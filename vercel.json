@@ -1,12 +1,6 @@
 {
   "version": 2,
   "name": "yxiong-profile",
-  "builds": [
-    {
-      "src": "**/*.html",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
       "src": "/(.*)",
