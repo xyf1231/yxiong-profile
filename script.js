@@ -461,7 +461,7 @@ function renderProfile(data) {
   });
   document.querySelectorAll("[data-profile-image]").forEach((node) => {
     if (data.profile.photo) {
-      node.src = data.profile.photo.replace(/\.webp$/, ".png");
+      node.src = data.profile.photo;
       const picture = node.closest("picture");
       const source = picture && picture.querySelector("[data-profile-source]");
       if (source) source.srcset = data.profile.photo;
