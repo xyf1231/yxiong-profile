@@ -2834,6 +2834,14 @@ html[lang="en"] .subtle-name {
     text-align: left;
     text-overflow: clip;
     border-radius: 10px;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .nav-links > a:hover,
+  .nav-group > a:hover,
+  .nav-dropdown a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .nav-group {
@@ -2930,6 +2938,14 @@ html[lang="en"] .subtle-name {
     padding: 10px 12px;
     text-align: left;
     text-overflow: clip;
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .nav-links > a:hover,
+  .nav-group > a:hover,
+  .nav-dropdown a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
   }
 
   .language-toggle {
@@ -2939,17 +2955,18 @@ html[lang="en"] .subtle-name {
   }
 
   .nav-group .nav-dropdown {
-    top: 120px;
-    left: 8px;
-    right: 8px;
-    padding: 8px;
-    z-index: 1000;
+    position: static;
+    display: none;
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+    margin-top: 4px;
+    padding: 4px 0 4px 12px;
+    border-left: 2px solid rgba(255, 255, 255, 0.1);
   }
 
   .nav-group.is-open .nav-dropdown {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateY(0) scale(1);
+    display: grid;
   }
 
   .nav-dropdown a {
