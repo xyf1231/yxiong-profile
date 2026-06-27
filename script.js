@@ -26,6 +26,13 @@ let currentLang = loadLanguagePreference();
 let compactNavClickBlockUntil = 0;
 const lightfallColors = ["#a6c8ff", "#5227ff", "#ff9ffc", "#58d5ff"];
 
+// Clear cached data to force reload from data.js (fixes encoding issues)
+try {
+  localStorage.removeItem(STORAGE_KEY);
+} catch (e) {
+  // ignore
+}
+
 const translations = {
   zh: {
     profile: "简介",

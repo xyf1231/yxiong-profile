@@ -2,6 +2,7 @@
 // Online mode: fetches from Supabase API
 // Offline mode: falls back to window.DEFAULT_SITE_DATA (data.js)
 
+// TEMPORARY: Force offline mode due to Supabase encoding issue (data stored as mojibake)
 const SUPABASE_URL = 'https://lmmkxikbhnorwliimnvc.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxtbWt4aWtiaG5vcndsaWltbnZjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0ODE3NzAsImV4cCI6MjA5ODA1Nzc3MH0.pYDqsKi0bNrE2YkvLw38E3zH8w_v4-TcTkAJKh0MhSM';
 const STORAGE_BUCKET = 'assets';
@@ -13,7 +14,8 @@ const STORAGE_CDN = `${SUPABASE_URL}/storage/v1/object/public`;
 // Check if we're in file:// mode (offline/local)
 const IS_FILE_PROTOCOL = window.location.protocol === 'file:';
 const IS_LOCALHOST = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-const USE_OFFLINE = IS_FILE_PROTOCOL || IS_LOCALHOST;
+// FORCE OFFLINE: Supabase data has encoding issues (mojibake Chinese characters)
+const USE_OFFLINE = true;
 
 // Supabase REST API helper
 async function supabaseFetch(table, options = {}) {

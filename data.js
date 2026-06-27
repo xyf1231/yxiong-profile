@@ -1,4 +1,4 @@
-window.DEFAULT_SITE_DATA = {
+﻿window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "profile": {
     "nameCn": "熊毅丰",
