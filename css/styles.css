@@ -7604,6 +7604,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   .profile-combo .profile-bio-text { order: 3; }
   .feature-card { padding-top: clamp(26px, 7vw, 42px) !important; }
   .feature-card .card-index { top: 18px !important; right: 18px !important; left: auto !important; }
+  .section-wrap#research .feature-card .card-index { top: 18px !important; left: 18px !important; right: auto !important; }
   .feature-card-image { margin-top: 42px; border-radius: 24px; }
   .home-bento-grid { grid-template-columns: 1fr 1fr; gap: 12px; padding-inline: 16px; }
   .home-bento-card, .home-bento-card-large, .home-bento-card-wide { grid-column: auto; min-height: 150px; border-radius: 22px; padding: 20px; }
@@ -7945,37 +7946,17 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   justify-content: space-between !important;
 }
 
-.home-dark .news-section .section-heading.center,
-.home-dark .home-bento-nav .section-heading.center,
-.home-dark .home-frame-section .section-heading.center {
-  width: 100% !important;
-  max-width: none !important;
-  margin-inline: auto !important;
-  padding-inline: 0 !important;
-  justify-content: center !important;
-  align-items: center !important;
-  text-align: center !important;
-}
-
-.home-dark .news-section .section-heading h2,
-.home-dark .home-bento-nav .section-heading h2,
-.home-dark .news-section .section-heading .section-kicker,
-.home-dark .home-bento-nav .section-heading .section-kicker {
+.home-dark .news-section .section-heading.inline h2,
+.home-dark .home-bento-nav .section-heading.inline h2,
+.home-dark .home-frame-section .section-heading.inline h2 {
   text-align: left !important;
   margin-inline: 0 !important;
 }
 
-.home-dark .news-section .section-heading.center h2,
-.home-dark .home-bento-nav .section-heading.center h2,
-.home-dark .home-frame-section .section-heading.center h2 {
-  text-align: center !important;
-  margin-inline: auto !important;
-}
-
-.home-dark .news-section .section-heading.center .section-kicker,
-.home-dark .home-bento-nav .section-heading.center .section-kicker,
-.home-dark .home-frame-section .section-heading.center .section-kicker {
-  display: none !important;
+.home-dark .news-section .section-heading.inline .section-kicker,
+.home-dark .home-bento-nav .section-heading.inline .section-kicker,
+.home-dark .home-frame-section .section-heading.inline .section-kicker {
+  display: block !important;
 }
 
 .profile-section#research {
@@ -8092,6 +8073,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 }
 
 .section-wrap#research .feature-card {
+  position: relative;
   min-width: 0 !important;
   width: 100% !important;
   min-height: clamp(500px, 38vw, 620px) !important;
