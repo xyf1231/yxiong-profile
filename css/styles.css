@@ -8117,6 +8117,18 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 
   .section-wrap#research .feature-card {
     min-height: auto !important;
+    padding: 20px !important;
+  }
+
+  .section-wrap#research .feature-card-image {
+    margin-top: 10px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .section-wrap#research .feature-card .card-index {
+    top: 14px !important;
+    left: 14px !important;
+    right: auto !important;
   }
 }
 
