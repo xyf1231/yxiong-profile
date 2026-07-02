@@ -6583,7 +6583,7 @@ body.nav-mega-open::after {
   .publication-item .pdf-actions {
     position: absolute;
     right: clamp(10px, 1vw, 16px);
-    bottom: clamp(10px, 1.2vw, 18px);
+    bottom: clamp(10px, 2.2vw, 30px);
     margin: 0 !important;
   }
 
