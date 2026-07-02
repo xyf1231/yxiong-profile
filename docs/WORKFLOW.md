@@ -5,7 +5,7 @@
 **项目目录**: `/Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站`  
 **生产环境**: https://xyfoptics.xyz  
 **Vercel 项目**: `xyfoptics/yxiong-profile`  
-**当前版本**: `v1.5.113`  
+**当前版本**: `v1.5.114`  
 **最后更新**: 2026-07-03
 
 ---

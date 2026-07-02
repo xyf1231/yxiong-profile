@@ -12,6 +12,14 @@
 - 部署：...
 ```
 
+## v1.5.114 - 2026-07-02
+
+- 类型：优化 / 部署
+- 变更：将所有图片和 PDF 文件引用从本地相对路径替换为 GitHub + jsDelivr CDN 直链。修改 `data.js`：16 处 `assets/` 引用和 14 处 `papers/` 引用全部替换为 `https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/...` 格式。修改 `index.html`：桌面端和移动端视频源统一使用 jsDelivr CDN（`https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/frame-hq.mp4`），替代之前的 123 云盘直链。
+- 说明：GitHub 仓库中已跟踪全部 40 个 assets/papers 文件，jsDelivr 会自动缓存并分发。由于当前网络到 GitHub 连接不稳定，代码已本地提交（commit c88aab1），请稍后手动执行 `git push origin main` 推送。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (15 html files, v1.5.114)`。
+- 部署：未部署。
+
 ## v1.5.113 - 2026-07-02
 
 - 类型：优化 / 部署
