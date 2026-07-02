@@ -1638,13 +1638,14 @@ html[lang="en"] .subtle-name {
 .publication-journal {
   color: var(--accent);
   font-weight: 850;
-  font-size: clamp(0.95rem, 1.4vw, 1.15rem);
+  font-size: clamp(1.05rem, 1.6vw, 1.28rem);
+  font-style: italic;
 }
 
 .publication-year {
   color: rgba(255, 255, 255, 0.92);
   font-weight: 850;
-  font-size: clamp(0.85rem, 1.2vw, 1.05rem);
+  font-size: clamp(0.95rem, 1.35vw, 1.15rem);
   margin-left: 0.4em;
 }
 
@@ -5908,8 +5909,9 @@ body.nav-mega-open::after {
   .news-info-card .button[data-pdf-download] {
     flex: 1;
     width: auto;
-    min-height: 46px;
+    min-height: 44px;
     margin-top: 0;
+    padding: 0 14px;
     justify-content: center;
   }
 
@@ -6513,8 +6515,8 @@ body.nav-mega-open::after {
     flex-wrap: nowrap;
     position: static;
     width: 100%;
-    gap: 8px;
-    margin-top: 10px !important;
+    gap: 10px;
+    margin-top: 8px !important;
   }
 
   .publication-item .pdf-actions .pdf-preview-link,
@@ -6528,6 +6530,8 @@ body.nav-mega-open::after {
     position: static !important;
     display: inline-flex;
     width: auto;
+    min-height: 44px;
+    padding: 0 14px;
     font-size: clamp(0.9rem, 2.8vw, 1.1rem);
     margin-top: 10px !important;
   }
