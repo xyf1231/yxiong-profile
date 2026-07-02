@@ -2110,7 +2110,7 @@ function revealOnView() {
   );
 
   items.forEach((item, index) => {
-    item.style.setProperty("--reveal-delay", `${Math.min(index * 45, 260)}ms`);
+    item.style.setProperty("--reveal-delay", `${Math.min(index * 80, 400)}ms`);
     observer.observe(item);
   });
 }
