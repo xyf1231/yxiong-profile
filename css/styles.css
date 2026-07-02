@@ -7604,8 +7604,17 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   .profile-combo .profile-bio-text { order: 3; }
   .feature-card { padding-top: clamp(26px, 7vw, 42px) !important; }
   .feature-card .card-index { top: 18px !important; right: 18px !important; left: auto !important; }
-  .section-wrap#research .feature-card .card-index { top: 18px !important; left: 18px !important; right: auto !important; }
-  .feature-card-image { margin-top: 42px; border-radius: 24px; }
+  .section-wrap#research .feature-card-image {
+    position: relative;
+    margin-top: 42px;
+    border-radius: 24px;
+  }
+
+  .section-wrap#research .feature-card .card-index {
+    top: 18px !important;
+    left: 18px !important;
+    right: auto !important;
+  }
   .home-bento-grid { grid-template-columns: 1fr 1fr; gap: 12px; padding-inline: 16px; }
   .home-bento-card, .home-bento-card-large, .home-bento-card-wide { grid-column: auto; min-height: 150px; border-radius: 22px; padding: 20px; }
   .home-bento-card.home-bento-card-large { grid-column: span 2; min-height: 170px; }

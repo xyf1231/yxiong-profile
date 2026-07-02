@@ -530,7 +530,7 @@ function renderResearch(items) {
   const list = currentLang === "en" ? researchEnglish : items;
   target.innerHTML = list.map((item, index) => {
     const image = item.image || fallbackImages[index % fallbackImages.length];
-    return "<article class=\"feature-card reveal\"><div class=\"feature-card-image\" aria-hidden=\"true\"><img src=\"" + escapeHtml(image) + "\" alt=\"\" loading=\"lazy\"></div><span class=\"card-index\">" + String(index + 1).padStart(2, "0") + "</span><div class=\"feature-card-copy\"><h3>" + escapeHtml(item.title) + "</h3><p>" + escapeHtml(item.text) + "</p></div></article>";
+    return "<article class=\"feature-card reveal\"><div class=\"feature-card-image\" aria-hidden=\"true\"><span class=\"card-index\">" + String(index + 1).padStart(2, "0") + "</span><img src=\"" + escapeHtml(image) + "\" alt=\"\" loading=\"lazy\"></div><div class=\"feature-card-copy\"><h3>" + escapeHtml(item.title) + "</h3><p>" + escapeHtml(item.text) + "</p></div></article>";
   }).join("");
 }
 
