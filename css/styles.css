@@ -7231,11 +7231,10 @@ body.nav-mega-open::after {
   .profile-publication-list .profile-publication-item {
     display: block !important;
     padding: 22px !important;
-    padding-top: 72px !important;
   }
 
   .profile-publication-list .profile-publication-item > span {
-    top: 22px !important;
+    top: 26px !important;
     left: 22px !important;
     right: auto !important;
   }
