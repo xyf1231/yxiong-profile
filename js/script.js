@@ -3,7 +3,7 @@ const LANG_KEY = "academicSiteLanguage";
 const isHomePage = /(^|\/)(index\.html)?$/.test(window.location.pathname) || window.location.pathname.endsWith('/');
 if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
 function resetHomeScrollIfNeeded() {
-  if (isHomePage && !window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  if (isHomePage && !window.location.hash && window.scrollY < 10) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
 window.addEventListener('pageshow', resetHomeScrollIfNeeded);
 window.addEventListener('load', resetHomeScrollIfNeeded);
@@ -817,7 +817,7 @@ function renderNewsDetail(items = []) {
   if (pdf) {
     if (detail.pdf) pdf.setAttribute("href", detail.pdf);
     else pdf.hidden = true;
-    pdf.innerHTML = `<span>${escapeHtml(localizeText("下载 PDF"))}</span><i aria-hidden="true"></i>`;
+    pdf.innerHTML = `<span>${escapeHtml(localizeText("下载"))}</span><i aria-hidden="true"></i>`;
     pdf.setAttribute("target", "_blank");
     pdf.setAttribute("rel", "noopener");
     pdf.setAttribute("data-pdf-download", "");
@@ -841,11 +841,16 @@ function isPdfUrl(url = "") {
   return /\.pdf(?:[?#].*)?$/i.test(String(url));
 }
 
-function pdfDownloadLink(url, label = localizeText("下载 PDF")) {
+function pdfDownloadLink(url) {
   if (!url) return "";
   const safeUrl = escapeHtml(url);
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
-  return `<a class="pdf-download-link" href="${safeUrl}" target="_blank" rel="noopener"${downloadAttr} data-pdf-download><span>${escapeHtml(label)}</span><i aria-hidden="true"></i></a>`;
+  const previewText = localizeText("预览") || "预览";
+  const downloadText = localizeText("下载") || "下载";
+  return `<div class="pdf-actions">
+    <a class="pdf-preview-link" href="${safeUrl}" target="_blank" rel="noopener"><span>${escapeHtml(previewText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+  </div>`;
 }
 
 function ensurePdfLoadingToast() {

@@ -12,6 +12,33 @@
 - 部署：...
 ```
 
+## v1.5.118 - 2026-07-02
+
+- 类型：修复 / 样式
+- 变更：修复电脑端论文卡片中预览/下载按钮位置错误的问题。为 `.publication-item` 添加 `position: relative`，使 `.pdf-actions` 的 `position: absolute` 能正确定位到卡片右下角。
+- 变更：将按钮文字「下载 PDF」统一改为「下载」，更新 `js/script.js` 中 `pdfDownloadLink()` 函数和新闻详情 PDF 按钮的 localizeText 调用。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (15 html files, v1.5.118)`。
+- 部署：已部署。
+
+## v1.5.117 - 2026-07-02
+
+- 类型：功能 / 样式
+- 变更：将所有论文模块的 PDF 下载按钮升级为「预览 + 下载」双按钮。
+  - 修改 `js/script.js` 中 `pdfDownloadLink()` 函数：返回 `.pdf-actions` 容器，内含「预览」和「下载 PDF」两个按钮。
+  - 「预览」按钮：使用 `↗` 图标，点击在新标签页打开 PDF 供浏览器内嵌预览。
+  - 「下载」按钮：保留原有 `↓` 图标和下载逻辑，本地 PDF 带 `download` 属性，外部 CDN 链接则在新标签页打开。
+  - 修改 `css/styles.css`：新增 `.pdf-actions` 按钮组容器（`display: inline-flex; gap: 10px;`）和 `.pdf-preview-link` 样式（与 `.pdf-download-link` 一致的玻璃质感按钮，图标为 `↗`）。更新所有响应式断点中的选择器，适配双按钮布局。
+  - 影响范围：成果页代表论文（`#publication-list`）和全部论文列表（`#all-publication-list`）。简介页代表论文（`#profile-publication-list`）继续隐藏 PDF 按钮，保持简洁展示。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (15 html files, v1.5.117)`。
+- 部署：未部署。
+
+## v1.5.116 - 2026-07-02
+
+- 类型：修复
+- 变更：修复首页视频加载完成后页面自动跳到最顶端的问题。`js/script.js` 中 `resetHomeScrollIfNeeded()` 函数添加 `window.scrollY < 10` 条件判断：只在用户尚未明显滚动时才执行 `scrollTo(0, 0)`，避免视频加载触发 `load` 事件后强制将已滚动的页面拉回顶部。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (15 html files, v1.5.116)`。
+- 部署：未部署。
+
 ## v1.5.115 - 2026-07-02
 
 - 类型：重构 / 部署
