@@ -1515,7 +1515,7 @@ function translateLooseHeadings(dict) {
     "Manage Content": dict.manageContent,
   };
 
-  document.querySelectorAll("h1, h2, h3, a, button, p").forEach((node) => {
+  document.querySelectorAll("h1, h2, h3, a, button, p:not(.section-kicker)").forEach((node) => {
     const text = node.textContent.trim();
     if (exact[text]) node.textContent = exact[text];
   });
