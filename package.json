@@ -1,0 +1,11 @@
+{
+  "name": "yxiong-profile",
+  "version": "1.5.113",
+  "private": true,
+  "scripts": {
+    "bump": "node scripts/bump-version.mjs",
+    "check": "node --check script.js && node --check admin.js && node --check scripts/admin-server.mjs && node scripts/check-site.mjs",
+    "serve": "python3 -m http.server 8000",
+    "admin": "node scripts/admin-server.mjs"
+  }
+}

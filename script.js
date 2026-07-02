@@ -1,14 +1,20 @@
 const STORAGE_KEY = "academicSiteData";
 const LANG_KEY = "academicSiteLanguage";
+const isHomePage = /(^|\/)(index\.html)?$/.test(window.location.pathname) || window.location.pathname.endsWith('/');
+if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'manual';
+function resetHomeScrollIfNeeded() {
+  if (isHomePage && !window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+}
+window.addEventListener('pageshow', resetHomeScrollIfNeeded);
+window.addEventListener('load', resetHomeScrollIfNeeded);
 const NAV_INDICATOR_KEY = "academicSiteNavIndicator";
 
-// Helper: create <picture> with WebP + PNG fallback for file:// compatibility
+// Helper: create optimized WebP image markup.
 function pictureTag(webpSrc, alt, cls, priority = false) {
-  const pngSrc = webpSrc.replace(/\.webp$/, ".png");
   const classAttr = cls ? ` class="${cls}"` : "";
   const priorityAttr = priority ? ` fetchpriority="high"` : ` fetchpriority="low" loading="lazy"`;
   const decodingAttr = ` decoding="async"`;
-  return `<picture><source srcset="${escapeHtml(webpSrc)}" type="image/webp"><img${classAttr} src="${escapeHtml(pngSrc)}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} /></picture>`;
+  return `<img${classAttr} src="${escapeHtml(webpSrc)}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
 }
 
 const header = document.querySelector(".site-header");
@@ -41,17 +47,28 @@ const translations = {
     projects: "项目",
     achievements: "成果荣誉",
     awards: "奖励",
-    conferences: "会议",
+    conferences: "学术活动",
     experience: "学术经历",
     contact: "联系方式",
     admin: "后台",
     news: "新闻动态",
+    quickNav: "快速导航",
+    quickProfileTitle: "简介",
+    quickProfileText: "个人简介、研究内容与代表论文",
+    quickResultsTitle: "成果",
+    quickResultsText: "论文、专利与项目",
+    quickHonorsTitle: "荣誉",
+    quickHonorsText: "奖励与创新创业",
+    quickActivitiesTitle: "学术活动",
+    quickActivitiesText: "会议报告、学术服务与审稿",
+    quickNewsTitle: "新闻",
+    quickNewsText: "最新动态与论文故事",
     navHome: "主页",
     results: "成果",
     honors: "荣誉",
     homeEyebrow: "光纤集成器件",
-    homeTitle: "光纤集成智能光电子器件",
-    homeSubtitle: "光纤集成 · 异质材料 · 智能光电子器件",
+    homeTitle: "光纤集成\n智能光电子",
+    homeSubtitle: "光纤集成 · 异质材料 · 智能感知",
     profileCard: "身份、研究概述、学术关键词与联系方式。",
     publicationsCard: "《自然·电子学》《科学进展》《先进材料》等。",
     projectsCard: "国家自然科学基金、江苏省青年基金、广东省面上项目等。",
@@ -59,6 +76,7 @@ const translations = {
     experienceCard: "南京大学学习工作经历与研究发展脉络。",
     contactCard: "邮箱、电话和后续可扩展的学术主页入口。",
     researchTitle: "研究内容",
+    homeFrameTitle: "研究亮点",
     explore: "探索",
     manageContent: "维护内容",
     langButton: "EN",
@@ -81,17 +99,28 @@ const translations = {
     projects: "Projects",
     achievements: "Achievements",
     awards: "Awards",
-    conferences: "Conferences",
+    conferences: "Activities",
     experience: "Experience",
     contact: "Contact",
     admin: "Admin",
     news: "News",
+    quickNav: "Explore",
+    quickProfileTitle: "Profile",
+    quickProfileText: "Biography, research, and selected publications",
+    quickResultsTitle: "Results",
+    quickResultsText: "Publications, patents, and projects",
+    quickHonorsTitle: "Honors",
+    quickHonorsText: "Awards and innovation",
+    quickActivitiesTitle: "Activities",
+    quickActivitiesText: "Talks, service, and reviewing",
+    quickNewsTitle: "News",
+    quickNewsText: "Updates and research stories",
     navHome: "Home",
     results: "Results",
     honors: "Honors",
     homeEyebrow: "Optical Fiber Devices",
-    homeTitle: "Fiber Integrated Intelligence",
-    homeSubtitle: "Fiber integration · Heterogeneous materials · Intelligent optoelectronics",
+    homeTitle: "Fiber\nIntegrated\nIntelligence",
+    homeSubtitle: "Fiber integration · Heterogeneous materials · Intelligent sensing",
     profileCard: "Position, research overview, academic keywords, and contact details.",
     publicationsCard: "Selected papers in Nature Electronics, Science Advances, Advanced Materials, and more.",
     projectsCard: "Funded research projects from national and provincial programs.",
@@ -99,6 +128,7 @@ const translations = {
     experienceCard: "Academic path and research development at Nanjing University.",
     contactCard: "Email, phone, and future academic profile links.",
     researchTitle: "Research",
+    homeFrameTitle: "Research Highlights",
     explore: "Explore",
     manageContent: "Manage Content",
     langButton: "中文",
@@ -420,15 +450,7 @@ function mergeWithDefaultData(source) {
   return merged;
 }
 
-// Cached data from Supabase (set by async init)
-let _cachedSiteData = null;
-
 function getSiteData() {
-  // If Supabase data is available, use it
-  if (_cachedSiteData) {
-    return _cachedSiteData;
-  }
-  // Fallback to localStorage + data.js
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return cloneData(window.DEFAULT_SITE_DATA);
 
@@ -494,46 +516,217 @@ function renderMetrics(metrics) {
 function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
+  const fallbackImages = ["assets/research-fiber-devices.svg", "assets/research-opto-chip.svg", "assets/research-fabrication.svg"];
   const list = currentLang === "en" ? researchEnglish : items;
-  target.innerHTML = list
-    .map(
-      (item, index) => `
-        <article class="feature-card reveal">
-          <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
-          <h3>${escapeHtml(item.title)}</h3>
-          <p>${escapeHtml(item.text)}</p>
-        </article>
-      `,
-    )
-    .join("");
+  target.innerHTML = list.map((item, index) => {
+    const image = item.image || fallbackImages[index % fallbackImages.length];
+    return "<article class=\"feature-card reveal\"><div class=\"feature-card-image\" aria-hidden=\"true\"><img src=\"" + escapeHtml(image) + "\" alt=\"\" loading=\"lazy\"></div><span class=\"card-index\">" + String(index + 1).padStart(2, "0") + "</span><div class=\"feature-card-copy\"><h3>" + escapeHtml(item.title) + "</h3><p>" + escapeHtml(item.text) + "</p></div></article>";
+  }).join("");
 }
 
 function renderNews(items) {
   const target = document.querySelector("#news-list");
   if (!target) return;
-  target.innerHTML = items
+  const cards = items
     .map((item, index) => {
       const title = currentLang === "en" ? item.titleEn || item.title : item.title;
-      const text = currentLang === "en" ? item.textEn || item.text : item.text;
+      const titleLength = [...String(title || "")].length;
+      const mediumAt = currentLang === "en" ? 42 : 18;
+      const longAt = currentLang === "en" ? 70 : 30;
+      const titleSize = titleLength >= longAt ? "long" : titleLength >= mediumAt ? "medium" : "short";
       const href = item.url || "#";
       const image = item.image
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
       return `
-        <a class="news-card reveal" href="${escapeHtml(href)}">
+        <a class="news-card reveal" href="${escapeHtml(href)}" data-news-slide="${index}" data-title-size="${titleSize}">
           ${image}
           <div class="news-card-body">
             <time>${escapeHtml(item.date || "")}</time>
             <h3>${escapeHtml(title || "")}</h3>
-            <p>${escapeHtml(text || "")}</p>
           </div>
           <span>${String(index + 1).padStart(2, "0")}</span>
         </a>
       `;
     })
     .join("");
+
+  target.innerHTML = `
+    <div class="news-carousel-viewport" tabindex="0" aria-label="${escapeHtml(currentLang === "en" ? "News carousel" : "新闻横向滚动区")}">
+      <div class="news-carousel-track">${cards}</div>
+    </div>
+    <div class="news-carousel-controls" aria-label="${escapeHtml(currentLang === "en" ? "News carousel controls" : "新闻切换控制")}">
+      <button class="news-carousel-arrow" data-news-prev type="button" aria-label="${escapeHtml(currentLang === "en" ? "Previous news" : "上一条新闻")}">‹</button>
+      <div class="news-carousel-dots">${items
+        .map((_, index) => `<button type="button" data-news-dot="${index}" aria-label="${escapeHtml(currentLang === "en" ? `Go to news ${index + 1}` : `跳转到第 ${index + 1} 条新闻`)}"></button>`)
+        .join("")}</div>
+      <button class="news-carousel-arrow" data-news-next type="button" aria-label="${escapeHtml(currentLang === "en" ? "Next news" : "下一条新闻")}">›</button>
+      <button class="news-carousel-play" data-news-play type="button" aria-label="${escapeHtml(currentLang === "en" ? "Pause auto play" : "暂停自动播放")}">Ⅱ</button>
+    </div>
+  `;
+  setupNewsCarousel(target);
 }
 
+function setupNewsCarousel(root) {
+  const viewport = root.querySelector(".news-carousel-viewport");
+  const track = root.querySelector(".news-carousel-track");
+  const cards = [...root.querySelectorAll(".news-card")];
+  const dots = [...root.querySelectorAll("[data-news-dot]")];
+  const prev = root.querySelector("[data-news-prev]");
+  const next = root.querySelector("[data-news-next]");
+  const play = root.querySelector("[data-news-play]");
+  if (!viewport || !track || !cards.length) return;
+
+  let activeIndex = 0;
+  // 用户手动滑动后，自动播放暂停，但可通过按钮恢复
+  let autoPlaying = true;
+  let timer = null;
+  let isDragging = false;
+  let dragStartX = 0;
+  let dragDeltaX = 0;
+  let dragPointerId = null;
+  let suppressClick = false;
+  const swipeThreshold = 64;
+
+  const getCurrentOffset = () => Number(track.dataset.offset || 0);
+  let dragBaseOffset = 0;
+
+  const update = (index = activeIndex) => {
+    activeIndex = Math.max(0, Math.min(cards.length - 1, index));
+    cards.forEach((card, i) => card.classList.toggle("is-active", i === activeIndex));
+    dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === activeIndex)));
+  };
+
+  const goTo = (index, behavior = "smooth", wrap = false) => {
+    const nextIndex = wrap
+      ? (index + cards.length) % cards.length
+      : Math.max(0, Math.min(cards.length - 1, index));
+    const card = cards[nextIndex];
+    update(nextIndex);
+    if (behavior === "auto") {
+      track.style.transitionDuration = "0ms";
+    } else {
+      track.style.transitionDuration = "320ms";
+    }
+
+    window.requestAnimationFrame(() => {
+      const viewportRect = viewport.getBoundingClientRect();
+      const targetOffset = Math.round(viewportRect.width / 2 - (card.offsetLeft + card.offsetWidth / 2));
+      track.dataset.offset = String(targetOffset);
+      track.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
+      if (behavior === "auto") {
+        window.setTimeout(() => {
+          track.style.transitionDuration = "";
+        }, 24);
+      }
+    });
+  };
+
+  const stopAuto = () => {
+    window.clearInterval(timer);
+    timer = null;
+  };
+
+  const pauseAuto = () => {
+    autoPlaying = false;
+    stopAuto();
+    if (play) {
+      play.textContent = "▶";
+      play.setAttribute("aria-label", currentLang === "en" ? "Resume auto play" : "继续自动播放");
+      play.removeAttribute("aria-disabled");
+      play.disabled = false;
+    }
+  };
+
+  const startAuto = () => {
+    stopAuto();
+    if (!autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) return;
+    timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), 5200);
+  };
+
+  prev?.addEventListener("click", () => { goTo(activeIndex - 1); });
+  next?.addEventListener("click", () => { goTo(activeIndex + 1); });
+  dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index); }));
+  play?.addEventListener("click", () => {
+    autoPlaying = !autoPlaying;
+    play.textContent = autoPlaying ? "Ⅱ" : "▶";
+    play.setAttribute("aria-label", autoPlaying ? (currentLang === "en" ? "Pause auto play" : "暂停自动播放") : (currentLang === "en" ? "Resume auto play" : "继续自动播放"));
+    startAuto();
+  });
+
+  const beginDrag = (event) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    isDragging = true;
+    dragStartX = event.clientX;
+    dragDeltaX = 0;
+    dragPointerId = event.pointerId;
+    // 用户开始拖拽，立即关闭自动播放，但保留按钮可恢复
+    pauseAuto();
+    dragBaseOffset = getCurrentOffset();
+    track.style.transitionDuration = "0ms";
+    root.classList.add("is-dragging");
+    viewport.setPointerCapture?.(event.pointerId);
+  };
+
+  const moveDrag = (event) => {
+    if (!isDragging || event.pointerId !== dragPointerId) return;
+    const rawDeltaX = event.clientX - dragStartX;
+    dragDeltaX = rawDeltaX;
+    const nextOffset = dragBaseOffset + dragDeltaX;
+    track.dataset.offset = String(nextOffset);
+    track.style.transform = `translate3d(${nextOffset}px, 0, 0)`;
+    if (Math.abs(rawDeltaX) > 2) event.preventDefault();
+  };
+
+  const finishDrag = (event) => {
+    if (!isDragging || event.pointerId !== dragPointerId) return;
+    isDragging = false;
+    root.classList.remove("is-dragging");
+    viewport.releasePointerCapture?.(dragPointerId);
+    dragPointerId = null;
+    if (Math.abs(dragDeltaX) > 8) suppressClick = true;
+
+    const targetIndex = Math.abs(dragDeltaX) >= swipeThreshold
+      ? (dragDeltaX < 0 ? Math.min(cards.length - 1, activeIndex + 1) : Math.max(0, activeIndex - 1))
+      : activeIndex;
+
+    goTo(targetIndex);
+
+    window.setTimeout(() => {
+      suppressClick = false;
+    }, 120);
+  };
+
+  viewport.addEventListener("pointerdown", beginDrag);
+  viewport.addEventListener("pointermove", moveDrag);
+  viewport.addEventListener("pointerup", finishDrag);
+  viewport.addEventListener("pointercancel", finishDrag);
+  root.addEventListener("click", (event) => {
+    if (!suppressClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+  }, true);
+
+  viewport.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowLeft") goTo(activeIndex - 1);
+    if (event.key === "ArrowRight") goTo(activeIndex + 1);
+  });
+
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(() => {
+      track.dataset.offset = "0";
+      track.style.transform = "translate3d(0, 0, 0)";
+      goTo(activeIndex, "auto");
+    }, 120);
+  });
+
+  update(0);
+  goTo(0, "auto");
+  window.addEventListener("load", () => goTo(activeIndex, "auto"), { once: true });
+  startAuto();
+}
 function sanitizeRichHtml(html = "") {
   const template = document.createElement("template");
   template.innerHTML = String(html);
@@ -551,15 +744,14 @@ function sanitizeRichHtml(html = "") {
     }
   });
   return template.innerHTML
-    // Convert standalone <img src="...webp"> to <picture> with PNG fallback (for file:// compatibility)
+    // Normalize standalone WebP images with lazy loading defaults.
     .replace(/<img([^>]*)src="([^"]+\.webp)"([^>]*)>/gi, (match, pre, src, post) => {
-      const pngSrc = src.replace(/\.webp$/, ".png");
       const hasLoading = /loading\s*=/.test(pre + post);
       const hasDecoding = /decoding\s*=/.test(pre + post);
       const loadingAttr = hasLoading ? "" : ` loading="lazy"`;
       const decodingAttr = hasDecoding ? "" : ` decoding="async"`;
       const fetchpriorityAttr = ` fetchpriority="low"`;
-      return `<picture><source srcset="${src}" type="image/webp"><img${pre}src="${pngSrc}"${post}${loadingAttr}${decodingAttr}${fetchpriorityAttr}></picture>`;
+      return `<img${pre}src="${src}"${post}${loadingAttr}${decodingAttr}${fetchpriorityAttr}>`;
     });
 }
 
@@ -625,7 +817,10 @@ function renderNewsDetail(items = []) {
   if (pdf) {
     if (detail.pdf) pdf.setAttribute("href", detail.pdf);
     else pdf.hidden = true;
-    pdf.textContent = localizeText("打开论文 PDF");
+    pdf.innerHTML = `<span>${escapeHtml(localizeText("下载 PDF"))}</span><i aria-hidden="true"></i>`;
+    pdf.setAttribute("target", "_blank");
+    pdf.setAttribute("rel", "noopener");
+    pdf.setAttribute("data-pdf-download", "");
   }
 }
 
@@ -641,6 +836,44 @@ function applicantLabel(item) {
   return currentLang === "en" ? "Applicant" : "申请人";
 }
 
+
+function isPdfUrl(url = "") {
+  return /\.pdf(?:[?#].*)?$/i.test(String(url));
+}
+
+function pdfDownloadLink(url, label = localizeText("下载 PDF")) {
+  if (!url) return "";
+  const safeUrl = escapeHtml(url);
+  const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
+  return `<a class="pdf-download-link" href="${safeUrl}" target="_blank" rel="noopener"${downloadAttr} data-pdf-download><span>${escapeHtml(label)}</span><i aria-hidden="true"></i></a>`;
+}
+
+function ensurePdfLoadingToast() {
+  let toast = document.querySelector("#pdf-loading-toast");
+  if (toast) return toast;
+  toast = document.createElement("div");
+  toast.id = "pdf-loading-toast";
+  toast.className = "pdf-loading-toast";
+  toast.setAttribute("role", "status");
+  toast.setAttribute("aria-live", "polite");
+  toast.innerHTML = `<span class="pdf-loading-spinner" aria-hidden="true"></span><div><strong>${escapeHtml(localizeText("正在加载 PDF..."))}</strong><p>${escapeHtml(localizeText("PDF 文件较大，正在打开下载链接。"))}</p></div>`;
+  document.body.appendChild(toast);
+  return toast;
+}
+
+function showPdfLoading(link) {
+  const toast = ensurePdfLoadingToast();
+  toast.querySelector("strong").textContent = localizeText("正在加载 PDF...");
+  toast.querySelector("p").textContent = localizeText("PDF 文件较大，正在打开下载链接。");
+  toast.classList.add("is-visible");
+  link?.classList.add("is-loading");
+  window.clearTimeout(showPdfLoading.timer);
+  showPdfLoading.timer = window.setTimeout(() => {
+    toast.classList.remove("is-visible");
+    link?.classList.remove("is-loading");
+  }, 4200);
+}
+
 function renderPublications(items) {
   const target = document.querySelector("#publication-list");
   if (!target) return;
@@ -650,31 +883,27 @@ function renderPublications(items) {
     return (ar === -1 ? 999 : ar) - (br === -1 ? 999 : br);
   });
   target.innerHTML = sorted
-    .map((item) => {
+    .map((item, index) => {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
       const date = item.date && item.date !== "-" && item.date;
-      const meta = [venue, date]
-        .filter(Boolean)
-        .join(" · ");
+      const year = date || item.year || "";
       const image = item.image
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
-      const href = item.url || "#";
-      const targetAttr = item.url ? ` target="_blank" rel="noopener"` : "";
-
       return `
-        <a class="publication-item reveal" href="${escapeHtml(href)}"${targetAttr}>
-          <time>${escapeHtml(item.year)}</time>
+        <article class="publication-item reveal">
+          <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
-          <div>
+          <div class="publication-copy">
             <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p>${escapeHtml(meta)}</p>
+            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${year ? ` <span class="publication-year">${escapeHtml(year)}</span>` : ""}</p>
+            ${pdfDownloadLink(item.url)}
           </div>
-        </a>
+        </article>
       `;
     })
     .join("");
@@ -696,17 +925,20 @@ function renderProfilePublications(items) {
   target.innerHTML = getRepresentativePublications(items, 5)
     .map((item, index) => {
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
-      const href = item.url || "results.html#papers";
+      const image = item.image
+        ? `<div class="publication-visual profile-publication-visual">${pictureTag(item.image, item.title)}</div>`
+        : `<div class="publication-visual profile-publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <a class="profile-publication-item reveal" href="${escapeHtml(href)}"${item.url ? ' target="_blank" rel="noopener"' : ""}>
+        <article class="profile-publication-item reveal">
           <span>${String(index + 1).padStart(2, "0")}</span>
+          ${image}
           <div>
             <h3>${escapeHtml(item.title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p>${escapeHtml([item.venue, item.date || item.year].filter(Boolean).join(" · "))}</p>
+            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(item.venue || "")}</strong>${(item.date || item.year) ? ` <span class="publication-year">${escapeHtml(item.date || item.year)}</span>` : ""}</p>
           </div>
-        </a>
+        </article>
       `;
     })
     .join("");
@@ -716,28 +948,38 @@ function renderAllPublications(items) {
   const target = document.querySelector("#all-publication-list");
   if (!target) return;
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
-  target.innerHTML = sorted
-    .map((item) => {
+  const compact = isCompactNav();
+  const expanded = target.dataset.expanded === "true";
+  const visibleItems = compact && !expanded ? sorted.slice(0, 12) : sorted;
+  const listHtml = visibleItems
+    .map((item, index) => {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
-      const href = item.url || "";
-      const linkStart = href ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">` : `<article>`;
-      const linkEnd = href ? `</a>` : `</article>`;
-
+      const date = item.date || item.year || "";
       return `
-        ${linkStart}
-          <time>${escapeHtml(item.date || item.year || "")}</time>
+        <article>
+          <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
             <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p>${escapeHtml(venue || "")}</p>
+            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${date ? ` <span class="publication-year">${escapeHtml(date)}</span>` : ""}</p>
+            ${pdfDownloadLink(item.url)}
           </div>
-        ${linkEnd}
+        </article>
       `;
     })
     .join("");
+  const moreHtml = compact && !expanded && sorted.length > visibleItems.length
+    ? `<button class="all-publications-more" type="button">${currentLang === "en" ? "Show all publications" : "展开全部论文"}</button>`
+    : "";
+  target.innerHTML = `${listHtml}${moreHtml}`;
+  target.querySelector(".all-publications-more")?.addEventListener("click", () => {
+    target.dataset.expanded = "true";
+    renderAllPublications(items);
+    setupReveal();
+  });
 }
 
 function publicationTime(item) {
@@ -775,15 +1017,18 @@ function renderAchievements(items) {
   if (!target) return;
   target.innerHTML = items
     .map(
-      (item) => `
+      (item, index) => `
         <article class="achievement-item reveal">
-          <div class="achievement-meta">
-            <span>${escapeHtml(localizeText(item.type))}</span>
-            <time>${escapeHtml(item.year)}</time>
+          <span class="item-index">${String(index + 1).padStart(2, "0")}</span>
+          <div>
+            <div class="achievement-meta">
+              <span>${escapeHtml(localizeText(item.type))}</span>
+              <time>${escapeHtml(item.year)}</time>
+            </div>
+            <h3>${escapeHtml(localizeText(item.title))}</h3>
+            ${item.applicant ? `<p class="detail-applicant">${escapeHtml(applicantLabel(item))}：${highlightAuthor(localizeText(item.applicant))}</p>` : ""}
+            <p>${escapeHtml(localizeText(item.detail))}</p>
           </div>
-          <h3>${escapeHtml(localizeText(item.title))}</h3>
-          ${item.applicant ? `<p class="detail-applicant">${escapeHtml(applicantLabel(item))}：${highlightAuthor(localizeText(item.applicant))}</p>` : ""}
-          <p>${escapeHtml(localizeText(item.detail))}</p>
         </article>
       `,
     )
@@ -796,11 +1041,11 @@ function renderDetailLists(items) {
     const filtered = items.filter((item) => types.includes(item.type));
       target.innerHTML = filtered
       .map(
-        (item) => `
+        (item, index) => `
           <article class="detail-item reveal">
-            <time>${escapeHtml(localizeText(item.year))}</time>
+            <time>${String(index + 1).padStart(2, "0")}</time>
             <div>
-              <p class="detail-type">${escapeHtml(localizeText(item.type))}</p>
+              <p class="detail-type">${escapeHtml([localizeText(item.type), localizeText(item.year)].filter(Boolean).join(" · "))}</p>
               <h3>${escapeHtml(localizeText(item.title))}</h3>
               ${item.applicant ? `<p class="detail-applicant">${escapeHtml(applicantLabel(item))}：${highlightAuthor(localizeText(item.applicant))}</p>` : ""}
               <p>${escapeHtml(localizeText(item.detail))}</p>
@@ -817,10 +1062,11 @@ function renderExperience(items) {
   if (!target) return;
   target.innerHTML = items
     .map(
-      (item) => `
-        <li>
-          <time>${escapeHtml(localizeText(item.period))}</time>
+      (item, index) => `
+        <li class="reveal">
+          <span class="item-index">${String(index + 1).padStart(2, "0")}</span>
           <div>
+            <time>${escapeHtml(localizeText(item.period))}</time>
             <h3>${escapeHtml(localizeText(item.title))}</h3>
             <p>${escapeHtml(localizeText(item.text))}</p>
           </div>
@@ -862,17 +1108,33 @@ function renderSite() {
 
 function setupLanguageToggle() {
   document.documentElement.lang = currentLang === "en" ? "en" : "zh-CN";
-  document.querySelectorAll(".nav-links").forEach((nav) => {
-    if (nav.querySelector(".language-toggle")) return;
-    const button = document.createElement("button");
-    button.className = "language-toggle";
-    button.type = "button";
-    button.addEventListener("click", () => {
+  const headerEl = document.querySelector(".site-header");
+  const nav = document.querySelector(".nav-links");
+  const host = headerEl || nav;
+  if (!host) return;
+
+  const existing = document.querySelector(".language-toggle");
+  const button = existing || document.createElement("button");
+  button.className = "language-toggle";
+  button.type = "button";
+
+  if (!button._langBound) {
+    button._langBound = true;
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
       currentLang = currentLang === "en" ? "zh" : "en";
       localStorage.setItem(LANG_KEY, currentLang);
       window.location.reload();
     });
-    nav.append(button);
+  }
+
+  const menuButton = headerEl?.querySelector(".nav-menu-toggle");
+  if (headerEl && menuButton) headerEl.insertBefore(button, menuButton);
+  else host.append(button);
+
+  document.querySelectorAll(".nav-links .language-toggle").forEach((node) => {
+    if (node !== button) node.remove();
   });
 }
 
@@ -889,36 +1151,21 @@ function applyLanguage() {
     button.setAttribute("aria-label", currentLang === "en" ? "Switch to Chinese" : "切换到英文");
   });
   document.querySelectorAll(".nav-menu-toggle").forEach((button) => {
-    button.textContent = currentLang === "en" ? "Menu" : "菜单";
-    if (!button._menuBound) {
-      button._menuBound = true;
-      button.addEventListener("click", () => {
-        const nav = document.querySelector(".nav-links");
-        const isOpen = nav.classList.toggle("is-open");
-        button.setAttribute("aria-expanded", isOpen ? "true" : "false");
-        // close sibling dropdowns inside nav
-        if (!isOpen) {
-          nav.querySelectorAll(".nav-group.is-open").forEach((g) => g.classList.remove("is-open"));
-        }
-      });
-      // click outside to close
-      document.addEventListener("click", (e) => {
-        if (!e.target.closest(".nav-links") && !e.target.closest(".nav-menu-toggle")) {
-          const nav = document.querySelector(".nav-links");
-          if (nav.classList.contains("is-open")) {
-            nav.classList.remove("is-open");
-            button.setAttribute("aria-expanded", "false");
-            nav.querySelectorAll(".nav-group.is-open").forEach((g) => g.classList.remove("is-open"));
-          }
-        }
-      });
-    }
+    button.setAttribute("aria-label", currentLang === "en" ? "Menu" : "菜单");
+  });
+  document.querySelectorAll(".nav-menu-close").forEach((button) => {
+    button.setAttribute("aria-label", currentLang === "en" ? "Close menu" : "关闭菜单");
+  });
+  document.querySelectorAll(".nav-card-label").forEach((label, index) => {
+    const labels = currentLang === "en" ? ["Explore", "Results", "Honors & Talks"] : ["浏览", "成果", "荣誉与会议"];
+    if (labels[index]) label.textContent = labels[index];
   });
   translateNavigation(dict);
   translateLooseHeadings(dict);
   document.querySelectorAll(".footer-address").forEach((node) => {
     node.textContent = localizeText("通信地址：南京大学仙林校区现代工学院A302");
   });
+  document.documentElement.dataset.langReady = "ready";
 }
 
 function translateNavigation(dict) {
@@ -952,91 +1199,137 @@ function translateNavigation(dict) {
 
 function setupNavigation() {
   const nav = document.querySelector("#site-nav");
-  if (nav && nav.dataset.ready !== "true") {
-    nav.dataset.ready = "true";
-    ensureNavIndicator(nav);
+  const toggle = document.querySelector(".nav-menu-toggle");
+  const closeBtn = document.querySelector(".nav-menu-close");
+  if (!nav) return;
+
+  const closeMobileNav = () => {
+    nav.classList.remove("is-open");
+    document.body.classList.remove("nav-menu-open");
+    if (toggle) {
+      toggle.classList.remove("is-open");
+      toggle.setAttribute("aria-expanded", "false");
+    }
+    document.body.style.overflow = "";
+  };
+
+  const openMobileNav = () => {
+    nav.classList.add("is-open");
+    nav.scrollTop = 0;
+    document.body.classList.add("nav-menu-open");
+    closeDesktopMega(nav);
+    if (toggle) {
+      toggle.classList.add("is-open");
+      toggle.setAttribute("aria-expanded", "true");
+    }
+    document.body.style.overflow = "hidden";
+  };
+
+  if (toggle && !toggle._menuBound) {
+    toggle._menuBound = true;
+    toggle.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (nav.classList.contains("is-open")) closeMobileNav();
+      else openMobileNav();
+    });
+  }
+
+  if (closeBtn && !closeBtn._menuBound) {
+    closeBtn._menuBound = true;
+    closeBtn.addEventListener("click", closeMobileNav);
+  }
+
+  if (!nav._appleNavBound) {
+    nav._appleNavBound = true;
+    let closeTimer = 0;
+    const desktopItems = nav.querySelector(".nav-desktop-items");
+    const cancelClose = () => window.clearTimeout(closeTimer);
+    const scheduleClose = () => {
+      cancelClose();
+      closeTimer = window.setTimeout(() => closeDesktopMega(nav), 120);
+    };
+
+    desktopItems?.addEventListener("pointerenter", () => {
+      if (!isCompactNav()) openDesktopMega(nav);
+    });
+    nav.addEventListener("pointerenter", cancelClose);
+    nav.addEventListener("pointerleave", () => {
+      if (!isCompactNav()) scheduleClose();
+    });
+    desktopItems?.addEventListener("focusin", () => {
+      if (!isCompactNav()) openDesktopMega(nav);
+    });
+
     nav.addEventListener("click", (event) => {
       const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-      const dropdownLink = targetEl.closest(".nav-dropdown a");
-      const clickedTopLink = targetEl.closest(".nav-links > a, .nav-group > a");
-      const clickedGroupLink = clickedTopLink?.closest(".nav-group") ? clickedTopLink : null;
-      const group = dropdownLink?.closest(".nav-group") || clickedGroupLink?.closest(".nav-group");
-      const indicatorTarget = clickedTopLink || getGroupMainLink(group);
-      if (indicatorTarget) storeNavIndicatorPosition(nav, indicatorTarget);
-
-      if (clickedGroupLink && isCompactNav()) {
-        const isOpen = group.classList.contains("is-open");
-        document.querySelectorAll(".nav-group.is-open").forEach((item) => {
-          if (item !== group) item.classList.remove("is-open");
-        });
-        if (!isOpen) {
-          event.preventDefault();
-          group.classList.add("is-open");
-          updateNavIndicator(nav);
-          return;
-        }
-      }
-
-      if (targetEl.closest(".nav-links a")) {
-        document.querySelectorAll(".nav-group.is-open").forEach((item) => item.classList.remove("is-open"));
-        if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
-        const navLinks = document.querySelector(".nav-links");
-        if (navLinks && navLinks.classList.contains("is-open")) {
-          navLinks.classList.remove("is-open");
-          document.querySelectorAll(".nav-menu-toggle").forEach((btn) => btn.setAttribute("aria-expanded", "false"));
-        }
-      }
-      if (dropdownLink && group) {
-        window.setTimeout(() => {
-          group.classList.add("nav-suppress-dropdown");
-          group.querySelectorAll(".nav-dropdown a").forEach((link) => {
-            link.blur();
-          });
-          window.setTimeout(() => group.classList.remove("nav-suppress-dropdown"), 520);
-        }, 0);
-      }
+      const link = targetEl.closest("a");
+      if (!link) return;
+      closeMobileNav();
+      closeDesktopMega(nav);
+      if (link.hasAttribute("data-nav")) storeNavIndicatorPosition(nav, link);
     });
+
     document.addEventListener("click", (event) => {
       const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
       if (!targetEl.closest(".site-header")) {
-        document.querySelectorAll(".nav-group.is-open").forEach((item) => item.classList.remove("is-open"));
+        closeMobileNav();
+        closeDesktopMega(nav);
       }
     });
-    window.addEventListener("hashchange", setupNavigation);
-    window.addEventListener("resize", () => updateNavIndicator(nav));
-    window.addEventListener("load", () => updateNavIndicator(nav));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeMobileNav();
+        closeDesktopMega(nav);
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (!isCompactNav()) closeMobileNav();
+      else closeDesktopMega(nav);
+      updateNavIndicator(nav);
+    });
   }
-  if (nav) ensureNavIndicator(nav);
+
+  ensureNavIndicator(nav);
 
   const path = normalizedCurrentPage();
-  document.querySelectorAll("[data-nav], [data-nav-group]").forEach((node) => node.removeAttribute("aria-current"));
-  const groupByPage = {
+  document.querySelectorAll("[data-nav]").forEach((node) => node.removeAttribute("aria-current"));
+  const pageByNav = {
+    index: "home",
+    profile: "profile",
     results: "results",
+    honors: "honors",
+    conferences: "conferences",
     publications: "results",
     patents: "results",
     projects: "results",
-    honors: "honors",
     awards: "honors",
     achievements: "honors",
-    conferences: "conferences",
-    "news-light-fingerprint": "home",
+    experience: "profile",
     contact: "profile",
+    "news-light-fingerprint": "home",
   };
-  const current = path === "index" ? "home" : path === "profile" ? "profile" : groupByPage[path] || "";
+  const current = pageByNav[path] || "";
   if (!current) return;
-  document.querySelectorAll(`[data-nav="${current}"], [data-nav-group="${current}"] > a`).forEach((node) => {
+  document.querySelectorAll(`[data-nav="${current}"]`).forEach((node) => {
     node.setAttribute("aria-current", "page");
   });
-  if (window.location.hash) {
-    const exactHref = `${path}${window.location.hash}`;
-    document.querySelectorAll(".nav-dropdown a").forEach((node) => {
-      if (normalizeHrefTarget(node.getAttribute("href")) === exactHref) {
-        node.setAttribute("aria-current", "location");
-      }
-    });
-  }
   updateNavIndicator(nav);
   requestAnimationFrame(() => updateNavIndicator(nav));
+}
+
+function openDesktopMega(nav) {
+  if (!nav || isCompactNav()) return;
+  nav.classList.add("is-mega-open");
+  header?.classList.add("is-mega-open");
+  document.body.classList.add("nav-mega-open");
+}
+
+function closeDesktopMega(nav) {
+  nav?.classList.remove("is-mega-open");
+  header?.classList.remove("is-mega-open");
+  document.body.classList.remove("nav-mega-open");
 }
 
 function normalizedCurrentPage() {
@@ -1081,11 +1374,9 @@ function getGroupMainLink(group) {
 }
 
 function getActiveNavLink(nav) {
-  const directLink = Array.from(nav.children).find((child) => child.matches?.("a[aria-current='page']"));
-  if (directLink) return directLink;
-  return Array.from(nav.querySelectorAll(".nav-group")).map(getGroupMainLink).find((link) => {
-    return link?.getAttribute("aria-current") === "page";
-  }) || null;
+  return nav?.querySelector(".nav-desktop-items a[aria-current='page']") ||
+    nav?.querySelector("a[aria-current='page']") ||
+    null;
 }
 
 function isCompactNav() {
@@ -1146,6 +1437,8 @@ function translateLooseHeadings(dict) {
     简介: dict.profile,
     主页: dict.navHome,
     研究内容: dict.researchTitle,
+    研究亮点: dict.homeFrameTitle,
+    "Research Highlights": dict.homeFrameTitle,
     Research: dict.researchTitle,
     Timeline: currentLang === "en" ? "Timeline" : "时间线",
     Papers: dict.publications,
@@ -1236,13 +1529,16 @@ function setupSplitText() {
     ".clean-copy h1, .page-hero h1, .profile-identity h1, .section-heading h2",
   );
   targets.forEach((node) => {
-    const text = node.textContent.trim();
+    const isHomeTitle = node.matches(".clean-copy h1");
+    const text = isHomeTitle
+      ? (currentLang === "en" ? "Fiber\nIntegrated\nIntelligence" : "光纤集成\n智能光电子")
+      : node.textContent.trim();
     if (!text) return;
     if (node.dataset.splitText === text) return;
 
     node.dataset.splitText = text;
     node.classList.add("split-text");
-    node.classList.toggle("split-text-home", node.matches(".clean-copy h1"));
+    node.classList.toggle("split-text-home", isHomeTitle);
     node.textContent = "";
 
     let index = 0;
@@ -1254,6 +1550,16 @@ function setupSplitText() {
       parent.append(span);
       index += 1;
     };
+
+    if (isHomeTitle) {
+      text.split("\n").forEach((line) => {
+        const lineSpan = document.createElement("span");
+        lineSpan.className = "home-title-line";
+        Array.from(line).forEach((char) => appendChar(lineSpan, char));
+        node.append(lineSpan);
+      });
+      return;
+    }
 
     if (/^[\x00-\x7F\s.,;:!?'"()&/+-]+$/.test(text) && text.includes(" ")) {
       text.split(/(\s+)/).forEach((part) => {
@@ -1291,6 +1597,7 @@ function buildGlowVars(glowColor = "195 90 70", intensity = 1) {
 }
 
 function setupBorderGlow() {
+  if (isCompactNav()) return;
   const cards = document.querySelectorAll(
     ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo",
   );
@@ -1300,7 +1607,7 @@ function setupBorderGlow() {
     card.classList.add("border-glow-card");
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
     card.style.setProperty("--edge-sensitivity", "26");
-    card.style.setProperty("--border-radius", "8px");
+    card.style.setProperty("--border-radius", window.getComputedStyle(card).borderRadius || "18px");
     card.style.setProperty("--glow-padding", "34px");
     card.style.setProperty("--cone-spread", "24");
     card.style.setProperty("--fill-opacity", "0.35");
@@ -1342,9 +1649,10 @@ function handleGlowPointerMove(event) {
 }
 
 function setupGlassSurface() {
-  const glassTargets = document.querySelectorAll(
-    ".site-header, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-combo, .contact-inner, .admin-hero, .editor-panel, .item-list, .json-panel",
-  );
+  const selector = isCompactNav()
+    ? ".site-header, .profile-combo, .contact-inner, .admin-hero"
+    : ".site-header, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-combo, .contact-inner, .admin-hero, .editor-panel, .item-list, .json-panel";
+  const glassTargets = document.querySelectorAll(selector);
   glassTargets.forEach((node) => {
     node.classList.add("glass-surface", "glass-surface--fallback");
   });
@@ -1370,7 +1678,7 @@ function resizeCanvas() {
     r: 1.3 + Math.random() * 2.4,
   }));
 
-  lightStreaks = Array.from({ length: Math.max(46, Math.min(96, Math.floor(width / 18))) }, () => createLightStreak(true));
+  lightStreaks = Array.from({ length: Math.max(72, Math.min(150, Math.floor(width / 11))) }, () => createLightStreak(true));
 }
 
 function drawNetwork() {
@@ -1426,17 +1734,18 @@ function drawFiberSystem() {
   frame += 1;
 
   const base = ctx.createLinearGradient(0, 0, width, height);
-  base.addColorStop(0, "#05070c");
-  base.addColorStop(0.42, "#071936");
-  base.addColorStop(1, "#02040a");
+  base.addColorStop(0, "#030411");
+  base.addColorStop(0.44, "#091f55");
+  base.addColorStop(1, "#020308");
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, width, height);
 
-  const glowX = width * 0.58;
-  const glowY = height * 0.18;
-  const bgGlow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, Math.max(width, height) * 0.62);
-  bgGlow.addColorStop(0, "rgba(82, 39, 255, 0.24)");
-  bgGlow.addColorStop(0.34, "rgba(88, 213, 255, 0.13)");
+  const glowX = width * 0.55;
+  const glowY = height * 0.12;
+  const bgGlow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, Math.max(width, height) * 0.68);
+  bgGlow.addColorStop(0, "rgba(166, 200, 255, 0.26)");
+  bgGlow.addColorStop(0.24, "rgba(82, 39, 255, 0.3)");
+  bgGlow.addColorStop(0.52, "rgba(255, 159, 252, 0.12)");
   bgGlow.addColorStop(1, "rgba(5, 7, 12, 0)");
   ctx.fillStyle = bgGlow;
   ctx.fillRect(0, 0, width, height);
@@ -1455,20 +1764,20 @@ function createLightStreak(randomY = false) {
   return {
     x: Math.random() * width,
     y: randomY ? Math.random() * height : -Math.random() * height * 0.35 - 80,
-    length: 230 + Math.random() * 460,
-    speed: 1.15 + Math.random() * 1.85,
-    width: 0.7 + Math.random() * 1.35,
-    drift: -0.12 + Math.random() * 0.08,
+    length: 250 + Math.random() * 520,
+    speed: 1.7 + Math.random() * 2.6,
+    width: 0.65 + Math.random() * 1.15,
+    drift: -0.08 + Math.random() * 0.045,
     color,
     phase: Math.random() * Math.PI * 2,
-    alpha: 0.34 + Math.random() * 0.66,
+    alpha: 0.4 + Math.random() * 0.6,
   };
 }
 
 function drawLightfallStars() {
   for (let i = 0; i < particles.length; i += 1) {
     const point = particles[i];
-    point.y += 0.12 + (i % 5) * 0.012;
+    point.y += 0.18 + (i % 5) * 0.018;
     point.x -= 0.05 + (i % 7) * 0.006;
     if (point.y > height + 20) point.y = -20;
     if (point.x < -20) point.x = width + 20;
@@ -1506,7 +1815,7 @@ function drawLightfallStreaks() {
     ctx.strokeStyle = gradient;
     ctx.lineWidth = streak.width * (1 + strength * 1.4);
     ctx.shadowColor = streak.color;
-    ctx.shadowBlur = 14 + strength * 22;
+    ctx.shadowBlur = 18 + strength * 22;
     ctx.stroke();
 
     ctx.beginPath();
@@ -1553,6 +1862,227 @@ function updateStoryProgress() {
   document.documentElement.style.setProperty("--story-progress", raw.toFixed(3));
 }
 
+function setupHomeFrameSequence() {
+  const media = document.querySelector(".home-frame-media");
+  const video = document.querySelector("#home-frame-video");
+  const replayButton = document.querySelector(".home-frame-replay");
+  if (!media || !video || !replayButton) return;
+
+  const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let hasTriggeredLoad = false;
+  let hasAutoPlayed = false;
+  let rafId = 0;
+  let retryId = 0;
+  let loadTimeoutId = 0;
+  let isInViewport = false;
+
+  // 创建加载指示器
+  const loader = document.createElement("div");
+  loader.className = "home-frame-loader";
+  loader.innerHTML = `
+    <div class="home-frame-loader-inner" aria-hidden="true">
+      <div class="home-frame-loader-spinner"></div>
+      <span class="home-frame-loader-percent">0%</span>
+      <div class="home-frame-loader-progress">
+        <div class="home-frame-loader-progress-bar"></div>
+      </div>
+      <span class="home-frame-loader-text">加载中</span>
+    </div>
+  `;
+  media.appendChild(loader);
+  const progressBar = loader.querySelector(".home-frame-loader-progress-bar");
+  const loaderText = loader.querySelector(".home-frame-loader-text");
+  const loaderPercent = loader.querySelector(".home-frame-loader-percent");
+
+  function showLoader() {
+    loader.classList.add("is-visible");
+  }
+
+  function hideLoader() {
+    loader.classList.remove("is-visible");
+  }
+
+  function updateProgress() {
+    if (!video.buffered || !video.buffered.length || !video.duration) return;
+    const end = video.buffered.end(video.buffered.length - 1);
+    const pct = end / video.duration;
+    progressBar.style.transform = `scaleX(${Math.min(pct, 1)})`;
+    if (loaderPercent) {
+      loaderPercent.textContent = `${Math.round(pct * 100)}%`;
+    }
+  }
+
+  function shouldArm() {
+    const rect = media.getBoundingClientRect();
+    const viewportCenter = window.innerHeight * 0.52;
+    const elementCenter = rect.top + rect.height / 2;
+    const distance = Math.abs(elementCenter - viewportCenter);
+    const threshold = window.innerHeight * 0.22;
+    return distance <= threshold;
+  }
+
+  function showFinalFrame() {
+    video.pause();
+  }
+
+  function playFromStart() {
+    video.currentTime = 0;
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.then === "function") {
+      playPromise.then(() => {
+        hasAutoPlayed = true;
+        hideLoader();
+        window.clearTimeout(loadTimeoutId);
+      }).catch(() => {
+        // 播放被浏览器阻止，保持 hasAutoPlayed 为 false
+        if (shouldArm()) showLoader();
+        scheduleRetry(isIOS ? 250 : 150);
+      });
+    } else {
+      hasAutoPlayed = true;
+      hideLoader();
+      window.clearTimeout(loadTimeoutId);
+    }
+  }
+
+  function triggerLoad() {
+    if (hasTriggeredLoad) return;
+    hasTriggeredLoad = true;
+    showLoader();
+    video.load();
+
+    // 加载超时：3 秒后仍未开始播放，提示用户（CDN 直链通常更快，缩短超时）
+    loadTimeoutId = window.setTimeout(() => {
+      if (video.paused && !video.ended && shouldArm() && loaderText) {
+        loaderText.textContent = "加载较慢，请稍候";
+      }
+    }, 3000);
+  }
+
+  function scheduleRetry(delay = isIOS ? 180 : 120) {
+    if (retryId) return;
+    retryId = window.setTimeout(() => {
+      retryId = 0;
+      if (shouldArm() && video.paused && !video.ended && video.readyState >= 2) {
+        playFromStart();
+      }
+    }, delay);
+  }
+
+  function tryAutoPlay() {
+    if (hasAutoPlayed || video.ended) return;
+    if (shouldArm() && video.readyState >= 2 && video.paused) {
+      playFromStart();
+    }
+  }
+
+  function updatePlayback() {
+    rafId = 0;
+    if (shouldArm()) {
+      if (!hasTriggeredLoad) {
+        triggerLoad();
+      }
+      tryAutoPlay();
+    }
+    if (!video.ended) {
+      rafId = window.requestAnimationFrame(updatePlayback);
+    }
+  }
+
+  // 视频事件监听
+  video.addEventListener("ended", showFinalFrame);
+  video.addEventListener("progress", updateProgress);
+  // loadedmetadata：只更新进度，不尝试播放（readyState 可能不足）
+  video.addEventListener("loadedmetadata", updateProgress);
+  // loadeddata / canplay：尝试播放，但不隐藏加载器（后续可能 still waiting）
+  video.addEventListener("loadeddata", () => { tryAutoPlay(); });
+  video.addEventListener("canplay", () => { tryAutoPlay(); });
+  // canplaythrough：确认可连续播放，隐藏加载器并尝试播放
+  video.addEventListener("canplaythrough", () => {
+    window.clearTimeout(loadTimeoutId);
+    hideLoader();
+    tryAutoPlay();
+  });
+  // playing：视频真正开始播放，确认隐藏加载器
+  video.addEventListener("playing", () => {
+    window.clearTimeout(loadTimeoutId);
+    hideLoader();
+  });
+  video.addEventListener("error", () => {
+    window.clearTimeout(loadTimeoutId);
+    if (loaderText) loaderText.textContent = "加载失败";
+    scheduleRetry(500);
+  });
+  // waiting：只在已经开始播放后（currentTime > 0）才显示加载器
+  video.addEventListener("waiting", () => {
+    if (video.currentTime > 0) showLoader();
+    scheduleRetry(200);
+  });
+
+  // 重播按钮
+  replayButton.addEventListener("click", () => {
+    hasAutoPlayed = false;
+    if (!hasTriggeredLoad) {
+      triggerLoad();
+    }
+    playFromStart();
+  });
+
+  // IntersectionObserver：提前加载视频数据
+  if ("IntersectionObserver" in window) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          isInViewport = entry.isIntersecting;
+          if (isInViewport && !hasTriggeredLoad) {
+            triggerLoad();
+          }
+          if (!isInViewport && !video.paused && !video.ended) {
+            video.pause();
+          }
+        });
+      },
+      { threshold: 0, rootMargin: "200px 0px" }
+    );
+    observer.observe(media);
+  }
+
+  // 滚动触发——保持 RAF 循环用于播放同步
+  window.addEventListener("scroll", () => {
+    if (rafId) return;
+    rafId = window.requestAnimationFrame(updatePlayback);
+  }, { passive: true });
+
+  // 窗口大小变化
+  window.addEventListener("resize", () => {
+    if (rafId) return;
+    rafId = window.requestAnimationFrame(updatePlayback);
+  });
+
+  // 触摸结束（移动端用户手势后尝试播放）
+  window.addEventListener("touchend", () => {
+    if (shouldArm() && video.paused && !video.ended && video.readyState >= 2) {
+      scheduleRetry(80);
+    }
+  }, { passive: true });
+
+  // 页面重新可见时尝试播放
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && shouldArm() && video.paused && !video.ended) {
+      scheduleRetry(100);
+    }
+  });
+
+  // 首次启动——只启动 RAF 监听，不立即加载视频
+  const start = () => {
+    if (!rafId) rafId = window.requestAnimationFrame(updatePlayback);
+    if (!hasTriggeredLoad && shouldArm()) {
+      triggerLoad();
+    }
+  };
+  start();
+}
+
 function revealOnView() {
   const items = document.querySelectorAll(".reveal");
   if (!items.length) return;
@@ -1581,25 +2111,19 @@ function revealOnView() {
 }
 
 async function initSite() {
-  // Try to fetch from Supabase (will fallback to data.js if offline or error)
-  if (window.fetchSiteData) {
-    try {
-      _cachedSiteData = await window.fetchSiteData();
-      // Cache in localStorage for offline use
-      if (_cachedSiteData && !window.USE_OFFLINE) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(_cachedSiteData));
-      }
-    } catch (err) {
-      console.error('[Init] Supabase fetch failed:', err);
-      _cachedSiteData = null; // Will fallback to getSiteData() using data.js
-    }
-  }
-
   renderSite();
+  setupHomeFrameSequence();
   revealOnView();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest("[data-pdf-download]");
+  if (!link) return;
+  showPdfLoading(link);
+});
+
 
 initSite();
 window.addEventListener("hashchange", setupNavigation);

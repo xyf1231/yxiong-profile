@@ -38,7 +38,7 @@ const schemas = {
       ["title", "标题", "textarea"],
       ["subtitle", "导语/副标题", "textarea"],
       ["image", "主图", "image"],
-      ["contentHtml", "自由排版 HTML（可插入图片）", "textarea"],
+      ["contentHtml", "自由排版正文", "richtext"],
       ["content", "正文（用 ## 小标题分节）", "textarea"],
       ["paperTitle", "论文题目", "textarea"],
       ["journal", "期刊"],
@@ -97,6 +97,9 @@ const list = document.querySelector("#item-list");
 const addButton = document.querySelector("#add-item");
 const jsonBuffer = document.querySelector("#json-buffer");
 const folderStatus = document.querySelector("#folder-status");
+let savedRichTextSelection = null;
+const USE_LOCAL_ADMIN_SERVER = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port === "8787";
+
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -143,8 +146,42 @@ async function writeDataJsToSiteFolder() {
 
 async function persistAndWrite() {
   persist();
-  if (await writeDataJsToSiteFolder()) {
-    folderStatus.textContent = "已保存：文件已写入 papers/ 或 assets/，data.js 也已同步更新。发布时上传整个网站文件夹即可。";
+  const saveButtons = [document.querySelector("#save-all"), document.querySelector("#local-save-top")].filter(Boolean);
+  saveButtons.forEach((button) => {
+    button.disabled = true;
+    button.dataset.originalText = button.dataset.originalText || button.textContent;
+    button.textContent = "保存中...";
+  });
+  const report = (message, type = "info") => {
+    if (folderStatus) {
+      folderStatus.textContent = message;
+      folderStatus.dataset.type = type;
+    }
+    setLocalStatus(message, type);
+  };
+  try {
+    if (USE_LOCAL_ADMIN_SERVER) {
+      report("正在保存到本地 data.js...", "info");
+      const result = await localRequest("/api/save-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+      });
+      report(`已保存到本地：${result.path}。现在可以预览或发布。`, "success");
+      return;
+    }
+    if (await writeDataJsToSiteFolder()) {
+      report("已保存：data.js 已同步更新。", "success");
+      return;
+    }
+    report("未连接本地后台：请双击 快捷命令/启动后台.command，并从 http://localhost:8787/admin.html 打开。", "error");
+  } catch (error) {
+    report(`保存失败：${error.message}`, "error");
+  } finally {
+    saveButtons.forEach((button) => {
+      button.disabled = false;
+      button.textContent = button.dataset.originalText || "保存到本地";
+    });
   }
 }
 
@@ -181,10 +218,20 @@ async function ensureWritableDirectory(name) {
 }
 
 async function saveFileToSiteFolder(file, key, kind, target) {
-  if (!siteDirectoryHandle) return null;
   const folder = kind === "image" ? "assets" : "papers";
-  const dir = await ensureWritableDirectory(folder);
   const filename = buildUploadFilename(file, key, target);
+  if (USE_LOCAL_ADMIN_SERVER) {
+    const response = await fetch(`/api/upload?bucket=${encodeURIComponent(folder)}&path=${encodeURIComponent(filename)}`, {
+      method: "POST",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+    if (!response.ok) throw new Error(await response.text());
+    const result = await response.json();
+    return result.url;
+  }
+  if (!siteDirectoryHandle) return null;
+  const dir = await ensureWritableDirectory(folder);
   const fileHandle = await dir.getFileHandle(filename, { create: true });
   const writable = await fileHandle.createWritable();
   await writable.write(file);
@@ -196,13 +243,44 @@ function currentCollection() {
   return schemas[activeTab].type === "object" ? data[activeTab] : data[activeTab] || [];
 }
 
+function richTextFieldHtml(key, label, value) {
+  return `
+    <section class="field full richtext-field" data-richtext-field="${key}">
+      <span>${label}</span>
+      <div class="richtext-toolbar" role="toolbar" aria-label="新闻详情排版工具">
+        <select data-rich-command="formatBlock" aria-label="段落样式">
+          <option value="P">段落：正文</option>
+          <option value="H2">段落：大标题</option>
+          <option value="H3">段落：小标题</option>
+          <option value="BLOCKQUOTE">段落：引用</option>
+        </select>
+        <select data-rich-command="fontSize" aria-label="字号">
+          <option value="3">字号：正文</option>
+          <option value="4">字号：稍大</option>
+          <option value="5">字号：小标题</option>
+          <option value="6">字号：大标题</option>
+        </select>
+        <button type="button" data-rich-command="bold">加粗</button>
+        <button type="button" data-rich-command="italic">斜体</button>
+        <button type="button" data-rich-command="insertUnorderedList">项目符号</button>
+        <button type="button" data-rich-command="insertOrderedList">编号</button>
+        <button type="button" data-rich-action="insertImageUrl">插入图片链接</button>
+        <label class="richtext-file-button">上传插图<input type="file" accept="image/*" data-rich-image-upload /></label>
+      </div>
+      <div class="richtext-editor" contenteditable="true" data-rich-editor="${key}" aria-label="新闻详情正文编辑区">${value || "<p>在这里输入新闻正文。可以像 Word 一样分段、插入标题和图片。</p>"}</div>
+      <textarea class="richtext-source" name="${key}" spellcheck="false">${escapeHtml(value)}</textarea>
+      <p class="richtext-hint">提示：在正文中点击要插图的位置，再使用“上传插图”或“插入图片链接”。保存当前条目后会写入新闻详情。</p>
+    </section>`;
+}
+
 function buildForm() {
   const schema = schemas[activeTab];
   const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
   form.innerHTML = schema.fields
     .map(([key, label, kind]) => {
       const value = source[key] || "";
-      const cls = kind === "textarea" || kind === "image" || kind === "file" ? "field full" : "field";
+      const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
+      if (kind === "richtext") return richTextFieldHtml(key, label, value);
       if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
       if (kind === "image" || kind === "file") {
         const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
@@ -211,6 +289,7 @@ function buildForm() {
       return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
     })
     .join("");
+  setupRichTextEditors(source);
 }
 
 function renderList() {
@@ -276,7 +355,97 @@ function readFile(file) {
   });
 }
 
+
+function activeRichTextEditor() {
+  return form.querySelector(".richtext-editor");
+}
+
+function saveRichTextSelection() {
+  const editor = activeRichTextEditor();
+  const selection = window.getSelection();
+  if (!editor || !selection?.rangeCount) return;
+  const range = selection.getRangeAt(0);
+  if (editor.contains(range.commonAncestorContainer)) savedRichTextSelection = range.cloneRange();
+}
+
+function restoreRichTextSelection(editor = activeRichTextEditor()) {
+  if (!editor || !savedRichTextSelection) return;
+  const selection = window.getSelection();
+  selection.removeAllRanges();
+  selection.addRange(savedRichTextSelection);
+}
+
+function syncRichTextSource(editor) {
+  const key = editor?.dataset.richEditor;
+  const source = key ? form.elements[key] : null;
+  if (source) source.value = editor.innerHTML.trim();
+}
+
+function syncAllRichTextSources() {
+  form.querySelectorAll(".richtext-editor").forEach(syncRichTextSource);
+}
+
+function insertRichHtml(html) {
+  const editor = activeRichTextEditor();
+  if (!editor) return;
+  editor.focus();
+  restoreRichTextSelection(editor);
+  document.execCommand("insertHTML", false, html);
+  syncRichTextSource(editor);
+  saveRichTextSelection();
+}
+
+function insertRichImage(src, caption = "") {
+  const safeSrc = escapeHtml(src);
+  const safeCaption = escapeHtml(caption);
+  insertRichHtml(`<figure><img src="${safeSrc}" alt="" /><figcaption>${safeCaption}</figcaption></figure><p><br></p>`);
+}
+
+async function handleRichImageUpload(input) {
+  const file = input.files?.[0];
+  if (!file) return;
+  const target = schemas[activeTab].type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
+  let src = await saveFileToSiteFolder(file, "content-image", "image", target);
+  if (!src) src = await readFile(file);
+  insertRichImage(src, file.name.replace(/\.[^.]+$/, ""));
+  input.value = "";
+}
+
+function setupRichTextEditors() {
+  form.querySelectorAll(".richtext-editor").forEach((editor) => {
+    editor.addEventListener("keyup", () => syncRichTextSource(editor));
+    editor.addEventListener("input", () => syncRichTextSource(editor));
+    editor.addEventListener("mouseup", saveRichTextSelection);
+    editor.addEventListener("focus", saveRichTextSelection);
+    editor.addEventListener("blur", saveRichTextSelection);
+  });
+  form.querySelectorAll("[data-rich-command]").forEach((control) => {
+    const runCommand = () => {
+      const editor = activeRichTextEditor();
+      if (!editor) return;
+      restoreRichTextSelection(editor);
+      const value = control.tagName === "SELECT" ? control.value : null;
+      document.execCommand(control.dataset.richCommand, false, value);
+      editor.focus();
+      syncRichTextSource(editor);
+      saveRichTextSelection();
+    };
+    if (control.tagName === "SELECT") {
+      control.addEventListener("change", runCommand);
+    } else {
+      control.addEventListener("mousedown", (event) => event.preventDefault());
+      control.addEventListener("click", runCommand);
+    }
+  });
+  form.querySelector("[data-rich-action='insertImageUrl']")?.addEventListener("click", () => {
+    const url = prompt("请输入图片 URL 或 assets/xxx.jpg 路径");
+    if (url) insertRichImage(url.trim(), "");
+  });
+  form.querySelector("[data-rich-image-upload]")?.addEventListener("change", (event) => handleRichImageUpload(event.target));
+}
+
 async function saveCurrent() {
+  syncAllRichTextSources();
   const schema = schemas[activeTab];
   const target = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
   for (const [key] of schema.fields) {
@@ -303,6 +472,7 @@ async function saveCurrent() {
 function clearForm() {
   editingIndex = currentCollection().length;
   form.querySelectorAll("input:not([type=file]), textarea").forEach((input) => (input.value = ""));
+  form.querySelectorAll(".richtext-editor").forEach((editor) => (editor.innerHTML = "<p></p>"));
 }
 
 document.querySelectorAll(".tab-button").forEach((button) => button.addEventListener("click", () => setActiveTab(button.dataset.tab)));
@@ -388,18 +558,6 @@ addButton.addEventListener("click", clearForm);
 document.querySelector("#clear-form").addEventListener("click", clearForm);
 document.querySelector("#save-item").addEventListener("click", saveCurrent);
 document.querySelector("#save-all").addEventListener("click", persistAndWrite);
-document.querySelector("#choose-site-folder")?.addEventListener("click", async () => {
-  if (!window.showDirectoryPicker) {
-    folderStatus.textContent = "当前浏览器不支持自动写入文件夹。请使用 Chrome/Edge 本地打开后台，或手动把文件放入 papers/、assets/ 后填写相对路径。";
-    return;
-  }
-  try {
-    siteDirectoryHandle = await window.showDirectoryPicker({ mode: "readwrite" });
-    folderStatus.textContent = "已选择网站文件夹：上传 PDF 将保存到 papers/，图片将保存到 assets/；保存后 data.js 会同步更新。";
-  } catch {
-    folderStatus.textContent = "未选择网站文件夹：上传文件不会自动写入项目目录。";
-  }
-});
 document.querySelector("#reset-data").addEventListener("click", async () => {
   if (!confirm("确定恢复默认数据？")) return;
   data = clone(window.DEFAULT_SITE_DATA);
@@ -416,5 +574,184 @@ document.querySelector("#export-json").addEventListener("click", () => {
   URL.revokeObjectURL(link.href);
 });
 
+
+
+
+const localStatus = document.querySelector("#local-status");
+const storageList = document.querySelector("#storage-list");
+const storageBucket = document.querySelector("#storage-bucket");
+const storagePath = document.querySelector("#storage-path");
+const storageFile = document.querySelector("#storage-file");
+
+function setLocalStatus(message, type = "info") {
+  if (!localStatus) return;
+  localStatus.textContent = message;
+  localStatus.dataset.type = type;
+}
+
+function cleanStoragePath(value = "") {
+  return String(value).replace(/^\/+/, "").replace(/\/+/g, "/").trim();
+}
+
+function buildStoragePath(file, bucket) {
+  const manual = cleanStoragePath(storagePath?.value || "");
+  if (manual) return manual;
+  const target = schemas[activeTab].type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
+  const stem = buildUploadFilename(file, bucket === "assets" ? "image" : "file", bucket === "assets" ? "image" : "file", target).replace(/\.[^.]+$/, "");
+  return `${stem || slugify(file.name.replace(/\.[^.]+$/, "")) || "file"}${extensionOf(file.name)}`;
+}
+
+async function localRequest(path, options = {}) {
+  const response = await fetch(path, { cache: "no-store", ...options });
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json") ? await response.json() : await response.text();
+  if (!response.ok) {
+    const message = typeof payload === "string" ? payload : payload.message || JSON.stringify(payload);
+    throw new Error(message);
+  }
+  return payload;
+}
+
+async function listLocalFiles(bucket = storageBucket?.value || "assets") {
+  if (!storageList) return;
+  storageList.innerHTML = `<p class="storage-empty">正在读取 ${bucket}...</p>`;
+  try {
+    const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
+    const files = result.files || [];
+    if (!files.length) {
+      storageList.innerHTML = `<p class="storage-empty">${bucket} 中暂时没有文件。</p>`;
+      return;
+    }
+    storageList.innerHTML = files.map((file) => {
+      const relativeUrl = `${bucket}/${file.path}`;
+      const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
+      return `
+        <article class="storage-item" data-path="${escapeHtml(file.path)}">
+          <div>
+            <h3>${escapeHtml(file.path)}</h3>
+            <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
+          </div>
+          <div class="item-actions">
+            <a class="icon-button" href="${escapeHtml(relativeUrl)}" target="_blank" rel="noopener">打开</a>
+            <button class="icon-button" data-storage-action="copy" data-url="${escapeHtml(relativeUrl)}" type="button">复制路径</button>
+            <button class="icon-button" data-storage-action="use" data-url="${escapeHtml(relativeUrl)}" type="button">填入当前项</button>
+            <button class="icon-button danger" data-storage-action="delete" data-path="${escapeHtml(file.path)}" type="button">删除</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+    setLocalStatus(`已读取 ${bucket}：${files.length} 个文件。`, "success");
+  } catch (error) {
+    storageList.innerHTML = `<p class="storage-empty">读取失败：${escapeHtml(error.message)}</p>`;
+    setLocalStatus(`读取文件失败：${error.message}`, "error");
+  }
+}
+
+async function uploadLocalFile() {
+  const file = storageFile?.files?.[0];
+  const bucket = storageBucket?.value || "assets";
+  if (!file) {
+    setLocalStatus("请先选择一个要上传的文件。", "error");
+    return;
+  }
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开，才能写入项目文件夹。", "error");
+    return;
+  }
+  const path = buildStoragePath(file, bucket);
+  try {
+    const result = await localRequest(`/api/upload?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, {
+      method: "POST",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+    storagePath.value = result.path;
+    setLocalStatus(`上传成功：${result.url}`, "success");
+    await navigator.clipboard?.writeText(result.url).catch(() => {});
+    await listLocalFiles(bucket);
+  } catch (error) {
+    setLocalStatus(`上传失败：${error.message}`, "error");
+  }
+}
+
+async function deleteLocalFile(bucket, path) {
+  if (!confirm(`确定删除 ${bucket}/${path}？`)) return;
+  try {
+    await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, { method: "DELETE" });
+    setLocalStatus(`已删除：${bucket}/${path}`, "success");
+    await listLocalFiles(bucket);
+  } catch (error) {
+    setLocalStatus(`删除失败：${error.message}`, "error");
+  }
+}
+
+function activeFileFieldName() {
+  const schema = schemas[activeTab];
+  const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
+  const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
+  return storageBucket?.value === "papers" ? fileField || "url" : imageField || "image";
+}
+
+async function deployToVercel() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再发布。", "error");
+    return;
+  }
+  if (!confirm("确定发布到 Vercel？请先确认当前内容已经保存。")) return;
+  try {
+    setLocalStatus("正在发布到 Vercel，请保持后台窗口打开...", "info");
+    const result = await localRequest("/api/deploy", { method: "POST" });
+    const url = (result.output || "").match(/https?:\/\/\S+/)?.[0] || "https://xyfoptics.xyz";
+    setLocalStatus(`发布完成：${url}`, "success");
+  } catch (error) {
+    setLocalStatus(`发布失败：${error.message}`, "error");
+  }
+}
+
+async function checkLocalServer() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("当前不是本地后台模式：请双击 快捷命令/启动后台.command，再从 http://localhost:8787/admin.html 打开。", "error");
+    return;
+  }
+  try {
+    const status = await localRequest("/api/status");
+    setLocalStatus(`本地后台已连接：${status.rootDir}`, "success");
+    await listLocalFiles(storageBucket?.value || "assets");
+  } catch (error) {
+    setLocalStatus(`本地后台连接失败：${error.message}`, "error");
+  }
+}
+
+document.querySelector("#local-save-top")?.addEventListener("click", persistAndWrite);
+document.querySelector("#local-deploy")?.addEventListener("click", deployToVercel);
+document.querySelector("#local-deploy-top")?.addEventListener("click", deployToVercel);
+document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToVercel);
+document.querySelector("#save-item-bottom")?.addEventListener("click", saveCurrent);
+document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
+document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
+document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
+storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
+storageList?.addEventListener("click", async (event) => {
+  const button = event.target.closest("button[data-storage-action]");
+  if (!button) return;
+  const action = button.dataset.storageAction;
+  if (action === "copy") {
+    await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+    setLocalStatus("已复制相对路径。", "success");
+  } else if (action === "use") {
+    const fieldName = activeFileFieldName();
+    const field = form.elements[fieldName];
+    if (field) {
+      field.value = button.dataset.url;
+      setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success");
+    } else {
+      setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
+    }
+  } else if (action === "delete") {
+    await deleteLocalFile(storageBucket?.value || "assets", button.dataset.path);
+  }
+});
+
+checkLocalServer();
 jsonBuffer.value = JSON.stringify(data, null, 2);
 setActiveTab(activeTab);

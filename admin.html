@@ -2,33 +2,140 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
+    <script>
+      document.documentElement.dataset.langReady = "pending";
+      try {
+        if (localStorage.getItem("academicSiteLanguage") !== "en") {
+          document.documentElement.lang = "zh-CN";
+        }
+      } catch (error) {
+        document.documentElement.lang = "zh-CN";
+      }
+      window.setTimeout(function () {
+        if (document.documentElement.dataset.langReady === "pending") {
+          document.documentElement.dataset.langReady = "ready";
+        }
+      }, 1800);
+    </script>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台维护 | 熊毅丰</title>
-    <link rel="stylesheet" href="styles.css?v=20250809-apple-v1.5.16" />
+    <link rel="stylesheet" href="styles.css?v=v1.5.113" />
   </head>
   <body class="admin-body">
-    <header class="site-header" data-elevated="true">
-      <a class="brand" href="index.html"><span class="brand-mark">YX</span><span>后台维护</span></a>
-      <nav class="nav-links" aria-label="后台导航">
-        <a href="index.html">首页</a>
-        <a href="publications.html">论文</a>
+    <header class="site-header" data-elevated="false">
+      <a href="index.html" class="nav-brand" aria-label="首页">YX</a>
+      <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">
+        <span class="nav-menu-line"></span>
+        <span class="nav-menu-line"></span>
+      </button>
+      <nav class="nav-links" id="site-nav" aria-label="主导航">
+        <div class="nav-desktop-items">
+          <a href="index.html" data-nav="home">主页</a>
+          <a href="profile.html" data-nav="profile">简介</a>
+          <a href="results.html" data-nav="results">成果</a>
+          <a href="honors.html" data-nav="honors">荣誉</a>
+          <a href="conferences.html" data-nav="conferences">学术活动</a>
+        </div>
+        <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-cards nav-cards-five">
+          <div class="nav-card" style="--delay:0.03s">
+            <div class="nav-card-links">
+              <a href="index.html" data-nav="home" class="nav-major-link">主页 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.06s">
+            <div class="nav-card-links">
+              <a href="profile.html" data-nav="profile" class="nav-major-link">简介 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.09s">
+            <div class="nav-card-links">
+              <a href="results.html" data-nav="results" class="nav-major-link">成果 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#papers" class="nav-sub-link">论文 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#patents" class="nav-sub-link">专利 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#projects" class="nav-sub-link">项目 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.12s">
+            <div class="nav-card-links nav-card-links-activity">
+              <a href="honors.html" data-nav="honors" class="nav-major-link">荣誉 <span class="nav-card-arrow">↗</span></a>
+              <a href="honors.html#awards" class="nav-sub-link">奖励 <span class="nav-card-arrow">↗</span></a>
+              <a href="honors.html#innovation" class="nav-sub-link">创新创业 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.15s">
+            <div class="nav-card-links nav-card-links-activity">
+              <a href="conferences.html" data-nav="conferences" class="nav-major-link">学术活动 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+        </div>
       </nav>
     </header>
     <main class="admin-shell">
       <section class="admin-hero">
         <div>
-          <p class="section-kicker">Local CMS</p>
+          <p class="section-kicker">Vercel CMS</p>
           <h1>后台维护</h1>
-          <p class="hero-copy">选择网站文件夹后，上传的 PDF/图片会写入项目目录，并同步更新 data.js，发布时上传整个文件夹即可。</p>
+          <p class="hero-copy">在本地编辑内容、上传图片/PDF，保存后写入 data.js、assets/ 和 papers/，最后一键发布到 Vercel。</p>
         </div>
         <div class="admin-actions">
-          <button class="admin-button" id="choose-site-folder" type="button">选择网站文件夹</button>
-          <button class="admin-button primary" id="save-all" type="button">保存</button>
+          <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
+          <button class="admin-button" id="local-deploy" type="button">发布到 Vercel</button>
           <button class="admin-button" id="export-json" type="button">导出 JSON</button>
           <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
         </div>
-        <p class="folder-status" id="folder-status">未选择网站文件夹：上传文件将只记录在浏览器本地数据里，不会写入 papers/、assets/ 或 data.js。</p>
+        <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 assets/，论文 PDF 写入 papers/。</p>
+      </section>
+      <section class="admin-sync-panel glass-surface glass-surface--fallback" aria-labelledby="admin-sync-title">
+        <div class="admin-sync-copy">
+          <p class="section-kicker">Local Publish</p>
+          <h2 id="admin-sync-title">按步骤维护网站</h2>
+          <p>日常只需要：上传文件、编辑内容、保存到本地、发布到 Vercel。所有公开素材都由 Vercel 托管。</p>
+        </div>
+        <div class="admin-step-grid">
+          <article class="admin-step-card">
+            <span>01</span>
+            <h3>上传文件</h3>
+            <p>图片保存到 assets，论文 PDF 保存到 papers，上传后可直接填入当前条目。</p>
+            <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
+          </article>
+          <article class="admin-step-card">
+            <span>02</span>
+            <h3>保存内容</h3>
+            <p>编辑下方内容后，先保存当前条目，再保存到本地 data.js。</p>
+            <button class="admin-button" id="local-save-top" type="button">保存到本地</button>
+          </article>
+          <article class="admin-step-card">
+            <span>03</span>
+            <h3>发布上线</h3>
+            <p>确认预览无误后发布到 Vercel，线上网站会使用最新 data.js 和素材。</p>
+            <button class="admin-button primary" id="local-deploy-top" type="button">发布到 Vercel</button>
+          </article>
+        </div>
+        <p class="folder-status" id="local-status">当前模式：本地静态维护。请从 http://localhost:8787/admin.html 打开后台。</p>
+        <div class="storage-manager">
+          <div class="storage-manager-head">
+            <div>
+              <h3>文件管理</h3>
+              <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Vercel 托管。</p>
+            </div>
+            <button class="admin-button" id="local-refresh-files-bottom" type="button">刷新文件列表</button>
+          </div>
+          <div class="storage-form">
+            <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="assets">assets 图片</option><option value="papers">papers 论文</option></select></label>
+            <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
+            <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
+            <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
+          </div>
+          <div class="storage-list" id="storage-list" aria-live="polite"></div>
+        </div>
       </section>
       <section class="admin-grid">
         <aside class="admin-tabs">
@@ -53,10 +160,20 @@
               <button class="admin-button" id="add-item" type="button">新增</button>
             </div>
             <form class="form-grid" id="content-form"></form>
-            <p class="upload-note">推荐先点“选择网站文件夹”。之后上传 PDF 会自动保存到 papers/，图片会自动保存到 assets/，并把 data.js 更新为可发布的相对路径。</p>
+            <p class="upload-note">上传 PDF 会自动保存到 papers/，图片会自动保存到 assets/；保存当前条目后 data.js 会同步更新。</p>
             <div class="editor-actions">
               <button class="admin-button primary" id="save-item" type="button">保存当前</button>
               <button class="admin-button" id="clear-form" type="button">清空</button>
+            </div>
+            <div class="editor-save-bar">
+              <div>
+                <strong>完成修改后</strong>
+                <span>先保存当前条目，再保存到本地；确认后发布到 Vercel。</span>
+              </div>
+              <div class="editor-save-actions">
+                <button class="admin-button primary" id="save-item-bottom" type="button">保存当前条目</button>
+                <button class="admin-button" id="local-deploy-bottom" type="button">发布到 Vercel</button>
+              </div>
             </div>
           </section>
           <section class="item-list" id="item-list"></section>
@@ -66,8 +183,7 @@
         </div>
       </section>
     </main>
-    <script src="data.js?v=20250809-apple-v1.5.16" charset="utf-8"></script>
-    <script src="supabase-client.js?v=20250809-apple-v1.5.16" charset="utf-8"></script>
-    <script src="admin.js?v=20250809-apple-v1.5.16" charset="utf-8"></script>
+    <script src="data.js?v=v1.5.113" charset="utf-8"></script>
+    <script src="admin.js?v=v1.5.113" charset="utf-8"></script>
   </body>
 </html>

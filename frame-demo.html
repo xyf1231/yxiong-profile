@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Frame 动画试验</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #081018;
+      --panel: rgba(10, 18, 28, 0.72);
+      --line: rgba(255, 255, 255, 0.12);
+      --text: #eff4fb;
+      --muted: rgba(239, 244, 251, 0.72);
+      --accent: #65d1ff;
+      --accent-2: #9ee8b1;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: radial-gradient(circle at top, #12273b 0, #081018 58%, #05080c 100%); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    body { overflow-x: hidden; }
+    a { color: inherit; }
+
+    .shell {
+      position: relative;
+      min-height: 100vh;
+    }
+
+    .intro {
+      position: relative;
+      padding: 42px 20px 18px;
+      z-index: 2;
+    }
+
+    .intro-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      display: grid;
+      gap: 14px;
+    }
+
+    .kicker {
+      margin: 0;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 5rem);
+      line-height: 0.95;
+      max-width: 12ch;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 58ch;
+      color: var(--muted);
+      font-size: 1.03rem;
+      line-height: 1.7;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .segmented button,
+    .button {
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      padding: 12px 18px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    .segmented button[data-active="true"] {
+      background: linear-gradient(135deg, rgba(101, 209, 255, 0.22), rgba(158, 232, 177, 0.16));
+    }
+
+    .button {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .slider {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .slider input { width: 180px; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .scene {
+      position: relative;
+      margin-top: 24px;
+      height: 420vh;
+    }
+
+    .sticky {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+    }
+
+    .glow {
+      position: absolute;
+      inset: auto 50% 12% auto;
+      width: 62vw;
+      aspect-ratio: 1;
+      transform: translateX(46%);
+      background: radial-gradient(circle, rgba(101, 209, 255, 0.22), rgba(101, 209, 255, 0) 66%);
+      filter: blur(28px);
+      pointer-events: none;
+    }
+
+    .frame-wrap {
+      position: relative;
+      width: min(86vw, 1180px);
+      border: 1px solid var(--line);
+      border-radius: 32px;
+      background: rgba(6, 10, 16, 0.55);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, 0.48);
+      overflow: hidden;
+    }
+
+    .frame-wrap img {
+      width: 100%;
+      height: auto;
+      display: block;
+      vertical-align: top;
+      opacity: 0;
+      transition: opacity 120ms ease;
+    }
+
+    .frame-wrap img.is-ready {
+      opacity: 1;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: auto 0 0 0;
+      padding: 18px 20px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 16px;
+      background: linear-gradient(to top, rgba(4, 8, 12, 0.9), rgba(4, 8, 12, 0.05));
+    }
+
+    .overlay strong {
+      display: block;
+      font-size: 0.92rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 4px;
+    }
+
+    .overlay p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 48ch;
+      line-height: 1.5;
+    }
+
+    .counter {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+      color: var(--text);
+      min-width: 92px;
+    }
+
+    .counter b {
+      display: block;
+      font-size: 2rem;
+      line-height: 1;
+    }
+
+    .counter span {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .foot {
+      padding: 0 20px 44px;
+    }
+
+    .foot-inner {
+      max-width: 1180px;
+      margin: 0 auto;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    @media (max-width: 760px) {
+      .intro {
+        padding: 18px 14px 10px;
+      }
+
+      .intro-inner {
+        gap: 10px;
+      }
+
+      .lede {
+        font-size: 0.95rem;
+        line-height: 1.55;
+      }
+
+      .controls {
+        gap: 10px;
+      }
+
+      .segmented button,
+      .button {
+        padding: 10px 14px;
+      }
+
+      .slider {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .slider input { width: min(42vw, 180px); }
+
+      .meta {
+        font-size: 0.84rem;
+        gap: 8px 12px;
+      }
+
+      .scene {
+        margin-top: 10px;
+        height: 290vh;
+      }
+
+      .sticky {
+        align-items: stretch;
+      }
+
+      .glow {
+        width: 110vw;
+        transform: translateX(48%);
+        inset: auto 50% 10% auto;
+        opacity: 0.55;
+      }
+
+      .frame-wrap {
+        width: 100vw;
+        border-left: 0;
+        border-right: 0;
+        border-radius: 0;
+      }
+
+      .frame-wrap img {
+        background: rgba(6, 10, 16, 0.96);
+      }
+
+      .overlay {
+        padding: 14px 14px 18px;
+        flex-direction: column;
+        align-items: start;
+      }
+
+      .overlay p {
+        max-width: 36ch;
+        font-size: 0.92rem;
+      }
+
+      .counter {
+        text-align: left;
+      }
+
+      .counter b {
+        font-size: 1.7rem;
+      }
+
+      .foot {
+        padding: 0 14px 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="intro">
+      <div class="intro-inner">
+        <p class="kicker">Frame Sequence Prototype</p>
+        <h1>滚动控制的帧动画试验</h1>
+        <p class="lede">这个页面单独测试 frame/ 里的序列帧。向下滚动时会像苹果官网那样把滚动进度映射成画面切换；你也可以切到自动播放，看看节奏是否适合放进首页。</p>
+        <div class="controls">
+          <div class="segmented" role="tablist" aria-label="动画模式">
+            <button type="button" id="mode-scroll" data-active="true">滚动</button>
+            <button type="button" id="mode-auto" data-active="false">自动</button>
+          </div>
+          <button class="button" id="toggle-play" type="button">暂停</button>
+          <label class="slider">
+            <span>速度</span>
+            <input id="speed" type="range" min="0.4" max="2" step="0.1" value="1">
+          </label>
+        </div>
+        <div class="meta">
+          <span id="frame-count">帧数 108</span>
+          <span id="frame-mode">当前模式：滚动</span>
+          <span id="frame-status">就绪</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="scene" id="scene">
+      <div class="sticky">
+        <div class="glow"></div>
+        <div class="frame-wrap">
+          <img id="frame-image" alt="frame animation preview" decoding="async" />
+          <div class="overlay">
+            <div>
+              <strong>Frame Preview</strong>
+              <p>滚动时切帧，自动模式则会顺序播放。这里先做一个可感知的试验版，确认节奏、停顿和画面切换是否像官网那样顺滑。</p>
+            </div>
+            <div class="counter">
+              <b id="frame-number">000</b>
+              <span id="frame-total">/ 108</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="foot">
+      <div class="foot-inner">
+        <p>说明：这个试验页只读取 `frame/` 目录，不会改动首页。你确认动画风格后，我们再决定要不要把它接到 `index.html` 的某个区块里。</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const TOTAL_FRAMES = 108;
+    const FRAME_PREFIX = "frame/";
+    const frameImage = document.querySelector("#frame-image");
+    const frameNumber = document.querySelector("#frame-number");
+    const frameStatus = document.querySelector("#frame-status");
+    const frameMode = document.querySelector("#frame-mode");
+    const modeScroll = document.querySelector("#mode-scroll");
+    const modeAuto = document.querySelector("#mode-auto");
+    const togglePlay = document.querySelector("#toggle-play");
+    const speedInput = document.querySelector("#speed");
+    const scene = document.querySelector("#scene");
+    const frameTotal = document.querySelector("#frame-total");
+    const frameCount = document.querySelector("#frame-count");
+
+    const frames = Array.from({ length: TOTAL_FRAMES }, (_, index) => `${FRAME_PREFIX}frame_${String(index + 1).padStart(3, "0")}.webp`);
+
+    let mode = "scroll";
+    let playing = true;
+    let currentFrame = 0;
+    let ready = false;
+    let lastTick = performance.now();
+    let autoAccumulator = 0;
+    let scrollRaf = 0;
+    let autoRaf = 0;
+    const cache = new Map();
+
+    frameCount.textContent = `帧数 ${TOTAL_FRAMES}`;
+    frameTotal.textContent = `/ ${String(TOTAL_FRAMES).padStart(3, "0")}`;
+
+    function setButtonState() {
+      modeScroll.dataset.active = String(mode === "scroll");
+      modeAuto.dataset.active = String(mode === "auto");
+      frameMode.textContent = `当前模式：${mode === "scroll" ? "滚动" : "自动"}`;
+      togglePlay.textContent = playing ? "暂停" : "播放";
+    }
+
+    function loadFrame(index) {
+      const safe = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+      const path = frames[safe];
+      let img = cache.get(path);
+      if (!img) {
+        img = new Image();
+        img.src = path;
+        cache.set(path, img);
+      }
+      return img;
+    }
+
+    function revealFrame() {
+      frameImage.classList.add("is-ready");
+      ready = true;
+    }
+
+    function drawFrame(index) {
+      const safe = Math.max(0, Math.min(TOTAL_FRAMES - 1, index));
+      currentFrame = safe;
+      const path = frames[safe];
+      const img = loadFrame(safe);
+      frameImage.src = img.src;
+      frameImage.alt = `frame ${String(safe + 1).padStart(3, "0")}`;
+      frameNumber.textContent = String(safe + 1).padStart(3, "0");
+      frameStatus.textContent = path;
+      if (img.complete && img.naturalWidth > 0) {
+        revealFrame();
+      } else {
+        img.onload = () => {
+          if (frameImage.src === img.src) revealFrame();
+        };
+      }
+    }
+
+    function setMode(nextMode) {
+      mode = nextMode;
+      setButtonState();
+      if (mode === "scroll") {
+        cancelAnimationFrame(autoRaf);
+        autoRaf = 0;
+        updateFromScroll();
+      } else {
+        cancelAnimationFrame(scrollRaf);
+        scrollRaf = 0;
+        animate();
+      }
+    }
+
+    function scrollProgress() {
+      const rect = scene.getBoundingClientRect();
+      const distance = rect.height - window.innerHeight;
+      if (distance <= 0) return 0;
+      const scrolled = Math.min(Math.max(-rect.top, 0), distance);
+      return scrolled / distance;
+    }
+
+    function updateFromScroll() {
+      if (mode !== "scroll") return;
+      const progress = scrollProgress();
+      drawFrame(Math.round(progress * (TOTAL_FRAMES - 1)));
+    }
+
+    function animate(now = performance.now()) {
+      if (mode !== "auto" || !playing) return;
+      const delta = Math.min(64, now - lastTick);
+      lastTick = now;
+      autoAccumulator += delta * Number(speedInput.value || 1);
+      const frameDuration = 1000 / 22;
+      while (autoAccumulator >= frameDuration) {
+        autoAccumulator -= frameDuration;
+        currentFrame = (currentFrame + 1) % TOTAL_FRAMES;
+        drawFrame(currentFrame);
+      }
+      autoRaf = requestAnimationFrame(animate);
+    }
+
+    function preloadBurst(startIndex = 0) {
+      const loaders = frames.map((src) => {
+        const img = new Image();
+        img.src = src;
+        cache.set(src, img);
+        return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+      });
+      Promise.allSettled(loaders).then(() => {
+        drawFrame(startIndex);
+        frameStatus.textContent = "已预加载";
+        revealFrame();
+      });
+    }
+
+    modeScroll.addEventListener("click", () => setMode("scroll"));
+    modeAuto.addEventListener("click", () => setMode("auto"));
+    togglePlay.addEventListener("click", () => {
+      playing = !playing;
+      setButtonState();
+      if (mode === "auto" && playing) {
+        lastTick = performance.now();
+        animate();
+      } else {
+        cancelAnimationFrame(autoRaf);
+      }
+    });
+
+    speedInput.addEventListener("input", () => {
+      if (mode === "auto") {
+        lastTick = performance.now();
+        autoAccumulator = 0;
+      }
+    });
+
+    window.addEventListener("scroll", () => {
+      if (mode === "scroll") {
+        if (scrollRaf) return;
+        scrollRaf = requestAnimationFrame(() => {
+          scrollRaf = 0;
+          updateFromScroll();
+        });
+      }
+    }, { passive: true });
+
+    window.addEventListener("resize", updateFromScroll);
+
+    frameImage.classList.remove("is-ready");
+    preloadBurst(0);
+    setButtonState();
+  </script>
+</body>
+</html>

@@ -2,6 +2,21 @@
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
+    <script>
+      document.documentElement.dataset.langReady = "pending";
+      try {
+        if (localStorage.getItem("academicSiteLanguage") !== "en") {
+          document.documentElement.lang = "zh-CN";
+        }
+      } catch (error) {
+        document.documentElement.lang = "zh-CN";
+      }
+      window.setTimeout(function () {
+        if (document.documentElement.dataset.langReady === "pending") {
+          document.documentElement.dataset.langReady = "ready";
+        }
+      }, 1800);
+    </script>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
@@ -9,36 +24,61 @@
       content="熊毅丰的个人学术网站，展示研究方向、论文成果、项目经历、专利会议与联系方式。"
     />
     <title>熊毅丰 | Yifeng Xiong</title>
-    <link rel="preload" href="styles.css?v=20250809-apple-v1.5.16" as="style" />
-    <link rel="stylesheet" href="styles.css?v=20250809-apple-v1.5.16" />
+    <link rel="preload" href="styles.css?v=v1.5.113" as="style" />
+    <link rel="stylesheet" href="styles.css?v=v1.5.113" />
   </head>
   <body class="home-dark">
     <header class="site-header" data-elevated="false">
-      <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false">菜单</button>
+      <a href="index.html" class="nav-brand" aria-label="首页">YX</a>
+      <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">
+        <span class="nav-menu-line"></span>
+        <span class="nav-menu-line"></span>
+      </button>
       <nav class="nav-links" id="site-nav" aria-label="主导航">
-        <a href="index.html" data-nav="home">主页</a>
-        <a href="profile.html" data-nav="profile">简介</a>
-        <div class="nav-group" data-nav-group="results">
+        <div class="nav-desktop-items">
+          <a href="index.html" data-nav="home">主页</a>
+          <a href="profile.html" data-nav="profile">简介</a>
           <a href="results.html" data-nav="results">成果</a>
-          <div class="nav-dropdown">
-            <a href="results.html#papers">论文</a>
-            <a href="results.html#patents">专利</a>
-            <a href="results.html#projects">项目</a>
-          </div>
-        </div>
-        <div class="nav-group" data-nav-group="honors">
           <a href="honors.html" data-nav="honors">荣誉</a>
-          <div class="nav-dropdown">
-            <a href="honors.html#awards">奖励</a>
-            <a href="honors.html#innovation">创新创业</a>
-          </div>
+          <a href="conferences.html" data-nav="conferences">学术活动</a>
         </div>
-        <div class="nav-group" data-nav-group="conferences">
-          <a href="conferences.html" data-nav="conferences">会议</a>
-          <div class="nav-dropdown">
-            <a href="conferences.html#talks">国内外会议</a>
-            <a href="conferences.html#service">学术服务</a>
-            <a href="conferences.html#reviews">审稿服务</a>
+        <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
+          <span></span>
+          <span></span>
+        </button>
+        <div class="nav-cards nav-cards-five">
+          <div class="nav-card" style="--delay:0.03s">
+            <div class="nav-card-links">
+              <a href="index.html" data-nav="home" class="nav-major-link">主页 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.06s">
+            <div class="nav-card-links">
+              <a href="profile.html" data-nav="profile" class="nav-major-link">简介 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.09s">
+            <div class="nav-card-links">
+              <a href="results.html" data-nav="results" class="nav-major-link">成果 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#papers" class="nav-sub-link">论文 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#patents" class="nav-sub-link">专利 <span class="nav-card-arrow">↗</span></a>
+              <a href="results.html#projects" class="nav-sub-link">项目 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.12s">
+            <div class="nav-card-links nav-card-links-activity">
+              <a href="honors.html" data-nav="honors" class="nav-major-link">荣誉 <span class="nav-card-arrow">↗</span></a>
+              <a href="honors.html#awards" class="nav-sub-link">奖励 <span class="nav-card-arrow">↗</span></a>
+              <a href="honors.html#innovation" class="nav-sub-link">创新创业 <span class="nav-card-arrow">↗</span></a>
+            </div>
+          </div>
+          <div class="nav-card" style="--delay:0.15s">
+            <div class="nav-card-links nav-card-links-activity">
+              <a href="conferences.html" data-nav="conferences" class="nav-major-link">学术活动 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="conferences.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
+            </div>
           </div>
         </div>
       </nav>
@@ -51,13 +91,34 @@
         <div class="fiber-sticky clean-stage">
           <canvas id="research-canvas" aria-hidden="true"></canvas>
           <div class="story-copy clean-copy reveal">
-            <p class="eyebrow" data-i18n="homeEyebrow">Optical Fiber Devices</p>
-            <h1 data-i18n="homeTitle">Fiber Integrated Intelligence</h1>
-            <p data-i18n="homeSubtitle">光纤集成 · 异质材料 · 智能光电子器件</p>
+            <p class="eyebrow" data-i18n="homeEyebrow">光纤集成器件</p>
+            <h1 data-i18n="homeTitle">光纤集成
+智能光电子</h1>
+            <p data-i18n="homeSubtitle">光纤集成 · 异质材料 · 智能感知</p>
             <div class="hero-actions" aria-label="快速入口">
               <a class="button primary" href="profile.html" data-i18n="profile">简介</a>
               <a class="button secondary" href="results.html#papers" data-i18n="publications">论文</a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-wrap home-frame-section" id="home-frame" aria-labelledby="home-frame-title">
+        <div class="section-heading inline home-frame-heading reveal">
+          <div>
+            <p class="section-kicker">Highlights</p>
+            <h2 id="home-frame-title" data-i18n="homeFrameTitle">研究亮点</h2>
+          </div>
+        </div>
+        <div class="home-frame-stage" id="home-frame-stage">
+          <div class="home-frame-media">
+            <video id="home-frame-video" class="home-frame-video" muted autoplay playsinline webkit-playsinline x-webkit-airplay="allow" disablepictureinpicture preload="none" aria-label="滚动视频演示">
+              <source src="https://1860288107.cdn.123clouddisk.com/1860288107/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99/frame-hq.mp4" type="video/mp4" media="(min-width: 761px)" />
+              <source src="https://1860288107.cdn.123clouddisk.com/1860288107/%E6%88%91%E7%9A%84%E7%BD%91%E7%AB%99/frame-hq.mp4" type="video/mp4" media="(max-width: 760px)" />
+            </video>
+            <button class="home-frame-replay" type="button" aria-label="重新播放视频">
+              <span class="home-frame-replay-icon" aria-hidden="true">↻</span>
+            </button>
           </div>
         </div>
       </section>
@@ -72,16 +133,31 @@
         </div>
         <div class="news-grid" id="news-list"></div>
       </section>
+
+      <section class="section-wrap home-bento-nav" aria-labelledby="home-bento-title">
+        <div class="section-heading inline reveal">
+          <div>
+            <p class="section-kicker" data-i18n="quickNav">快速导航</p>
+            <h2 id="home-bento-title" data-i18n="quickNav">快速导航</h2>
+          </div>
+        </div>
+        <div class="home-bento-grid reveal">
+          <a class="home-bento-card home-bento-card-large" href="profile.html"><span data-i18n="quickProfileTitle">简介</span><strong data-i18n="quickProfileTitle">简介</strong><p data-i18n="quickProfileText">个人简介、研究内容与代表论文</p></a>
+          <a class="home-bento-card" href="results.html#papers"><span data-i18n="quickResultsTitle">成果</span><strong data-i18n="quickResultsTitle">成果</strong><p data-i18n="quickResultsText">论文、专利与项目</p></a>
+          <a class="home-bento-card" href="honors.html"><span data-i18n="quickHonorsTitle">荣誉</span><strong data-i18n="quickHonorsTitle">荣誉</strong><p data-i18n="quickHonorsText">奖励与创新创业</p></a>
+          <a class="home-bento-card" href="conferences.html"><span data-i18n="quickActivitiesTitle">学术活动</span><strong data-i18n="quickActivitiesTitle">学术活动</strong><p data-i18n="quickActivitiesText">会议报告、学术服务与审稿</p></a>
+          <a class="home-bento-card home-bento-card-wide" href="#news"><span data-i18n="quickNewsTitle">新闻</span><strong data-i18n="quickNewsTitle">新闻</strong><p data-i18n="quickNewsText">最新动态与论文故事</p></a>
+        </div>
+      </section>
     </main>
     <footer class="site-footer contact-footer">
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.5.16</span>
+      <span class="footer-version">Version 1.5.113</span>
     </footer>
 
-    <script src="data.js?v=20250809-apple-v1.5.16" charset="utf-8"></script>
-    <script src="supabase-client.js?v=20250809-apple-v1.5.16" charset="utf-8"></script>
-    <script src="script.js?v=20250809-apple-v1.5.16" charset="utf-8" defer></script>
+    <script src="data.js?v=v1.5.113" charset="utf-8"></script>
+    <script src="script.js?v=v1.5.113" charset="utf-8" defer></script>
   </body>
 </html>
