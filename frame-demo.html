@@ -316,7 +316,7 @@
       <div class="intro-inner">
         <p class="kicker">Frame Sequence Prototype</p>
         <h1>滚动控制的帧动画试验</h1>
-        <p class="lede">这个页面单独测试 frame/ 里的序列帧。向下滚动时会像苹果官网那样把滚动进度映射成画面切换；你也可以切到自动播放，看看节奏是否适合放进首页。</p>
+        <p class="lede">这个页面单独测试 assets/frames/ 里的序列帧。向下滚动时会像苹果官网那样把滚动进度映射成画面切换；你也可以切到自动播放，看看节奏是否适合放进首页。</p>
         <div class="controls">
           <div class="segmented" role="tablist" aria-label="动画模式">
             <button type="button" id="mode-scroll" data-active="true">滚动</button>
@@ -357,14 +357,14 @@
 
     <section class="foot">
       <div class="foot-inner">
-        <p>说明：这个试验页只读取 `frame/` 目录，不会改动首页。你确认动画风格后，我们再决定要不要把它接到 `index.html` 的某个区块里。</p>
+        <p>说明：这个试验页只读取 `assets/frames/` 目录，不会改动首页。你确认动画风格后，我们再决定要不要把它接到 `index.html` 的某个区块里。</p>
       </div>
     </section>
   </main>
 
   <script>
     const TOTAL_FRAMES = 108;
-    const FRAME_PREFIX = "frame/";
+    const FRAME_PREFIX = "assets/frames/";
     const frameImage = document.querySelector("#frame-image");
     const frameNumber = document.querySelector("#frame-number");
     const frameStatus = document.querySelector("#frame-status");

@@ -12,6 +12,27 @@
 - 部署：...
 ```
 
+## v1.5.115 - 2026-07-02
+
+- 类型：重构 / 部署
+- 变更：重新整理项目文件结构，创建 `js/`、`css/`、`videos/` 文件夹归类存放文件。
+  - `data.js`、`script.js`、`admin.js` → `js/`
+  - `styles.css` → `css/`
+  - `frame-hq.mp4`、`frame.mp4` → `videos/`
+  - `frame/` 序列帧 → `assets/frames/`
+  - 删除旧 `frame/` 目录
+- 变更：修复所有 HTML 文件中的引用路径（15 个文件），将 `styles.css` 改为 `css/styles.css`，`data.js` 改为 `js/data.js`，`script.js` 改为 `js/script.js`，`admin.js` 改为 `js/admin.js`。
+- 变更：修复 `scripts/bump-version.mjs` 中的正则表达式，适配新的 `css/` 和 `js/` 路径。
+- 变更：修复 `scripts/check-site.mjs` 中的必需文件检查路径。
+- 变更：修复 `scripts/admin-server.mjs` 中的 `data.js` 保存路径为 `js/data.js`。
+- 变更：修复 `vercel.json` 中的缓存头路径配置。
+- 变更：修复 `package.json` 中 `check` 脚本的路径引用。
+- 变更：更新 `README.md` 项目结构描述和文件路径说明。
+- 变更：更新 `index.html` 中视频 CDN 直链路径为 `videos/frame-hq.mp4`。
+- 变更：更新 `frame-demo.html` 中帧序列路径为 `assets/frames/`。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (15 html files, v1.5.115)`。
+- 部署：未部署。
+
 ## v1.5.114 - 2026-07-02
 
 - 类型：优化 / 部署

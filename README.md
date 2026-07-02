@@ -11,7 +11,7 @@
 
 ## 给接手 AI 的快速说明
 
-这是原生 HTML/CSS/JavaScript 静态站，不是 React、Vue 或 Next 项目。内容主要维护在 `data.js`，样式在 `styles.css`，前台交互在 `script.js`，后台编辑逻辑在 `admin.js` 和 `scripts/admin-server.mjs`。
+这是原生 HTML/CSS/JavaScript 静态站，不是 React、Vue 或 Next 项目。内容主要维护在 `js/data.js`，样式在 `css/styles.css`，前台交互在 `js/script.js`，后台编辑逻辑在 `js/admin.js` 和 `scripts/admin-server.mjs`。
 
 每次修改必须：同步中英文内容、更新版本号、写入 `docs/CHANGELOG.md`、运行检查。只有用户明确要求发布时再部署。
 
@@ -25,14 +25,24 @@
 ├── honors.html             # 荣誉：奖励、创新创业
 ├── conferences.html        # 学术活动：会议、学术服务、审稿服务
 ├── admin.html              # 本地后台维护界面
-├── data.js                 # 网站内容数据库，最核心
-├── script.js               # 前台渲染、语言、导航、轮播、交互
-├── admin.js                # 后台编辑界面逻辑
-├── styles.css              # 全站样式
-├── assets/                 # 图片、头像、论文主图、新闻图、研究图
-├── papers/                 # 公开论文 PDF
+├── js/
+│   ├── data.js             # 网站内容数据库，最核心
+│   ├── script.js            # 前台渲染、语言、导航、轮播、交互
+│   └── admin.js             # 后台编辑界面逻辑
+├── css/
+│   └── styles.css           # 全站样式
+├── assets/                  # 图片、头像、论文主图、新闻图、研究图
+│   └── frames/              # 帧动画序列
+├── papers/                  # 公开论文 PDF
+├── videos/                  # 视频文件
 ├── scripts/
-│   ├── admin-server.mjs    # 本地后台服务，负责保存 data.js 和上传文件
+│   ├── admin-server.mjs     # 本地后台服务，负责保存 js/data.js 和上传文件
+│   ├── check-site.mjs       # 静态检查
+│   ├── bump-version.mjs     # 版本号更新
+│   ├── optimize-images.py   # 图片压缩为 WebP
+│   └── backup.sh            # 本地备份脚本
+├── scripts/
+│   ├── admin-server.mjs    # 本地后台服务，负责保存 js/data.js 和上传文件
 │   ├── check-site.mjs      # 静态检查
 │   ├── bump-version.mjs    # 版本号更新
 │   ├── optimize-images.py  # 图片压缩为 WebP
@@ -86,7 +96,7 @@ vercel deploy --prod --yes
 
 ### 改文字和条目
 
-优先改 `data.js`。常见内容包括：
+优先改 `js/data.js`。常见内容包括：
 
 - `profile`：简介、研究内容、经历、代表论文、学术任职。
 - `publications`：代表论文和全部论文。
@@ -98,7 +108,7 @@ vercel deploy --prod --yes
 
 ### 改样式
 
-优先改 `styles.css`。重点检查：
+优先改 `css/styles.css`。重点检查：
 
 - 电脑端 1440px 左右宽度。
 - 手机端 390px 左右宽度。
@@ -109,11 +119,11 @@ vercel deploy --prod --yes
 
 ### 改交互
 
-优先改 `script.js`。常见交互包括：语言切换、导航当前状态、移动端菜单、新闻轮播、锚点跳转、PDF 加载提示。
+优先改 `js/script.js`。常见交互包括：语言切换、导航当前状态、移动端菜单、新闻轮播、锚点跳转、PDF 加载提示。
 
 ### 改后台
 
-优先改 `admin.js` 和 `scripts/admin-server.mjs`。后台是本地维护工具，不应放进公开导航。保存和上传必须给用户明确反馈。
+优先改 `js/admin.js` 和 `scripts/admin-server.mjs`。后台是本地维护工具，不应放进公开导航。保存和上传必须给用户明确反馈。
 
 ## 视觉规范
 
@@ -178,7 +188,7 @@ Intelligence
 
 先阅读 README.md、docs/WORKFLOW.md、docs/CHANGELOG.md。
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
-内容主要在 data.js，样式在 styles.css，交互在 script.js，本地后台在 admin.html/admin.js/scripts/admin-server.mjs。
+内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
 当前稳定流程是本地维护 data.js、assets/、papers/，再由 Vercel 托管。
 每次迭代必须更新版本号、写 docs/CHANGELOG.md、运行 npm run check。
 只有用户明确要求发布时才部署。

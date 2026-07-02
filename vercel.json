@@ -20,7 +20,7 @@
       ]
     },
     {
-      "source": "/:file(styles.css|script.js|admin.js|data.js)",
+      "source": "/(css/styles.css|js/script.js|js/admin.js|js/data.js)",
       "headers": [
         {
           "key": "Cache-Control",

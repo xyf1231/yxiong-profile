@@ -10,9 +10,9 @@ const requiredFiles = [
   "results.html",
   "honors.html",
   "conferences.html",
-  "styles.css",
-  "script.js",
-  "data.js",
+  "css/styles.css",
+  "js/script.js",
+  "js/data.js",
   "vercel.json",
 ];
 
@@ -44,11 +44,11 @@ if (versions.size !== 1) errors.push(`cache versions are not consistent: ${[...v
 if (footerVersions.size > 1) errors.push(`footer versions are not consistent: ${[...footerVersions].join(", ")}`);
 if (footerVersions.size === 0) warnings.push("no footer Version text found");
 
-const dataPath = path.join(root, "data.js");
+const dataPath = path.join(root, "js", "data.js");
 if (fs.existsSync(dataPath)) {
   const data = fs.readFileSync(dataPath);
   if (!(data[0] === 0xef && data[1] === 0xbb && data[2] === 0xbf)) {
-    warnings.push("data.js has no UTF-8 BOM; keep BOM if Chinese displays incorrectly in some browsers");
+    warnings.push("js/data.js has no UTF-8 BOM; keep BOM if Chinese displays incorrectly in some browsers");
   }
 }
 

@@ -104,8 +104,8 @@ async function saveData(req, res) {
     throw new Error("没有收到有效的网站数据。");
   }
   const text = `\ufeffwindow.DEFAULT_SITE_DATA = ${JSON.stringify(siteData, null, 2)};\n`;
-  await writeFile(join(rootDir, "data.js"), text, "utf8");
-  sendJson(res, 200, { ok: true, path: "data.js", bytes: Buffer.byteLength(text) });
+  await writeFile(join(rootDir, "js", "data.js"), text, "utf8");
+  sendJson(res, 200, { ok: true, path: "js/data.js", bytes: Buffer.byteLength(text) });
 }
 
 async function uploadFile(req, res, url) {
