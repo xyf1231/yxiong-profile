@@ -7967,8 +7967,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 .home-dark .news-section .section-heading.center .section-kicker,
 .home-dark .home-bento-nav .section-heading.center .section-kicker,
 .home-dark .home-frame-section .section-heading.center .section-kicker {
-  text-align: center !important;
-  margin-inline: auto !important;
+  display: none !important;
 }
 
 .profile-section#research {
