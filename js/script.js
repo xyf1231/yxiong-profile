@@ -1762,7 +1762,7 @@ function buildGlowVars(glowColor = "195 90 70", intensity = 1) {
 function setupBorderGlow() {
   if (isCompactNav()) return;
   const cards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo",
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-timeline .timeline li",
   );
   cards.forEach((card, index) => {
     if (card.dataset.glowReady === "true") return;
