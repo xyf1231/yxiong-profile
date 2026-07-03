@@ -1156,7 +1156,7 @@ h3 {
 .profile-identity h1 {
   margin: 10px 0 8px;
   max-width: 100%;
-  font-size: clamp(3rem, 4.4vw, 4.6rem);
+  font-size: clamp(3.4rem, 5vw, 5.2rem);
   line-height: 1.25;
   text-wrap: balance;
 }
@@ -1213,7 +1213,7 @@ html[lang="en"] .profile-bio-text {
 
 .profile-intro-heading {
   margin-top: calc(var(--nav-height, 68px) + 12px) !important;
-  margin-bottom: clamp(32px, 4.2vw, 58px) !important;
+  margin-bottom: 24px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
@@ -6253,7 +6253,7 @@ body.nav-mega-open::after {
 .profile-combo {
   width: min(100% - 40px, var(--max)) !important;
   min-height: auto !important;
-  grid-template-columns: minmax(200px, 0.38fr) minmax(340px, 0.85fr) minmax(360px, 1fr) !important;
+  grid-template-columns: minmax(240px, 0.45fr) minmax(340px, 0.85fr) minmax(360px, 1fr) !important;
   padding: clamp(32px, 3.5vw, 52px) !important;
   gap: clamp(28px, 3.2vw, 48px) !important;
   border-color: var(--glass-card-border) !important;
@@ -6269,7 +6269,7 @@ body.nav-mega-open::after {
 }
 
 .profile-identity h1 {
-  font-size: clamp(2.9rem, 4vw, 4.25rem) !important;
+  font-size: clamp(3.2rem, 4.6vw, 4.8rem) !important;
 }
 
 .profile-bio-text {
@@ -6386,11 +6386,11 @@ body.nav-mega-open::after {
 @media (min-width: 861px) and (max-width: 1260px) {
   .profile-combo {
     width: min(100% - 40px, var(--max)) !important;
-    grid-template-columns: minmax(180px, 0.32fr) minmax(300px, 0.75fr) minmax(340px, 0.95fr) !important;
+    grid-template-columns: minmax(200px, 0.38fr) minmax(300px, 0.75fr) minmax(340px, 0.95fr) !important;
   }
 
   .profile-photo {
-    width: min(100%, 260px);
+    width: min(100%, 300px);
   }
 
   .profile-identity h1 {
@@ -6440,7 +6440,7 @@ body.nav-mega-open::after {
     width: 100%;
     margin: 22px 0 0;
     text-align: center;
-    font-size: clamp(3.15rem, 13vw, 4.65rem) !important;
+    font-size: clamp(3.5rem, 14vw, 5.2rem) !important;
   }
 
   .profile-en-name {
@@ -7890,7 +7890,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
   }
 
   main > .profile-combo.section-wrap:first-child .profile-identity h1 {
-    font-size: clamp(2.7rem, 4.2vw, 3.5rem) !important;
+    font-size: clamp(3rem, 4.6vw, 4.2rem) !important;
   }
 
   main > .profile-combo.section-wrap:first-child .profile-identity h2 {
