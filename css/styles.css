@@ -7761,9 +7761,11 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 /* profile intro rollback: restore the earlier three-column layout and keep the photo uncropped */
 main > .profile-combo.section-wrap:first-child {
   align-items: center !important;
+  width: min(100% - 40px, var(--profile-wide-width)) !important;
+  max-width: min(100% - 40px, var(--profile-wide-width)) !important;
   grid-template-columns: minmax(210px, 0.42fr) minmax(360px, 0.9fr) minmax(360px, 1fr) !important;
-  gap: clamp(28px, 4vw, 58px) !important;
-  padding: clamp(30px, 4.4vw, 64px) !important;
+  gap: clamp(24px, 3vw, 46px) !important;
+  padding: clamp(26px, 3.6vw, 46px) !important;
   border-radius: clamp(26px, 2.4vw, 34px) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   background:
@@ -8152,7 +8154,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 /* v1.5.66: rollback card shimmer, restore centered hero and full-width research cards */
 :root {
   --home-panel-width: min(1180px, 92vw);
-  --profile-wide-width: min(1380px, 92vw);
+  --profile-wide-width: var(--max);
 }
 
 .home-dark .fiber-sticky.clean-stage,
@@ -8229,15 +8231,15 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 }
 
 .profile-section#research .section-heading {
-  width: var(--profile-wide-width) !important;
-  max-width: var(--profile-wide-width) !important;
+  width: min(100% - 40px, var(--profile-wide-width)) !important;
+  max-width: min(100% - 40px, var(--profile-wide-width)) !important;
   margin: 0 auto clamp(28px, 4vw, 48px) !important;
   padding: 0 !important;
 }
 
 .profile-section#research .feature-grid {
-  width: var(--profile-wide-width) !important;
-  max-width: var(--profile-wide-width) !important;
+  width: min(100% - 40px, var(--profile-wide-width)) !important;
+  max-width: min(100% - 40px, var(--profile-wide-width)) !important;
   margin: 0 auto !important;
   display: grid !important;
   grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
@@ -8258,8 +8260,18 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .profile-section#research .feature-card-image {
   position: relative !important;
   width: 100% !important;
-  aspect-ratio: 16 / 9 !important;
-  margin: 0 0 clamp(16px, 1.4vw, 22px) !important;
+  aspect-ratio: 4 / 3 !important;
+  margin: 0 0 clamp(14px, 1.2vw, 18px) !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.profile-section#research .feature-card-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  display: block !important;
 }
 
 .profile-section#research .feature-card .card-index {
@@ -8317,8 +8329,8 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 
 .section-wrap#research {
   display: block !important;
-  width: min(1380px, 92vw) !important;
-  max-width: min(1380px, 92vw) !important;
+  width: min(100% - 40px, var(--profile-wide-width)) !important;
+  max-width: min(100% - 40px, var(--profile-wide-width)) !important;
 }
 
 .section-wrap#research .section-heading {
@@ -8366,8 +8378,18 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .section-wrap#research .feature-card-image {
   position: relative !important;
   width: 100% !important;
-  aspect-ratio: 16 / 9 !important;
+  aspect-ratio: 4 / 3 !important;
   margin: 0 0 clamp(14px, 1.2vw, 18px) !important;
+  overflow: hidden !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.section-wrap#research .feature-card-image img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  display: block !important;
 }
 
 .section-wrap#research .feature-card .card-index {
@@ -8569,8 +8591,8 @@ body.home-dark main > .section-wrap.home-frame-section .section-heading.center {
 
 body:not(.home-dark) main > .section-wrap#research {
   display: block !important;
-  width: var(--profile-wide-width) !important;
-  max-width: var(--profile-wide-width) !important;
+  width: min(100% - 40px, var(--profile-wide-width)) !important;
+  max-width: min(100% - 40px, var(--profile-wide-width)) !important;
   margin-left: auto !important;
   margin-right: auto !important;
 }
@@ -8578,7 +8600,7 @@ body:not(.home-dark) main > .section-wrap#research {
 body:not(.home-dark) main > .section-wrap#research .section-heading {
   width: 100% !important;
   max-width: none !important;
-  margin: 0 0 clamp(30px, 4vw, 56px) !important;
+  margin: 0 0 clamp(28px, 4vw, 48px) !important;
 }
 
 body:not(.home-dark) main > .section-wrap#research .feature-grid {

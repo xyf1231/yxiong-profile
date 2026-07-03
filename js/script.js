@@ -8,13 +8,32 @@ function resetHomeScrollIfNeeded() {
 window.addEventListener('pageshow', resetHomeScrollIfNeeded);
 window.addEventListener('load', resetHomeScrollIfNeeded);
 const NAV_INDICATOR_KEY = "academicSiteNavIndicator";
+const ASSET_CACHE_BUSTER = (() => {
+  try {
+    const src = document.currentScript?.src || "";
+    return src ? (new URL(src).searchParams.get("v") || "") : "";
+  } catch (e) {
+    return "";
+  }
+})();
+
+function withAssetCacheBuster(src) {
+  if (!src || !ASSET_CACHE_BUSTER) return src;
+  try {
+    const url = new URL(src, window.location.href);
+    url.searchParams.set("v", ASSET_CACHE_BUSTER);
+    return url.toString();
+  } catch (e) {
+    return src;
+  }
+}
 
 // Helper: create optimized WebP image markup.
 function pictureTag(webpSrc, alt, cls, priority = false) {
   const classAttr = cls ? ` class="${cls}"` : "";
   const priorityAttr = priority ? ` fetchpriority="high"` : ` fetchpriority="low" loading="lazy"`;
   const decodingAttr = ` decoding="async"`;
-  return `<img${classAttr} src="${escapeHtml(webpSrc)}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
+  return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
 }
 
 const header = document.querySelector(".site-header");
@@ -532,10 +551,23 @@ function renderResearch(items) {
   if (!target) return;
   const fallbackImages = ["assets/research-fiber-devices.webp", "assets/research-opto-chip.webp", "assets/research-fabrication.webp"];
   const list = currentLang === "en" ? researchEnglish : items;
-  target.innerHTML = list.map((item, index) => {
-    const image = item.image || fallbackImages[index % fallbackImages.length];
-    return "<article class=\"feature-card reveal\"><div class=\"feature-card-image\" aria-hidden=\"true\"><span class=\"card-index\">" + String(index + 1).padStart(2, "0") + "</span><img src=\"" + escapeHtml(image) + "\" alt=\"\" loading=\"lazy\"></div><div class=\"feature-card-copy\"><h3>" + escapeHtml(item.title) + "</h3><p>" + escapeHtml(item.text) + "</p></div></article>";
-  }).join("");
+  target.innerHTML = list
+    .map((item, index) => {
+      const image = withAssetCacheBuster(item.image || fallbackImages[index % fallbackImages.length]);
+      return `
+        <article class="feature-card reveal">
+          <div class="feature-card-image" aria-hidden="true">
+            <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
+            <img src="${escapeHtml(image)}" alt="" loading="lazy">
+          </div>
+          <div class="feature-card-copy">
+            <h3>${escapeHtml(item.title)}</h3>
+            <p>${escapeHtml(item.text)}</p>
+          </div>
+        </article>
+      `;
+    })
+    .join("");
 }
 
 function renderNews(items) {
