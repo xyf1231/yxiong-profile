@@ -13,11 +13,13 @@ while true; do
   echo "  xyfoptics 网站发布"
   echo "========================================"
   echo "  1. 推送到 GitHub（更新 jsDelivr CDN，触发 Cloudflare Pages 自动部署）"
-  echo "  2. 退出"
+  echo "  2. 打开 Cloudflare Pages 预览地址"
+  echo "  3. 打开正式域名"
+  echo "  4. 退出"
   echo "========================================"
   echo
 
-  read -r "?请选择操作 [1/2]: " choice
+  read -r "?请选择操作 [1/2/3/4]: " choice
   echo
 
   case "${choice:l}" in
@@ -71,12 +73,26 @@ while true; do
       ;;
 
     2)
+      echo "打开 Cloudflare Pages 预览地址..."
+      open "https://yxiong-profile.pages.dev"
+      echo "✅ 已打开 https://yxiong-profile.pages.dev"
+      echo
+      ;;
+
+    3)
+      echo "打开正式域名..."
+      open "https://xyfoptics.xyz"
+      echo "✅ 已打开 https://xyfoptics.xyz"
+      echo
+      ;;
+
+    4)
       echo "已退出。"
       exit 0
       ;;
 
     *)
-      echo "请输入 1 或 2。"
+      echo "请输入 1、2、3 或 4。"
       echo
       ;;
   esac
