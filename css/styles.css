@@ -7855,7 +7855,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 /* v1.5.64: transform-driven news carousel; every slide centers exactly, including the final card */
 .news-carousel-viewport {
   overflow: visible !important;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .news-carousel-track {
