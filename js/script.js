@@ -119,6 +119,15 @@ const translations = {
     allPapersKicker: "All Papers",
     patentsKicker: "Patents",
     projectsKicker: "Projects",
+    awardsKicker: "Awards",
+    innovationKicker: "Innovation",
+    talksKicker: "Conferences",
+    serviceKicker: "Service",
+    reviewsKicker: "Reviewing",
+    innovation: "创新创业",
+    conferenceTalks: "国内外会议",
+    academicService: "学术服务",
+    reviewingService: "审稿服务",
     detailsSee: "详情请见",
     allResults: "全部成果",
     allPublications: "全部论文",
@@ -191,6 +200,15 @@ const translations = {
     allPapersKicker: "全部论文",
     patentsKicker: "专利",
     projectsKicker: "项目",
+    awardsKicker: "奖励",
+    innovationKicker: "创新创业",
+    talksKicker: "国内外会议",
+    serviceKicker: "学术服务",
+    reviewsKicker: "审稿服务",
+    innovation: "Innovation",
+    conferenceTalks: "Conference Talks",
+    academicService: "Academic Service",
+    reviewingService: "Reviewing Service",
     detailsSee: "For details, see",
     allResults: "All Results",
     allPublications: "All Publications",
@@ -448,7 +466,7 @@ const newsDetailEnglish = {
   title: "Fiber-Tip Integration: Reading Light Fingerprints In Situ",
   subtitle: "A three-dimensional single-pixel device on an optical fiber tip enables one-shot in-fiber four-dimensional light-state identification",
   contentHtml:
-    "<p>When light enters an optical fiber, it carries far more than brightness. It may propagate in different fiber modes, oscillate along different polarization directions, and possess distinct wavelengths and intensities. Conventionally, reading out these coupled dimensions requires multiple optical and optoelectronic elements, which increases system complexity, latency, and noise.</p><h2>From seeing light to understanding light</h2><p>The richer the optical dimensions, the greater the information capacity of the fiber. Yet these coupled degrees of freedom also make detection more difficult. A compact device capable of reading light states directly at the fiber tip can simplify optical receivers and enable new forms of multidimensional sensing and communication.</p><figure><img src=\"assets/light-fingerprint-main.webp\" alt=\"Fiber-tip light fingerprint identification\"><figcaption>A three-dimensional single-pixel device integrated on an optical fiber tip identifies mode, polarization, wavelength, and intensity in one shot.</figcaption></figure><h2>A miniature decoding station on a fiber tip</h2><p>The team stacked two anisotropic detector units directly on the end face of a two-mode optical fiber. Through the co-design of van der Waals materials, microelectrodes, and decoding algorithms, a micron-scale fiber-core pixel generates six distinct photoelectric responses that encode multidimensional optical information.</p><h2>One-shot identification of nearly ten thousand light states</h2><p>By matching six-channel voltage outputs with a pre-calibrated database, the device identifies nearly ten thousand four-dimensional input states with an accuracy above 99%. For unknown states between calibration points, interpolation and decoupling algorithms enable reliable reconstruction.</p><h2>Imagination from the fiber tip</h2><p>This work suggests that future photodetectors can become smaller, more integrated, and closer to the site of light propagation. Integrating multidimensional readout directly on fiber tips may reduce loss, latency, and crosstalk in compact optical systems.</p>",
+    "<p>When light enters an optical fiber, it carries far more than brightness. It may propagate in different fiber modes, oscillate along different polarization directions, and possess distinct wavelengths and intensities. Conventionally, reading out these coupled dimensions requires multiple optical and optoelectronic elements, which increases system complexity, latency, and noise.</p><h2>From seeing light to understanding light</h2><p>The richer the optical dimensions, the greater the information capacity of the fiber. Yet these coupled degrees of freedom also make detection more difficult. A compact device capable of reading light states directly at the fiber tip can simplify optical receivers and enable new forms of multidimensional sensing and communication.</p><figure><img src=\"https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/light-fingerprint-main.webp\" alt=\"Fiber-tip light fingerprint identification\"><figcaption>A three-dimensional single-pixel device integrated on an optical fiber tip identifies mode, polarization, wavelength, and intensity in one shot.</figcaption></figure><h2>A miniature decoding station on a fiber tip</h2><p>The team stacked two anisotropic detector units directly on the end face of a two-mode optical fiber. Through the co-design of van der Waals materials, microelectrodes, and decoding algorithms, a micron-scale fiber-core pixel generates six distinct photoelectric responses that encode multidimensional optical information.</p><h2>One-shot identification of nearly ten thousand light states</h2><p>By matching six-channel voltage outputs with a pre-calibrated database, the device identifies nearly ten thousand four-dimensional input states with an accuracy above 99%. For unknown states between calibration points, interpolation and decoupling algorithms enable reliable reconstruction.</p><h2>Imagination from the fiber tip</h2><p>This work suggests that future photodetectors can become smaller, more integrated, and closer to the site of light propagation. Integrating multidimensional readout directly on fiber tips may reduce loss, latency, and crosstalk in compact optical systems.</p>",
   paperTitle: "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip",
   authors: "Yifeng Xiong, Shaochen Fang, Yining Xu, et al.",
   correspondingAuthors: "Yanqing Lu, Hongtao Yuan, Fei Xu",
@@ -575,7 +593,7 @@ function renderMetrics(metrics) {
 function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
-  const fallbackImages = ["assets/research-fiber-devices.webp", "assets/research-opto-chip.webp", "assets/research-fabrication.webp"];
+  const fallbackImages = ["https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-fiber-devices.webp", "https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-opto-chip.webp", "https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-fabrication.webp"];
   const list = currentLang === "en" ? researchEnglish : items;
   target.innerHTML = list
     .map((item, index) => {
