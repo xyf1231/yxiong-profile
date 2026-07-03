@@ -4444,9 +4444,6 @@ body.nav-mega-open::after {
 
 
 /* v1.5.36 cleaner headings, tighter mega menu, Apple-like rounded cards */
-.section-heading .section-kicker {
-  display: none !important;
-}
 
 .section-heading {
   margin-bottom: clamp(22px, 3vw, 34px);
@@ -6256,7 +6253,7 @@ body.nav-mega-open::after {
 }
 
 .profile-combo {
-  width: min(100% - 64px, 1320px) !important;
+  width: min(100% - 40px, var(--max)) !important;
   min-height: auto !important;
   grid-template-columns: minmax(220px, 0.42fr) minmax(300px, 0.72fr) minmax(360px, 1fr) !important;
   padding: clamp(28px, 3.2vw, 46px) !important;
@@ -6390,7 +6387,7 @@ body.nav-mega-open::after {
 
 @media (min-width: 861px) and (max-width: 1260px) {
   .profile-combo {
-    width: min(100% - 44px, 1120px) !important;
+    width: min(100% - 40px, var(--max)) !important;
     grid-template-columns: minmax(190px, 0.36fr) minmax(260px, 0.58fr) minmax(340px, 0.9fr) !important;
   }
 
