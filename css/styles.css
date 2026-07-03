@@ -1213,7 +1213,7 @@ html[lang="en"] .profile-bio-text {
 
 .profile-intro-heading {
   margin-top: calc(var(--nav-height, 68px) + 12px) !important;
-  margin-bottom: 10px !important;
+  margin-bottom: clamp(32px, 4.2vw, 58px) !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
@@ -1482,7 +1482,7 @@ html[lang="en"] .subtle-name {
 }
 
 .section-heading {
-  margin-bottom: 36px;
+  margin-bottom: clamp(32px, 4.2vw, 58px);
 }
 
 .section-heading.inline {
@@ -1508,7 +1508,7 @@ html[lang="en"] .subtle-name {
   justify-content: center;
   text-align: center;
   gap: clamp(8px, 1vw, 14px);
-  margin-bottom: clamp(28px, 4vw, 54px) !important;
+  margin-bottom: clamp(32px, 4.2vw, 58px) !important;
 }
 
 .section-heading.center > div {
@@ -4444,7 +4444,7 @@ body.nav-mega-open::after {
 /* v1.5.36 cleaner headings, tighter mega menu, Apple-like rounded cards */
 
 .section-heading {
-  margin-bottom: clamp(22px, 3vw, 34px);
+  margin-bottom: clamp(32px, 4.2vw, 58px);
 }
 
 .section-heading h2 {
@@ -4558,7 +4558,7 @@ body.nav-mega-open::after {
 
 @media (max-width: 860px) {
   .section-heading {
-    margin-bottom: 20px;
+    margin-bottom: clamp(24px, 3.6vw, 32px);
   }
 
   .nav-cards.nav-cards-five {
@@ -7393,7 +7393,7 @@ html[lang="en"] .news-card-body {
 }
 
 .news-section .section-heading {
-  margin-bottom: clamp(22px, 2.8vw, 40px) !important;
+  margin-bottom: clamp(32px, 4.2vw, 58px) !important;
 }
 
 .news-section .section-heading .text-link {
@@ -7510,7 +7510,7 @@ html[lang="en"] .news-carousel-track .news-card:first-child h3 {
   }
 
   .news-section .section-heading {
-    margin-bottom: 18px !important;
+    margin-bottom: clamp(24px, 3.6vw, 32px) !important;
   }
 
   .news-carousel-viewport {
@@ -7587,7 +7587,7 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 .home-bento-nav .section-heading {
   --section-heading-size: clamp(3rem, 5vw, 5.7rem);
   --section-heading-size-mobile: clamp(2.8rem, 10vw, 4rem);
-  --section-heading-gap: clamp(28px, 4vw, 54px);
+  --section-heading-gap: clamp(32px, 4.2vw, 58px);
   --section-heading-gap-mobile: 18px;
 }
 
@@ -7617,7 +7617,7 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 }
 
 .home-frame-heading {
-  margin-bottom: calc(var(--section-heading-gap) + 8px) !important;
+  margin-bottom: var(--section-heading-gap) !important;
 }
 
 .news-section .section-heading,
@@ -7991,7 +7991,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
   .home-dark .news-section .section-heading,
   .home-dark .home-bento-nav .section-heading {
     padding-inline: 20px;
-    margin-bottom: 24px !important;
+    margin-bottom: clamp(24px, 3.6vw, 32px) !important;
   }
 
   .home-dark .news-section .section-heading.center,
@@ -9324,7 +9324,7 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   }
 
   .home-frame-section .section-heading {
-    margin-bottom: clamp(18px, 4vw, 26px) !important;
+    margin-bottom: clamp(24px, 3.6vw, 32px) !important;
   }
 
   .home-frame-media {
