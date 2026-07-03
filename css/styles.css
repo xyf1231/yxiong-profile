@@ -1450,6 +1450,14 @@ html[lang="en"] .subtle-name {
   gap: 24px;
 }
 
+.profile-link-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
 .section-heading.center {
   display: flex;
   flex-direction: column;
@@ -7599,6 +7607,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   .news-card .news-card-body { max-width: 78% !important; padding: 22px !important; }
   .news-card h3, html[lang="en"] .news-card h3 { font-size: clamp(1.7rem, 7vw, 2.35rem) !important; line-height: 1.08 !important; }
   main > .profile-combo.section-wrap:first-child { margin-top: 78px !important; padding-top: 28px !important; }
+  .profile-link-row { margin-left: 0; }
   .profile-combo .profile-photo { order: 1; width: min(72vw, 340px) !important; margin-inline: auto; }
   .profile-combo .profile-identity { order: 2; text-align: center; }
   .profile-combo .profile-bio-text { order: 3; }
