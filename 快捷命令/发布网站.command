@@ -8,18 +8,26 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # ============================================
+# 读取当前版本号
+# ============================================
+get_current_version() {
+  if [ -f "VERSION" ]; then
+    cat VERSION | tr -d '[:space:]'
+  else
+    echo "v0.0.0"
+  fi
+}
+
+# ============================================
 # 版本号自动递增工具函数
 # ============================================
 auto_bump_version() {
   local current_version=""
   local new_version=""
   
-  # 读取当前版本号
-  if [ -f "VERSION" ]; then
-    current_version=$(cat VERSION | tr -d '[:space:]')
-  fi
+  current_version=$(get_current_version)
   
-  if [ -z "$current_version" ]; then
+  if [ -z "$current_version" ] || [ "$current_version" = "v0.0.0" ]; then
     current_version="v1.0.0"
     echo "⚠️  VERSION 文件为空或不存在，使用默认版本 $current_version"
   fi
@@ -30,7 +38,7 @@ auto_bump_version() {
   echo "  1) 自动递增补丁号 (patch +1) — 推荐日常发布"
   echo "  2) 自动递增次版本号 (minor +1) — 较大功能更新"
   echo "  3) 手动输入版本号"
-  echo "  4) 跳过版本号更新"
+  echo "  4) 取消"
   echo
   
   read -r "?请选择 [1/2/3/4] (默认 1): " bump_choice
@@ -70,12 +78,12 @@ auto_bump_version() {
         fi
         echo "✅ 手动设置版本号: $current_version → $new_version"
       else
-        echo "❌ 版本号格式不正确，跳过版本号更新"
+        echo "❌ 版本号格式不正确，已取消"
         return 1
       fi
       ;;
     4)
-      echo "⏭️ 跳过版本号更新"
+      echo "⏭️ 已取消"
       return 1
       ;;
     *)
@@ -108,38 +116,47 @@ auto_bump_version() {
 # ============================================
 
 while true; do
+  CURRENT_VER=$(get_current_version)
+  
   echo
   echo "========================================"
   echo "  xyfoptics 网站发布"
+  echo "  当前版本: $CURRENT_VER"
   echo "========================================"
-  echo "  1. 推送到 GitHub（更新 jsDelivr CDN，触发 Cloudflare Pages 自动部署）"
-  echo "  2. 打开 Cloudflare Pages 预览地址"
-  echo "  3. 打开正式域名"
-  echo "  4. 本地预览（启动 http://localhost:3000）"
-  echo "  5. 退出"
+  echo "  1. 更新版本号"
+  echo "  2. 推送到 GitHub（更新 jsDelivr CDN，触发 Cloudflare Pages 自动部署）"
+  echo "  3. 打开 Cloudflare Pages 预览地址"
+  echo "  4. 打开正式域名"
+  echo "  5. 本地预览（启动 http://localhost:3000）"
+  echo "  6. 退出"
   echo "========================================"
   echo
 
-  read -r "?请选择操作 [1/2/3/4/5]: " choice
+  read -r "?请选择操作 [1/2/3/4/5/6]: " choice
   echo
 
   case "${choice:l}" in
     1)
-      echo "---------- 版本号更新 ----------"
+      echo "---------- 更新版本号 ----------"
       echo
       
-      # 调用自动递增版本号
       new_ver=$(auto_bump_version) && VERSION_BUMPED=true || VERSION_BUMPED=false
       
       if [ "$VERSION_BUMPED" = true ]; then
-        echo "📌 准备发布版本: $new_ver"
+        echo "📌 版本号已更新为: $new_ver"
+        echo
+        echo "💡 提示: 版本号更新已写入文件，但尚未提交。"
+        echo "   请选择「2. 推送到 GitHub」将更改一起发布。"
       else
-        new_ver=$(cat VERSION 2>/dev/null | tr -d '[:space:]')
-        echo "📌 当前版本号保持不变: $new_ver"
+        echo "📌 版本号未变更，当前仍为: $(get_current_version)"
       fi
-      
       echo
+      ;;
+
+    2)
+      CURRENT_VER=$(get_current_version)
       echo "---------- 推送到 GitHub ----------"
+      echo "📌 当前版本: $CURRENT_VER"
       echo
 
       # 检查 Git 仓库状态
@@ -149,15 +166,15 @@ while true; do
         continue
       fi
 
-      # 添加所有更改（包含版本号更新）
+      # 添加所有更改
       git add -A
 
       # 检查是否有更改要提交
       if git diff --cached --quiet; then
         echo "✅ 没有新的更改需要提交"
       else
-        echo "提交更改（版本: $new_ver）..."
-        git commit -m "Deploy $new_ver - update content"
+        echo "提交更改（版本: $CURRENT_VER）..."
+        git commit -m "Deploy $CURRENT_VER - update content"
       fi
 
       # 推送到 GitHub
@@ -173,7 +190,7 @@ while true; do
         echo "  Cloudflare Pages 会自动构建部署"
         echo "  线上地址： https://xyfoptics.xyz"
         echo "  jsDelivr 缓存：5-10 分钟后生效"
-        echo "  当前版本： $new_ver"
+        echo "  当前版本： $CURRENT_VER"
       else
         echo
         echo "❌ 推送失败"
@@ -182,21 +199,21 @@ while true; do
       echo
       ;;
 
-    2)
+    3)
       echo "打开 Cloudflare Pages 预览地址..."
       open "https://yxiong-profile.pages.dev"
       echo "✅ 已打开 https://yxiong-profile.pages.dev"
       echo
       ;;
 
-    3)
+    4)
       echo "打开正式域名..."
       open "https://xyfoptics.xyz"
       echo "✅ 已打开 https://xyfoptics.xyz"
       echo
       ;;
 
-    4)
+    5)
       echo "---------- 本地预览 ----------"
       echo "正在启动本地服务器..."
       echo
@@ -225,13 +242,13 @@ while true; do
       echo
       ;;
 
-    5)
+    6)
       echo "已退出。"
       exit 0
       ;;
 
     *)
-      echo "请输入 1、2、3、4 或 5。"
+      echo "请输入 1、2、3、4、5 或 6。"
       echo
       ;;
   esac

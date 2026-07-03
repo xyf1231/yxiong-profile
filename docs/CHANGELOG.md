@@ -12,6 +12,16 @@
 - 部署：...
 ```
 
+## v1.6.4 - 2026-07-03
+
+- 类型：功能
+- 变更：为 `快捷命令/发布网站.command` 增加自动版本号更新功能。
+  - 推送前自动检测当前版本号，提供 4 种更新策略：自动递增 patch（默认）、自动递增 minor、手动输入、跳过。
+  - 自动更新 `VERSION` 文件并运行 `bump-version.sh` 批量刷新所有 HTML 的缓存戳和页脚版本号。
+  - 版本号更新后自动 `git add -A` 并随代码一起提交，确保每次发布都有唯一版本标识。
+- 检查：`npm run check` 通过，静态检查输出 `Site check passed (14 html files, v1.6.4)`。
+- 部署：未部署。
+
 ## v1.6.3 - 2026-07-03
 
 - 类型：统筹 / 文档 / 修复
@@ -23,17 +33,6 @@
   - 补全 `docs/CHANGELOG.md`：补充 v1.5.118 之后版本管理方案切换的说明记录。
   - 说明：v1.5.119 ~ v1.6.2 期间有多轮迭代（文件结构调整、CDN 迁移、视频加载优化、PDF 双按钮等），但当时未同步写入 CHANGELOG，现以 v1.6.3 为统筹后的统一基线版本。
 - 检查：`npm run check` 通过，静态检查输出 `Site check passed (14 html files, v1.6.3)`。
-- 部署：未部署。
-
-- 类型：统筹 / 文档 / 修复
-- 变更：全面统筹统一网站版本号和文档一致性。
-  - 统一全站版本号到 v1.6.2（VERSION 文件、14 个 HTML 缓存戳、package.json、页脚）。
-  - 修复 `scripts/check-site.mjs`：移除对已停用 `vercel.json` 的强制检查（项目已改用 Cloudflare Pages 托管）；修复 `<meta charset>` 匹配逻辑，适配 `<meta charset="utf-8" />` 自闭合格式。
-  - 更新 `package.json` 版本到 `1.6.2`。
-  - 更新 `docs/WORKFLOW.md`：版本号改为 v1.6.2，托管平台从 Vercel 更正为 Cloudflare Pages。
-  - 补全 `docs/CHANGELOG.md`：补充 v1.5.118 之后版本管理方案切换的说明记录。
-  - 说明：v1.5.119 ~ v1.6.1 期间有多轮迭代（文件结构调整、CDN 迁移、视频加载优化、PDF 双按钮等），但当时未同步写入 CHANGELOG，现以 v1.6.2 为统筹后的统一基线版本。
-- 检查：`npm run check` 通过，静态检查输出 `Site check passed (14 html files, v1.6.2)`。
 - 部署：未部署。
 
 ## v1.5.118 - 2026-07-02
