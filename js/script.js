@@ -704,8 +704,7 @@ function setupNewsCarousel(root) {
     }
 
     window.requestAnimationFrame(() => {
-      const viewportRect = viewport.getBoundingClientRect();
-      const targetOffset = Math.round(viewportRect.width / 2 - (card.offsetLeft + card.offsetWidth / 2));
+      const targetOffset = Math.round(viewport.clientWidth / 2 - (card.offsetLeft + card.offsetWidth / 2));
       track.dataset.offset = String(targetOffset);
       track.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
       if (behavior === "auto") {
@@ -715,6 +714,7 @@ function setupNewsCarousel(root) {
       }
     });
   };
+
 
   const stopAuto = () => {
     window.clearInterval(timer);

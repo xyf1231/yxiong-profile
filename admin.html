@@ -22,52 +22,6 @@
     <title>后台管理 | 熊毅丰</title>
     <link rel="stylesheet" href="css/styles.css?v=v1.6.5" />
     <style>
-      /* ── 顶部实时状态栏 ── */
-      .admin-statusbar {
-        position: sticky;
-        top: 52px;
-        z-index: 40;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-        padding: 10px 24px;
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        background: rgba(0,0,0,0.65);
-        backdrop-filter: blur(16px) saturate(1.3);
-        -webkit-backdrop-filter: blur(16px) saturate(1.3);
-        font-size: 0.8rem;
-      }
-      .statusbar-left, .statusbar-right { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-      .status-pill {
-        display:inline-flex; align-items:center; gap:5px;
-        padding: 4px 10px;
-        border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.1);
-        background: rgba(255,255,255,0.04);
-        color: rgba(255,255,255,0.6);
-        font-weight: 650;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 0.76rem;
-        transition: all 0.2s ease;
-      }
-      .status-pill .dot {
-        width: 6px; height: 6px; border-radius: 50%; display:inline-block;
-        background: rgba(255,255,255,0.3);
-      }
-      .status-pill.version-pill { border-color: rgba(41,151,255,0.25); background: rgba(41,151,255,0.08); color: #2997FF; }
-      .status-pill.version-pill .dot { background: #2997FF; box-shadow: 0 0 5px rgba(41,151,255,0.5); }
-      .status-pill.git-pill.has-changes { border-color: rgba(255,159,10,0.25); background: rgba(255,159,10,0.08); color: #ff9f0a; }
-      .status-pill.git-pill.has-changes .dot { background: #ff9f0a; box-shadow: 0 0 5px rgba(255,159,10,0.5); }
-      .status-pill.preview-pill.running { border-color: rgba(48,209,88,0.25); background: rgba(48,209,88,0.08); color: #30d158; }
-      .status-pill.preview-pill.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.5); }
-      .status-pill.connection-pill.connected { border-color: rgba(48,209,88,0.2); background: rgba(48,209,88,0.06); color: rgba(220,255,230,0.8); }
-      .status-pill.connection-pill.connected .dot { background: #30d158; }
-      .status-pill.connection-pill.disconnected { border-color: rgba(255,69,58,0.2); background: rgba(255,69,58,0.06); color: rgba(255,180,170,0.8); }
-      .status-pill.connection-pill.disconnected .dot { background: #ff453a; }
-      .status-pill.clickable { cursor: pointer; }
-      .status-pill.clickable:hover { background: rgba(255,255,255,0.08); }
-
       /* ── 侧边栏分组 ── */
       .admin-sidebar { display: flex; flex-direction: column; gap: 6px; }
       .sidebar-group-label {
@@ -216,9 +170,71 @@
       .deploy-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display:inline-block; }
       .deploy-status-badge.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.4); }
 
-      /* 调整 shell 顶部间距，为状态栏留位置 */
-      .admin-shell { padding-top: 92px; }
-      @media (max-width: 860px) { .admin-shell { padding-top: 80px; } }
+      /* 左侧完整侧边栏样式 */
+      .admin-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        align-self: start;
+        padding: 18px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        background: rgba(0,0,0,0.45);
+        backdrop-filter: blur(20px) saturate(1.2);
+        -webkit-backdrop-filter: blur(20px) saturate(1.2);
+        border-right: 1px solid rgba(255,255,255,0.08);
+      }
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px 8px;
+      }
+      .sidebar-brand {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        display: grid; place-items: center;
+        color: #fff; font-weight: 800; font-size: 0.85rem;
+        text-decoration: none; transition: all 0.2s ease;
+      }
+      .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
+      .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
+      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+      .sidebar-footer {
+        padding: 10px 6px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .sidebar-status-pill {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 0.72rem; color: rgba(255,255,255,0.45);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-weight: 600;
+        cursor: default;
+      }
+      .sidebar-status-pill .dot {
+        width: 5px; height: 5px; border-radius: 50%; display: inline-block;
+        background: rgba(255,255,255,0.3);
+      }
+      .sidebar-status-pill.version-pill .dot { background: #2997FF; box-shadow: 0 0 4px rgba(41,151,255,0.4); }
+      .sidebar-status-pill.version-pill { color: rgba(41,151,255,0.8); }
+      .sidebar-status-pill.git-pill.has-changes .dot { background: #ff9f0a; box-shadow: 0 0 4px rgba(255,159,10,0.4); }
+      .sidebar-status-pill.git-pill.has-changes { color: rgba(255,159,10,0.8); }
+      .sidebar-status-pill.preview-pill.running .dot { background: #30d158; box-shadow: 0 0 4px rgba(48,209,88,0.4); }
+      .sidebar-status-pill.preview-pill.running { color: rgba(48,209,88,0.8); }
+      .sidebar-status-pill.connection-pill.connected .dot { background: #30d158; }
+      .sidebar-status-pill.connection-pill.connected { color: rgba(220,255,230,0.7); }
+      .sidebar-status-pill.connection-pill.disconnected .dot { background: #ff453a; }
+      .sidebar-status-pill.connection-pill.disconnected { color: rgba(255,180,170,0.7); }
+      .sidebar-status-pill.git-pill { cursor: pointer; transition: color 0.2s ease; }
+      .sidebar-status-pill.git-pill:hover { color: rgba(255,255,255,0.7); }
+
+      /* 调整 shell 顶部间距 */
+      .admin-shell { padding-top: 0; }
 
       /* 增强条目列表交互 */
       .managed-item { cursor: default; }
@@ -235,78 +251,60 @@
 
       /* 移动端 */
       @media (max-width: 860px) {
-        .admin-statusbar { padding: 8px 14px; top: 48px; font-size: 0.72rem; }
-        .status-pill { padding: 3px 8px; }
         .admin-grid { grid-template-columns: 1fr; }
-        .admin-tabs { position: static; }
+        .admin-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 8px; }
+        .sidebar-header { width: 100%; padding: 0 0 4px; }
+        .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .sidebar-group { flex: 1; min-width: 140px; }
+        .sidebar-footer { width: 100%; border-top: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
         .deploy-dashboard-grid { grid-template-columns: 1fr; }
         .deploy-link-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body class="admin-body">
-    <header class="site-header" data-elevated="false">
-      <a href="index.html" class="nav-brand" aria-label="首页">YX</a>
-      <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">
-        <span class="nav-menu-line"></span>
-        <span class="nav-menu-line"></span>
-      </button>
-      <nav class="nav-links" id="site-nav" aria-label="主导航">
-        <div class="nav-desktop-items">
-          <a href="index.html" data-nav="home">主页</a>
-          <a href="profile.html" data-nav="profile">简介</a>
-          <a href="results.html" data-nav="results">成果</a>
-          <a href="honors.html" data-nav="honors">荣誉</a>
-          <a href="conferences.html" data-nav="conferences">其他</a>
-        </div>
-        <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
-          <span></span><span></span>
-        </button>
-        <div class="nav-cards nav-cards-five">
-          <div class="nav-card" style="--delay:0.03s"><div class="nav-card-links"><a href="index.html" data-nav="home" class="nav-major-link">主页 <span class="nav-card-arrow">↗</span></a></div></div>
-          <div class="nav-card" style="--delay:0.06s"><div class="nav-card-links"><a href="profile.html" data-nav="profile" class="nav-major-link">简介 <span class="nav-card-arrow">↗</span></a></div></div>
-          <div class="nav-card" style="--delay:0.09s"><div class="nav-card-links"><a href="results.html" data-nav="results" class="nav-major-link">成果 <span class="nav-card-arrow">↗</span></a><a href="results.html#papers" class="nav-sub-link">论文 <span class="nav-card-arrow">↗</span></a><a href="results.html#patents" class="nav-sub-link">专利 <span class="nav-card-arrow">↗</span></a><a href="results.html#projects" class="nav-sub-link">项目 <span class="nav-card-arrow">↗</span></a></div></div>
-          <div class="nav-card" style="--delay:0.12s"><div class="nav-card-links nav-card-links-activity"><a href="honors.html" data-nav="honors" class="nav-major-link">荣誉 <span class="nav-card-arrow">↗</span></a><a href="honors.html#awards" class="nav-sub-link">奖励 <span class="nav-card-arrow">↗</span></a><a href="honors.html#innovation" class="nav-sub-link">创新创业 <span class="nav-card-arrow">↗</span></a></div></div>
-          <div class="nav-card" style="--delay:0.15s"><div class="nav-card-links nav-card-links-activity"><a href="conferences.html" data-nav="conferences" class="nav-major-link">其他 <span class="nav-card-arrow">↗</span></a><a href="conferences.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a><a href="conferences.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a><a href="conferences.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a></div></div>
-        </div>
-      </nav>
-    </header>
-
-    <!-- 实时状态栏 -->
-    <div class="admin-statusbar" id="admin-statusbar">
-      <div class="statusbar-left">
-        <span class="status-pill version-pill" id="sb-version" title="当前版本号"><span class="dot"></span>--</span>
-        <span class="status-pill git-pill" id="sb-git" title="点击刷新 Git 状态"><span class="dot"></span>Git --</span>
-        <span class="status-pill preview-pill" id="sb-preview"><span class="dot"></span>预览 --</span>
-      </div>
-      <div class="statusbar-right">
+    <div class="statusbar-right">
         <span class="status-pill connection-pill" id="sb-connection"><span class="dot"></span>连接中…</span>
       </div>
     </div>
 
     <main class="admin-shell">
-      <!-- 左侧边栏 -->
-      <aside class="admin-tabs admin-sidebar" aria-label="管理导航">
-        <div class="sidebar-group">
-          <div class="sidebar-group-label">内容管理</div>
-          <div class="sidebar-group" id="cms-tabs">
-            <button class="tab-button" data-tab="profile" aria-selected="true" type="button">基本资料</button>
-            <button class="tab-button" data-tab="research" type="button">研究内容</button>
-            <button class="tab-button" data-tab="news" type="button">新闻</button>
-            <button class="tab-button" data-tab="newsDetails" type="button">新闻详情</button>
-            <button class="tab-button" data-tab="publications" type="button">论文</button>
-            <button class="tab-button" data-tab="allPublications" type="button">全部论文</button>
-            <button class="tab-button" data-tab="projects" type="button">项目</button>
-            <button class="tab-button" data-tab="achievements" type="button">成果</button>
-            <button class="tab-button" data-tab="experience" type="button">经历</button>
-            <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
-          </div>
+      <!-- 左侧完整侧边栏 -->
+      <aside class="admin-sidebar" aria-label="管理导航">
+        <div class="sidebar-header">
+          <a href="index.html" class="sidebar-brand" title="返回首页">YX</a>
+          <div class="sidebar-title">后台管理</div>
         </div>
-        <div class="sidebar-group">
-          <div class="sidebar-group-label">发布工具</div>
+
+        <nav class="sidebar-nav">
           <div class="sidebar-group">
-            <button class="tab-button" data-tab="deploy" type="button">🚀 发布仪表盘</button>
+            <div class="sidebar-group-label">内容管理</div>
+            <div class="sidebar-group" id="cms-tabs">
+              <button class="tab-button" data-tab="profile" aria-selected="true" type="button">基本资料</button>
+              <button class="tab-button" data-tab="research" type="button">研究内容</button>
+              <button class="tab-button" data-tab="news" type="button">新闻</button>
+              <button class="tab-button" data-tab="newsDetails" type="button">新闻详情</button>
+              <button class="tab-button" data-tab="publications" type="button">论文</button>
+              <button class="tab-button" data-tab="allPublications" type="button">全部论文</button>
+              <button class="tab-button" data-tab="projects" type="button">项目</button>
+              <button class="tab-button" data-tab="achievements" type="button">成果</button>
+              <button class="tab-button" data-tab="experience" type="button">经历</button>
+              <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
+            </div>
           </div>
+          <div class="sidebar-group">
+            <div class="sidebar-group-label">发布工具</div>
+            <div class="sidebar-group">
+              <button class="tab-button" data-tab="deploy" type="button">🚀 发布仪表盘</button>
+            </div>
+          </div>
+        </nav>
+
+        <div class="sidebar-footer">
+          <div class="sidebar-status-pill version-pill" id="sb-version"><span class="dot"></span>--</div>
+          <div class="sidebar-status-pill git-pill" id="sb-git" title="点击刷新 Git 状态"><span class="dot"></span>Git --</div>
+          <div class="sidebar-status-pill preview-pill" id="sb-preview"><span class="dot"></span>预览 --</div>
+          <div class="sidebar-status-pill connection-pill" id="sb-connection"><span class="dot"></span>连接中…</div>
         </div>
       </aside>
 
