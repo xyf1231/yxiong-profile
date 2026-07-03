@@ -1129,14 +1129,23 @@ h3 {
   position: relative;
   overflow: visible;
   display: grid;
-  grid-template-columns: minmax(210px, 0.42fr) minmax(360px, 0.9fr) minmax(360px, 1fr);
+  grid-template-columns: minmax(240px, 0.48fr) minmax(320px, 0.8fr) minmax(360px, 1fr);
   gap: clamp(28px, 4vw, 58px);
   align-items: center;
   width: min(100% - 56px, 1440px);
   margin-top: 116px;
   padding: clamp(30px, 4.4vw, 64px);
-  border: 1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(20, 20, 30, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
 }
 
 .profile-identity,
@@ -7694,17 +7703,17 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 .profile-timeline .timeline li {
   min-height: 170px;
   padding: clamp(24px, 2.2vw, 32px) clamp(26px, 2.4vw, 36px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: clamp(30px, 3vw, 40px);
   background:
-    radial-gradient(circle at 14% 14%, rgba(255, 255, 255, 0.12), transparent 26%),
-    radial-gradient(circle at 88% 10%, rgba(100, 210, 255, 0.1), transparent 22%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.03)),
-    rgba(16, 18, 24, 0.86);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(20, 20, 30, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: clamp(30px, 3vw, 40px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.03),
-    0 20px 48px rgba(0, 0, 0, 0.26);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 40px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
   transition:
     transform 240ms var(--ease-apple),
     border-color 240ms var(--ease-apple),
@@ -7717,14 +7726,13 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   transform: translateX(6px) translateY(-2px) scale(1.01);
   border-color: rgba(100, 210, 255, 0.34);
   background:
-    radial-gradient(circle at 14% 14%, rgba(255, 255, 255, 0.13), transparent 28%),
-    radial-gradient(circle at 88% 10%, rgba(100, 210, 255, 0.13), transparent 24%),
-    linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)),
-    rgba(19, 23, 30, 0.94);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(20, 20, 30, 0.4);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.18),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
-    0 26px 64px rgba(0, 0, 0, 0.34);
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 20px 48px rgba(0, 0, 0, 0.35);
+}
 }
 
 .profile-timeline .timeline .item-index {
@@ -8401,7 +8409,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 
 .section-wrap#research .feature-card:hover,
 .section-wrap#research .feature-card:focus-within {
-  transform: translateY(-4px) scale(1.006) !important;
+  transform: none !important;
   border-color: rgba(100, 210, 255, 0.32) !important;
   background:
     radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.09), transparent 32%),
