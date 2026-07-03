@@ -60,7 +60,7 @@ try {
 
 const translations = {
   zh: {
-    profile: "简介",
+    profile: "个人简介",
     publications: "论文",
     patents: "专利",
     projects: "项目",
@@ -78,7 +78,7 @@ const translations = {
     experienceKicker: "Education and Works",
     selectedWorkKicker: "Selected Work",
     appointmentsKicker: "Academic Participation",
-    quickProfileTitle: "简介",
+    quickProfileTitle: "个人简介",
     quickProfileText: "个人简介、研究内容与代表论文",
     quickResultsTitle: "成果",
     quickResultsText: "论文、专利与项目",
