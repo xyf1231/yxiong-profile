@@ -6352,7 +6352,7 @@ body.nav-mega-open::after {
 @media (max-width: 860px) {
   .profile-combo {
     display: grid;
-    width: min(100% - 24px, 560px) !important;
+    width: min(100% - 40px, 560px) !important;
     padding: 28px 22px 26px !important;
     gap: 16px !important;
     justify-items: center;
