@@ -15,11 +15,12 @@ while true; do
   echo "  1. 推送到 GitHub（更新 jsDelivr CDN，触发 Cloudflare Pages 自动部署）"
   echo "  2. 打开 Cloudflare Pages 预览地址"
   echo "  3. 打开正式域名"
-  echo "  4. 退出"
+  echo "  4. 本地预览（启动 http://localhost:3000）"
+  echo "  5. 退出"
   echo "========================================"
   echo
 
-  read -r "?请选择操作 [1/2/3/4]: " choice
+  read -r "?请选择操作 [1/2/3/4/5]: " choice
   echo
 
   case "${choice:l}" in
@@ -87,12 +88,41 @@ while true; do
       ;;
 
     4)
+      echo "---------- 本地预览 ----------"
+      echo "正在启动本地服务器..."
+      echo
+
+      # 检查 npx 是否可用
+      if ! command -v npx > /dev/null 2>&1; then
+        echo "❌ 未找到 npx，请先安装 Node.js"
+        echo
+        continue
+      fi
+
+      # 后台启动 serve
+      npx serve . -l 3000 &
+      SERVE_PID=$!
+
+      sleep 2
+      open "http://localhost:3000"
+      echo "✅ 已打开 http://localhost:3000"
+      echo "   按回车键关闭本地服务器..."
+      echo
+      read -r ""
+
+      # 关闭 serve 进程
+      kill $SERVE_PID 2>/dev/null || true
+      echo "本地服务器已关闭。"
+      echo
+      ;;
+
+    5)
       echo "已退出。"
       exit 0
       ;;
 
     *)
-      echo "请输入 1、2、3 或 4。"
+      echo "请输入 1、2、3、4 或 5。"
       echo
       ;;
   esac

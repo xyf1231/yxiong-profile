@@ -2315,10 +2315,68 @@ function revealOnView() {
   });
 }
 
+/* ── Card scroll animations: right-to-left fade in / out ── */
+function setupCardScrollAnimations() {
+  const selectors = [
+    ".feature-card",
+    ".project-card",
+    ".publication-item",
+    ".profile-publication-item",
+    ".detail-item",
+    ".achievement-item",
+    ".profile-timeline .timeline li",
+    ".news-article-card",
+    ".news-info-card",
+    ".home-bento-card",
+    ".contact-form-field",
+    ".metric-row > div",
+    ".profile-combo",
+    ".home-frame-item",
+  ];
+
+  const items = document.querySelectorAll(selectors.join(", "));
+  if (!items.length) return;
+
+  // Remove old .reveal class from cards to avoid conflicting animations
+  items.forEach((item) => {
+    item.classList.remove("reveal");
+    item.classList.add("card-scroll-anim");
+  });
+
+  if (!("IntersectionObserver" in window)) {
+    items.forEach((item) => item.classList.add("is-visible"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        const el = entry.target;
+        if (entry.isIntersecting) {
+          el.classList.remove("is-exited");
+          el.classList.add("is-visible");
+        } else {
+          if (el.classList.contains("is-visible")) {
+            el.classList.remove("is-visible");
+            el.classList.add("is-exited");
+          }
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "-40px 0px -40px 0px" },
+  );
+
+  items.forEach((item, index) => {
+    item.style.setProperty("--scroll-delay", `${Math.min(index * 60, 400)}ms`);
+    observer.observe(item);
+  });
+}
+
 async function initSite() {
   renderSite();
   setupHomeFrameSequence();
   revealOnView();
+  setupCardScrollAnimations();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }

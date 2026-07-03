@@ -13,7 +13,6 @@ const requiredFiles = [
   "css/styles.css",
   "js/script.js",
   "js/data.js",
-  "vercel.json",
 ];
 
 const errors = [];
@@ -32,7 +31,7 @@ for (const file of htmlFiles) {
   for (const match of content.matchAll(/\?v=([^"']+)/g)) versions.add(match[1]);
   for (const match of content.matchAll(/Version (\d+\.\d+\.\d+)/g)) footerVersions.add(match[1]);
 
-  if (!content.includes('<meta charset="utf-8"')) {
+  if (!content.includes('<meta charset="utf-8">')) {
     warnings.push(`${file}: missing explicit utf-8 meta tag`);
   }
   if (content.includes("data.js") && !content.includes('charset="utf-8"')) {
@@ -53,10 +52,12 @@ if (fs.existsSync(dataPath)) {
 }
 
 try {
-  const vercel = JSON.parse(fs.readFileSync(path.join(root, "vercel.json"), "utf8"));
-  if (!Array.isArray(vercel.headers)) warnings.push("vercel.json has no headers array");
+  const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+  if (pkg.version !== [...footerVersions][0]) {
+    warnings.push(`package.json version (${pkg.version}) does not match footer version (${[...footerVersions][0]})`);
+  }
 } catch (error) {
-  errors.push(`vercel.json is not valid JSON: ${error.message}`);
+  warnings.push(`package.json check skipped: ${error.message}`);
 }
 
 if (warnings.length) {
