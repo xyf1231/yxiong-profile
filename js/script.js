@@ -1226,7 +1226,7 @@ function renderExperience(items) {
   target.innerHTML = items
     .map(
       (item, index) => `
-        <li class="reveal">
+        <li class="reveal glass-surface">
           <span class="item-index">${String(index + 1).padStart(2, "0")}</span>
           <div>
             <time>${escapeHtml(localizeText(item.period))}</time>
