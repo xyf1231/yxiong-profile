@@ -60,13 +60,13 @@ try {
 
 const translations = {
   zh: {
-    profile: "个人简介",
+    profile: "简介",
     publications: "论文",
     patents: "专利",
     projects: "项目",
     achievements: "成果荣誉",
     awards: "奖励",
-    conferences: "学术活动",
+    conferences: "其他",
     experience: "学术经历",
     contact: "联系方式",
     admin: "后台",
@@ -147,7 +147,7 @@ const translations = {
     projects: "Projects",
     achievements: "Achievements",
     awards: "Awards",
-    conferences: "Activities",
+    conferences: "Others",
     experience: "Experience",
     contact: "Contact",
     admin: "Admin",
@@ -1805,19 +1805,19 @@ function buildGlowVars(glowColor = "195 90 70", intensity = 1) {
 function setupBorderGlow() {
   if (isCompactNav()) return;
   const cards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo",
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner",
   );
   cards.forEach((card, index) => {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
     card.classList.add("border-glow-card");
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
-    card.style.setProperty("--edge-sensitivity", "26");
+    card.style.setProperty("--edge-sensitivity", "28");
     card.style.setProperty("--border-radius", window.getComputedStyle(card).borderRadius || "18px");
-    card.style.setProperty("--glow-padding", "34px");
-    card.style.setProperty("--cone-spread", "24");
-    card.style.setProperty("--fill-opacity", "0.35");
-    Object.entries(buildGlowVars(index % 2 ? "190 96 68" : "205 98 72", 0.92)).forEach(([key, value]) => {
+    card.style.setProperty("--glow-padding", "28px");
+    card.style.setProperty("--cone-spread", "22");
+    card.style.setProperty("--fill-opacity", "0.32");
+    Object.entries(buildGlowVars("195 90 70", 1.0)).forEach(([key, value]) => {
       card.style.setProperty(key, value);
     });
     if (!card.querySelector(":scope > .edge-light")) {
