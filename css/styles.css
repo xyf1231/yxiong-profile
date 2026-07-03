@@ -1213,17 +1213,26 @@ html[lang="en"] .profile-bio-text {
 
 .profile-photo {
   overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
 }
 
 .profile-photo img {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  object-fit: cover;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
   will-change: transform;
 }
 
@@ -6003,10 +6012,40 @@ body.nav-mega-open::after {
   padding: clamp(26px, 3.5vw, 48px) !important;
   gap: clamp(26px, 3.4vw, 52px) !important;
   border-radius: 30px !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.08), transparent 28%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.026)),
+    rgba(16, 18, 24, 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 54px rgba(0, 0, 0, 0.28) !important;
 }
 
 .profile-photo {
   max-width: 310px;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  will-change: transform;
 }
 
 .profile-identity h1 {
@@ -7786,14 +7825,15 @@ main > .profile-combo.section-wrap:first-child {
 
 main > .profile-combo.section-wrap:first-child .profile-photo {
   width: min(100%, 320px);
+  aspect-ratio: 1 / 1;
   justify-self: start;
   align-self: start;
 }
 
 main > .profile-combo.section-wrap:first-child .profile-photo img {
   width: 100%;
-  height: auto;
-  aspect-ratio: auto;
+  height: 100%;
+  aspect-ratio: 1 / 1;
   object-fit: contain;
   object-position: center center;
 }
@@ -8241,6 +8281,35 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
   max-width: min(100% - 40px, var(--profile-wide-width)) !important;
   margin: 0 auto clamp(28px, 4vw, 48px) !important;
   padding: 0 !important;
+}
+
+
+.profile-combo,
+.profile-section#research .feature-card,
+.profile-publication-item,
+.detail-item,
+.timeline li,
+.profile-photo {
+  border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.08), transparent 28%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.026)),
+    rgba(16, 18, 24, 0.72) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 18px 54px rgba(0, 0, 0, 0.28) !important;
+}
+
+.profile-combo:hover,
+.profile-section#research .feature-card:hover,
+.profile-publication-item:hover,
+.detail-item:hover,
+.timeline li:hover,
+.profile-photo:hover {
+  border-color: rgba(100, 210, 255, 0.28) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 22px 62px rgba(0, 0, 0, 0.34) !important;
 }
 
 .profile-section#research .feature-grid {
@@ -8941,6 +9010,20 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(255, 255, 255, 0.05),
     0 22px 54px rgba(0, 0, 0, 0.28);
+}
+
+
+.home-frame-media-link {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  border-radius: inherit;
+  cursor: pointer;
+}
+
+.home-frame-media-link:focus-visible {
+  outline: 2px solid rgba(100, 210, 255, 0.55);
+  outline-offset: 4px;
 }
 
 .home-frame-video {
