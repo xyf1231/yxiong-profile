@@ -336,6 +336,15 @@
         opacity: 0.8;
       }
 
+      .deploy-log-entry.link {
+        color: var(--deploy-accent);
+      }
+
+      .deploy-log-entry.link a {
+        color: var(--deploy-accent);
+        text-decoration: underline;
+      }
+
       .deploy-spinner {
         display: inline-block;
         width: 14px;
@@ -434,6 +443,36 @@
         background: var(--deploy-success);
         box-shadow: 0 0 6px rgba(48, 209, 88, 0.5);
       }
+
+      .deploy-divider {
+        height: 1px;
+        background: var(--deploy-border);
+        margin: 12px 0;
+      }
+
+      .deploy-checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 12px 0;
+        font-size: 0.82rem;
+        color: var(--deploy-muted);
+        cursor: pointer;
+      }
+
+      .deploy-checkbox-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        accent-color: var(--deploy-accent);
+        cursor: pointer;
+      }
+
+      .deploy-result-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
     </style>
   </head>
   <body class="deploy-body">
@@ -444,6 +483,24 @@
       </header>
 
       <div class="deploy-grid">
+        <!-- 一键发布 -->
+        <div class="deploy-card full-width" style="background: linear-gradient(135deg, rgba(41,151,255,0.08) 0%, rgba(48,209,88,0.05) 100%);">
+          <div class="deploy-card-header">
+            <div class="deploy-card-icon">🚀</div>
+            <h2 class="deploy-card-title">一键发布</h2>
+          </div>
+          <p class="deploy-card-desc">自动执行：更新版本号 → 运行 bump-version.sh → 推送到 GitHub → 触发 Cloudflare Pages 部署。</p>
+          <div class="deploy-btn-row">
+            <button class="deploy-btn primary" id="btn-one-click" style="height:44px;padding:0 24px;font-size:0.9rem;">
+              <span id="one-click-spinner" class="deploy-spinner" style="display:none"></span>
+              <span id="one-click-text">一键发布到线上</span>
+            </button>
+            <span style="color:var(--deploy-muted);font-size:0.78rem;align-self:center">
+              自动执行: 版本号 patch+1 → bump → git push
+            </span>
+          </div>
+        </div>
+
         <!-- 版本号管理 -->
         <div class="deploy-card">
           <div class="deploy-card-header">
@@ -459,6 +516,10 @@
           <div class="deploy-version-input" id="manual-version-row" style="display:none">
             <input type="text" id="manual-version" placeholder="例如: v1.7.0" maxlength="12" />
             <button class="deploy-btn primary" id="btn-set-version">设置</button>
+          </div>
+          <div class="deploy-checkbox-row" id="auto-bump-checkbox-row">
+            <input type="checkbox" id="auto-bump" checked />
+            <label for="auto-bump">更新后自动运行 bump-version.sh</label>
           </div>
           <div class="deploy-btn-row" style="margin-top:12px">
             <button class="deploy-btn primary" id="btn-update-version">
@@ -490,8 +551,8 @@
         <!-- 发布操作 -->
         <div class="deploy-card full-width">
           <div class="deploy-card-header">
-            <div class="deploy-card-icon">🚀</div>
-            <h2 class="deploy-card-title">发布到线上</h2>
+            <div class="deploy-card-icon">📤</div>
+            <h2 class="deploy-card-title">推送到 GitHub</h2>
           </div>
           <p class="deploy-card-desc">执行 git add → commit → push，触发 Cloudflare Pages 自动部署。</p>
           <div class="deploy-btn-row">
@@ -502,6 +563,10 @@
             <span style="color:var(--deploy-muted);font-size:0.78rem;margin-left:4px;align-self:center">
               自动执行: git add -A → git commit → git push origin main
             </span>
+          </div>
+          <div class="deploy-result-links" id="deploy-result-links" style="display:none">
+            <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 打开正式域名</a>
+            <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ 打开 Pages 预览</a>
           </div>
         </div>
 
@@ -530,7 +595,7 @@
             <div class="deploy-card-icon">💻</div>
             <h2 class="deploy-card-title">本地预览</h2>
           </div>
-          <p class="deploy-card-desc">在浏览器中启动本地 HTTP 服务器预览网站。</p>
+          <p class="deploy-card-desc">在浏览器中启动本地 HTTP 服务器预览网站。启动后自动打开浏览器。</p>
           <div class="deploy-btn-row">
             <button class="deploy-btn primary" id="btn-preview-start">
               <span id="preview-spinner" class="deploy-spinner" style="display:none"></span>

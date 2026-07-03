@@ -111,10 +111,10 @@ a {
   z-index: 20;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   gap: 28px;
   height: 68px;
-  padding: 0 clamp(20px, 4vw, 48px);
+  padding: 0 max(20px, calc((100vw - var(--max)) / 2));
   border-bottom: 1px solid transparent;
   backdrop-filter: blur(24px) saturate(1.4);
   -webkit-backdrop-filter: blur(24px) saturate(1.4);
@@ -291,7 +291,7 @@ a {
 }
 
 .nav-brand {
-  display: none;
+  display: grid;
   align-items: center;
   justify-content: center;
   width: 40px;
@@ -1255,7 +1255,31 @@ html[lang="en"] .profile-bio-text {
     0 18px 50px rgba(0, 0, 0, 0.28);
 }
 
+.profile-photo {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
 .profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: inherit;
+  will-change: transform;
+}
   display: block;
   width: 100%;
   height: 100%;
@@ -4872,7 +4896,31 @@ body.nav-mega-open::after {
   .news-card-image img,
   .publication-visual img,
   .project-visual img,
-  .profile-photo img {
+  .profile-photo {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: inherit;
+  will-change: transform;
+}
     filter: saturate(1.04) contrast(1.02) brightness(1.02) !important;
     transform: none !important;
     transition: none !important;
@@ -6010,7 +6058,31 @@ body.nav-mega-open::after {
     0 18px 50px rgba(0, 0, 0, 0.28);
 }
 
+.profile-photo {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
 .profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: inherit;
+  will-change: transform;
+}
   display: block;
   width: 100%;
   height: 100%;
@@ -7646,7 +7718,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
     left: 18px !important;
     right: auto !important;
   }
-  .home-bento-grid { grid-template-columns: 1fr 1fr; gap: 12px; padding-inline: 16px; }
+  .home-bento-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
   .home-bento-card, .home-bento-card-large, .home-bento-card-wide { grid-column: auto; min-height: 150px; border-radius: clamp(18px, 2vw, 24px); --border-radius: clamp(18px, 2vw, 24px); padding: 20px; }
   .home-bento-card.home-bento-card-large { grid-column: span 2; min-height: 170px; }
   .home-bento-card span { font-size: .78rem; }
@@ -7765,7 +7837,31 @@ main > .profile-combo.section-wrap:first-child .profile-photo {
   align-self: start;
 }
 
-main > .profile-combo.section-wrap:first-child .profile-photo img {
+main > .profile-combo.section-wrap:first-child .profile-photo {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: inherit;
+  will-change: transform;
+}
   width: 100%;
   height: 100%;
   aspect-ratio: 1 / 1;
@@ -7837,7 +7933,31 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
     justify-self: auto !important;
   }
 
-  main > .profile-combo.section-wrap:first-child .profile-photo img {
+  main > .profile-combo.section-wrap:first-child .profile-photo {
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: clamp(24px, 2.4vw, 32px);
+  aspect-ratio: 1 / 1;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.08), transparent 30%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.065), rgba(255, 255, 255, 0.022)),
+    rgba(16, 18, 24, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.profile-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  object-position: center center;
+  border-radius: inherit;
+  will-change: transform;
+}
     width: 100%;
     height: auto;
     aspect-ratio: auto;
@@ -7879,7 +7999,6 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 /* v1.5.63: robust mobile carousel centering and cleaner stacked sections */
 .news-section .section-heading,
 .home-bento-nav .section-heading {
-  padding-inline: clamp(20px, 4vw, 64px);
 }
 
 .home-dark .news-section .section-heading h2,
@@ -7897,7 +8016,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .news-carousel-track::before,
 .news-carousel-track::after {
   content: "";
-  flex: 0 0 max(42px, calc((100vw - min(76vw, 1120px)) / 2));
+  flex: 0 0 0;
 }
 
 @media (max-width: 860px) {
@@ -7908,7 +8027,6 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 
   .home-dark .news-section .section-heading,
   .home-dark .home-bento-nav .section-heading {
-    padding-inline: 20px;
     margin-bottom: clamp(24px, 3.6vw, 32px) !important;
   }
 
@@ -7944,7 +8062,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 
   .news-carousel-track::before,
   .news-carousel-track::after {
-    flex-basis: calc((100vw - min(82vw, 380px)) / 2);
+    flex-basis: 0;
   }
 
   .news-card {
@@ -8917,7 +9035,7 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
 
 .home-frame-media {
   position: relative;
-  width: min(100% - 40px, var(--max));
+  width: 100%;
   margin-inline: auto;
   overflow: hidden;
   padding: 0;

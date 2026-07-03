@@ -599,7 +599,7 @@ function renderResearch(items) {
     .map((item, index) => {
       const image = withAssetCacheBuster(item.image || fallbackImages[index % fallbackImages.length]);
       return `
-        <article class="feature-card reveal">
+        <article class="feature-card">
           <div class="feature-card-image" aria-hidden="true">
             <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
             <img src="${escapeHtml(image)}" alt="" loading="lazy">
@@ -629,7 +629,7 @@ function renderNews(items) {
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
       return `
-        <a class="news-card reveal" href="${escapeHtml(href)}" data-news-slide="${index}" data-title-size="${titleSize}">
+        <a class="news-card" href="${escapeHtml(href)}" data-news-slide="${index}" data-title-size="${titleSize}">
           ${image}
           <div class="news-card-body">
             <time>${escapeHtml(item.date || "")}</time>
@@ -1099,7 +1099,7 @@ function renderPublications(items) {
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="publication-item reveal">
+        <article class="publication-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1135,7 +1135,7 @@ function renderProfilePublications(items) {
         ? `<div class="publication-visual profile-publication-visual">${pictureTag(item.image, item.title)}</div>`
         : `<div class="publication-visual profile-publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="profile-publication-item reveal">
+        <article class="profile-publication-item">
           <span>${String(index + 1).padStart(2, "0")}</span>
           ${image}
           <div>
@@ -1164,7 +1164,7 @@ function renderAllPublications(items) {
       const venue = item.venue;
       const date = (item.date || item.year || "").toString().slice(0, 4);
       return `
-        <article class="reveal">
+        <article class="">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
             <h3>${escapeHtml(title)}</h3>
@@ -1205,7 +1205,7 @@ function renderProjects(items) {
       const title = localizeText(item.title);
       const text = localizeText(item.text);
       return `
-        <article class="detail-item reveal">
+        <article class="detail-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
             <h3>${item.url ? `<a href="${escapeHtml(item.url)}">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
@@ -1223,7 +1223,7 @@ function renderAchievements(items) {
   target.innerHTML = items
     .map(
       (item, index) => `
-        <article class="achievement-item reveal">
+        <article class="achievement-item">
           <span class="item-index">${String(index + 1).padStart(2, "0")}</span>
           <div>
             <div class="achievement-meta">
@@ -1247,7 +1247,7 @@ function renderDetailLists(items) {
       target.innerHTML = filtered
       .map(
         (item, index) => `
-          <article class="detail-item reveal">
+          <article class="detail-item">
             <time>${String(index + 1).padStart(2, "0")}</time>
             <div>
               <p class="detail-type">${escapeHtml([localizeText(item.type), localizeText(item.year)].filter(Boolean).join(" · "))}</p>
@@ -1268,7 +1268,7 @@ function renderExperience(items) {
   target.innerHTML = items
     .map(
       (item, index) => `
-        <li class="reveal glass-surface">
+        <li class="glass-surface">
           <span class="item-index">${String(index + 1).padStart(2, "0")}</span>
           <div>
             <time>${escapeHtml(localizeText(item.period))}</time>

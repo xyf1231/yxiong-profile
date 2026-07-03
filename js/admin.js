@@ -1,4 +1,14 @@
+/**
+ * xyfoptics 后台管理 — 内容管理 + 发布工具
+ * 统一入口，实时状态，一键发布
+ */
+
 const STORAGE_KEY = "academicSiteData";
+const USE_LOCAL_ADMIN_SERVER = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port === "8787";
+
+// ═══════════════════════════════════════════════════════════════
+//  模式定义
+// ═══════════════════════════════════════════════════════════════
 
 const schemas = {
   profile: {
@@ -86,24 +96,50 @@ const schemas = {
   contacts: { title: "联系方式", fields: [["label", "标签"], ["value", "显示文本"], ["url", "链接"]] },
 };
 
+// ═══════════════════════════════════════════════════════════════
+//  状态
+// ═══════════════════════════════════════════════════════════════
+
 let data = loadData();
 let activeTab = "profile";
 let editingIndex = 0;
 let siteDirectoryHandle = null;
 let draggedIndex = null;
+let savedRichTextSelection = null;
+
+// 发布工具状态
+let deployState = {
+  versionStrategy: "patch",
+  isDeploying: false,
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  DOM 引用
+// ═══════════════════════════════════════════════════════════════
 
 const form = document.querySelector("#content-form");
 const list = document.querySelector("#item-list");
 const addButton = document.querySelector("#add-item");
 const jsonBuffer = document.querySelector("#json-buffer");
 const folderStatus = document.querySelector("#folder-status");
-let savedRichTextSelection = null;
-const USE_LOCAL_ADMIN_SERVER = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port === "8787";
+const localStatus = document.querySelector("#local-status") || folderStatus;
+const storageList = document.querySelector("#storage-list");
+const storageBucket = document.querySelector("#storage-bucket");
+const storagePath = document.querySelector("#storage-path");
+const storageFile = document.querySelector("#storage-file");
 
+// 发布工具 DOM
+const deployLogEl = document.querySelector("#deploy-log");
+const sbVersion = document.querySelector("#sb-version");
+const sbGit = document.querySelector("#sb-git");
+const sbPreview = document.querySelector("#sb-preview");
+const sbConnection = document.querySelector("#sb-connection");
 
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
+// ═══════════════════════════════════════════════════════════════
+//  工具函数
+// ═══════════════════════════════════════════════════════════════
+
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
 
 function mergeWithDefaultData(source) {
   const base = clone(window.DEFAULT_SITE_DATA);
@@ -111,9 +147,7 @@ function mergeWithDefaultData(source) {
   merged.profile = { ...base.profile, ...(source.profile || {}) };
   Object.keys(base).forEach((key) => {
     if (Array.isArray(base[key])) {
-      if (!Array.isArray(merged[key]) || merged[key].length === 0) {
-        merged[key] = base[key];
-      }
+      if (!Array.isArray(merged[key]) || merged[key].length === 0) merged[key] = base[key];
     }
   });
   return merged;
@@ -125,9 +159,7 @@ function loadData() {
   try {
     const parsed = JSON.parse(saved);
     return parsed.version === window.DEFAULT_SITE_DATA.version ? mergeWithDefaultData(parsed) : clone(window.DEFAULT_SITE_DATA);
-  } catch {
-    return clone(window.DEFAULT_SITE_DATA);
-  }
+  } catch { return clone(window.DEFAULT_SITE_DATA); }
 }
 
 function persist() {
@@ -135,68 +167,12 @@ function persist() {
   jsonBuffer.value = JSON.stringify(data, null, 2);
 }
 
-async function writeDataJsToSiteFolder() {
-  if (!siteDirectoryHandle) return false;
-  const fileHandle = await siteDirectoryHandle.getFileHandle("data.js", { create: true });
-  const writable = await fileHandle.createWritable();
-  await writable.write(`window.DEFAULT_SITE_DATA = ${JSON.stringify(data, null, 2)};\n`);
-  await writable.close();
-  return true;
-}
-
-async function persistAndWrite() {
-  persist();
-  const saveButtons = [document.querySelector("#save-all"), document.querySelector("#local-save-top")].filter(Boolean);
-  saveButtons.forEach((button) => {
-    button.disabled = true;
-    button.dataset.originalText = button.dataset.originalText || button.textContent;
-    button.textContent = "保存中...";
-  });
-  const report = (message, type = "info") => {
-    if (folderStatus) {
-      folderStatus.textContent = message;
-      folderStatus.dataset.type = type;
-    }
-    setLocalStatus(message, type);
-  };
-  try {
-    if (USE_LOCAL_ADMIN_SERVER) {
-      report("正在保存到本地 data.js...", "info");
-      const result = await localRequest("/api/save-data", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ data }),
-      });
-      report(`已保存到本地：${result.path}。现在可以预览或发布。`, "success");
-      return;
-    }
-    if (await writeDataJsToSiteFolder()) {
-      report("已保存：data.js 已同步更新。", "success");
-      return;
-    }
-    report("未连接本地后台：请双击 快捷命令/启动后台.command，并从 http://localhost:8787/admin.html 打开。", "error");
-  } catch (error) {
-    report(`保存失败：${error.message}`, "error");
-  } finally {
-    saveButtons.forEach((button) => {
-      button.disabled = false;
-      button.textContent = button.dataset.originalText || "保存到本地";
-    });
-  }
-}
-
 function escapeHtml(value = "") {
   return String(value).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }
 
 function slugify(value = "") {
-  return String(value)
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 90)
-    .toLowerCase();
+  return String(value).normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 90).toLowerCase();
 }
 
 function extensionOf(filename = "", fallback = "") {
@@ -211,6 +187,63 @@ function buildUploadFilename(file, key, target) {
   const stem = [year, slugify(title), suffix].filter(Boolean).join("-");
   return `${stem || slugify(file.name) || "file"}${extensionOf(file.name)}`;
 }
+
+function currentCollection() {
+  return schemas[activeTab].type === "object" ? data[activeTab] : data[activeTab] || [];
+}
+
+function readFile(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function cleanStoragePath(value = "") {
+  return String(value).replace(/^\/+/, "").replace(/\/+/g, "/").trim();
+}
+
+function activeFileFieldName() {
+  const schema = schemas[activeTab];
+  const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
+  const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
+  return storageBucket?.value === "papers" ? fileField || "url" : imageField || "image";
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  API 请求
+// ═══════════════════════════════════════════════════════════════
+
+async function apiGet(path) {
+  const res = await fetch(path, { cache: "no-store" });
+  return res.json();
+}
+
+async function apiPost(path, body = {}) {
+  const res = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  return res.json();
+}
+
+async function localRequest(path, options = {}) {
+  const response = await fetch(path, { cache: "no-store", ...options });
+  const contentType = response.headers.get("content-type") || "";
+  const payload = contentType.includes("application/json") ? await response.json() : await response.text();
+  if (!response.ok) {
+    const message = typeof payload === "string" ? payload : payload.message || JSON.stringify(payload);
+    throw new Error(message);
+  }
+  return payload;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  文件写入（本地服务器 / File System Access）
+// ═══════════════════════════════════════════════════════════════
 
 async function ensureWritableDirectory(name) {
   if (!siteDirectoryHandle) return null;
@@ -239,126 +272,71 @@ async function saveFileToSiteFolder(file, key, kind, target) {
   return `${folder}/${filename}`;
 }
 
-function currentCollection() {
-  return schemas[activeTab].type === "object" ? data[activeTab] : data[activeTab] || [];
+async function writeDataJsToSiteFolder() {
+  if (!siteDirectoryHandle) return false;
+  const fileHandle = await siteDirectoryHandle.getFileHandle("data.js", { create: true });
+  const writable = await fileHandle.createWritable();
+  await writable.write(`window.DEFAULT_SITE_DATA = ${JSON.stringify(data, null, 2)};\n`);
+  await writable.close();
+  return true;
 }
 
-function richTextFieldHtml(key, label, value) {
-  return `
-    <section class="field full richtext-field" data-richtext-field="${key}">
-      <span>${label}</span>
-      <div class="richtext-toolbar" role="toolbar" aria-label="新闻详情排版工具">
-        <select data-rich-command="formatBlock" aria-label="段落样式">
-          <option value="P">段落：正文</option>
-          <option value="H2">段落：大标题</option>
-          <option value="H3">段落：小标题</option>
-          <option value="BLOCKQUOTE">段落：引用</option>
-        </select>
-        <select data-rich-command="fontSize" aria-label="字号">
-          <option value="3">字号：正文</option>
-          <option value="4">字号：稍大</option>
-          <option value="5">字号：小标题</option>
-          <option value="6">字号：大标题</option>
-        </select>
-        <button type="button" data-rich-command="bold">加粗</button>
-        <button type="button" data-rich-command="italic">斜体</button>
-        <button type="button" data-rich-command="insertUnorderedList">项目符号</button>
-        <button type="button" data-rich-command="insertOrderedList">编号</button>
-        <button type="button" data-rich-action="insertImageUrl">插入图片链接</button>
-        <label class="richtext-file-button">上传插图<input type="file" accept="image/*" data-rich-image-upload /></label>
-      </div>
-      <div class="richtext-editor" contenteditable="true" data-rich-editor="${key}" aria-label="新闻详情正文编辑区">${value || "<p>在这里输入新闻正文。可以像 Word 一样分段、插入标题和图片。</p>"}</div>
-      <textarea class="richtext-source" name="${key}" spellcheck="false">${escapeHtml(value)}</textarea>
-      <p class="richtext-hint">提示：在正文中点击要插图的位置，再使用“上传插图”或“插入图片链接”。保存当前条目后会写入新闻详情。</p>
-    </section>`;
-}
+// ═══════════════════════════════════════════════════════════════
+//  保存逻辑
+// ═══════════════════════════════════════════════════════════════
 
-function buildForm() {
-  const schema = schemas[activeTab];
-  const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
-  form.innerHTML = schema.fields
-    .map(([key, label, kind]) => {
-      const value = source[key] || "";
-      const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
-      if (kind === "richtext") return richTextFieldHtml(key, label, value);
-      if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
-      if (kind === "image" || kind === "file") {
-        const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
-        return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><input name="${key}Upload" type="file" accept="${accept}" /></label>`;
-      }
-      return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
-    })
-    .join("");
-  setupRichTextEditors(source);
-}
-
-function renderList() {
-  const schema = schemas[activeTab];
-  addButton.style.display = schema.type === "object" ? "none" : "inline-flex";
-  if (schema.type === "object") {
-    list.dataset.sortable = "false";
-    list.innerHTML = `<article class="managed-item"><div><h3>${escapeHtml(data.profile.nameCn)}</h3><p>${escapeHtml(data.profile.affiliation)}</p></div></article>`;
-    return;
-  }
-  list.dataset.sortable = "true";
-  list.innerHTML = currentCollection()
-    .map(
-      (item, index) => `
-        <article class="managed-item" draggable="false" data-index="${index}">
-          <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
-          <div class="managed-copy">
-            <h3>${escapeHtml(item.title || item.label || `条目 ${index + 1}`)}</h3>
-            <p>${escapeHtml(item.venue || item.text || item.detail || item.period || item.url || "")}</p>
-          </div>
-          <div class="item-actions">
-            <button class="icon-button" data-action="up" data-index="${index}" type="button">上移</button>
-            <button class="icon-button" data-action="down" data-index="${index}" type="button">下移</button>
-            <button class="icon-button" data-action="edit" data-index="${index}" type="button">编辑</button>
-            <button class="icon-button" data-action="delete" data-index="${index}" type="button">删除</button>
-          </div>
-        </article>
-      `,
-    )
-    .join("");
-}
-
-async function reorderCurrentCollection(fromIndex, toIndex) {
-  const collection = currentCollection();
-  if (!Array.isArray(collection) || fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
-  if (fromIndex >= collection.length || toIndex >= collection.length) return;
-  const [moved] = collection.splice(fromIndex, 1);
-  collection.splice(toIndex, 0, moved);
-  if (editingIndex === fromIndex) editingIndex = toIndex;
-  else if (fromIndex < editingIndex && toIndex >= editingIndex) editingIndex -= 1;
-  else if (fromIndex > editingIndex && toIndex <= editingIndex) editingIndex += 1;
-  await persistAndWrite();
-  buildForm();
-  renderList();
-}
-
-function setActiveTab(tab) {
-  activeTab = tab;
-  editingIndex = 0;
-  document.querySelectorAll(".tab-button").forEach((button) => button.setAttribute("aria-selected", String(button.dataset.tab === tab)));
-  document.querySelector("#active-title").textContent = schemas[tab].title;
-  document.querySelector("#active-kicker").textContent = tab;
-  buildForm();
-  renderList();
-}
-
-function readFile(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+async function persistAndWrite() {
+  persist();
+  const saveButtons = [document.querySelector("#save-all"), document.querySelector("#local-save-top")].filter(Boolean);
+  saveButtons.forEach((button) => {
+    button.disabled = true;
+    button.dataset.originalText = button.dataset.originalText || button.textContent;
+    button.textContent = "保存中…";
   });
+  const report = (message, type = "info") => {
+    if (folderStatus) {
+      folderStatus.textContent = message;
+      folderStatus.dataset.type = type;
+    }
+    setLocalStatus(message, type);
+  };
+  try {
+    if (USE_LOCAL_ADMIN_SERVER) {
+      report("正在保存到本地 data.js…", "info");
+      const result = await localRequest("/api/save-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data }),
+      });
+      report(`已保存到本地：${result.path}。现在可以预览或发布。`, "success");
+      return;
+    }
+    if (await writeDataJsToSiteFolder()) {
+      report("已保存：data.js 已同步更新。", "success");
+      return;
+    }
+    report("未连接本地后台：请双击「发布工具.command」，并从 http://localhost:8787/admin.html 打开。", "error");
+  } catch (error) {
+    report(`保存失败：${error.message}`, "error");
+  } finally {
+    saveButtons.forEach((button) => {
+      button.disabled = false;
+      button.textContent = button.dataset.originalText || "保存到本地";
+    });
+  }
 }
 
-
-function activeRichTextEditor() {
-  return form.querySelector(".richtext-editor");
+function setLocalStatus(message, type = "info") {
+  if (!localStatus) return;
+  localStatus.textContent = message;
+  localStatus.dataset.type = type;
 }
+
+// ═══════════════════════════════════════════════════════════════
+//  富文本编辑器
+// ═══════════════════════════════════════════════════════════════
+
+function activeRichTextEditor() { return form.querySelector(".richtext-editor"); }
 
 function saveRichTextSelection() {
   const editor = activeRichTextEditor();
@@ -411,6 +389,36 @@ async function handleRichImageUpload(input) {
   input.value = "";
 }
 
+function richTextFieldHtml(key, label, value) {
+  return `
+    <section class="field full richtext-field" data-richtext-field="${key}">
+      <span>${label}</span>
+      <div class="richtext-toolbar" role="toolbar" aria-label="新闻详情排版工具">
+        <select data-rich-command="formatBlock" aria-label="段落样式">
+          <option value="P">段落：正文</option>
+          <option value="H2">段落：大标题</option>
+          <option value="H3">段落：小标题</option>
+          <option value="BLOCKQUOTE">段落：引用</option>
+        </select>
+        <select data-rich-command="fontSize" aria-label="字号">
+          <option value="3">字号：正文</option>
+          <option value="4">字号：稍大</option>
+          <option value="5">字号：小标题</option>
+          <option value="6">字号：大标题</option>
+        </select>
+        <button type="button" data-rich-command="bold">加粗</button>
+        <button type="button" data-rich-command="italic">斜体</button>
+        <button type="button" data-rich-command="insertUnorderedList">项目符号</button>
+        <button type="button" data-rich-command="insertOrderedList">编号</button>
+        <button type="button" data-rich-action="insertImageUrl">插入图片链接</button>
+        <label class="richtext-file-button">上传插图<input type="file" accept="image/*" data-rich-image-upload /></label>
+      </div>
+      <div class="richtext-editor" contenteditable="true" data-rich-editor="${key}" aria-label="新闻详情正文编辑区">${value || "<p>在这里输入新闻正文。可以像 Word 一样分段、插入标题和图片。</p>"}</div>
+      <textarea class="richtext-source" name="${key}" spellcheck="false">${escapeHtml(value)}</textarea>
+      <p class="richtext-hint">提示：在正文中点击要插图的位置，再使用「上传插图」或「插入图片链接」。保存当前条目后会写入新闻详情。</p>
+    </section>`;
+}
+
 function setupRichTextEditors() {
   form.querySelectorAll(".richtext-editor").forEach((editor) => {
     editor.addEventListener("keyup", () => syncRichTextSource(editor));
@@ -430,9 +438,8 @@ function setupRichTextEditors() {
       syncRichTextSource(editor);
       saveRichTextSelection();
     };
-    if (control.tagName === "SELECT") {
-      control.addEventListener("change", runCommand);
-    } else {
+    if (control.tagName === "SELECT") control.addEventListener("change", runCommand);
+    else {
       control.addEventListener("mousedown", (event) => event.preventDefault());
       control.addEventListener("click", runCommand);
     }
@@ -442,6 +449,73 @@ function setupRichTextEditors() {
     if (url) insertRichImage(url.trim(), "");
   });
   form.querySelector("[data-rich-image-upload]")?.addEventListener("change", (event) => handleRichImageUpload(event.target));
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  表单与列表渲染
+// ═══════════════════════════════════════════════════════════════
+
+function buildForm() {
+  const schema = schemas[activeTab];
+  const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
+  form.innerHTML = schema.fields
+    .map(([key, label, kind]) => {
+      const value = source[key] || "";
+      const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
+      if (kind === "richtext") return richTextFieldHtml(key, label, value);
+      if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
+      if (kind === "image" || kind === "file") {
+        const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
+        return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><input name="${key}Upload" type="file" accept="${accept}" /></label>`;
+      }
+      return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
+    })
+    .join("");
+  setupRichTextEditors();
+}
+
+function renderList() {
+  const schema = schemas[activeTab];
+  addButton.style.display = schema.type === "object" ? "none" : "inline-flex";
+  if (schema.type === "object") {
+    list.dataset.sortable = "false";
+    list.innerHTML = `<article class="managed-item"><div><h3>${escapeHtml(data.profile.nameCn)}</h3><p>${escapeHtml(data.profile.affiliation)}</p></div></article>`;
+    return;
+  }
+  list.dataset.sortable = "true";
+  list.innerHTML = currentCollection()
+    .map(
+      (item, index) => `
+        <article class="managed-item" draggable="false" data-index="${index}">
+          <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
+          <div class="managed-copy">
+            <h3>${escapeHtml(item.title || item.label || `条目 ${index + 1}`)}</h3>
+            <p>${escapeHtml(item.venue || item.text || item.detail || item.period || item.url || "")}</p>
+          </div>
+          <div class="item-actions">
+            <button class="icon-button" data-action="up" data-index="${index}" type="button">上移</button>
+            <button class="icon-button" data-action="down" data-index="${index}" type="button">下移</button>
+            <button class="icon-button" data-action="edit" data-index="${index}" type="button">编辑</button>
+            <button class="icon-button" data-action="delete" data-index="${index}" type="button">删除</button>
+          </div>
+        </article>
+      `,
+    )
+    .join("");
+}
+
+async function reorderCurrentCollection(fromIndex, toIndex) {
+  const collection = currentCollection();
+  if (!Array.isArray(collection) || fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+  if (fromIndex >= collection.length || toIndex >= collection.length) return;
+  const [moved] = collection.splice(fromIndex, 1);
+  collection.splice(toIndex, 0, moved);
+  if (editingIndex === fromIndex) editingIndex = toIndex;
+  else if (fromIndex < editingIndex && toIndex >= editingIndex) editingIndex -= 1;
+  else if (fromIndex > editingIndex && toIndex <= editingIndex) editingIndex += 1;
+  await persistAndWrite();
+  buildForm();
+  renderList();
 }
 
 async function saveCurrent() {
@@ -475,123 +549,364 @@ function clearForm() {
   form.querySelectorAll(".richtext-editor").forEach((editor) => (editor.innerHTML = "<p></p>"));
 }
 
-document.querySelectorAll(".tab-button").forEach((button) => button.addEventListener("click", () => setActiveTab(button.dataset.tab)));
-list.addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-action]");
-  if (!button) return;
-  const index = Number(button.dataset.index);
-  if (button.dataset.action === "edit") {
-    editingIndex = index;
-    buildForm();
-  } else if (button.dataset.action === "up") {
-    await reorderCurrentCollection(index, Math.max(0, index - 1));
-  } else if (button.dataset.action === "down") {
-    await reorderCurrentCollection(index, Math.min(currentCollection().length - 1, index + 1));
-  } else {
-    currentCollection().splice(index, 1);
-    editingIndex = 0;
-    await persistAndWrite();
-    buildForm();
-    renderList();
-  }
-});
-list.addEventListener("pointerdown", (event) => {
-  const handle = event.target.closest(".drag-handle");
-  if (!handle || list.dataset.sortable !== "true") return;
-  list.querySelectorAll(".managed-item").forEach((node) => (node.draggable = false));
-  const item = handle.closest(".managed-item[data-index]");
-  if (item) {
-    item.draggable = true;
-    item.classList.add("drag-ready");
-  }
-});
-list.addEventListener("pointerup", () => {
-  if (draggedIndex !== null) return;
-  list.querySelectorAll(".managed-item").forEach((node) => {
-    node.draggable = false;
-    node.classList.remove("drag-ready");
+// ═══════════════════════════════════════════════════════════════
+//  标签切换（CMS + Deploy）
+// ═══════════════════════════════════════════════════════════════
+
+function setActiveTab(tab) {
+  activeTab = tab;
+  editingIndex = 0;
+
+  // 更新按钮状态
+  document.querySelectorAll(".tab-button").forEach((btn) => {
+    btn.setAttribute("aria-selected", String(btn.dataset.tab === tab));
   });
-});
-list.addEventListener("dragstart", (event) => {
-  const item = event.target.closest(".managed-item[data-index]");
-  if (!item || item.draggable !== true) {
-    event.preventDefault();
+
+  // 切换面板
+  const isDeploy = tab === "deploy";
+  document.querySelector("#panel-cms").classList.toggle("active", !isDeploy);
+  document.querySelector("#panel-deploy").classList.toggle("active", isDeploy);
+
+  if (isDeploy) {
+    // 加载发布仪表盘初始数据
+    loadDeployData();
     return;
   }
-  draggedIndex = Number(item.dataset.index);
-  item.classList.add("is-dragging");
-  event.dataTransfer.effectAllowed = "move";
-  event.dataTransfer.setData("text/plain", String(draggedIndex));
-});
-list.addEventListener("dragover", (event) => {
-  if (draggedIndex === null || list.dataset.sortable !== "true") return;
-  const item = event.target.closest(".managed-item[data-index]");
-  if (!item) return;
-  event.preventDefault();
-  const targetIndex = Number(item.dataset.index);
-  list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("drag-over-before", "drag-over-after"));
-  item.classList.add(targetIndex > draggedIndex ? "drag-over-after" : "drag-over-before");
-});
-list.addEventListener("dragleave", (event) => {
-  const item = event.target.closest(".managed-item[data-index]");
-  if (item && !item.contains(event.relatedTarget)) item.classList.remove("drag-over-before", "drag-over-after");
-});
-list.addEventListener("drop", async (event) => {
-  if (draggedIndex === null || list.dataset.sortable !== "true") return;
-  const item = event.target.closest(".managed-item[data-index]");
-  if (!item) return;
-  event.preventDefault();
-  const targetIndex = Number(item.dataset.index);
-  list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("is-dragging", "drag-over-before", "drag-over-after"));
-  const fromIndex = draggedIndex;
-  draggedIndex = null;
-  await reorderCurrentCollection(fromIndex, targetIndex);
-});
-list.addEventListener("dragend", () => {
-  draggedIndex = null;
-  list.querySelectorAll(".managed-item").forEach((node) => {
-    node.draggable = false;
-    node.classList.remove("drag-ready", "is-dragging", "drag-over-before", "drag-over-after");
-  });
-});
-addButton.addEventListener("click", clearForm);
-document.querySelector("#clear-form").addEventListener("click", clearForm);
-document.querySelector("#save-item").addEventListener("click", saveCurrent);
-document.querySelector("#save-all").addEventListener("click", persistAndWrite);
-document.querySelector("#reset-data").addEventListener("click", async () => {
-  if (!confirm("确定恢复默认数据？")) return;
-  data = clone(window.DEFAULT_SITE_DATA);
-  await persistAndWrite();
-  setActiveTab(activeTab);
-});
-document.querySelector("#export-json").addEventListener("click", () => {
-  persist();
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const link = document.createElement("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = "academic-site-data.json";
-  link.click();
-  URL.revokeObjectURL(link.href);
-});
 
-
-
-
-const localStatus = document.querySelector("#local-status");
-const storageList = document.querySelector("#storage-list");
-const storageBucket = document.querySelector("#storage-bucket");
-const storagePath = document.querySelector("#storage-path");
-const storageFile = document.querySelector("#storage-file");
-
-function setLocalStatus(message, type = "info") {
-  if (!localStatus) return;
-  localStatus.textContent = message;
-  localStatus.dataset.type = type;
+  // CMS 模式
+  const schema = schemas[tab];
+  document.querySelector("#active-kicker").textContent = tab;
+  document.querySelector("#active-title").textContent = schema.title;
+  document.querySelector("#editor-kicker").textContent = "编辑";
+  document.querySelector("#editor-title").textContent = "编辑当前条目";
+  buildForm();
+  renderList();
 }
 
-function cleanStoragePath(value = "") {
-  return String(value).replace(/^\/+/, "").replace(/\/+/g, "/").trim();
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 日志
+// ═══════════════════════════════════════════════════════════════
+
+function deployLog(message, type = "info") {
+  if (!deployLogEl) return;
+  const entry = document.createElement("div");
+  entry.className = `deploy-log-entry ${type}`;
+  const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+  entry.textContent = `[${time}] ${message}`;
+  deployLogEl.appendChild(entry);
+  deployLogEl.scrollTop = deployLogEl.scrollHeight;
 }
+
+function clearDeployLog() {
+  if (!deployLogEl) return;
+  deployLogEl.innerHTML = "";
+  deployLog("日志已清空");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 版本管理
+// ═══════════════════════════════════════════════════════════════
+
+async function loadVersion() {
+  try {
+    const data = await apiGet("/api/version");
+    if (data.ok) {
+      updateVersionPill(data.version);
+      deployLog(`当前版本号: ${data.version}`);
+    }
+  } catch (err) {
+    deployLog(`获取版本号失败: ${err.message}`, "error");
+  }
+}
+
+function updateVersionPill(version) {
+  if (sbVersion) sbVersion.innerHTML = `<span class="dot"></span>${version}`;
+}
+
+async function updateVersion() {
+  if (deployState.isDeploying) return;
+  deployState.isDeploying = true;
+  const spinner = document.querySelector("#version-spinner");
+  const btnText = document.querySelector("#version-btn-text");
+  const btn = document.querySelector("#btn-update-version");
+  spinner.style.display = "inline-block";
+  btnText.textContent = "更新中…";
+  btn.disabled = true;
+
+  try {
+    const payload = { strategy: deployState.versionStrategy };
+    if (deployState.versionStrategy === "manual") {
+      const manual = document.querySelector("#manual-version").value.trim();
+      if (!manual) { deployLog("请输入版本号", "warn"); return; }
+      payload.version = manual;
+    }
+    deployLog(`正在更新版本号 (策略: ${deployState.versionStrategy})…`, "cmd");
+    const result = await apiPost("/api/version", payload);
+    if (result.ok) {
+      updateVersionPill(result.version);
+      deployLog(`✅ 版本号已更新: ${result.previous} → ${result.version}`, "success");
+    } else {
+      deployLog(`❌ 更新失败: ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    deployState.isDeploying = false;
+    spinner.style.display = "none";
+    btnText.textContent = "更新版本号";
+    btn.disabled = false;
+  }
+}
+
+async function runBump() {
+  if (deployState.isDeploying) return;
+  deployState.isDeploying = true;
+  const spinner = document.querySelector("#bump-spinner");
+  const btn = document.querySelector("#btn-bump");
+  spinner.style.display = "inline-block";
+  btn.disabled = true;
+  try {
+    deployLog("正在运行 bump-version.sh…", "cmd");
+    const result = await apiPost("/api/bump");
+    if (result.ok) {
+      deployLog("✅ bump-version.sh 执行成功", "success");
+      if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) deployLog(line, "info"); });
+      await loadVersion();
+    } else {
+      deployLog(`❌ 执行失败: ${result.message || result.output}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    deployState.isDeploying = false;
+    spinner.style.display = "none";
+    btn.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — Git 状态
+// ═══════════════════════════════════════════════════════════════
+
+async function refreshGitStatus(silent = false) {
+  const btn = document.querySelector("#btn-refresh-git");
+  try {
+    if (btn) { btn.disabled = true; btn.textContent = "刷新中…"; }
+    if (!silent) deployLog("正在获取 Git 状态…", "cmd");
+    const result = await apiGet("/api/git/status");
+    if (result.ok) {
+      updateGitPill(result);
+      const listEl = document.querySelector("#git-status-list");
+      if (result.files.length === 0) {
+        if (listEl) listEl.innerHTML = '<div class="deploy-file-list empty">✅ 工作区干净，没有未提交的更改</div>';
+        if (!silent) deployLog("工作区干净，没有未提交的更改", "success");
+      } else {
+        if (listEl) {
+          listEl.innerHTML = result.files.map((f) => {
+            let statusClass = "";
+            if (f.status === "A" || f.status === "??") statusClass = "added";
+            else if (f.status === "M" || f.status === "MM") statusClass = "modified";
+            else if (f.status === "D") statusClass = "deleted";
+            return `<div class="deploy-file-item"><span class="deploy-file-status ${statusClass}">${f.status}</span><span>${escapeHtml(f.path)}</span></div>`;
+          }).join("");
+        }
+        if (!silent) deployLog(`发现 ${result.files.length} 个变更文件`, "warn");
+      }
+    }
+  } catch (err) {
+    if (!silent) deployLog(`获取 Git 状态失败: ${err.message}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "刷新状态"; }
+  }
+}
+
+function updateGitPill(result) {
+  if (!sbGit) return;
+  const count = result.files?.length || 0;
+  if (count > 0) {
+    sbGit.innerHTML = `<span class="dot"></span>${count} 个未提交`;
+    sbGit.classList.add("has-changes");
+  } else {
+    sbGit.innerHTML = `<span class="dot"></span>Git 干净`;
+    sbGit.classList.remove("has-changes");
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 推送到 GitHub
+// ═══════════════════════════════════════════════════════════════
+
+async function deployToGitHub() {
+  if (deployState.isDeploying) return;
+  deployState.isDeploying = true;
+  const spinner = document.querySelector("#deploy-spinner");
+  const btnText = document.querySelector("#deploy-btn-text");
+  const btn = document.querySelector("#btn-deploy");
+  spinner.style.display = "inline-block";
+  btnText.textContent = "推送中…";
+  btn.disabled = true;
+
+  try {
+    const versionText = sbVersion ? sbVersion.textContent.trim() : "v1.6.5";
+    const version = versionText.replace(/^[^v]*/, "").trim() || "v1.6.5";
+    const message = `Deploy ${version} - update content`;
+    deployLog("开始发布流程…", "cmd");
+    deployLog(`提交信息: ${message}`, "info");
+    const result = await apiPost("/api/git/push", { message });
+    if (result.ok) {
+      if (result.committed) {
+        deployLog("✅ 推送成功！", "success");
+        if (result.output?.commit) deployLog(result.output.commit, "info");
+        if (result.output?.push) deployLog(result.output.push, "info");
+        deployLog("🌐 Cloudflare Pages 将自动构建部署", "success");
+        deployLog("⏱️ jsDelivr CDN 缓存约 5-10 分钟后生效", "info");
+      } else {
+        deployLog("✅ 没有新的更改需要提交", "success");
+      }
+      await refreshGitStatus(true);
+    } else {
+      deployLog(`❌ 推送失败: ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    deployState.isDeploying = false;
+    spinner.style.display = "none";
+    btnText.textContent = "推送到 GitHub";
+    btn.disabled = false;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 本地预览
+// ═══════════════════════════════════════════════════════════════
+
+async function startPreview() {
+  const spinner = document.querySelector("#preview-spinner");
+  const btn = document.querySelector("#btn-preview-start");
+  spinner.style.display = "inline-block";
+  btn.disabled = true;
+  try {
+    deployLog("正在启动本地预览服务器…", "cmd");
+    const result = await apiPost("/api/preview/start");
+    if (result.ok && result.running) {
+      deployLog(`✅ ${result.message}`, "success");
+      updatePreviewUI(true);
+    } else {
+      deployLog(`❌ 启动失败: ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    spinner.style.display = "none";
+    btn.disabled = false;
+  }
+}
+
+async function stopPreview() {
+  const btn = document.querySelector("#btn-preview-stop");
+  btn.disabled = true;
+  try {
+    deployLog("正在停止本地预览服务器…", "cmd");
+    const result = await apiPost("/api/preview/stop");
+    if (result.ok) {
+      deployLog(`✅ ${result.message}`, "success");
+      updatePreviewUI(false);
+    } else {
+      deployLog(`❌ 停止失败: ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function checkPreviewStatus() {
+  try {
+    const result = await apiGet("/api/preview/status");
+    updatePreviewUI(result.running);
+  } catch { /* 静默失败 */ }
+}
+
+function updatePreviewUI(running) {
+  if (sbPreview) {
+    if (running) {
+      sbPreview.innerHTML = `<span class="dot"></span>预览运行中`;
+      sbPreview.classList.add("running");
+    } else {
+      sbPreview.innerHTML = `<span class="dot"></span>预览未运行`;
+      sbPreview.classList.remove("running");
+    }
+  }
+  const statusEl = document.querySelector("#preview-status");
+  const linkEl = document.querySelector("#preview-link");
+  if (statusEl) statusEl.className = running ? "deploy-status-badge running" : "deploy-status-badge";
+  if (statusEl) statusEl.innerHTML = running ? '<span class="dot"></span>运行中' : '<span class="dot"></span>未运行';
+  if (linkEl) linkEl.style.display = running ? "inline-flex" : "none";
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 状态栏轮询
+// ═══════════════════════════════════════════════════════════════
+
+async function pollStatus() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    if (sbConnection) {
+      sbConnection.innerHTML = `<span class="dot"></span>本地模式`;
+      sbConnection.classList.remove("connected", "disconnected");
+    }
+    return;
+  }
+  try {
+    // 并发获取所有状态
+    const [versionRes, gitRes, previewRes] = await Promise.allSettled([
+      apiGet("/api/version"),
+      apiGet("/api/git/status"),
+      apiGet("/api/preview/status"),
+    ]);
+
+    if (versionRes.status === "fulfilled" && versionRes.value.ok) {
+      updateVersionPill(versionRes.value.version);
+    }
+    if (gitRes.status === "fulfilled" && gitRes.value.ok) {
+      updateGitPill(gitRes.value);
+    }
+    if (previewRes.status === "fulfilled" && previewRes.value.ok) {
+      updatePreviewUI(previewRes.value.running);
+    }
+
+    if (sbConnection) {
+      sbConnection.innerHTML = `<span class="dot"></span>服务器已连接`;
+      sbConnection.classList.add("connected");
+      sbConnection.classList.remove("disconnected");
+    }
+  } catch {
+    if (sbConnection) {
+      sbConnection.innerHTML = `<span class="dot"></span>服务器断开`;
+      sbConnection.classList.add("disconnected");
+      sbConnection.classList.remove("connected");
+    }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  发布工具 — 加载仪表盘数据
+// ═══════════════════════════════════════════════════════════════
+
+async function loadDeployData() {
+  deployLog("加载发布仪表盘数据…", "cmd");
+  await Promise.all([
+    loadVersion(),
+    refreshGitStatus(true),
+    checkPreviewStatus(),
+  ]);
+  deployLog("发布仪表盘数据加载完成", "success");
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  文件管理器
+// ═══════════════════════════════════════════════════════════════
 
 function buildStoragePath(file, bucket) {
   const manual = cleanStoragePath(storagePath?.value || "");
@@ -601,20 +916,9 @@ function buildStoragePath(file, bucket) {
   return `${stem || slugify(file.name.replace(/\.[^.]+$/, "")) || "file"}${extensionOf(file.name)}`;
 }
 
-async function localRequest(path, options = {}) {
-  const response = await fetch(path, { cache: "no-store", ...options });
-  const contentType = response.headers.get("content-type") || "";
-  const payload = contentType.includes("application/json") ? await response.json() : await response.text();
-  if (!response.ok) {
-    const message = typeof payload === "string" ? payload : payload.message || JSON.stringify(payload);
-    throw new Error(message);
-  }
-  return payload;
-}
-
 async function listLocalFiles(bucket = storageBucket?.value || "assets") {
   if (!storageList) return;
-  storageList.innerHTML = `<p class="storage-empty">正在读取 ${bucket}...</p>`;
+  storageList.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
   try {
     const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
     const files = result.files || [];
@@ -650,14 +954,8 @@ async function listLocalFiles(bucket = storageBucket?.value || "assets") {
 async function uploadLocalFile() {
   const file = storageFile?.files?.[0];
   const bucket = storageBucket?.value || "assets";
-  if (!file) {
-    setLocalStatus("请先选择一个要上传的文件。", "error");
-    return;
-  }
-  if (!USE_LOCAL_ADMIN_SERVER) {
-    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开，才能写入项目文件夹。", "error");
-    return;
-  }
+  if (!file) { setLocalStatus("请先选择一个要上传的文件。", "error"); return; }
+  if (!USE_LOCAL_ADMIN_SERVER) { setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开，才能写入项目文件夹。", "error"); return; }
   const path = buildStoragePath(file, bucket);
   try {
     const result = await localRequest(`/api/upload?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, {
@@ -685,32 +983,23 @@ async function deleteLocalFile(bucket, path) {
   }
 }
 
-function activeFileFieldName() {
-  const schema = schemas[activeTab];
-  const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
-  const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
-  return storageBucket?.value === "papers" ? fileField || "url" : imageField || "image";
-}
+// ═══════════════════════════════════════════════════════════════
+//  旧版部署兼容
+// ═══════════════════════════════════════════════════════════════
 
 async function deployToCloudflare() {
+  // 重定向到新的 GitHub 推送
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再发布。", "error");
     return;
   }
   if (!confirm("确定推送到 GitHub？请先确认当前内容已经保存。")) return;
-  try {
-    setLocalStatus("正在推送到 GitHub，请保持后台窗口打开...", "info");
-    const result = await localRequest("/api/deploy", { method: "POST" });
-    const url = (result.output || "").match(/https?:\/\/\S+/)?.[0] || "https://xyfoptics.xyz";
-    setLocalStatus(`发布完成：${url}`, "success");
-  } catch (error) {
-    setLocalStatus(`发布失败：${error.message}`, "error");
-  }
+  await deployToGitHub();
 }
 
 async function checkLocalServer() {
   if (!USE_LOCAL_ADMIN_SERVER) {
-    setLocalStatus("当前不是本地后台模式：请双击 快捷命令/启动后台.command，再从 http://localhost:8787/admin.html 打开。", "error");
+    setLocalStatus("当前不是本地后台模式：请双击「发布工具.command」，再从 http://localhost:8787/admin.html 打开。", "error");
     return;
   }
   try {
@@ -722,36 +1011,180 @@ async function checkLocalServer() {
   }
 }
 
-document.querySelector("#local-save-top")?.addEventListener("click", persistAndWrite);
-document.querySelector("#local-deploy")?.addEventListener("click", deployToCloudflare);
-document.querySelector("#local-deploy-top")?.addEventListener("click", deployToCloudflare);
-document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToCloudflare);
-document.querySelector("#save-item-bottom")?.addEventListener("click", saveCurrent);
-document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
-document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
-document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
-storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
-storageList?.addEventListener("click", async (event) => {
-  const button = event.target.closest("button[data-storage-action]");
-  if (!button) return;
-  const action = button.dataset.storageAction;
-  if (action === "copy") {
-    await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
-    setLocalStatus("已复制相对路径。", "success");
-  } else if (action === "use") {
-    const fieldName = activeFileFieldName();
-    const field = form.elements[fieldName];
-    if (field) {
-      field.value = button.dataset.url;
-      setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success");
-    } else {
-      setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
-    }
-  } else if (action === "delete") {
-    await deleteLocalFile(storageBucket?.value || "assets", button.dataset.path);
-  }
-});
+// ═══════════════════════════════════════════════════════════════
+//  事件绑定
+// ═══════════════════════════════════════════════════════════════
 
-checkLocalServer();
-jsonBuffer.value = JSON.stringify(data, null, 2);
-setActiveTab(activeTab);
+function init() {
+  // ── 标签切换 ──
+  document.querySelectorAll(".tab-button").forEach((btn) => {
+    btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
+  });
+
+  // ── CMS 编辑器事件 ──
+  addButton?.addEventListener("click", clearForm);
+  document.querySelector("#clear-form")?.addEventListener("click", clearForm);
+  document.querySelector("#save-item")?.addEventListener("click", saveCurrent);
+  document.querySelector("#save-item-bottom")?.addEventListener("click", saveCurrent);
+  document.querySelector("#save-all")?.addEventListener("click", persistAndWrite);
+  document.querySelector("#reset-data")?.addEventListener("click", async () => {
+    if (!confirm("确定恢复默认数据？")) return;
+    data = clone(window.DEFAULT_SITE_DATA);
+    await persistAndWrite();
+    setActiveTab(activeTab);
+  });
+  document.querySelector("#export-json")?.addEventListener("click", () => {
+    persist();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "academic-site-data.json";
+    link.click();
+    URL.revokeObjectURL(link.href);
+  });
+
+  // ── 条目列表事件 ──
+  list?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const index = Number(button.dataset.index);
+    if (button.dataset.action === "edit") {
+      editingIndex = index;
+      buildForm();
+    } else if (button.dataset.action === "up") {
+      await reorderCurrentCollection(index, Math.max(0, index - 1));
+    } else if (button.dataset.action === "down") {
+      await reorderCurrentCollection(index, Math.min(currentCollection().length - 1, index + 1));
+    } else {
+      currentCollection().splice(index, 1);
+      editingIndex = 0;
+      await persistAndWrite();
+      buildForm();
+      renderList();
+    }
+  });
+
+  // ── 拖拽排序 ──
+  list?.addEventListener("pointerdown", (event) => {
+    const handle = event.target.closest(".drag-handle");
+    if (!handle || list.dataset.sortable !== "true") return;
+    list.querySelectorAll(".managed-item").forEach((node) => (node.draggable = false));
+    const item = handle.closest(".managed-item[data-index]");
+    if (item) { item.draggable = true; item.classList.add("drag-ready"); }
+  });
+  list?.addEventListener("pointerup", () => {
+    if (draggedIndex !== null) return;
+    list.querySelectorAll(".managed-item").forEach((node) => { node.draggable = false; node.classList.remove("drag-ready"); });
+  });
+  list?.addEventListener("dragstart", (event) => {
+    const item = event.target.closest(".managed-item[data-index]");
+    if (!item || item.draggable !== true) { event.preventDefault(); return; }
+    draggedIndex = Number(item.dataset.index);
+    item.classList.add("is-dragging");
+    event.dataTransfer.effectAllowed = "move";
+    event.dataTransfer.setData("text/plain", String(draggedIndex));
+  });
+  list?.addEventListener("dragover", (event) => {
+    if (draggedIndex === null || list.dataset.sortable !== "true") return;
+    const item = event.target.closest(".managed-item[data-index]");
+    if (!item) return;
+    event.preventDefault();
+    const targetIndex = Number(item.dataset.index);
+    list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("drag-over-before", "drag-over-after"));
+    item.classList.add(targetIndex > draggedIndex ? "drag-over-after" : "drag-over-before");
+  });
+  list?.addEventListener("dragleave", (event) => {
+    const item = event.target.closest(".managed-item[data-index]");
+    if (item && !item.contains(event.relatedTarget)) item.classList.remove("drag-over-before", "drag-over-after");
+  });
+  list?.addEventListener("drop", async (event) => {
+    if (draggedIndex === null || list.dataset.sortable !== "true") return;
+    const item = event.target.closest(".managed-item[data-index]");
+    if (!item) return;
+    event.preventDefault();
+    const targetIndex = Number(item.dataset.index);
+    list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("is-dragging", "drag-over-before", "drag-over-after"));
+    const fromIndex = draggedIndex;
+    draggedIndex = null;
+    await reorderCurrentCollection(fromIndex, targetIndex);
+  });
+  list?.addEventListener("dragend", () => {
+    draggedIndex = null;
+    list.querySelectorAll(".managed-item").forEach((node) => {
+      node.draggable = false;
+      node.classList.remove("drag-ready", "is-dragging", "drag-over-before", "drag-over-after");
+    });
+  });
+
+  // ── 文件管理器 ──
+  document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
+  document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
+  document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
+  storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
+  storageList?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-storage-action]");
+    if (!button) return;
+    const action = button.dataset.storageAction;
+    if (action === "copy") {
+      await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+      setLocalStatus("已复制相对路径。", "success");
+    } else if (action === "use") {
+      const fieldName = activeFileFieldName();
+      const field = form.elements[fieldName];
+      if (field) { field.value = button.dataset.url; setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success"); }
+      else setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
+    } else if (action === "delete") {
+      await deleteLocalFile(storageBucket?.value || "assets", button.dataset.path);
+    }
+  });
+
+  // ── 旧版部署按钮兼容 ──
+  document.querySelector("#local-deploy")?.addEventListener("click", deployToCloudflare);
+  document.querySelector("#local-deploy-top")?.addEventListener("click", deployToCloudflare);
+  document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToCloudflare);
+
+  // ── 发布工具事件 ──
+  document.querySelectorAll("#version-strategy button").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#version-strategy button").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      deployState.versionStrategy = btn.dataset.strategy;
+      const manualRow = document.querySelector("#manual-version-row");
+      if (manualRow) manualRow.style.display = deployState.versionStrategy === "manual" ? "flex" : "none";
+      deployLog(`版本号策略切换为: ${deployState.versionStrategy}`);
+    });
+  });
+  document.querySelector("#btn-set-version")?.addEventListener("click", updateVersion);
+  document.querySelector("#btn-update-version")?.addEventListener("click", updateVersion);
+  document.querySelector("#btn-bump")?.addEventListener("click", runBump);
+  document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
+  document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
+  document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
+  document.querySelector("#btn-preview-stop")?.addEventListener("click", stopPreview);
+  document.querySelector("#btn-clear-log")?.addEventListener("click", clearDeployLog);
+
+  // ── 状态栏点击刷新 ──
+  sbGit?.addEventListener("click", () => refreshGitStatus());
+
+  // ── 初始化 ──
+  jsonBuffer.value = JSON.stringify(data, null, 2);
+  setActiveTab(activeTab);
+  checkLocalServer();
+
+  // ── 启动状态轮询 ──
+  if (USE_LOCAL_ADMIN_SERVER) {
+    pollStatus();
+    setInterval(pollStatus, 5000);
+  }
+
+  // ── 页面可见性变化时刷新 ──
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && USE_LOCAL_ADMIN_SERVER) pollStatus();
+  });
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", init);
+} else {
+  init();
+}

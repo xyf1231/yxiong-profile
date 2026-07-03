@@ -10,8 +10,6 @@ const scriptDir = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(scriptDir, "..");
 const port = Number(process.env.ADMIN_PORT || 8787);
 const allowedBuckets = new Set(["assets", "papers"]);
-const bundledBin = "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/pnpm";
-const bundledNodeBin = "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin";
 
 // ── 本地预览服务器状态 ──
 let previewServer = null;
@@ -55,7 +53,7 @@ function safeBucket(value) {
 function safeRelativePath(rawPath, fallbackName = "file") {
   const cleaned = String(rawPath || fallbackName)
     .replace(/\\/g, "/")
-    .replace(/^\/+/, "")
+    .replace(/^\/+/ ,"")
     .replace(/\0/g, "")
     .trim();
   const normalized = normalize(cleaned || fallbackName).replace(/^\.\/+/, "");
@@ -316,6 +314,43 @@ async function stopPreview(res) {
   }
 }
 
+async function getPreviewStatus(res) {
+  const running = previewServer !== null;
+  sendJson(res, 200, {
+    ok: true,
+    running,
+    url: running ? `http://localhost:${previewPort}` : null,
+  });
+}
+
+// ── 统一状态 API ──
+async function getAllStatus(res) {
+  try {
+    const versionPath = resolve(rootDir, "VERSION");
+    let version = "v0.0.0";
+    if (existsSync(versionPath)) version = (await readFile(versionPath, "utf8")).trim();
+
+    const gitChild = spawn("git", ["status", "--short"], { cwd: rootDir });
+    let gitStdout = "";
+    gitChild.stdout.on("data", (c) => (gitStdout += c));
+    await new Promise((resolve) => gitChild.on("close", resolve));
+    const gitFiles = gitStdout.trim().split("\n").filter(Boolean).map((line) => ({
+      status: line.slice(0, 2).trim(),
+      path: line.slice(3).trim(),
+    }));
+
+    sendJson(res, 200, {
+      ok: true,
+      version,
+      git: { hasChanges: gitFiles.length > 0, fileCount: gitFiles.length, files: gitFiles },
+      preview: { running: previewServer !== null, url: previewServer ? `http://localhost:${previewPort}` : null },
+      server: { rootDir, canWrite: true },
+    });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
 async function serveStatic(req, res, url) {
   let pathname = decodeURIComponent(url.pathname);
   if (pathname === "/") pathname = "/admin.html";
@@ -347,6 +382,10 @@ const server = createServer(async (req, res) => {
     // ── CMS API ──
     if (url.pathname === "/api/status") {
       sendJson(res, 200, { ok: true, mode: "local-static-cloudflare", rootDir, canWrite: true, buckets: [...allowedBuckets] });
+      return;
+    }
+    if (url.pathname === "/api/status/all" && req.method === "GET") {
+      await getAllStatus(res);
       return;
     }
     if (url.pathname === "/api/save-data" && req.method === "POST") {
@@ -388,6 +427,10 @@ const server = createServer(async (req, res) => {
       await gitAddCommitPush(req, res);
       return;
     }
+    if (url.pathname === "/api/preview/status" && req.method === "GET") {
+      await getPreviewStatus(res);
+      return;
+    }
     if (url.pathname === "/api/preview/start" && req.method === "POST") {
       await startPreview(res);
       return;
@@ -406,11 +449,14 @@ const server = createServer(async (req, res) => {
 server.listen(port, "127.0.0.1", () => {
   const openPath = process.env.ADMIN_OPEN_PATH || "/admin.html";
   const openUrl = `http://localhost:${port}${openPath.startsWith("/") ? openPath : `/${openPath}`}`;
-  console.log(`Local CMS Server: http://localhost:${port}/admin.html`);
-  console.log(`Deploy Tool:      http://localhost:${port}/deploy.html`);
-  console.log(`Preview URL:      http://localhost:${port}/index.html`);
-  console.log(`Project folder:   ${rootDir}`);
-  console.log("Content writes to data.js; files write to assets/ and papers/; deploy uses GitHub + Cloudflare Pages.");
+  console.log(`╔══════════════════════════════════════════════════════════════╗`);
+  console.log(`║  xyfoptics 本地管理后台                                       ║`);
+  console.log(`╠══════════════════════════════════════════════════════════════╣`);
+  console.log(`║  管理界面:  http://localhost:${port}/admin.html              ║`);
+  console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
+  console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
+  console.log(`╚══════════════════════════════════════════════════════════════╝`);
+  console.log("内容写入 data.js；文件写入 assets/ 和 papers/；发布使用 GitHub + Cloudflare Pages。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];
