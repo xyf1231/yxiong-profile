@@ -597,10 +597,14 @@ function setupNewsCarousel(root) {
   let timer = null;
   let isDragging = false;
   let dragStartX = 0;
+  let dragStartY = 0;
   let dragDeltaX = 0;
+  let dragDeltaY = 0;
   let dragPointerId = null;
+  let dragLocked = null;   // 'horizontal' | 'vertical' | null
   let suppressClick = false;
   const swipeThreshold = 64;
+  const angleLockThreshold = 10;
 
   const getCurrentOffset = () => Number(track.dataset.offset || 0);
   let dragBaseOffset = 0;
@@ -672,8 +676,11 @@ function setupNewsCarousel(root) {
     if (event.pointerType === "mouse" && event.button !== 0) return;
     isDragging = true;
     dragStartX = event.clientX;
+    dragStartY = event.clientY;
     dragDeltaX = 0;
+    dragDeltaY = 0;
     dragPointerId = event.pointerId;
+    dragLocked = null;
     // 用户开始拖拽，立即关闭自动播放，但保留按钮可恢复
     pauseAuto();
     dragBaseOffset = getCurrentOffset();
@@ -685,11 +692,31 @@ function setupNewsCarousel(root) {
   const moveDrag = (event) => {
     if (!isDragging || event.pointerId !== dragPointerId) return;
     const rawDeltaX = event.clientX - dragStartX;
+    const rawDeltaY = event.clientY - dragStartY;
     dragDeltaX = rawDeltaX;
-    const nextOffset = dragBaseOffset + dragDeltaX;
-    track.dataset.offset = String(nextOffset);
-    track.style.transform = `translate3d(${nextOffset}px, 0, 0)`;
-    if (Math.abs(rawDeltaX) > 2) event.preventDefault();
+    dragDeltaY = rawDeltaY;
+
+    // 方向锁定：在足够位移前先判断角度，避免误拦截纵向滚动
+    if (dragLocked === null) {
+      const absX = Math.abs(rawDeltaX);
+      const absY = Math.abs(rawDeltaY);
+      if (absX > angleLockThreshold || absY > angleLockThreshold) {
+        dragLocked = absY > absX ? 'vertical' : 'horizontal';
+      }
+    }
+
+    // 若判定为纵向手势，完全交还给页面滚动，不做任何处理
+    if (dragLocked === 'vertical') {
+      return;
+    }
+
+    // 只有在明确横向滑动时才接管
+    if (dragLocked === 'horizontal') {
+      const nextOffset = dragBaseOffset + dragDeltaX;
+      track.dataset.offset = String(nextOffset);
+      track.style.transform = `translate3d(${nextOffset}px, 0, 0)`;
+      event.preventDefault();
+    }
   };
 
   const finishDrag = (event) => {
@@ -698,6 +725,16 @@ function setupNewsCarousel(root) {
     root.classList.remove("is-dragging");
     viewport.releasePointerCapture?.(dragPointerId);
     dragPointerId = null;
+
+    // 如果是纵向手势，直接复位，不触发任何横向切换
+    if (dragLocked === 'vertical') {
+      dragLocked = null;
+      track.style.transitionDuration = "320ms";
+      track.dataset.offset = String(dragBaseOffset);
+      track.style.transform = `translate3d(${dragBaseOffset}px, 0, 0)`;
+      return;
+    }
+
     if (Math.abs(dragDeltaX) > 8) suppressClick = true;
 
     const targetIndex = Math.abs(dragDeltaX) >= swipeThreshold
@@ -709,6 +746,7 @@ function setupNewsCarousel(root) {
     window.setTimeout(() => {
       suppressClick = false;
     }, 120);
+    dragLocked = null;
   };
 
   viewport.addEventListener("pointerdown", beginDrag);
