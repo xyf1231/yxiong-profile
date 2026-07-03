@@ -101,9 +101,9 @@ const translations = {
     experienceCard: "南京大学学习工作经历与研究发展脉络。",
     contactCard: "邮箱、电话和后续可扩展的学术主页入口。",
     researchTitle: "研究内容",
-    experienceTitle: "Education and Works",
-    selectedWorkTitle: "Selected Publications",
-    appointmentsTitle: "Academic Participation",
+    experienceTitle: "学习工作经历",
+    selectedWorkTitle: "代表论文",
+    appointmentsTitle: "学术任职",
     homeFrameKicker: "Highlights",
     homeFrameTitle: "研究亮点",
     newsKicker: "News",
@@ -182,9 +182,9 @@ const translations = {
     experienceCard: "Academic path and research development at Nanjing University.",
     contactCard: "Email, phone, and future academic profile links.",
     researchTitle: "Research",
-    experienceTitle: "学习工作经历",
-    selectedWorkTitle: "代表论文",
-    appointmentsTitle: "学术任职",
+    experienceTitle: "Education and Works",
+    selectedWorkTitle: "Selected Publications",
+    appointmentsTitle: "Academic Participation",
     homeFrameKicker: "研究亮点",
     homeFrameTitle: "Research Highlights",
     newsKicker: "新闻动态",
@@ -1094,8 +1094,7 @@ function renderPublications(items) {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
-      const date = item.date && item.date !== "-" && item.date;
-      const year = date || item.year || "";
+      const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = item.image
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
@@ -1143,7 +1142,7 @@ function renderProfilePublications(items) {
             <h3>${escapeHtml(item.title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(item.venue || "")}</strong>${(item.date || item.year) ? ` <span class="publication-year">${escapeHtml(item.date || item.year)}</span>` : ""}</p>
+            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(item.venue || "")}</strong>${(item.date || item.year) ? ` <span class="publication-year">${escapeHtml((item.date || item.year || "").toString().slice(0, 4))}</span>` : ""}</p>
           </div>
         </article>
       `;
@@ -1163,7 +1162,7 @@ function renderAllPublications(items) {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
-      const date = item.date || item.year || "";
+      const date = (item.date || item.year || "").toString().slice(0, 4);
       return `
         <article>
           <time>${String(index + 1).padStart(2, "0")}</time>
