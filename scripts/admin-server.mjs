@@ -220,6 +220,47 @@ async function getGitStatus(res) {
   }
 }
 
+async function testGitHubConnection(res) {
+  try {
+    // Step 1: check if git repo exists and has remote
+    const remoteChild = spawn("git", ["remote", "get-url", "origin"], { cwd: rootDir });
+    let remoteUrl = "";
+    let remoteErr = "";
+    remoteChild.stdout.on("data", (c) => (remoteUrl += c));
+    remoteChild.stderr.on("data", (c) => (remoteErr += c));
+    const remoteCode = await new Promise((resolve) => remoteChild.on("close", resolve));
+    if (remoteCode !== 0) {
+      sendJson(res, 200, { ok: false, message: "未配置 Git 远程仓库 origin", detail: remoteErr.trim() });
+      return;
+    }
+
+    // Step 2: test connectivity with git ls-remote
+    const testChild = spawn("git", ["ls-remote", "--heads", "origin"], { cwd: rootDir });
+    let testOut = "";
+    let testErr = "";
+    testChild.stdout.on("data", (c) => (testOut += c));
+    testChild.stderr.on("data", (c) => (testErr += c));
+    const testCode = await new Promise((resolve) => testChild.on("close", resolve));
+    if (testCode === 0) {
+      sendJson(res, 200, {
+        ok: true,
+        message: "GitHub 连接正常",
+        remote: remoteUrl.trim(),
+        heads: testOut.trim().split("\n").filter(Boolean).length,
+      });
+    } else {
+      sendJson(res, 200, {
+        ok: false,
+        message: "GitHub 连接失败，请检查网络或代理设置",
+        remote: remoteUrl.trim(),
+        detail: testErr.trim(),
+      });
+    }
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
 async function gitAddCommitPush(req, res) {
   try {
     const body = await readRequestBody(req);
@@ -421,6 +462,10 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/git/status" && req.method === "GET") {
       await getGitStatus(res);
+      return;
+    }
+    if (url.pathname === "/api/git/test" && req.method === "GET") {
+      await testGitHubConnection(res);
       return;
     }
     if (url.pathname === "/api/git/push" && req.method === "POST") {

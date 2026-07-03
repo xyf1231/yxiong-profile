@@ -733,6 +733,29 @@ function updateGitPill(result) {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  发布工具 — 测试 GitHub 连接
+// ═══════════════════════════════════════════════════════════════
+
+async function testGitHubConnection() {
+  const btn = document.querySelector("#btn-test-git");
+  if (btn) { btn.disabled = true; btn.textContent = "测试中…"; }
+  deployLog("正在测试 GitHub 连接…", "cmd");
+  try {
+    const result = await apiGet("/api/git/test");
+    if (result.ok) {
+      deployLog(`✅ GitHub 连接正常: ${result.message}`, "success");
+      if (result.remote) deployLog(`远程仓库: ${result.remote}`, "info");
+    } else {
+      deployLog(`❌ GitHub 连接失败: ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 测试失败: ${err.message}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "测试 GitHub 连接"; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  发布工具 — 推送到 GitHub
 // ═══════════════════════════════════════════════════════════════
 
@@ -1158,6 +1181,7 @@ function init() {
   document.querySelector("#btn-update-version")?.addEventListener("click", updateVersion);
   document.querySelector("#btn-bump")?.addEventListener("click", runBump);
   document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
+  document.querySelector("#btn-test-git")?.addEventListener("click", testGitHubConnection);
   document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
   document.querySelector("#btn-preview-stop")?.addEventListener("click", stopPreview);
