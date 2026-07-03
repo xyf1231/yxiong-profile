@@ -1164,7 +1164,7 @@ function renderAllPublications(items) {
       const venue = item.venue;
       const date = (item.date || item.year || "").toString().slice(0, 4);
       return `
-        <article>
+        <article class="reveal">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
             <h3>${escapeHtml(title)}</h3>
@@ -1184,7 +1184,7 @@ function renderAllPublications(items) {
   target.querySelector(".all-publications-more")?.addEventListener("click", () => {
     target.dataset.expanded = "true";
     renderAllPublications(items);
-    setupReveal();
+    revealOnView();
   });
 }
 
