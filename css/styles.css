@@ -7701,19 +7701,19 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 }
 
 .profile-timeline .timeline li {
-  min-height: 170px;
-  padding: clamp(24px, 2.2vw, 32px) clamp(26px, 2.4vw, 36px);
+  min-height: 170px !important;
+  padding: clamp(24px, 2.2vw, 32px) clamp(26px, 2.4vw, 36px) !important;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
-    rgba(20, 20, 30, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: clamp(30px, 3vw, 40px);
+    rgba(20, 20, 30, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: clamp(30px, 3vw, 40px) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-    0 16px 40px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
-  -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.05);
+    0 16px 40px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(20px) saturate(1.5) brightness(1.05) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.05) !important;
   transition:
     transform 240ms var(--ease-apple),
     border-color 240ms var(--ease-apple),
@@ -7723,16 +7723,15 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 
 .profile-timeline .timeline li:hover,
 .profile-timeline .timeline li:focus-within {
-  transform: translateX(6px) translateY(-2px) scale(1.01);
-  border-color: rgba(100, 210, 255, 0.34);
+  transform: translateX(6px) translateY(-2px) scale(1.01) !important;
+  border-color: rgba(100, 210, 255, 0.34) !important;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
-    rgba(20, 20, 30, 0.4);
+    rgba(20, 20, 30, 0.4) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04),
-    0 20px 48px rgba(0, 0, 0, 0.35);
-}
+    0 20px 48px rgba(0, 0, 0, 0.35) !important;
 }
 
 .profile-timeline .timeline .item-index {
