@@ -673,6 +673,7 @@ function setupNewsCarousel(root) {
   });
 
   const beginDrag = (event) => {
+    if (event.pointerType === "touch") return; // 触摸事件由 touchstart 处理
     if (event.pointerType === "mouse" && event.button !== 0) return;
     isDragging = true;
     dragStartX = event.clientX;
@@ -690,6 +691,7 @@ function setupNewsCarousel(root) {
   };
 
   const moveDrag = (event) => {
+    if (event.pointerType === "touch") return; // 触摸事件由 touchmove 处理
     if (!isDragging || event.pointerId !== dragPointerId) return;
     const rawDeltaX = event.clientX - dragStartX;
     const rawDeltaY = event.clientY - dragStartY;
@@ -724,6 +726,7 @@ function setupNewsCarousel(root) {
   };
 
   const finishDrag = (event) => {
+    if (event.pointerType === "touch") return; // 触摸事件由 touchend 处理
     if (!isDragging || event.pointerId !== dragPointerId) return;
     isDragging = false;
     root.classList.remove("is-dragging");
@@ -752,6 +755,73 @@ function setupNewsCarousel(root) {
     }, 120);
     dragLocked = null;
   };
+
+  // 触摸事件处理（移动端：纵向滑动交还页面滚动，横向滑动接管）
+  let touchStartX = 0, touchStartY = 0, touchDeltaX = 0, touchDeltaY = 0, touchLocked = null, touchActive = false;
+
+  viewport.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    touchStartX = touch.clientX;
+    touchStartY = touch.clientY;
+    touchDeltaX = 0;
+    touchDeltaY = 0;
+    touchLocked = null;
+    touchActive = true;
+    pauseAuto();
+    dragBaseOffset = getCurrentOffset();
+    track.style.transitionDuration = "0ms";
+    root.classList.add("is-dragging");
+  }, { passive: true });
+
+  viewport.addEventListener("touchmove", (e) => {
+    if (!touchActive || e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    touchDeltaX = touch.clientX - touchStartX;
+    touchDeltaY = touch.clientY - touchStartY;
+    
+    const absX = Math.abs(touchDeltaX);
+    const absY = Math.abs(touchDeltaY);
+    
+    if (touchLocked === null) {
+      if (absX > angleLockThreshold || absY > angleLockThreshold) {
+        touchLocked = absY > absX ? 'vertical' : 'horizontal';
+      }
+    }
+    
+    if (touchLocked === 'vertical') {
+      return; // 不调用 preventDefault，允许浏览器默认滚动
+    }
+    
+    if (touchLocked === 'horizontal') {
+      e.preventDefault(); // 阻止默认滚动，由 JS 接管横向拖动
+      const nextOffset = dragBaseOffset + touchDeltaX;
+      track.dataset.offset = String(nextOffset);
+      track.style.transform = `translate3d(${nextOffset}px, 0, 0)`;
+    }
+  }, { passive: false });
+
+  viewport.addEventListener("touchend", (e) => {
+    if (!touchActive) return;
+    touchActive = false;
+    root.classList.remove("is-dragging");
+    
+    if (touchLocked === 'vertical') {
+      touchLocked = null;
+      return;
+    }
+    
+    if (Math.abs(touchDeltaX) >= swipeThreshold) {
+      const targetIndex = touchDeltaX < 0 
+        ? Math.min(cards.length - 1, activeIndex + 1) 
+        : Math.max(0, activeIndex - 1);
+      goTo(targetIndex);
+    } else {
+      goTo(activeIndex);
+    }
+    
+    touchLocked = null;
+  });
 
   viewport.addEventListener("pointerdown", beginDrag);
   viewport.addEventListener("pointermove", moveDrag);
