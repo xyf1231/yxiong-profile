@@ -3052,6 +3052,24 @@ html[lang="en"] .subtle-name {
   }
 }
 
+
+/* profile timeline: align experience cards with the site surface language */
+.profile-timeline .timeline {
+  background: transparent;
+}
+
+.profile-timeline .timeline li {
+  border-radius: var(--radius);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.16);
+  transform-origin: center;
+}
+
+.profile-timeline .timeline li:hover {
+  transform: translateX(6px) translateY(-2px) scale(1.01);
+  border-color: rgba(100, 210, 255, 0.28);
+  background: rgba(255, 255, 255, 0.082);
+}
+
 @media (max-width: 620px) {
   .site-header {
     position: fixed;
@@ -7134,6 +7152,25 @@ body.nav-mega-open::after {
     margin: 0 !important;
   }
 
+  .profile-timeline .timeline {
+    gap: 14px;
+    background: transparent !important;
+  }
+
+  .profile-timeline .timeline li {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+  }
+
+  .profile-timeline .timeline li:hover {
+    transform: none !important;
+    background: transparent !important;
+    border-color: transparent !important;
+  }
+
   .profile-publication-item .pdf-actions .pdf-preview-link,
   .profile-publication-item .pdf-actions .pdf-download-link,
   .all-publication-list .pdf-actions .pdf-preview-link,
@@ -7644,6 +7681,74 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 @media (max-width: 860px) {
   .home-dark .hero.portal-hero.clean-hero {
     min-height: min(820px, 96svh) !important;
+  }
+}
+
+
+/* profile photo resize: keep the intro layout balanced after image dimension updates */
+main > .profile-combo.section-wrap:first-child {
+  align-items: center !important;
+}
+
+main > .profile-combo.section-wrap:first-child .profile-photo {
+  width: min(100%, 280px);
+  justify-self: center;
+}
+
+main > .profile-combo.section-wrap:first-child .profile-photo img {
+  aspect-ratio: 1 / 1.18;
+  object-position: center top;
+}
+
+main > .profile-combo.section-wrap:first-child .profile-identity {
+  align-self: center;
+}
+
+main > .profile-combo.section-wrap:first-child .profile-bio-text {
+  max-width: 58ch;
+}
+
+@media (min-width: 861px) and (max-width: 1260px) {
+  main > .profile-combo.section-wrap:first-child {
+    grid-template-columns: minmax(170px, 0.36fr) minmax(300px, 0.86fr) minmax(320px, 1fr) !important;
+    gap: clamp(22px, 2.8vw, 40px) !important;
+    padding: clamp(24px, 2.8vw, 40px) !important;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-photo {
+    width: min(100%, 240px);
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-identity h1 {
+    font-size: clamp(2.5rem, 3.5vw, 3.45rem) !important;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-identity h2 {
+    font-size: clamp(1.18rem, 1.8vw, 1.55rem) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  main > .profile-combo.section-wrap:first-child {
+    width: min(100% - 24px, 560px) !important;
+    padding: 22px !important;
+    gap: 18px !important;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-photo {
+    width: min(100%, 250px) !important;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-photo img {
+    aspect-ratio: 4 / 5;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-identity h1 {
+    font-size: clamp(2.9rem, 12.5vw, 4rem) !important;
+  }
+
+  main > .profile-combo.section-wrap:first-child .profile-bio-text {
+    max-width: 100%;
   }
 }
 
