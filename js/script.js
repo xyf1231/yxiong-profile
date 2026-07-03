@@ -530,7 +530,7 @@ function renderMetrics(metrics) {
 function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
-  const fallbackImages = ["assets/research-fiber-devices.svg", "assets/research-opto-chip.svg", "assets/research-fabrication.svg"];
+  const fallbackImages = ["assets/research-fiber-devices.webp", "assets/research-opto-chip.webp", "assets/research-fabrication.webp"];
   const list = currentLang === "en" ? researchEnglish : items;
   target.innerHTML = list.map((item, index) => {
     const image = item.image || fallbackImages[index % fallbackImages.length];
