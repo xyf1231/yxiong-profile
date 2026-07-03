@@ -5,7 +5,7 @@
 - 线上地址：https://xyfoptics.xyz
 - 项目目录：`/Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站`
 - 本地后台：`http://localhost:8787/admin.html`
-- 当前版本：`v1.5.72`
+- 当前版本：`v1.6.2`
 - 稳定流程：`docs/WORKFLOW.md`
 - 更新日志：`docs/CHANGELOG.md`
 
@@ -25,6 +25,8 @@
 ├── honors.html             # 荣誉：奖励、创新创业
 ├── conferences.html        # 学术活动：会议、学术服务、审稿服务
 ├── admin.html              # 本地后台维护界面
+├── VERSION                 # 全站统一版本号（如 v1.6.2）
+├── bump-version.sh         # 一键批量更新所有 HTML 版本号
 ├── js/
 │   ├── data.js             # 网站内容数据库，最核心
 │   ├── script.js            # 前台渲染、语言、导航、轮播、交互
@@ -38,20 +40,53 @@
 ├── scripts/
 │   ├── admin-server.mjs     # 本地后台服务，负责保存 js/data.js 和上传文件
 │   ├── check-site.mjs       # 静态检查
-│   ├── bump-version.mjs     # 版本号更新
 │   ├── optimize-images.py   # 图片压缩为 WebP
 │   └── backup.sh            # 本地备份脚本
-├── scripts/
-│   ├── admin-server.mjs    # 本地后台服务，负责保存 js/data.js 和上传文件
-│   ├── check-site.mjs      # 静态检查
-│   ├── bump-version.mjs    # 版本号更新
-│   ├── optimize-images.py  # 图片压缩为 WebP
-│   └── backup.sh           # 本地备份脚本
 ├── docs/                   # 维护文档、部署清单、交接说明、更新日志
 ├── 快捷命令/               # 双击启动、预览、压缩图片、部署入口
 ├── package.json            # 项目命令
 └── vercel.json             # Vercel 配置
 ```
+
+## 版本号管理（推荐新方案）
+
+网站已改为**中央版本号管理**，所有 HTML 页面的缓存版本戳统一读取自 `VERSION` 文件，不再手动逐个修改。
+
+### 文件
+
+- `VERSION` — 只写一行版本号，例如 `v1.6.2`
+- `bump-version.sh` — 自动遍历所有 HTML，批量替换 `?v=vX.Y.Z` 格式
+
+### 升级步骤
+
+```bash
+# 1. 修改 VERSION
+echo "v1.6.3" > VERSION
+
+# 2. 运行脚本
+./bump-version.sh
+```
+
+脚本会自动：
+- 读取 `VERSION` 中的版本号
+- 遍历所有 `*.html` 文件
+- 用正则匹配 `?v=vX.Y.Z` 格式并统一替换
+- 输出每个文件的旧→新版本号
+
+### 特性
+
+- **自动识别任意旧版本号**（v1.5.167、v1.6.1 等）
+- **格式校验**：版本号必须符合 `vX.Y.Z`，否则提示确认
+- **跳过无版本戳文件**：不会误改其他文件
+- **macOS / Linux 兼容**
+
+### 旧方案（保留兼容）
+
+```bash
+npm run bump -- 1.6.2
+```
+
+`scripts/bump-version.mjs` 仍可运行，但推荐优先使用 `./bump-version.sh`。
 
 ## 日常维护流程
 
@@ -60,10 +95,10 @@
 3. 打开 `http://localhost:8787/admin.html`。
 4. 上传图片到 `assets/`，上传 PDF 到 `papers/`。
 5. 在后台编辑对应栏目内容。
-6. 点击条目内的保存按钮，再点击“保存到本地”。
+6. 点击条目内的保存按钮，再点击"保存到本地"。
 7. 预览页面。
 8. 运行 `npm run check`。
-9. 更新版本号和 `docs/CHANGELOG.md`。
+9. 更新版本号（`echo "vX.Y.Z" > VERSION && ./bump-version.sh`）和 `docs/CHANGELOG.md`。
 10. 用户要求发布时执行 `vercel deploy --prod --yes`。
 
 ## 常用命令
@@ -72,7 +107,8 @@
 cd /Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站
 npm run admin
 npm run check
-npm run bump -- 1.5.72
+./bump-version.sh           # 新版本号管理
+npm run bump -- 1.6.2       # 旧版本号管理（兼容）
 vercel deploy --prod --yes
 ```
 
@@ -178,7 +214,7 @@ Intelligence
 - PDF 下载路径是 `papers/...`。
 - 图片路径是 `assets/...`。
 - `docs/CHANGELOG.md` 已新增记录。
-- `docs/WORKFLOW.md` 当前版本正确。
+- `VERSION` 文件已更新，`./bump-version.sh` 已运行。
 
 ## 交给其他 AI 的提示词
 
@@ -190,6 +226,6 @@ Intelligence
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
 内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
 当前稳定流程是本地维护 data.js、assets/、papers/，再由 Vercel 托管。
-每次迭代必须更新版本号、写 docs/CHANGELOG.md、运行 npm run check。
+每次迭代必须更新版本号（修改 VERSION 后运行 ./bump-version.sh）、写 docs/CHANGELOG.md、运行 npm run check。
 只有用户明确要求发布时才部署。
 ```
