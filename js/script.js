@@ -1639,7 +1639,6 @@ function translateLooseHeadings(dict) {
   if (homeResearch) homeResearch.textContent = dict.researchTitle;
 
   const exact = {
-    个人简介: dict.profile,
     简介: dict.profile,
     主页: dict.navHome,
     研究内容: dict.researchTitle,
