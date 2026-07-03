@@ -162,7 +162,84 @@
         margin-bottom: 18px;
       }
       .cms-editor-col { display: flex; flex-direction: column; gap: 18px; }
-      .cms-list-col .item-list { max-height: 70vh; overflow-y: auto; }
+      /* ── 条目列表列 ── */
+      .cms-list-col {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .cms-list-col .item-list {
+        flex: 1;
+        max-height: 70vh;
+        overflow-y: auto;
+        gap: 0;
+      }
+      .cms-list-col .managed-item {
+        background: rgba(255,255,255,0.09);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .cms-list-col .managed-item:last-child { border-bottom: none; }
+      .cms-list-col .managed-item:hover { background: rgba(255,255,255,0.12); }
+      .cms-list-col .managed-item h3 { font-size: 0.95rem; margin-bottom: 2px; }
+      .cms-list-col .managed-item p { font-size: 0.82rem; color: var(--muted); margin-bottom: 0; }
+      .cms-list-col .drag-handle {
+        width: 32px; height: 38px; border-radius: 8px;
+        border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.45); cursor: grab; font: inherit; font-size: 0.9rem;
+        font-weight: 700; letter-spacing: -0.15em; padding-right: 0.15em;
+        display: grid; place-items: center; flex-shrink: 0;
+      }
+      .cms-list-col .drag-handle:hover { border-color: rgba(41,151,255,0.25); background: rgba(41,151,255,0.08); color: #2997FF; }
+      .cms-list-col .item-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+      .cms-list-col .icon-button {
+        min-height: 30px; padding: 0 10px; border-radius: 8px;
+        border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+        color: rgba(255,255,255,0.6); font: inherit; font-size: 0.75rem; font-weight: 600;
+        cursor: pointer; transition: all 0.15s ease;
+      }
+      .cms-list-col .icon-button:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2); }
+      .cms-list-col .icon-button[data-action="delete"] { color: rgba(255,107,99,0.7); }
+      .cms-list-col .icon-button[data-action="delete"]:hover { color: #ff6b63; background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.2); }
+
+      /* 条目列表空状态 */
+      .cms-list-col .item-list:empty::before {
+        content: "暂无条目";
+        display: block;
+        padding: 40px 20px;
+        text-align: center;
+        color: rgba(255,255,255,0.3);
+        font-size: 0.85rem;
+      }
+
+      /* 条目序号 */
+      .item-number {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        background: rgba(41,151,255,0.12);
+        color: #2997FF;
+        font-size: 0.7rem;
+        font-weight: 800;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+
+      /* Profile 摘要卡片 */
+      .profile-summary {
+        display: flex !important;
+        align-items: center;
+        gap: 12px;
+        padding: 20px !important;
+      }
+      .profile-avatar {
+        width: 44px; height: 44px; border-radius: 12px;
+        background: rgba(41,151,255,0.1); border: 1px solid rgba(41,151,255,0.15);
+        display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0;
+      }
 
       /* ── 增强条目列表交互 ── */
       .managed-item { cursor: default; }
@@ -402,7 +479,7 @@
                     <button data-strategy="manual">手动</button>
                   </div>
                   <div id="manual-version-row" style="display:none; margin-top:10px; gap:8px; align-items:center;">
-                    <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.0" maxlength="12" style="flex:1;min-width:0;" />
+                    <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.1" maxlength="12" style="flex:1;min-width:0;" />
                     <button class="deploy-btn primary" id="btn-set-version">设置</button>
                   </div>
                   <div class="deploy-btn-row" style="margin-top:12px;">

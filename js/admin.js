@@ -479,24 +479,38 @@ function renderList() {
   addButton.style.display = schema.type === "object" ? "none" : "inline-flex";
   if (schema.type === "object") {
     list.dataset.sortable = "false";
-    list.innerHTML = `<article class="managed-item"><div><h3>${escapeHtml(data.profile.nameCn)}</h3><p>${escapeHtml(data.profile.affiliation)}</p></div></article>`;
+    const p = data.profile || {};
+    list.innerHTML = `
+      <article class="managed-item profile-summary">
+        <div class="profile-avatar">👤</div>
+        <div class="managed-copy">
+          <h3>${escapeHtml(p.nameCn || "未命名")}</h3>
+          <p>${escapeHtml(p.affiliation || "")}</p>
+          <p style="margin-top:2px;font-size:0.78rem;color:rgba(255,255,255,0.4);">${escapeHtml(p.title || "")} · ${escapeHtml(p.email || "")}</p>
+        </div>
+      </article>`;
     return;
   }
   list.dataset.sortable = "true";
-  list.innerHTML = currentCollection()
+  const items = currentCollection();
+  if (items.length === 0) {
+    list.innerHTML = `<div class="managed-item empty-item"><div style="text-align:center;width:100%;padding:30px 20px;color:rgba(255,255,255,0.35);font-size:0.85rem;">暂无条目，点击「新增」添加</div></div>`;
+    return;
+  }
+  list.innerHTML = items
     .map(
       (item, index) => `
         <article class="managed-item" draggable="false" data-index="${index}">
           <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
           <div class="managed-copy">
-            <h3>${escapeHtml(item.title || item.label || `条目 ${index + 1}`)}</h3>
-            <p>${escapeHtml(item.venue || item.text || item.detail || item.period || item.url || "")}</p>
+            <h3><span class="item-number">${String(index + 1).padStart(2, "0")}</span>${escapeHtml(item.title || item.label || item.nameCn || `条目 ${index + 1}`)}</h3>
+            <p>${escapeHtml(item.venue || item.text || item.detail || item.period || item.subtitle || item.affiliation || item.url || "")}</p>
           </div>
           <div class="item-actions">
-            <button class="icon-button" data-action="up" data-index="${index}" type="button">上移</button>
-            <button class="icon-button" data-action="down" data-index="${index}" type="button">下移</button>
-            <button class="icon-button" data-action="edit" data-index="${index}" type="button">编辑</button>
-            <button class="icon-button" data-action="delete" data-index="${index}" type="button">删除</button>
+            <button class="icon-button" data-action="up" data-index="${index}" type="button" title="上移">▲</button>
+            <button class="icon-button" data-action="down" data-index="${index}" type="button" title="下移">▼</button>
+            <button class="icon-button" data-action="edit" data-index="${index}" type="button" title="编辑">✎</button>
+            <button class="icon-button" data-action="delete" data-index="${index}" type="button" title="删除">🗑</button>
           </div>
         </article>
       `,
