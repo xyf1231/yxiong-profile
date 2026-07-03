@@ -1,6 +1,6 @@
 {
   "name": "yxiong-profile",
-  "version": "1.5.138",
+  "version": "1.5.139",
   "private": true,
   "scripts": {
     "bump": "node scripts/bump-version.mjs",
