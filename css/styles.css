@@ -1213,6 +1213,11 @@ html[lang="en"] .profile-bio-text {
 
 .profile-intro-heading {
   margin-top: calc(var(--nav-height, 68px) + 12px) !important;
+  margin-bottom: 12px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+  margin-top: calc(var(--nav-height, 68px) + 12px) !important;
   margin-bottom: 24px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
