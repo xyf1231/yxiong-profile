@@ -1213,7 +1213,7 @@ html[lang="en"] .profile-bio-text {
 
 .profile-intro-heading {
   margin-top: calc(var(--nav-height, 68px) + 18px) !important;
-  margin-bottom: 14px !important;
+  margin-bottom: 12px !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
@@ -1226,13 +1226,14 @@ html[lang="en"] .profile-bio-text {
 }
 
 .profile-intro-heading-inner .section-kicker {
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .profile-intro-heading-inner .profile-intro-title {
   margin: 0;
+  font-size: clamp(1.9rem, 2.8vw, 2.8rem);
+  line-height: 1.12;
 }
-
 
 .profile-photo {
   overflow: hidden;
