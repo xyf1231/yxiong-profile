@@ -8269,7 +8269,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .profile-section#research .feature-card-image img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center center !important;
   display: block !important;
 }
@@ -8387,7 +8387,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .section-wrap#research .feature-card-image img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center center !important;
   display: block !important;
 }
