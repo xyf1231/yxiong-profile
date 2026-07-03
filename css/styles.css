@@ -1451,7 +1451,8 @@ html[lang="en"] .subtle-name {
 }
 
 .profile-link-row {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 0.3em;
   white-space: nowrap;
@@ -5356,7 +5357,7 @@ body.nav-mega-open::after {
   width: 100%;
   overflow-x: hidden;
   overflow-y: hidden;
-  touch-action: none;
+  touch-action: pan-y;
   scroll-padding-inline: max(24px, calc((100vw - 1420px) / 2));
   scrollbar-width: none;
   -webkit-overflow-scrolling: touch;

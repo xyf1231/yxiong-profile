@@ -686,7 +686,7 @@ function setupNewsCarousel(root) {
     dragBaseOffset = getCurrentOffset();
     track.style.transitionDuration = "0ms";
     root.classList.add("is-dragging");
-    viewport.setPointerCapture?.(event.pointerId);
+    // 不在此处 setPointerCapture，交给 moveDrag 根据方向锁定后再决定
   };
 
   const moveDrag = (event) => {
@@ -702,6 +702,10 @@ function setupNewsCarousel(root) {
       const absY = Math.abs(rawDeltaY);
       if (absX > angleLockThreshold || absY > angleLockThreshold) {
         dragLocked = absY > absX ? 'vertical' : 'horizontal';
+        // 只有在明确横向时才捕获指针，避免纵向滚动被阻断
+        if (dragLocked === 'horizontal') {
+          viewport.setPointerCapture?.(dragPointerId);
+        }
       }
     }
 
