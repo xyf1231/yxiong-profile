@@ -1184,8 +1184,7 @@ function renderAllPublications(items) {
   target.querySelector(".all-publications-more")?.addEventListener("click", () => {
     target.dataset.expanded = "true";
     renderAllPublications(items);
-    revealOnView();
-  });
+    });
 }
 
 function publicationTime(item) {
@@ -1308,7 +1307,6 @@ function renderSite() {
   applyLanguage();
   setupGlassSurface();
   setupBorderGlow();
-  setupSplitText();
   setupNavigation();
 }
 
@@ -1729,61 +1727,6 @@ function translateLooseHeadings(dict) {
   });
 }
 
-function setupSplitText() {
-  const targets = document.querySelectorAll(
-    ".clean-copy h1, .page-hero h1, .profile-identity h1, .section-heading h2",
-  );
-  targets.forEach((node) => {
-    const isHomeTitle = node.matches(".clean-copy h1");
-    const text = isHomeTitle
-      ? (currentLang === "en" ? "Fiber\nIntegrated\nIntelligence" : "光纤集成\n智能光电子")
-      : node.textContent.trim();
-    if (!text) return;
-    if (node.dataset.splitText === text) return;
-
-    node.dataset.splitText = text;
-    node.classList.add("split-text");
-    node.classList.toggle("split-text-home", isHomeTitle);
-    node.textContent = "";
-
-    let index = 0;
-    const appendChar = (parent, char) => {
-      const span = document.createElement("span");
-      span.className = "split-char";
-      span.style.setProperty("--split-delay", `${Math.min(index * 56, 1720)}ms`);
-      span.textContent = char === " " ? "\u00a0" : char;
-      parent.append(span);
-      index += 1;
-    };
-
-    if (isHomeTitle) {
-      text.split("\n").forEach((line) => {
-        const lineSpan = document.createElement("span");
-        lineSpan.className = "home-title-line";
-        Array.from(line).forEach((char) => appendChar(lineSpan, char));
-        node.append(lineSpan);
-      });
-      return;
-    }
-
-    if (/^[\x00-\x7F\s.,;:!?'"()&/+-]+$/.test(text) && text.includes(" ")) {
-      text.split(/(\s+)/).forEach((part) => {
-        if (!part) return;
-        if (/^\s+$/.test(part)) {
-          appendChar(node, " ");
-          return;
-        }
-        const word = document.createElement("span");
-        word.className = "split-word";
-        Array.from(part).forEach((char) => appendChar(word, char));
-        node.append(word);
-      });
-      return;
-    }
-
-    Array.from(text).forEach((char) => appendChar(node, char));
-  });
-}
 
 function parseHsl(value = "195 90 70") {
   const match = String(value).match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
@@ -2288,102 +2231,20 @@ function setupHomeFrameSequence() {
   start();
 }
 
-function revealOnView() {
-  const items = document.querySelectorAll(".reveal");
-  if (!items.length) return;
-
-  if (!("IntersectionObserver" in window)) {
-    items.forEach((item) => item.classList.add("is-visible"));
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    { threshold: 0.16 },
-  );
-
-  items.forEach((item, index) => {
-    item.style.setProperty("--reveal-delay", `${Math.min(index * 80, 400)}ms`);
-    observer.observe(item);
-  });
-}
-
-/* ── Card scroll animations: right-to-left fade in / out ── */
-function setupCardScrollAnimations() {
-  const selectors = [
-    ".feature-card",
-    ".project-card",
-    ".publication-item",
-    ".profile-publication-item",
-    ".detail-item",
-    ".achievement-item",
-    ".profile-timeline .timeline li",
-    ".news-card",
-    ".news-article-card",
-    ".news-info-card",
-    ".home-bento-card",
-    ".contact-form-field",
-    ".metric-row > div",
-    ".profile-combo",
-    ".home-frame-item",
-  ];
-
-  const items = document.querySelectorAll(selectors.join(", "));
-  if (!items.length) return;
-
-  // Remove old .reveal class and add new animation class
-  items.forEach((item) => {
-    item.classList.remove("reveal");
-    item.classList.add("card-scroll-anim");
-  });
-
-  // Force synchronous layout so browser applies opacity:0 before observer fires
-  document.body.offsetHeight;
-
-  if (!("IntersectionObserver" in window)) {
-    items.forEach((item) => item.classList.add("is-visible"));
-    return;
-  }
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const el = entry.target;
-        if (entry.isIntersecting) {
-          el.classList.remove("is-exited");
-          el.classList.add("is-visible");
-        } else {
-          if (el.classList.contains("is-visible")) {
-            el.classList.remove("is-visible");
-            el.classList.add("is-exited");
-          }
-        }
-      });
-    },
-    { threshold: 0.1, rootMargin: "-40px 0px -40px 0px" },
-  );
-
-  items.forEach((item, index) => {
-    item.style.setProperty("--scroll-delay", `${Math.min(index * 60, 400)}ms`);
-    observer.observe(item);
-  });
-}
 
 async function initSite() {
   renderSite();
   setupHomeFrameSequence();
-  setupCardScrollAnimations();
-  revealOnView();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
+
+document.addEventListener("click", (event) => {
+  renderSite();
+  setupHomeFrameSequence();
+  window.addEventListener("resize", resizeCanvas);
+  window.addEventListener("scroll", updateHeader, { passive: true });
+});
 
 document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-pdf-download]");
