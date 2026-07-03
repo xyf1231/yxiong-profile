@@ -31,7 +31,7 @@ for (const file of htmlFiles) {
   for (const match of content.matchAll(/\?v=([^"']+)/g)) versions.add(match[1]);
   for (const match of content.matchAll(/Version (\d+\.\d+\.\d+)/g)) footerVersions.add(match[1]);
 
-  if (!content.includes('<meta charset="utf-8">')) {
+  if (!content.includes('<meta charset="utf-8"')) {
     warnings.push(`${file}: missing explicit utf-8 meta tag`);
   }
   if (content.includes("data.js") && !content.includes('charset="utf-8"')) {

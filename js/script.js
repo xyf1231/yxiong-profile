@@ -2325,6 +2325,7 @@ function setupCardScrollAnimations() {
     ".detail-item",
     ".achievement-item",
     ".profile-timeline .timeline li",
+    ".news-card",
     ".news-article-card",
     ".news-info-card",
     ".home-bento-card",
@@ -2337,11 +2338,14 @@ function setupCardScrollAnimations() {
   const items = document.querySelectorAll(selectors.join(", "));
   if (!items.length) return;
 
-  // Remove old .reveal class from cards to avoid conflicting animations
+  // Remove old .reveal class and add new animation class
   items.forEach((item) => {
     item.classList.remove("reveal");
     item.classList.add("card-scroll-anim");
   });
+
+  // Force synchronous layout so browser applies opacity:0 before observer fires
+  document.body.offsetHeight;
 
   if (!("IntersectionObserver" in window)) {
     items.forEach((item) => item.classList.add("is-visible"));
@@ -2375,8 +2379,8 @@ function setupCardScrollAnimations() {
 async function initSite() {
   renderSite();
   setupHomeFrameSequence();
-  revealOnView();
   setupCardScrollAnimations();
+  revealOnView();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }

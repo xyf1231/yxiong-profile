@@ -7,6 +7,106 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$PROJECT_DIR"
 
+# ============================================
+# 版本号自动递增工具函数
+# ============================================
+auto_bump_version() {
+  local current_version=""
+  local new_version=""
+  
+  # 读取当前版本号
+  if [ -f "VERSION" ]; then
+    current_version=$(cat VERSION | tr -d '[:space:]')
+  fi
+  
+  if [ -z "$current_version" ]; then
+    current_version="v1.0.0"
+    echo "⚠️  VERSION 文件为空或不存在，使用默认版本 $current_version"
+  fi
+  
+  echo "📌 当前版本号: $current_version"
+  echo
+  echo "请选择版本号更新策略:"
+  echo "  1) 自动递增补丁号 (patch +1) — 推荐日常发布"
+  echo "  2) 自动递增次版本号 (minor +1) — 较大功能更新"
+  echo "  3) 手动输入版本号"
+  echo "  4) 跳过版本号更新"
+  echo
+  
+  read -r "?请选择 [1/2/3/4] (默认 1): " bump_choice
+  bump_choice=${bump_choice:-1}
+  echo
+  
+  # 解析当前版本号 vX.Y.Z
+  local major minor patch
+  major=$(echo "$current_version" | sed -E 's/^v?([0-9]+)\..*/\1/')
+  minor=$(echo "$current_version" | sed -E 's/^v?[0-9]+\.([0-9]+)\..*/\1/')
+  patch=$(echo "$current_version" | sed -E 's/^v?[0-9]+\.[0-9]+\.([0-9]+).*/\1/')
+  
+  # 确保解析成功
+  major=${major:-1}
+  minor=${minor:-0}
+  patch=${patch:-0}
+  
+  case "$bump_choice" in
+    1)
+      patch=$((patch + 1))
+      new_version="v${major}.${minor}.${patch}"
+      echo "✅ 自动递增补丁号: $current_version → $new_version"
+      ;;
+    2)
+      minor=$((minor + 1))
+      patch=0
+      new_version="v${major}.${minor}.${patch}"
+      echo "✅ 自动递增次版本号: $current_version → $new_version"
+      ;;
+    3)
+      read -r "?请输入新版本号 (格式 vX.Y.Z): " input_version
+      if echo "$input_version" | grep -qE '^v?[0-9]+\.[0-9]+\.[0-9]+$'; then
+        new_version="$input_version"
+        # 确保带 v 前缀
+        if [[ ! "$new_version" =~ ^v ]]; then
+          new_version="v$new_version"
+        fi
+        echo "✅ 手动设置版本号: $current_version → $new_version"
+      else
+        echo "❌ 版本号格式不正确，跳过版本号更新"
+        return 1
+      fi
+      ;;
+    4)
+      echo "⏭️ 跳过版本号更新"
+      return 1
+      ;;
+    *)
+      patch=$((patch + 1))
+      new_version="v${major}.${minor}.${patch}"
+      echo "✅ 自动递增补丁号: $current_version → $new_version"
+      ;;
+  esac
+  
+  # 写入 VERSION 文件
+  echo "$new_version" > VERSION
+  echo "   📝 已更新 VERSION 文件"
+  
+  # 运行 bump-version.sh 更新所有 HTML
+  if [ -f "./bump-version.sh" ]; then
+    echo "   🔄 正在运行 bump-version.sh 更新所有 HTML 文件..."
+    bash ./bump-version.sh
+    echo
+  else
+    echo "   ⚠️ bump-version.sh 不存在，跳过 HTML 版本号更新"
+  fi
+  
+  # 返回新版本号
+  echo "$new_version"
+  return 0
+}
+
+# ============================================
+# 主菜单
+# ============================================
+
 while true; do
   echo
   echo "========================================"
@@ -25,6 +125,20 @@ while true; do
 
   case "${choice:l}" in
     1)
+      echo "---------- 版本号更新 ----------"
+      echo
+      
+      # 调用自动递增版本号
+      new_ver=$(auto_bump_version) && VERSION_BUMPED=true || VERSION_BUMPED=false
+      
+      if [ "$VERSION_BUMPED" = true ]; then
+        echo "📌 准备发布版本: $new_ver"
+      else
+        new_ver=$(cat VERSION 2>/dev/null | tr -d '[:space:]')
+        echo "📌 当前版本号保持不变: $new_ver"
+      fi
+      
+      echo
       echo "---------- 推送到 GitHub ----------"
       echo
 
@@ -35,21 +149,15 @@ while true; do
         continue
       fi
 
-      # 添加所有更改
+      # 添加所有更改（包含版本号更新）
       git add -A
-
-      # 获取版本号用于提交信息
-      VERSION=$(cat VERSION 2>/dev/null || echo "")
-      if [ -z "$VERSION" ]; then
-        VERSION="$(date +%Y%m%d-%H%M)"
-      fi
 
       # 检查是否有更改要提交
       if git diff --cached --quiet; then
         echo "✅ 没有新的更改需要提交"
       else
-        echo "提交更改（版本: $VERSION）..."
-        git commit -m "Deploy $VERSION - update content"
+        echo "提交更改（版本: $new_ver）..."
+        git commit -m "Deploy $new_ver - update content"
       fi
 
       # 推送到 GitHub
@@ -65,6 +173,7 @@ while true; do
         echo "  Cloudflare Pages 会自动构建部署"
         echo "  线上地址： https://xyfoptics.xyz"
         echo "  jsDelivr 缓存：5-10 分钟后生效"
+        echo "  当前版本： $new_ver"
       else
         echo
         echo "❌ 推送失败"
