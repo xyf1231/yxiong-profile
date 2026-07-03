@@ -1211,6 +1211,29 @@ html[lang="en"] .profile-bio-text {
   border-bottom: 1px solid var(--line);
 }
 
+.profile-intro-heading {
+  margin-top: calc(var(--nav-height, 68px) + 18px) !important;
+  margin-bottom: 14px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.profile-intro-heading-inner {
+  width: min(100% - 40px, var(--profile-wide-width));
+  max-width: min(100% - 40px, var(--profile-wide-width));
+  margin-inline: auto;
+  padding-inline: 0;
+}
+
+.profile-intro-heading-inner .section-kicker {
+  margin-bottom: 10px;
+}
+
+.profile-intro-heading-inner .profile-intro-title {
+  margin: 0;
+}
+
+
 .profile-photo {
   overflow: hidden;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
