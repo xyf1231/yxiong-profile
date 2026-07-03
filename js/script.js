@@ -159,7 +159,7 @@ const translations = {
     newsKicker: "新闻动态",
     news: "News",
     quickNavKicker: "Explore",
-    quickNav: "快速导航",
+    quickNav: "Explore",
     explore: "Explore",
     manageContent: "Manage Content",
     langButton: "中文",
