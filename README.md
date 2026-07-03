@@ -1,6 +1,6 @@
 # xyfoptics 个人学术网站维护手册
 
-熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + Vercel 托管公开页面和公开素材**。
+熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + Cloudflare Pages 托管公开页面和公开素材**。
 
 - 线上地址：https://xyfoptics.xyz
 - 项目目录：`/Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站`
@@ -45,7 +45,7 @@
 ├── docs/                   # 维护文档、部署清单、交接说明、更新日志
 ├── 快捷命令/               # 双击启动、预览、压缩图片、部署入口
 ├── package.json            # 项目命令
-└── vercel.json             # Vercel 配置
+└── vercel.json.bak         # Vercel 配置（已停用）
 ```
 
 ## 版本号管理（推荐新方案）
@@ -225,7 +225,7 @@ Intelligence
 先阅读 README.md、docs/WORKFLOW.md、docs/CHANGELOG.md。
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
 内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
-当前稳定流程是本地维护 data.js、assets/、papers/，再由 Vercel 托管。
+当前稳定流程是本地维护 data.js、assets/、papers/，再由 Cloudflare Pages 托管。
 每次迭代必须更新版本号（修改 VERSION 后运行 ./bump-version.sh）、写 docs/CHANGELOG.md、运行 npm run check。
 只有用户明确要求发布时才部署。
 ```

@@ -12,14 +12,12 @@ while true; do
   echo "========================================"
   echo "  xyfoptics 网站发布"
   echo "========================================"
-  echo "  1. 推送到 GitHub（更新 jsDelivr CDN）"
-  echo "  2. 部署到 Vercel（更新线上网站）"
-  echo "  3. 全部执行（GitHub → Vercel）"
-  echo "  4. 退出"
+  echo "  1. 推送到 GitHub（更新 jsDelivr CDN，触发 Cloudflare Pages 自动部署）"
+  echo "  2. 退出"
   echo "========================================"
   echo
 
-  read -r "?请选择操作 [1/2/3/4]: " choice
+  read -r "?请选择操作 [1/2]: " choice
   echo
 
   case "${choice:l}" in
@@ -38,7 +36,7 @@ while true; do
       git add -A
 
       # 获取版本号用于提交信息
-      VERSION=$(grep '"version":' package.json | head -1 | sed 's/.*"\(.*\)".*/\1/')
+      VERSION=$(cat VERSION 2>/dev/null || echo "")
       if [ -z "$VERSION" ]; then
         VERSION="$(date +%Y%m%d-%H%M)"
       fi
@@ -48,19 +46,21 @@ while true; do
         echo "✅ 没有新的更改需要提交"
       else
         echo "提交更改（版本: $VERSION）..."
-        git commit -m "Deploy v$VERSION - update content"
+        git commit -m "Deploy $VERSION - update content"
       fi
 
       # 推送到 GitHub
       echo
       echo "推送到 GitHub origin/main..."
-      echo "（如果网络较慢，可能需要等待 1-2 分钟）"
+      echo "（Cloudflare Pages 会自动从 GitHub 构建并部署）"
       echo
 
       if git push origin main; then
         echo
         echo "✅ 推送成功！"
         echo "  仓库地址： https://github.com/xyf1231/yxiong-profile"
+        echo "  Cloudflare Pages 会自动构建部署"
+        echo "  线上地址： https://xyfoptics.xyz"
         echo "  jsDelivr 缓存：5-10 分钟后生效"
       else
         echo
@@ -71,75 +71,12 @@ while true; do
       ;;
 
     2)
-      echo "---------- 部署到 Vercel ----------"
-      echo
-      if npx vercel --prod; then
-        echo
-        echo "✅ 部署完成"
-        echo "  线上地址： https://xyfoptics.xyz"
-      else
-        echo
-        echo "❌ 部署失败，请检查上方报错"
-      fi
-      echo
-      ;;
-
-    3)
-      echo "---------- 全部执行：GitHub → Vercel ----------"
-      echo
-
-      # GitHub 推送
-      if ! git status --short > /dev/null 2>&1; then
-        echo "❌ 无法访问 Git 仓库，请检查网络或 Git 配置"
-        echo
-        continue
-      fi
-
-      git add -A
-
-      VERSION=$(grep '"version":' package.json | head -1 | sed 's/.*"\(.*\)".*/\1/')
-      if [ -z "$VERSION" ]; then
-        VERSION="$(date +%Y%m%d-%H%M)"
-      fi
-
-      if git diff --cached --quiet; then
-        echo "✅ 没有新的更改需要提交"
-      else
-        echo "提交更改（版本: $VERSION）..."
-        git commit -m "Deploy v$VERSION - update content"
-      fi
-
-      echo
-      echo "推送到 GitHub..."
-      if git push origin main; then
-        echo "✅ GitHub 推送成功"
-      else
-        echo "❌ GitHub 推送失败，跳过 Vercel 部署"
-        echo
-        continue
-      fi
-
-      echo
-      echo "部署到 Vercel..."
-      if npx vercel --prod; then
-        echo
-        echo "✅ 部署完成！"
-        echo "  jsDelivr 缓存：5-10 分钟后生效"
-        echo "  线上地址： https://xyfoptics.xyz"
-      else
-        echo
-        echo "❌ Vercel 部署失败，请检查上方报错"
-      fi
-      echo
-      ;;
-
-    4)
       echo "已退出。"
       exit 0
       ;;
 
     *)
-      echo "请输入 1、2、3 或 4。"
+      echo "请输入 1 或 2。"
       echo
       ;;
   esac

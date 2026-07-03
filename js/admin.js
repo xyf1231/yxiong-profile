@@ -692,14 +692,14 @@ function activeFileFieldName() {
   return storageBucket?.value === "papers" ? fileField || "url" : imageField || "image";
 }
 
-async function deployToVercel() {
+async function deployToCloudflare() {
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再发布。", "error");
     return;
   }
-  if (!confirm("确定发布到 Vercel？请先确认当前内容已经保存。")) return;
+  if (!confirm("确定推送到 GitHub？请先确认当前内容已经保存。")) return;
   try {
-    setLocalStatus("正在发布到 Vercel，请保持后台窗口打开...", "info");
+    setLocalStatus("正在推送到 GitHub，请保持后台窗口打开...", "info");
     const result = await localRequest("/api/deploy", { method: "POST" });
     const url = (result.output || "").match(/https?:\/\/\S+/)?.[0] || "https://xyfoptics.xyz";
     setLocalStatus(`发布完成：${url}`, "success");
@@ -723,9 +723,9 @@ async function checkLocalServer() {
 }
 
 document.querySelector("#local-save-top")?.addEventListener("click", persistAndWrite);
-document.querySelector("#local-deploy")?.addEventListener("click", deployToVercel);
-document.querySelector("#local-deploy-top")?.addEventListener("click", deployToVercel);
-document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToVercel);
+document.querySelector("#local-deploy")?.addEventListener("click", deployToCloudflare);
+document.querySelector("#local-deploy-top")?.addEventListener("click", deployToCloudflare);
+document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToCloudflare);
 document.querySelector("#save-item-bottom")?.addEventListener("click", saveCurrent);
 document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
 document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));

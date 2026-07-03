@@ -81,13 +81,13 @@
     <main class="admin-shell">
       <section class="admin-hero">
         <div>
-          <p class="section-kicker">Vercel CMS</p>
+          <p class="section-kicker">Cloudflare CMS</p>
           <h1>后台维护</h1>
-          <p class="hero-copy">在本地编辑内容、上传图片/PDF，保存后写入 data.js、assets/ 和 papers/，最后一键发布到 Vercel。</p>
+          <p class="hero-copy">在本地编辑内容、上传图片/PDF，保存后写入 data.js、assets/ 和 papers/，最后一键推送到 GitHub。</p>
         </div>
         <div class="admin-actions">
           <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
-          <button class="admin-button" id="local-deploy" type="button">发布到 Vercel</button>
+          <button class="admin-button" id="local-deploy" type="button">推送到 GitHub</button>
           <button class="admin-button" id="export-json" type="button">导出 JSON</button>
           <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
         </div>
@@ -97,7 +97,7 @@
         <div class="admin-sync-copy">
           <p class="section-kicker">Local Publish</p>
           <h2 id="admin-sync-title">按步骤维护网站</h2>
-          <p>日常只需要：上传文件、编辑内容、保存到本地、发布到 Vercel。所有公开素材都由 Vercel 托管。</p>
+          <p>日常只需要：上传文件、编辑内容、保存到本地、推送到 GitHub。所有公开素材都由 Cloudflare Pages 托管。</p>
         </div>
         <div class="admin-step-grid">
           <article class="admin-step-card">
@@ -115,8 +115,8 @@
           <article class="admin-step-card">
             <span>03</span>
             <h3>发布上线</h3>
-            <p>确认预览无误后发布到 Vercel，线上网站会使用最新 data.js 和素材。</p>
-            <button class="admin-button primary" id="local-deploy-top" type="button">发布到 Vercel</button>
+            <p>确认预览无误后推送到 GitHub，线上网站会使用最新 data.js 和素材。</p>
+            <button class="admin-button primary" id="local-deploy-top" type="button">推送到 GitHub</button>
           </article>
         </div>
         <p class="folder-status" id="local-status">当前模式：本地静态维护。请从 http://localhost:8787/admin.html 打开后台。</p>
@@ -124,7 +124,7 @@
           <div class="storage-manager-head">
             <div>
               <h3>文件管理</h3>
-              <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Vercel 托管。</p>
+              <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Cloudflare Pages 托管。</p>
             </div>
             <button class="admin-button" id="local-refresh-files-bottom" type="button">刷新文件列表</button>
           </div>
@@ -168,11 +168,11 @@
             <div class="editor-save-bar">
               <div>
                 <strong>完成修改后</strong>
-                <span>先保存当前条目，再保存到本地；确认后发布到 Vercel。</span>
+                <span>先保存当前条目，再保存到本地；确认后推送到 GitHub。</span>
               </div>
               <div class="editor-save-actions">
                 <button class="admin-button primary" id="save-item-bottom" type="button">保存当前条目</button>
-                <button class="admin-button" id="local-deploy-bottom" type="button">发布到 Vercel</button>
+                <button class="admin-button" id="local-deploy-bottom" type="button">推送到 GitHub</button>
               </div>
             </div>
           </section>

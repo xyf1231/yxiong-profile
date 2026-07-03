@@ -19,5 +19,5 @@ echo ""
 "$PYTHON_BIN" scripts/optimize-images.py
 
 echo ""
-echo "压缩完成。需要上线时，请再运行“部署到Vercel.command”。"
+echo '压缩完成。需要上线时，请再运行“发布网站.command”。'
 read "?按回车关闭..."
