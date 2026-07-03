@@ -22,8 +22,49 @@
     <title>后台管理 | 熊毅丰</title>
     <link rel="stylesheet" href="css/styles.css?v=v1.6.5" />
     <style>
-      /* ── 侧边栏分组 ── */
-      .admin-sidebar { display: flex; flex-direction: column; gap: 6px; }
+      /* ═══════════════════════════════════════════════
+         整体布局：左侧边栏 + 右侧主区域
+         ═══════════════════════════════════════════════ */
+      .admin-layout {
+        display: grid;
+        grid-template-columns: 210px 1fr;
+        min-height: 100vh;
+      }
+
+      /* ── 左侧边栏 ── */
+      .admin-sidebar {
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        overflow-y: auto;
+        background: rgba(0,0,0,0.55);
+        backdrop-filter: blur(20px) saturate(1.2);
+        -webkit-backdrop-filter: blur(20px) saturate(1.2);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        padding: 20px 12px 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        z-index: 30;
+      }
+      .sidebar-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 4px 6px 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .sidebar-brand {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        display: grid; place-items: center;
+        color: #fff; font-weight: 800; font-size: 0.85rem;
+        text-decoration: none; transition: all 0.2s ease;
+        flex-shrink: 0;
+      }
+      .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
+      .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
+      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 18px; }
       .sidebar-group-label {
         padding: 8px 12px 4px;
         color: rgba(255,255,255,0.35);
@@ -33,181 +74,30 @@
         text-transform: uppercase;
       }
       .sidebar-group { display: flex; flex-direction: column; gap: 2px; }
-      .tab-button[data-tab="deploy"] {
-        margin-top: 8px;
-        border: 1.5px solid rgba(41,151,255,0.2);
+      .tab-button {
+        width: 100%;
+        min-height: 38px;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--muted);
+        font: inherit;
+        font-weight: 700;
+        text-align: left;
+        cursor: pointer;
+        padding: 0 12px;
+        transition: all 0.15s ease;
       }
-      .tab-button[data-tab="deploy"][aria-selected="true"] {
-        background: #2997FF;
-        color: #fff;
-        border-color: #2997FF;
-      }
-
-      /* ── 面板切换 ── */
-      .admin-panel { display: none; }
-      .admin-panel.active { display: block; }
-
-      /* ── 发布仪表盘 ── */
-      .deploy-dashboard { display: grid; gap: 16px; }
-      .deploy-dashboard-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-      }
-      @media (max-width: 900px) { .deploy-dashboard-grid { grid-template-columns: 1fr; } }
-
-      .deploy-card {
-        border: 1.5px solid rgba(255,255,255,0.1);
-        border-radius: 20px;
-        background: rgba(255,255,255,0.04);
-        padding: 22px;
-        transition: border-color 0.2s ease, background 0.2s ease;
-      }
-      .deploy-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); }
-      .deploy-card.full-width { grid-column: 1 / -1; }
-      .deploy-card-header {
-        display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
-      }
-      .deploy-card-icon {
-        width: 34px; height: 34px; border-radius: 10px;
-        background: rgba(41,151,255,0.1); border: 1px solid rgba(41,151,255,0.18);
-        display: grid; place-items: center; font-size: 1rem; flex-shrink: 0;
-      }
-      .deploy-card-title { font-size: 1rem; font-weight: 700; margin: 0; }
-      .deploy-card-desc { font-size: 0.82rem; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
-      .deploy-btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-
-      .deploy-btn {
-        display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-        height: 36px; padding: 0 14px;
-        border-radius: 10px; border: 1px solid rgba(255,255,255,0.12);
-        background: rgba(255,255,255,0.05); color: var(--ink);
-        font: inherit; font-size: 0.82rem; font-weight: 650;
-        cursor: pointer; transition: all 0.15s ease; white-space: nowrap;
-      }
-      .deploy-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
-      .deploy-btn:active { transform: translateY(0); }
-      .deploy-btn.primary { background: #2997FF; border-color: #2997FF; color: #fff; }
-      .deploy-btn.primary:hover { background: #1a85f0; border-color: #1a85f0; }
-      .deploy-btn.success { background: rgba(48,209,88,0.12); border-color: rgba(48,209,88,0.25); color: #30d158; }
-      .deploy-btn.success:hover { background: rgba(48,209,88,0.2); }
-      .deploy-btn.danger { background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.2); color: #ff453a; }
-      .deploy-btn.danger:hover { background: rgba(255,69,58,0.18); }
-      .deploy-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-
-      .deploy-segmented {
-        display: inline-flex; background: rgba(255,255,255,0.04);
-        border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 3px; gap: 2px;
-      }
-      .deploy-segmented button {
-        height: 28px; padding: 0 12px; border-radius: 8px; border: none;
-        background: transparent; color: var(--muted); font: inherit;
-        font-size: 0.78rem; font-weight: 650; cursor: pointer; transition: all 0.15s ease;
-      }
-      .deploy-segmented button.active { background: rgba(255,255,255,0.1); color: var(--ink); }
-      .deploy-segmented button:hover:not(.active) { color: var(--ink); }
-
-      .deploy-input {
-        height: 36px; padding: 0 12px; border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03);
-        color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 600;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      }
-      .deploy-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(41,151,255,0.12); }
-      .deploy-input::placeholder { color: rgba(255,255,255,0.25); }
-
-      .deploy-file-list {
-        max-height: 200px; overflow-y: auto; border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25);
-        padding: 10px 14px; margin-top: 12px;
-        font-size: 0.76rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-      }
-      .deploy-file-list.empty { color: var(--muted); text-align: center; padding: 20px; }
-      .deploy-file-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-      .deploy-file-item:last-child { border-bottom: none; }
-      .deploy-file-status { display: inline-block; width: 18px; text-align: center; font-weight: 800; color: #ff9f0a; }
-      .deploy-file-status.added { color: #30d158; }
-      .deploy-file-status.modified { color: #2997FF; }
-      .deploy-file-status.deleted { color: #ff453a; }
-
-      .deploy-log {
-        background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08);
-        border-radius: 14px; padding: 14px 18px;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 0.76rem; line-height: 1.6; color: rgba(255,255,255,0.65);
-        max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all;
-      }
-      .deploy-log-entry { margin: 1px 0; padding: 1px 0; }
-      .deploy-log-entry.info { color: rgba(255,255,255,0.5); }
-      .deploy-log-entry.success { color: #30d158; }
-      .deploy-log-entry.error { color: #ff453a; }
-      .deploy-log-entry.warn { color: #ff9f0a; }
-      .deploy-log-entry.cmd { color: #2997FF; opacity: 0.8; }
-
-      .deploy-spinner {
-        display: inline-block; width: 13px; height: 13px;
-        border: 2px solid rgba(255,255,255,0.12); border-top-color: #2997FF;
-        border-radius: 50%; animation: deploySpin 0.8s linear infinite;
-        vertical-align: middle;
-      }
-      @keyframes deploySpin { to { transform: rotate(360deg); } }
-
-      .deploy-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-      @media (max-width: 600px) { .deploy-link-grid { grid-template-columns: 1fr; } }
-      .deploy-link-btn {
-        display: flex; align-items: center; justify-content: center; gap: 6px;
-        height: 40px; padding: 0 12px; border-radius: 10px;
-        border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03);
-        color: var(--ink); font: inherit; font-size: 0.8rem; font-weight: 650;
-        text-decoration: none; cursor: pointer; transition: all 0.15s ease;
-      }
-      .deploy-link-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
-
-      .deploy-status-badge {
-        display: inline-flex; align-items: center; gap: 5px;
-        font-size: 0.78rem; color: var(--muted);
-      }
-      .deploy-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display:inline-block; }
-      .deploy-status-badge.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.4); }
-
-      /* 左侧完整侧边栏样式 */
-      .admin-sidebar {
-        position: sticky;
-        top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        align-self: start;
-        padding: 18px 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        background: rgba(0,0,0,0.45);
-        backdrop-filter: blur(20px) saturate(1.2);
-        -webkit-backdrop-filter: blur(20px) saturate(1.2);
-        border-right: 1px solid rgba(255,255,255,0.08);
-      }
-      .sidebar-header {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 4px 6px 8px;
-      }
-      .sidebar-brand {
-        width: 36px; height: 36px; border-radius: 10px;
-        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
-        display: grid; place-items: center;
-        color: #fff; font-weight: 800; font-size: 0.85rem;
-        text-decoration: none; transition: all 0.2s ease;
-      }
-      .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
-      .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
-      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+      .tab-button:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
+      .tab-button[aria-selected="true"] { background: #fff; color: #000; }
+      .tab-button[data-tab="deploy"] { border: 1.5px solid rgba(41,151,255,0.2); }
+      .tab-button[data-tab="deploy"][aria-selected="true"] { background: #2997FF; color: #fff; border-color: #2997FF; }
       .sidebar-footer {
-        padding: 10px 6px;
-        border-top: 1px solid rgba(255,255,255,0.08);
+        padding: 12px 6px 0;
+        border-top: 1px solid rgba(255,255,255,0.06);
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 6px;
       }
       .sidebar-status-pill {
         display: flex; align-items: center; gap: 6px;
@@ -233,43 +123,138 @@
       .sidebar-status-pill.git-pill { cursor: pointer; transition: color 0.2s ease; }
       .sidebar-status-pill.git-pill:hover { color: rgba(255,255,255,0.7); }
 
-      /* 调整 shell 顶部间距 */
-      .admin-shell { padding-top: 0; }
+      /* ── 右侧主区域 ── */
+      .admin-main {
+        padding: 28px 28px 40px;
+        overflow-y: auto;
+        max-height: 100vh;
+      }
+      .admin-shell { padding-top: 0 !important; }
 
-      /* 增强条目列表交互 */
+      /* ── 面板切换 ── */
+      .admin-panel { display: none; }
+      .admin-panel.active { display: block; }
+
+      /* ── CMS 标题栏 ── */
+      .cms-header {
+        display: grid;
+        grid-template-columns: minmax(300px, 1fr) auto;
+        gap: 24px;
+        align-items: end;
+        margin-bottom: 28px;
+      }
+      .folder-status {
+        grid-column: 1 / -1;
+        margin: -6px 0 0;
+        border: 1px solid rgba(41,151,255,0.15);
+        border-radius: 10px;
+        background: rgba(41,151,255,0.05);
+        color: rgba(255,255,255,0.65);
+        font-size: 0.9rem;
+        padding: 10px 12px;
+      }
+
+      /* ── CMS 主工作区：编辑表单 + 条目列表 ── */
+      .cms-primary {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 360px;
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+      .cms-editor-col { display: flex; flex-direction: column; gap: 18px; }
+      .cms-list-col .item-list { max-height: 70vh; overflow-y: auto; }
+
+      /* ── 增强条目列表交互 ── */
       .managed-item { cursor: default; }
       .managed-item .item-actions { opacity: 0.6; transition: opacity 0.2s ease; }
       .managed-item:hover .item-actions { opacity: 1; }
-
-      /* 拖拽排序优化 */
       .managed-item.drag-over-before { box-shadow: inset 0 3px 0 var(--accent) !important; }
       .managed-item.drag-over-after { box-shadow: inset 0 -3px 0 var(--accent) !important; }
-
-      /* 文件管理器增强 */
       .storage-item { transition: background 0.15s ease, border-color 0.15s ease; }
       .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
 
-      /* 移动端 */
-      @media (max-width: 860px) {
-        .admin-grid { grid-template-columns: 1fr; }
+      /* ── 发布仪表盘 ── */
+      .deploy-dashboard { display: grid; gap: 16px; }
+      .deploy-dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+      }
+      .deploy-card {
+        border: 1.5px solid rgba(255,255,255,0.1);
+        border-radius: 20px;
+        background: rgba(255,255,255,0.04);
+        padding: 22px;
+        transition: border-color 0.2s ease, background 0.2s ease;
+      }
+      .deploy-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); }
+      .deploy-card.full-width { grid-column: 1 / -1; }
+      .deploy-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+      .deploy-card-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(41,151,255,0.1); border: 1px solid rgba(41,151,255,0.18); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+      .deploy-card-title { font-size: 1rem; font-weight: 700; margin: 0; }
+      .deploy-card-desc { font-size: 0.82rem; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
+      .deploy-btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+      .deploy-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 650; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
+      .deploy-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
+      .deploy-btn:active { transform: translateY(0); }
+      .deploy-btn.primary { background: #2997FF; border-color: #2997FF; color: #fff; }
+      .deploy-btn.primary:hover { background: #1a85f0; border-color: #1a85f0; }
+      .deploy-btn.success { background: rgba(48,209,88,0.12); border-color: rgba(48,209,88,0.25); color: #30d158; }
+      .deploy-btn.success:hover { background: rgba(48,209,88,0.2); }
+      .deploy-btn.danger { background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.2); color: #ff453a; }
+      .deploy-btn.danger:hover { background: rgba(255,69,58,0.18); }
+      .deploy-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+      .deploy-segmented { display: inline-flex; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 3px; gap: 2px; }
+      .deploy-segmented button { height: 28px; padding: 0 12px; border-radius: 8px; border: none; background: transparent; color: var(--muted); font: inherit; font-size: 0.78rem; font-weight: 650; cursor: pointer; transition: all 0.15s ease; }
+      .deploy-segmented button.active { background: rgba(255,255,255,0.1); color: var(--ink); }
+      .deploy-segmented button:hover:not(.active) { color: var(--ink); }
+      .deploy-input { height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .deploy-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(41,151,255,0.12); }
+      .deploy-input::placeholder { color: rgba(255,255,255,0.25); }
+      .deploy-file-list { max-height: 200px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); padding: 10px 14px; margin-top: 12px; font-size: 0.76rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+      .deploy-file-list.empty { color: var(--muted); text-align: center; padding: 20px; }
+      .deploy-file-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+      .deploy-file-item:last-child { border-bottom: none; }
+      .deploy-file-status { display: inline-block; width: 18px; text-align: center; font-weight: 800; color: #ff9f0a; }
+      .deploy-file-status.added { color: #30d158; }
+      .deploy-file-status.modified { color: #2997FF; }
+      .deploy-file-status.deleted { color: #ff453a; }
+      .deploy-log { background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px 18px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.76rem; line-height: 1.6; color: rgba(255,255,255,0.65); max-height: 280px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; }
+      .deploy-log-entry { margin: 1px 0; padding: 1px 0; }
+      .deploy-log-entry.info { color: rgba(255,255,255,0.5); }
+      .deploy-log-entry.success { color: #30d158; }
+      .deploy-log-entry.error { color: #ff453a; }
+      .deploy-log-entry.warn { color: #ff9f0a; }
+      .deploy-log-entry.cmd { color: #2997FF; opacity: 0.8; }
+      .deploy-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.12); border-top-color: #2997FF; border-radius: 50%; animation: deploySpin 0.8s linear infinite; vertical-align: middle; }
+      @keyframes deploySpin { to { transform: rotate(360deg); } }
+      .deploy-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .deploy-link-btn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: var(--ink); font: inherit; font-size: 0.8rem; font-weight: 650; text-decoration: none; cursor: pointer; transition: all 0.15s ease; }
+      .deploy-link-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
+      .deploy-status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--muted); }
+      .deploy-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display: inline-block; }
+      .deploy-status-badge.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.4); }
+
+      /* ── 移动端 ── */
+      @media (max-width: 900px) {
+        .admin-layout { grid-template-columns: 1fr; }
         .admin-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 8px; }
-        .sidebar-header { width: 100%; padding: 0 0 4px; }
+        .sidebar-header { width: auto; padding: 0; border-bottom: none; }
         .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; }
         .sidebar-group { flex: 1; min-width: 140px; }
         .sidebar-footer { width: 100%; border-top: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
+        .admin-main { padding: 16px; max-height: none; }
+        .cms-primary { grid-template-columns: 1fr; }
         .deploy-dashboard-grid { grid-template-columns: 1fr; }
         .deploy-link-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body class="admin-body">
-    <div class="statusbar-right">
-        <span class="status-pill connection-pill" id="sb-connection"><span class="dot"></span>连接中…</span>
-      </div>
-    </div>
-
-    <main class="admin-shell">
-      <!-- 左侧完整侧边栏 -->
+    <div class="admin-layout">
+      <!-- ═══════════════════════════════════════
+           左侧边栏
+           ═══════════════════════════════════════ -->
       <aside class="admin-sidebar" aria-label="管理导航">
         <div class="sidebar-header">
           <a href="index.html" class="sidebar-brand" title="返回首页">YX</a>
@@ -308,180 +293,193 @@
         </div>
       </aside>
 
-      <div class="admin-workspace">
-        <!-- ===== 内容管理面板 ===== -->
-        <div class="admin-panel active" id="panel-cms">
-          <section class="admin-hero">
-            <div>
-              <p class="section-kicker" id="active-kicker">Profile</p>
-              <h1 id="active-title">基本资料</h1>
-              <p class="hero-copy">编辑下方内容，保存当前条目后自动同步到 data.js。所有公开素材由 Cloudflare Pages 托管。</p>
-            </div>
-            <div class="admin-actions">
-              <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
-              <button class="admin-button" id="export-json" type="button">导出 JSON</button>
-              <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
-            </div>
-            <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 assets/，论文 PDF 写入 papers/。</p>
-          </section>
-
-          <section class="editor-panel">
-            <div class="section-heading inline">
+      <!-- ═══════════════════════════════════════
+           右侧主区域
+           ═══════════════════════════════════════ -->
+      <main class="admin-main">
+        <div class="admin-shell">
+          <!-- ===== 内容管理面板 ===== -->
+          <div class="admin-panel active" id="panel-cms">
+            <!-- 标题栏 -->
+            <section class="admin-hero">
               <div>
-                <p class="section-kicker" id="editor-kicker">编辑</p>
-                <h2 id="editor-title">编辑当前条目</h2>
+                <p class="section-kicker" id="active-kicker">Profile</p>
+                <h1 id="active-title">基本资料</h1>
+                <p class="hero-copy">编辑下方内容，保存当前条目后自动同步到 data.js。所有公开素材由 Cloudflare Pages 托管。</p>
               </div>
-              <button class="admin-button" id="add-item" type="button">新增</button>
+              <div class="admin-actions">
+                <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
+                <button class="admin-button" id="export-json" type="button">导出 JSON</button>
+                <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
+              </div>
+              <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 assets/，论文 PDF 写入 papers/。</p>
+            </section>
+
+            <!-- 主工作区：编辑表单 + 条目列表 -->
+            <div class="cms-primary">
+              <div class="cms-editor-col">
+                <section class="editor-panel">
+                  <div class="section-heading inline">
+                    <div>
+                      <p class="section-kicker" id="editor-kicker">编辑</p>
+                      <h2 id="editor-title">编辑当前条目</h2>
+                    </div>
+                    <button class="admin-button" id="add-item" type="button">新增</button>
+                  </div>
+                  <form class="form-grid" id="content-form"></form>
+                  <p class="upload-note">上传 PDF 会自动保存到 papers/，图片会自动保存到 assets/；保存当前条目后 data.js 会同步更新。</p>
+                  <div class="editor-actions">
+                    <button class="admin-button primary" id="save-item" type="button">保存当前</button>
+                    <button class="admin-button" id="clear-form" type="button">清空</button>
+                  </div>
+                  <div class="editor-save-bar">
+                    <div>
+                      <strong>完成修改后</strong>
+                      <span>先保存当前条目，再保存到本地；确认后推送到 GitHub。</span>
+                    </div>
+                    <div class="editor-save-actions">
+                      <button class="admin-button primary" id="save-item-bottom" type="button">保存当前条目</button>
+                      <button class="admin-button" id="local-deploy-bottom" type="button">推送到 GitHub</button>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="json-panel">
+                  <textarea id="json-buffer" spellcheck="false"></textarea>
+                </section>
+              </div>
+
+              <div class="cms-list-col">
+                <section class="item-list" id="item-list"></section>
+              </div>
             </div>
-            <form class="form-grid" id="content-form"></form>
-            <p class="upload-note">上传 PDF 会自动保存到 papers/，图片会自动保存到 assets/；保存当前条目后 data.js 会同步更新。</p>
-            <div class="editor-actions">
-              <button class="admin-button primary" id="save-item" type="button">保存当前</button>
-              <button class="admin-button" id="clear-form" type="button">清空</button>
-            </div>
-            <div class="editor-save-bar">
+
+            <!-- 文件管理器 -->
+            <section class="admin-sync-panel glass-surface glass-surface--fallback" aria-labelledby="admin-sync-title">
+              <div class="admin-sync-copy">
+                <p class="section-kicker">File Manager</p>
+                <h2 id="admin-sync-title">文件管理</h2>
+                <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Cloudflare Pages 托管。</p>
+              </div>
+              <div class="storage-manager">
+                <div class="storage-manager-head">
+                  <div>
+                    <h3>素材文件</h3>
+                    <p>管理 assets/ 图片和 papers/ 论文 PDF。</p>
+                  </div>
+                  <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
+                </div>
+                <div class="storage-form">
+                  <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="assets">assets 图片</option><option value="papers">papers 论文</option></select></label>
+                  <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
+                  <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
+                  <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
+                </div>
+                <div class="storage-list" id="storage-list" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+
+          <!-- ===== 发布仪表盘面板 ===== -->
+          <div class="admin-panel" id="panel-deploy">
+            <section class="admin-hero" style="grid-template-columns:1fr;">
               <div>
-                <strong>完成修改后</strong>
-                <span>先保存当前条目，再保存到本地；确认后推送到 GitHub。</span>
+                <p class="section-kicker">Deploy Dashboard</p>
+                <h1>发布仪表盘</h1>
+                <p class="hero-copy">管理版本号、查看 Git 状态、推送到 GitHub、启动本地预览。所有操作记录显示在下方日志中。</p>
               </div>
-              <div class="editor-save-actions">
-                <button class="admin-button primary" id="save-item-bottom" type="button">保存当前条目</button>
-                <button class="admin-button" id="local-deploy-bottom" type="button">推送到 GitHub</button>
-              </div>
-            </div>
-          </section>
+            </section>
 
-          <section class="item-list" id="item-list"></section>
-
-          <section class="json-panel">
-            <textarea id="json-buffer" spellcheck="false"></textarea>
-          </section>
-
-          <!-- 文件管理器 -->
-          <section class="admin-sync-panel glass-surface glass-surface--fallback" aria-labelledby="admin-sync-title">
-            <div class="admin-sync-copy">
-              <p class="section-kicker">File Manager</p>
-              <h2 id="admin-sync-title">文件管理</h2>
-              <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Cloudflare Pages 托管。</p>
-            </div>
-            <div class="storage-manager">
-              <div class="storage-manager-head">
-                <div>
-                  <h3>素材文件</h3>
-                  <p>管理 assets/ 图片和 papers/ 论文 PDF。</p>
+            <div class="deploy-dashboard">
+              <div class="deploy-dashboard-grid">
+                <!-- 版本号管理 -->
+                <div class="deploy-card">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">🏷️</div><h2 class="deploy-card-title">版本号管理</h2></div>
+                  <p class="deploy-card-desc">更新 VERSION 文件并同步到所有 HTML 的缓存戳和页脚。</p>
+                  <div class="deploy-segmented" id="version-strategy">
+                    <button class="active" data-strategy="patch">patch +1</button>
+                    <button data-strategy="minor">minor +1</button>
+                    <button data-strategy="manual">手动</button>
+                  </div>
+                  <div id="manual-version-row" style="display:none; margin-top:10px; gap:8px; align-items:center;">
+                    <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.0" maxlength="12" style="flex:1;min-width:0;" />
+                    <button class="deploy-btn primary" id="btn-set-version">设置</button>
+                  </div>
+                  <div class="deploy-btn-row" style="margin-top:12px;">
+                    <button class="deploy-btn primary" id="btn-update-version">
+                      <span id="version-spinner" class="deploy-spinner" style="display:none"></span>
+                      <span id="version-btn-text">更新版本号</span>
+                    </button>
+                    <button class="deploy-btn" id="btn-bump">
+                      <span id="bump-spinner" class="deploy-spinner" style="display:none"></span>
+                      运行 bump-version.sh
+                    </button>
+                  </div>
                 </div>
-                <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
-              </div>
-              <div class="storage-form">
-                <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="assets">assets 图片</option><option value="papers">papers 论文</option></select></label>
-                <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
-                <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
-                <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
-              </div>
-              <div class="storage-list" id="storage-list" aria-live="polite"></div>
-            </div>
-          </section>
-        </div>
 
-        <!-- ===== 发布仪表盘面板 ===== -->
-        <div class="admin-panel" id="panel-deploy">
-          <section class="admin-hero" style="grid-template-columns:1fr;">
-            <div>
-              <p class="section-kicker">Deploy Dashboard</p>
-              <h1>发布仪表盘</h1>
-              <p class="hero-copy">管理版本号、查看 Git 状态、推送到 GitHub、启动本地预览。所有操作记录显示在下方日志中。</p>
-            </div>
-          </section>
+                <!-- Git 状态 -->
+                <div class="deploy-card">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">📦</div><h2 class="deploy-card-title">Git 变更</h2></div>
+                  <p class="deploy-card-desc">查看当前工作区的文件变更状态。</p>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn" id="btn-refresh-git">刷新状态</button>
+                  </div>
+                  <div class="deploy-file-list empty" id="git-status-list">点击「刷新状态」查看变更文件</div>
+                </div>
 
-          <div class="deploy-dashboard">
-            <div class="deploy-dashboard-grid">
-              <!-- 版本号管理 -->
-              <div class="deploy-card">
-                <div class="deploy-card-header"><div class="deploy-card-icon">🏷️</div><h2 class="deploy-card-title">版本号管理</h2></div>
-                <p class="deploy-card-desc">更新 VERSION 文件并同步到所有 HTML 的缓存戳和页脚。</p>
-                <div class="deploy-segmented" id="version-strategy">
-                  <button class="active" data-strategy="patch">patch +1</button>
-                  <button data-strategy="minor">minor +1</button>
-                  <button data-strategy="manual">手动</button>
+                <!-- 发布操作 -->
+                <div class="deploy-card full-width">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">🚀</div><h2 class="deploy-card-title">发布到线上</h2></div>
+                  <p class="deploy-card-desc">执行 git add → commit → push，触发 Cloudflare Pages 自动部署。</p>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn success" id="btn-deploy">
+                      <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
+                      <span id="deploy-btn-text">推送到 GitHub</span>
+                    </button>
+                    <span style="color:var(--muted);font-size:0.76rem;margin-left:4px;align-self:center">自动执行: git add -A → git commit → git push origin main</span>
+                  </div>
                 </div>
-                <div id="manual-version-row" style="display:none; margin-top:10px; gap:8px; align-items:center;">
-                  <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.0" maxlength="12" style="flex:1;min-width:0;" />
-                  <button class="deploy-btn primary" id="btn-set-version">设置</button>
-                </div>
-                <div class="deploy-btn-row" style="margin-top:12px;">
-                  <button class="deploy-btn primary" id="btn-update-version">
-                    <span id="version-spinner" class="deploy-spinner" style="display:none"></span>
-                    <span id="version-btn-text">更新版本号</span>
-                  </button>
-                  <button class="deploy-btn" id="btn-bump">
-                    <span id="bump-spinner" class="deploy-spinner" style="display:none"></span>
-                    运行 bump-version.sh
-                  </button>
-                </div>
-              </div>
 
-              <!-- Git 状态 -->
-              <div class="deploy-card">
-                <div class="deploy-card-header"><div class="deploy-card-icon">📦</div><h2 class="deploy-card-title">Git 变更</h2></div>
-                <p class="deploy-card-desc">查看当前工作区的文件变更状态。</p>
-                <div class="deploy-btn-row">
-                  <button class="deploy-btn" id="btn-refresh-git">刷新状态</button>
+                <!-- 快捷链接 -->
+                <div class="deploy-card full-width">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">🔗</div><h2 class="deploy-card-title">快捷链接</h2></div>
+                  <div class="deploy-link-grid">
+                    <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
+                    <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
+                  </div>
                 </div>
-                <div class="deploy-file-list empty" id="git-status-list">点击「刷新状态」查看变更文件</div>
+
+                <!-- 本地预览 -->
+                <div class="deploy-card full-width">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">💻</div><h2 class="deploy-card-title">本地预览</h2></div>
+                  <p class="deploy-card-desc">在浏览器中启动本地 HTTP 服务器预览网站。</p>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn primary" id="btn-preview-start">
+                      <span id="preview-spinner" class="deploy-spinner" style="display:none"></span>
+                      启动本地预览
+                    </button>
+                    <button class="deploy-btn danger" id="btn-preview-stop">停止预览</button>
+                    <a class="deploy-link-btn" href="http://localhost:3456" target="_blank" rel="noopener" id="preview-link" style="display:none">打开 localhost:3456</a>
+                    <span class="deploy-status-badge" id="preview-status"><span class="dot"></span>未运行</span>
+                  </div>
+                </div>
               </div>
 
-              <!-- 发布操作 -->
+              <!-- 操作日志 -->
               <div class="deploy-card full-width">
-                <div class="deploy-card-header"><div class="deploy-card-icon">🚀</div><h2 class="deploy-card-title">发布到线上</h2></div>
-                <p class="deploy-card-desc">执行 git add → commit → push，触发 Cloudflare Pages 自动部署。</p>
-                <div class="deploy-btn-row">
-                  <button class="deploy-btn success" id="btn-deploy">
-                    <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
-                    <span id="deploy-btn-text">推送到 GitHub</span>
-                  </button>
-                  <span style="color:var(--muted);font-size:0.76rem;margin-left:4px;align-self:center">自动执行: git add -A → git commit → git push origin main</span>
+                <div class="deploy-card-header"><div class="deploy-card-icon">📋</div><h2 class="deploy-card-title">操作日志</h2></div>
+                <div class="deploy-log" id="deploy-log">
+                  <div class="deploy-log-entry info">发布仪表盘已就绪。</div>
                 </div>
-              </div>
-
-              <!-- 快捷链接 -->
-              <div class="deploy-card full-width">
-                <div class="deploy-card-header"><div class="deploy-card-icon">🔗</div><h2 class="deploy-card-title">快捷链接</h2></div>
-                <div class="deploy-link-grid">
-                  <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
-                  <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
+                <div class="deploy-btn-row" style="margin-top:10px;">
+                  <button class="deploy-btn" id="btn-clear-log">清空日志</button>
                 </div>
-              </div>
-
-              <!-- 本地预览 -->
-              <div class="deploy-card full-width">
-                <div class="deploy-card-header"><div class="deploy-card-icon">💻</div><h2 class="deploy-card-title">本地预览</h2></div>
-                <p class="deploy-card-desc">在浏览器中启动本地 HTTP 服务器预览网站。</p>
-                <div class="deploy-btn-row">
-                  <button class="deploy-btn primary" id="btn-preview-start">
-                    <span id="preview-spinner" class="deploy-spinner" style="display:none"></span>
-                    启动本地预览
-                  </button>
-                  <button class="deploy-btn danger" id="btn-preview-stop">停止预览</button>
-                  <a class="deploy-link-btn" href="http://localhost:3456" target="_blank" rel="noopener" id="preview-link" style="display:none">打开 localhost:3456</a>
-                  <span class="deploy-status-badge" id="preview-status"><span class="dot"></span>未运行</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 操作日志 -->
-            <div class="deploy-card full-width">
-              <div class="deploy-card-header"><div class="deploy-card-icon">📋</div><h2 class="deploy-card-title">操作日志</h2></div>
-              <div class="deploy-log" id="deploy-log">
-                <div class="deploy-log-entry info">发布仪表盘已就绪。</div>
-              </div>
-              <div class="deploy-btn-row" style="margin-top:10px;">
-                <button class="deploy-btn" id="btn-clear-log">清空日志</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </main>
+      </main>
+    </div>
 
     <script src="js/data.js?v=v1.6.5" charset="utf-8"></script>
     <script src="js/admin.js?v=v1.6.5" charset="utf-8"></script>
