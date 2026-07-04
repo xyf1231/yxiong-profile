@@ -1044,14 +1044,17 @@ function isPdfUrl(url = "") {
 }
 
 function pdfDownloadLink(url) {
-  if (!url) return "";
+  if (!url) {
+    const noResourceText = localizeText("暂无资源") || "暂无资源";
+    return `<div class="pdf-actions">
+      <span class="pdf-download-link no-resource"><span>${escapeHtml(noResourceText)}</span></span>
+    </div>`;
+  }
   const safeUrl = escapeHtml(url);
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
-  const previewText = localizeText("预览") || "预览";
   const downloadText = localizeText("下载") || "下载";
   return `<div class="pdf-actions">
-    <a class="pdf-preview-link" href="${safeUrl}" target="_blank" rel="noopener"><span>${escapeHtml(previewText)}</span><i aria-hidden="true"></i></a>
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -1084,12 +1087,8 @@ function showPdfLoading(link) {
 function renderPublications(items) {
   const target = document.querySelector("#publication-list");
   if (!target) return;
-  const sorted = [...items].sort((a, b) => {
-    const ar = representativeOrder.indexOf(a.title);
-    const br = representativeOrder.indexOf(b.title);
-    return (ar === -1 ? 999 : ar) - (br === -1 ? 999 : br);
-  });
-  target.innerHTML = sorted
+  // 直接使用 data.publications 数组的顺序，前 5 篇作为代表论文
+  target.innerHTML = items.slice(0, 5)
     .map((item, index) => {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
@@ -1103,7 +1102,7 @@ function renderPublications(items) {
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
-            <h3>${escapeHtml(title)}</h3>
+            <h3>${item.url ? `<a class="publication-title-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
             <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${year ? ` <span class="publication-year">${escapeHtml(year)}</span>` : ""}</p>
@@ -1116,13 +1115,8 @@ function renderPublications(items) {
 }
 
 function getRepresentativePublications(items, limit = 5) {
-  return [...items]
-    .sort((a, b) => {
-      const ar = representativeOrder.indexOf(a.title);
-      const br = representativeOrder.indexOf(b.title);
-      return (ar === -1 ? 999 : ar) - (br === -1 ? 999 : br);
-    })
-    .slice(0, limit);
+  // 直接使用 data.publications 数组的顺序
+  return items.slice(0, limit);
 }
 
 function renderProfilePublications(items) {
@@ -1167,7 +1161,7 @@ function renderAllPublications(items) {
         <article class="">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
-            <h3>${escapeHtml(title)}</h3>
+            <h3>${item.url ? `<a class="publication-title-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
             <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${date ? ` <span class="publication-year">${escapeHtml(date)}</span>` : ""}</p>

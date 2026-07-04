@@ -177,6 +177,15 @@
       .cms-list-col .managed-item {
         background: rgba(255,255,255,0.09);
         border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 14px;
+        align-items: start;
+        grid-template-columns: auto 1fr auto;
+        gap: 10px;
+      }
+        background: rgba(255,255,255,0.09);
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        padding: 10px 14px;
+        align-items: start;
       }
       .cms-list-col .managed-item:last-child { border-bottom: none; }
       .cms-list-col .managed-item:hover { background: rgba(255,255,255,0.12); }
@@ -190,7 +199,7 @@
         display: grid; place-items: center; flex-shrink: 0;
       }
       .cms-list-col .drag-handle:hover { border-color: rgba(41,151,255,0.25); background: rgba(41,151,255,0.08); color: #2997FF; }
-      .cms-list-col .item-actions { display: flex; gap: 4px; flex-wrap: wrap; }
+      .cms-list-col .item-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
       .cms-list-col .icon-button {
         min-height: 30px; padding: 0 10px; border-radius: 8px;
         border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
