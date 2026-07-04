@@ -19,7 +19,7 @@
     </script>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>联系合作 | 熊毅丰</title>
+    <title>学术活动 | 熊毅丰</title>
     <link rel="stylesheet" href="css/styles.css?v=v1.7.6" />
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="profile.html" data-nav="profile">简介</a>
           <a href="results.html" data-nav="results">成果</a>
           <a href="honors.html" data-nav="honors">荣誉</a>
-          <a href="conferences.html" data-nav="conferences">其他</a>
+          <a href="activities.html" data-nav="activities">其他</a>
         </div>
         <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
           <span></span>
@@ -69,24 +69,35 @@
           </div>
           <div class="nav-card" style="--delay:0.15s">
             <div class="nav-card-links nav-card-links-activity">
-              <a href="conferences.html" data-nav="conferences" class="nav-major-link">其他 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html" data-nav="activities" class="nav-major-link">学术活动 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
             </div>
           </div>
         </div>
       </nav>
     </header>
     <main>
-      <section class="contact section-band">
-        <div class="section-wrap contact-inner reveal">
-          <div>
-            <p class="section-kicker">Reach Out</p>
-            <h2>欢迎交流研究合作。</h2>
-          </div>
-          <div class="contact-links" id="contact-links"></div>
+      <section class="section-wrap" id="talks">
+        <div class="section-heading inline reveal">
+          <div><p class="section-kicker" data-i18n="talksKicker">Conferences</p><h2 data-i18n="conferenceTalks">国内外会议</h2></div>
         </div>
+        <div class="detail-list" id="conference-list" data-achievement-types="会议报告"></div>
+      </section>
+
+      <section class="section-wrap" id="service">
+        <div class="section-heading inline reveal">
+          <div><p class="section-kicker" data-i18n="serviceKicker">Service</p><h2 data-i18n="service">学术服务</h2></div>
+        </div>
+        <div class="detail-list" id="service-list" data-achievement-types="学术服务"></div>
+      </section>
+
+      <section class="section-wrap" id="reviews">
+        <div class="section-heading inline reveal">
+          <div><p class="section-kicker" data-i18n="reviewsKicker">Reviewing</p><h2 data-i18n="reviews">审稿服务</h2></div>
+        </div>
+        <div class="detail-list" id="review-list" data-achievement-types="审稿服务"></div>
       </section>
     </main>
     <footer class="site-footer contact-footer">

@@ -23,20 +23,19 @@
 ├── profile.html            # 简介：个人简介、研究内容、经历、代表论文、学术任职
 ├── results.html            # 成果：论文、全部论文、专利、项目
 ├── honors.html             # 荣誉：奖励、创新创业
-├── conferences.html        # 学术活动：会议、学术服务、审稿服务
+├── activities.html        # 学术活动：会议、学术服务、审稿服务
 ├── admin.html              # 本地后台维护界面
 ├── VERSION                 # 全站统一版本号（如 v1.6.2）
-├── bump-version.sh         # 一键批量更新所有 HTML 版本号
 ├── js/
 │   ├── data.js             # 网站内容数据库，最核心
 │   ├── script.js            # 前台渲染、语言、导航、轮播、交互
 │   └── admin.js             # 后台编辑界面逻辑
 ├── css/
 │   └── styles.css           # 全站样式
-├── assets/                  # 图片、头像、论文主图、新闻图、研究图
+├── resources/                  # 图片、头像、论文主图、新闻图、研究图
 │   └── frames/              # 帧动画序列
-├── papers/                  # 公开论文 PDF
-├── videos/                  # 视频文件
+├── resources/                  # 公开论文 PDF
+├── resources/                  # 视频文件
 ├── scripts/
 │   ├── admin-server.mjs     # 本地后台服务，负责保存 js/data.js 和上传文件
 │   ├── check-site.mjs       # 静态检查
@@ -45,7 +44,7 @@
 ├── docs/                   # 维护文档、部署清单、交接说明、更新日志
 ├── 快捷命令/               # 双击启动、预览、压缩图片、部署入口
 ├── package.json            # 项目命令
-└── vercel.json.bak         # Vercel 配置（已停用）
+└── vercel-archive/         # 旧 Vercel 资料和历史脚本归档
 ```
 
 ## 版本号管理（推荐新方案）
@@ -55,7 +54,7 @@
 ### 文件
 
 - `VERSION` — 只写一行版本号，例如 `v1.6.2`
-- `bump-version.sh` — 自动遍历所有 HTML，批量替换 `?v=vX.Y.Z` 格式
+- `scripts/bump-version.mjs` — 自动遍历所有 HTML，批量替换 `?v=vX.Y.Z` 格式
 
 ### 升级步骤
 
@@ -64,7 +63,7 @@
 echo "v1.6.3" > VERSION
 
 # 2. 运行脚本
-./bump-version.sh
+npm run bump -- 1.6.3
 ```
 
 脚本会自动：
@@ -77,7 +76,7 @@ echo "v1.6.3" > VERSION
 
 - **自动识别任意旧版本号**（v1.5.167、v1.6.1 等）
 - **格式校验**：版本号必须符合 `vX.Y.Z`，否则提示确认
-- **跳过无版本戳文件**：不会误改其他文件
+- **跳过无版本戳文件**：不会误改学术活动文件
 - **macOS / Linux 兼容**
 
 ### 旧方案（保留兼容）
@@ -86,19 +85,19 @@ echo "v1.6.3" > VERSION
 npm run bump -- 1.6.2
 ```
 
-`scripts/bump-version.mjs` 仍可运行，但推荐优先使用 `./bump-version.sh`。
+`scripts/bump-version.mjs` 仍可运行，也可由后台和命令行直接调用。
 
 ## 日常维护流程
 
 1. 进入项目目录。
 2. 启动后台：`npm run admin`，或双击 `快捷命令/启动后台.command`。
 3. 打开 `http://localhost:8787/admin.html`。
-4. 上传图片到 `assets/`，上传 PDF 到 `papers/`。
+4. 上传图片到 `resources/`，上传 PDF 到 `resources/`。
 5. 在后台编辑对应栏目内容。
 6. 点击条目内的保存按钮，再点击"保存到本地"。
 7. 预览页面。
 8. 运行 `npm run check`。
-9. 更新版本号（`echo "vX.Y.Z" > VERSION && ./bump-version.sh`）和 `docs/CHANGELOG.md`。
+9. 更新版本号（`echo "vX.Y.Z" > VERSION && npm run bump -- X.Y.Z`）和 `docs/CHANGELOG.md`。
 10. 用户要求发布时执行 `vercel deploy --prod --yes`。
 
 ## 常用命令
@@ -107,7 +106,7 @@ npm run bump -- 1.6.2
 cd /Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站
 npm run admin
 npm run check
-./bump-version.sh           # 新版本号管理
+npm run bump -- 1.6.2        # 新版本号管理
 npm run bump -- 1.6.2       # 旧版本号管理（兼容）
 vercel deploy --prod --yes
 ```
@@ -121,8 +120,8 @@ vercel deploy --prod --yes
 ## 内容维护规则
 
 - `data.js` 是公开内容数据库，修改内容优先看这里。
-- 图片路径必须是仓库内相对路径，例如 `assets/example.jpg`。
-- PDF 路径必须是仓库内相对路径，例如 `papers/example.pdf`。
+- 图片路径必须是仓库内相对路径，例如 `resources/images/example.jpg`。
+- PDF 路径必须是仓库内相对路径，例如 `resources/papers/example.pdf`。
 - 不要把 `/Users/...` 这种本机路径写进公开页面。
 - 中文和英文字段都要补齐，不能只改一种语言。
 - 网站默认中文打开；切换英文后，切换页面仍应保持英文。
@@ -211,12 +210,12 @@ Intelligence
 - 首页首屏标题居中，英文不裁切。
 - 新闻 01、02、03 都能居中显示。
 - 手机端无横向滑移。
-- PDF 下载路径是 `papers/...`。
-- 图片路径是 `assets/...`。
+- PDF 下载路径是 `resources/...`。
+- 图片路径是 `resources/...`。
 - `docs/CHANGELOG.md` 已新增记录。
-- `VERSION` 文件已更新，`./bump-version.sh` 已运行。
+- `VERSION` 文件已更新，`npm run bump` 已运行。
 
-## 交给其他 AI 的提示词
+## 交给学术活动 AI 的提示词
 
 ```text
 请维护这个静态个人学术网站：
@@ -225,7 +224,7 @@ Intelligence
 先阅读 README.md、docs/WORKFLOW.md、docs/CHANGELOG.md。
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
 内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
-当前稳定流程是本地维护 data.js、assets/、papers/，再由 Cloudflare Pages 托管。
-每次迭代必须更新版本号（修改 VERSION 后运行 ./bump-version.sh）、写 docs/CHANGELOG.md、运行 npm run check。
+当前稳定流程是本地维护 data.js、resources/、resources/，再由 Cloudflare Pages 托管。
+每次迭代必须更新版本号（修改 VERSION 后运行 `npm run bump -- X.Y.Z`）、写 docs/CHANGELOG.md、运行 npm run check。
 只有用户明确要求发布时才部署。
 ```

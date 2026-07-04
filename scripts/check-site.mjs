@@ -9,7 +9,7 @@ const requiredFiles = [
   "profile.html",
   "results.html",
   "honors.html",
-  "conferences.html",
+  "activities.html",
   "css/styles.css",
   "js/script.js",
   "js/data.js",

@@ -182,12 +182,16 @@ async function updateVersion(req, res) {
 
 async function runBumpVersion(res) {
   try {
-    const bumpScript = resolve(rootDir, "bump-version.sh");
-    if (!existsSync(bumpScript)) {
-      sendJson(res, 404, { ok: false, message: "bump-version.sh 不存在" });
+    const versionPath = resolve(rootDir, "VERSION");
+    const current = existsSync(versionPath) ? readFileSync(versionPath, "utf8").trim() : "v0.0.0";
+    const match = current.match(/^v?(\d+)\.(\d+)\.(\d+)$/);
+    if (!match) {
+      sendJson(res, 400, { ok: false, message: "VERSION 文件格式不正确" });
       return;
     }
-    const child = spawn("bash", [bumpScript], { cwd: rootDir });
+    const nextVersion = `v${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
+    await writeFile(versionPath, `${nextVersion}\n`, "utf8");
+    const child = spawn("node", ["scripts/bump-version.mjs", nextVersion], { cwd: rootDir });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => (stdout += chunk));
@@ -501,7 +505,7 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
   console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
-  console.log("内容写入 data.js；文件写入 assets/ 和 papers/；发布使用 GitHub + Cloudflare Pages。");
+  console.log("内容写入 data.js；文件写入 resources/ 和 resources/；发布使用 GitHub + Cloudflare Pages。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];

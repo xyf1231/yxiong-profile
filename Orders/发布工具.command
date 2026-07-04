@@ -1,13 +1,13 @@
 #!/bin/bash
-# xyfoptics 发布工具
-# 一键打开 deploy.html 发布界面
+# xyfoptics 站点维护
+# 一键打开后台管理界面
 
 PROJECT_DIR="$HOME/Documents/02-个人/01-个人网站/个人简历网站"
 PORT=8787
-URL="http://localhost:${PORT}/deploy.html"
+URL="http://localhost:${PORT}/admin.html"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  xyfoptics 发布工具"
+echo "  xyfoptics 站点维护"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # 检查端口是否已被占用（admin-server 已在运行）
@@ -30,11 +30,11 @@ else
 fi
 
 # 打开浏览器
-echo "🌐 正在打开发布工具…"
+echo "🌐 正在打开后台管理界面…"
 open "$URL"
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo "  发布工具地址: $URL"
+echo "  后台地址: $URL"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # 保持终端窗口短暂显示

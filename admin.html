@@ -259,7 +259,7 @@
       .storage-item { transition: background 0.15s ease, border-color 0.15s ease; }
       .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
 
-      /* ── 发布仪表盘 ── */
+      /* ── 版本仪表盘 ── */
       .deploy-dashboard { display: grid; gap: 16px; }
       .deploy-dashboard-grid {
         display: grid;
@@ -364,9 +364,9 @@
             </div>
           </div>
           <div class="sidebar-group">
-            <div class="sidebar-group-label">发布工具</div>
+            <div class="sidebar-group-label">版本更新</div>
             <div class="sidebar-group">
-              <button class="tab-button" data-tab="deploy" type="button">🚀 发布仪表盘</button>
+              <button class="tab-button" data-tab="deploy" type="button">🚀 版本仪表盘</button>
             </div>
           </div>
         </nav>
@@ -398,7 +398,7 @@
                 <button class="admin-button" id="export-json" type="button">导出 JSON</button>
                 <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
               </div>
-              <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 assets/，论文 PDF 写入 papers/。</p>
+              <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 resources/，论文 PDF 写入 resources/。</p>
             </section>
 
             <!-- 主工作区：编辑表单 + 条目列表 -->
@@ -413,7 +413,7 @@
                     <button class="admin-button" id="add-item" type="button">新增</button>
                   </div>
                   <form class="form-grid" id="content-form"></form>
-                  <p class="upload-note">上传 PDF 会自动保存到 papers/，图片会自动保存到 assets/；保存当前条目后 data.js 会同步更新。</p>
+                  <p class="upload-note">上传 PDF 会自动保存到 resources/，图片会自动保存到 resources/；保存当前条目后 data.js 会同步更新。</p>
                   <div class="editor-actions">
                     <button class="admin-button primary" id="save-item" type="button">保存当前</button>
                     <button class="admin-button" id="clear-form" type="button">清空</button>
@@ -451,7 +451,7 @@
                 <div class="storage-manager-head">
                   <div>
                     <h3>素材文件</h3>
-                    <p>管理 assets/ 图片和 papers/ 论文 PDF。</p>
+                    <p>管理 resources/ 图片和 resources/ 论文 PDF。</p>
                   </div>
                   <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
                 </div>
@@ -466,12 +466,12 @@
             </section>
           </div>
 
-          <!-- ===== 发布仪表盘面板 ===== -->
+          <!-- ===== 版本仪表盘面板 ===== -->
           <div class="admin-panel" id="panel-deploy">
             <section class="admin-hero" style="grid-template-columns:1fr;">
               <div>
                 <p class="section-kicker">Deploy Dashboard</p>
-                <h1>发布仪表盘</h1>
+                <h1>版本仪表盘</h1>
                 <p class="hero-copy">管理版本号、查看 Git 状态、推送到 GitHub、启动本地预览。所有操作记录显示在下方日志中。</p>
               </div>
             </section>
@@ -498,7 +498,7 @@
                     </button>
                     <button class="deploy-btn" id="btn-bump">
                       <span id="bump-spinner" class="deploy-spinner" style="display:none"></span>
-                      运行 bump-version.sh
+                      运行版本更新
                     </button>
                   </div>
                 </div>
@@ -566,7 +566,7 @@
               <div class="deploy-card full-width">
                 <div class="deploy-card-header"><div class="deploy-card-icon">📋</div><h2 class="deploy-card-title">操作日志</h2></div>
                 <div class="deploy-log" id="deploy-log">
-                  <div class="deploy-log-entry info">发布仪表盘已就绪。</div>
+                  <div class="deploy-log-entry info">版本仪表盘已就绪。</div>
                 </div>
                 <div class="deploy-btn-row" style="margin-top:10px;">
                   <button class="deploy-btn" id="btn-clear-log">清空日志</button>

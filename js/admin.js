@@ -1,6 +1,6 @@
 /**
- * xyfoptics 后台管理 — 内容管理 + 发布工具
- * 统一入口，实时状态，一键发布
+ * xyfoptics 后台管理 — 内容管理 + 版本更新
+ * 统一入口，实时状态，一键更新
  */
 
 const STORAGE_KEY = "academicSiteData";
@@ -107,7 +107,7 @@ let siteDirectoryHandle = null;
 let draggedIndex = null;
 let savedRichTextSelection = null;
 
-// 发布工具状态
+// 版本更新状态
 let deployState = {
   versionStrategy: "patch",
   isDeploying: false,
@@ -128,7 +128,7 @@ const storageBucket = document.querySelector("#storage-bucket");
 const storagePath = document.querySelector("#storage-path");
 const storageFile = document.querySelector("#storage-file");
 
-// 发布工具 DOM
+// 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
 const sbVersion = document.querySelector("#sb-version");
 const sbGit = document.querySelector("#sb-git");
@@ -315,7 +315,7 @@ async function persistAndWrite() {
       report("已保存：data.js 已同步更新。", "success");
       return;
     }
-    report("未连接本地后台：请双击「发布工具.command」，并从 http://localhost:8787/admin.html 打开。", "error");
+    report("未连接本地后台：请双击「站点维护.command」，并从 http://localhost:8787/admin.html 打开。", "error");
   } catch (error) {
     report(`保存失败：${error.message}`, "error");
   } finally {
@@ -445,7 +445,7 @@ function setupRichTextEditors() {
     }
   });
   form.querySelector("[data-rich-action='insertImageUrl']")?.addEventListener("click", () => {
-    const url = prompt("请输入图片 URL 或 assets/xxx.jpg 路径");
+    const url = prompt("请输入图片 URL 或 resources/images/xxx.jpg 路径");
     if (url) insertRichImage(url.trim(), "");
   });
   form.querySelector("[data-rich-image-upload]")?.addEventListener("change", (event) => handleRichImageUpload(event.target));
@@ -582,7 +582,7 @@ function setActiveTab(tab) {
   document.querySelector("#panel-deploy").classList.toggle("active", isDeploy);
 
   if (isDeploy) {
-    // 加载发布仪表盘初始数据
+    // 加载版本仪表盘初始数据
     loadDeployData();
     return;
   }
@@ -598,7 +598,7 @@ function setActiveTab(tab) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 日志
+//  版本更新 — 日志
 // ═══════════════════════════════════════════════════════════════
 
 function deployLog(message, type = "info") {
@@ -618,7 +618,7 @@ function clearDeployLog() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 版本管理
+//  版本更新 — 版本管理
 // ═══════════════════════════════════════════════════════════════
 
 async function loadVersion() {
@@ -680,10 +680,10 @@ async function runBump() {
   spinner.style.display = "inline-block";
   btn.disabled = true;
   try {
-    deployLog("正在运行 bump-version.sh…", "cmd");
+    deployLog("正在运行版本批量更新…", "cmd");
     const result = await apiPost("/api/bump");
     if (result.ok) {
-      deployLog("✅ bump-version.sh 执行成功", "success");
+      deployLog("✅ 版本批量更新成功", "success");
       if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) deployLog(line, "info"); });
       await loadVersion();
     } else {
@@ -699,7 +699,7 @@ async function runBump() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — Git 状态
+//  版本更新 — Git 状态
 // ═══════════════════════════════════════════════════════════════
 
 async function refreshGitStatus(silent = false) {
@@ -747,7 +747,7 @@ function updateGitPill(result) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 测试 GitHub 连接
+//  版本更新 — 测试 GitHub 连接
 // ═══════════════════════════════════════════════════════════════
 
 async function testGitHubConnection() {
@@ -770,7 +770,7 @@ async function testGitHubConnection() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 推送到 GitHub
+//  版本更新 — 推送到 GitHub
 // ═══════════════════════════════════════════════════════════════
 
 async function deployToGitHub() {
@@ -815,7 +815,7 @@ async function deployToGitHub() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 本地预览
+//  版本更新 — 本地预览
 // ═══════════════════════════════════════════════════════════════
 
 async function startPreview() {
@@ -884,7 +884,7 @@ function updatePreviewUI(running) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 状态栏轮询
+//  版本更新 — 状态栏轮询
 // ═══════════════════════════════════════════════════════════════
 
 async function pollStatus() {
@@ -928,17 +928,17 @@ async function pollStatus() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布工具 — 加载仪表盘数据
+//  版本更新 — 加载仪表盘数据
 // ═══════════════════════════════════════════════════════════════
 
 async function loadDeployData() {
-  deployLog("加载发布仪表盘数据…", "cmd");
+  deployLog("加载版本仪表盘数据…", "cmd");
   await Promise.all([
     loadVersion(),
     refreshGitStatus(true),
     checkPreviewStatus(),
   ]);
-  deployLog("发布仪表盘数据加载完成", "success");
+  deployLog("版本仪表盘数据加载完成", "success");
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1036,7 +1036,7 @@ async function deployToCloudflare() {
 
 async function checkLocalServer() {
   if (!USE_LOCAL_ADMIN_SERVER) {
-    setLocalStatus("当前不是本地后台模式：请双击「发布工具.command」，再从 http://localhost:8787/admin.html 打开。", "error");
+    setLocalStatus("当前不是本地后台模式：请双击「站点维护.command」，再从 http://localhost:8787/admin.html 打开。", "error");
     return;
   }
   try {
@@ -1180,7 +1180,7 @@ function init() {
   document.querySelector("#local-deploy-top")?.addEventListener("click", deployToCloudflare);
   document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToCloudflare);
 
-  // ── 发布工具事件 ──
+  // ── 版本更新事件 ──
   document.querySelectorAll("#version-strategy button").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll("#version-strategy button").forEach((b) => b.classList.remove("active"));

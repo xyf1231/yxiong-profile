@@ -66,7 +66,7 @@ const translations = {
     projects: "项目",
     achievements: "成果荣誉",
     awards: "奖励",
-    conferences: "其他",
+    conferences: "学术活动",
     experience: "学术经历",
     contact: "联系方式",
     admin: "后台",
@@ -147,7 +147,7 @@ const translations = {
     projects: "Projects",
     achievements: "Achievements",
     awards: "Awards",
-    conferences: "Others",
+    conferences: "Activities",
     experience: "Experience",
     contact: "Contact",
     admin: "Admin",
@@ -466,7 +466,7 @@ const newsDetailEnglish = {
   title: "Fiber-Tip Integration: Reading Light Fingerprints In Situ",
   subtitle: "A three-dimensional single-pixel device on an optical fiber tip enables one-shot in-fiber four-dimensional light-state identification",
   contentHtml:
-    "<p>When light enters an optical fiber, it carries far more than brightness. It may propagate in different fiber modes, oscillate along different polarization directions, and possess distinct wavelengths and intensities. Conventionally, reading out these coupled dimensions requires multiple optical and optoelectronic elements, which increases system complexity, latency, and noise.</p><h2>From seeing light to understanding light</h2><p>The richer the optical dimensions, the greater the information capacity of the fiber. Yet these coupled degrees of freedom also make detection more difficult. A compact device capable of reading light states directly at the fiber tip can simplify optical receivers and enable new forms of multidimensional sensing and communication.</p><figure><img src=\"https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/light-fingerprint-main.webp\" alt=\"Fiber-tip light fingerprint identification\"><figcaption>A three-dimensional single-pixel device integrated on an optical fiber tip identifies mode, polarization, wavelength, and intensity in one shot.</figcaption></figure><h2>A miniature decoding station on a fiber tip</h2><p>The team stacked two anisotropic detector units directly on the end face of a two-mode optical fiber. Through the co-design of van der Waals materials, microelectrodes, and decoding algorithms, a micron-scale fiber-core pixel generates six distinct photoelectric responses that encode multidimensional optical information.</p><h2>One-shot identification of nearly ten thousand light states</h2><p>By matching six-channel voltage outputs with a pre-calibrated database, the device identifies nearly ten thousand four-dimensional input states with an accuracy above 99%. For unknown states between calibration points, interpolation and decoupling algorithms enable reliable reconstruction.</p><h2>Imagination from the fiber tip</h2><p>This work suggests that future photodetectors can become smaller, more integrated, and closer to the site of light propagation. Integrating multidimensional readout directly on fiber tips may reduce loss, latency, and crosstalk in compact optical systems.</p>",
+    "<p>When light enters an optical fiber, it carries far more than brightness. It may propagate in different fiber modes, oscillate along different polarization directions, and possess distinct wavelengths and intensities. Conventionally, reading out these coupled dimensions requires multiple optical and optoelectronic elements, which increases system complexity, latency, and noise.</p><h2>From seeing light to understanding light</h2><p>The richer the optical dimensions, the greater the information capacity of the fiber. Yet these coupled degrees of freedom also make detection more difficult. A compact device capable of reading light states directly at the fiber tip can simplify optical receivers and enable new forms of multidimensional sensing and communication.</p><figure><img src=\"resources/images/light-fingerprint-main.webp\" alt=\"Fiber-tip light fingerprint identification\"><figcaption>A three-dimensional single-pixel device integrated on an optical fiber tip identifies mode, polarization, wavelength, and intensity in one shot.</figcaption></figure><h2>A miniature decoding station on a fiber tip</h2><p>The team stacked two anisotropic detector units directly on the end face of a two-mode optical fiber. Through the co-design of van der Waals materials, microelectrodes, and decoding algorithms, a micron-scale fiber-core pixel generates six distinct photoelectric responses that encode multidimensional optical information.</p><h2>One-shot identification of nearly ten thousand light states</h2><p>By matching six-channel voltage outputs with a pre-calibrated database, the device identifies nearly ten thousand four-dimensional input states with an accuracy above 99%. For unknown states between calibration points, interpolation and decoupling algorithms enable reliable reconstruction.</p><h2>Imagination from the fiber tip</h2><p>This work suggests that future photodetectors can become smaller, more integrated, and closer to the site of light propagation. Integrating multidimensional readout directly on fiber tips may reduce loss, latency, and crosstalk in compact optical systems.</p>",
   paperTitle: "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip",
   authors: "Yifeng Xiong, Shaochen Fang, Yining Xu, et al.",
   correspondingAuthors: "Yanqing Lu, Hongtao Yuan, Fei Xu",
@@ -593,7 +593,7 @@ function renderMetrics(metrics) {
 function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
-  const fallbackImages = ["https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-fiber-devices.webp", "https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-opto-chip.webp", "https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main/assets/research-fabrication.webp"];
+  const fallbackImages = ["resources/images/research-fiber-devices.webp", "resources/images/research-opto-chip.webp", "resources/images/research-fabrication.webp"];
   const list = currentLang === "en" ? researchEnglish : items;
   target.innerHTML = list
     .map((item, index) => {
@@ -1385,16 +1385,10 @@ function translateNavigation(dict) {
     "honors.html": dict.honors,
     "honors.html#awards": dict.awards,
     "honors.html#innovation": currentLang === "en" ? "Innovation" : "创新创业",
-    "conferences.html#talks": currentLang === "en" ? "Conferences" : "国内外会议",
-    "conferences.html#service": currentLang === "en" ? "Service" : "学术服务",
-    "conferences.html#reviews": currentLang === "en" ? "Reviewing" : "审稿服务",
-    "publications.html": dict.publications,
-    "patents.html": dict.patents,
-    "projects.html": dict.projects,
-    "achievements.html": dict.achievements,
-    "awards.html": dict.awards,
-    "conferences.html": dict.conferences,
-    "contact.html": dict.contact,
+    "activities.html#talks": currentLang === "en" ? "Conferences" : "国内外会议",
+    "activities.html#service": currentLang === "en" ? "Service" : "学术服务",
+    "activities.html#reviews": currentLang === "en" ? "Reviewing" : "审稿服务",
+    "activities.html": dict.conferences,
   };
 
   document.querySelectorAll(".nav-links a").forEach((link) => {
@@ -1506,7 +1500,7 @@ function setupNavigation() {
     profile: "profile",
     results: "results",
     honors: "honors",
-    conferences: "conferences",
+    activities: "activities",
     publications: "results",
     patents: "results",
     projects: "results",

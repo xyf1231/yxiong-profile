@@ -52,9 +52,9 @@ if [ ! -t 0 ]; then
   echo "自动递增补丁号: $current_version -> $new_version"
   echo "$new_version" > VERSION
   
-  if [ -f "./bump-version.sh" ]; then
+  if [ -f "scripts/bump-version.mjs" ]; then
     echo "更新所有 HTML 文件..."
-    bash ./bump-version.sh
+    node scripts/bump-version.mjs "$new_version"
   fi
   
   echo ""
@@ -138,9 +138,9 @@ while true; do
       echo "$new_version" > VERSION
       echo "  VERSION 文件已更新"
 
-      if [ -f "./bump-version.sh" ]; then
-        echo "  正在运行 bump-version.sh..."
-        bash ./bump-version.sh
+      if [ -f "scripts/bump-version.mjs" ]; then
+        echo "  正在运行版本批量更新..."
+        node scripts/bump-version.mjs "$new_version"
         echo ""
       fi
 

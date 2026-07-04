@@ -13,7 +13,7 @@ if [ -z "$PYTHON_BIN" ]; then
   exit 1
 fi
 
-echo "正在一键压缩 assets/ 里的图片到 WebP..."
+echo "正在一键压缩 resources/ 里的图片到 WebP..."
 echo "PNG/JPG/JPEG 会在成功转换后删除；SVG 会保持不变。"
 echo ""
 "$PYTHON_BIN" scripts/optimize-images.py

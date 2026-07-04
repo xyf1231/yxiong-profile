@@ -6787,7 +6787,6 @@ body.nav-mega-open::after {
     padding-right: clamp(90px, 8vw, 124px);
   }
 
-  .all-publication-list time,
   .detail-item time,
   .profile-publication-item > span {
     position: absolute !important;
@@ -7253,7 +7252,6 @@ body.nav-mega-open::after {
     line-height: 1.62;
   }
 
-  .all-publication-list time,
   .detail-item time,
   .profile-publication-item > span,
   .achievement-item > .item-index,

@@ -15,6 +15,6 @@ fi
 
 echo "正在启动本地后台..."
 echo "浏览器会自动打开：http://localhost:8787/admin.html"
-echo "内容会写入 js/data.js，文件会写入 assets/ 和 papers/。"
+echo "内容会写入 js/data.js，文件会写入 resources/ 和 resources/。"
 echo "保持这个窗口打开；维护结束后按 Ctrl+C 关闭。"
 "$NODE_BIN" scripts/admin-server.mjs

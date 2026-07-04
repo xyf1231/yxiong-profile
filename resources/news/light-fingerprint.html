@@ -19,7 +19,7 @@
     </script>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>学术经历 | 熊毅丰</title>
+    <title>光纤端面集成：原位读懂纤内光“指纹” | 熊毅丰</title>
     <link rel="stylesheet" href="css/styles.css?v=v1.7.6" />
   </head>
   <body>
@@ -35,7 +35,7 @@
           <a href="profile.html" data-nav="profile">简介</a>
           <a href="results.html" data-nav="results">成果</a>
           <a href="honors.html" data-nav="honors">荣誉</a>
-          <a href="conferences.html" data-nav="conferences">其他</a>
+          <a href="activities.html" data-nav="activities">其他</a>
         </div>
         <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
           <span></span>
@@ -69,22 +69,27 @@
           </div>
           <div class="nav-card" style="--delay:0.15s">
             <div class="nav-card-links nav-card-links-activity">
-              <a href="conferences.html" data-nav="conferences" class="nav-major-link">其他 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
-              <a href="conferences.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html" data-nav="activities" class="nav-major-link">学术活动 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#talks" class="nav-sub-link">国内外会议 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#service" class="nav-sub-link">学术服务 <span class="nav-card-arrow">↗</span></a>
+              <a href="activities.html#reviews" class="nav-sub-link">审稿服务 <span class="nav-card-arrow">↗</span></a>
             </div>
           </div>
         </div>
       </nav>
     </header>
+
     <main>
-      <section class="section-wrap timeline-section">
-        <div class="section-heading reveal">
-          <p class="section-kicker">Timeline</p>
-          <h2>学习工作经历</h2>
-        </div>
-        <ol class="timeline" id="experience-list"></ol>
+      <section class="section-wrap news-detail-layout">
+        <article class="news-article-card reveal">
+          <div id="news-detail-content"></div>
+        </article>
+
+        <aside class="news-info-card reveal" aria-label="论文信息">
+          <p class="section-kicker">Paper Info</p>
+          <dl class="news-info-list" id="news-detail-info"></dl>
+          <a class="button primary" id="news-detail-pdf" href="resources/papers/light-fingerprint-2026.pdf">打开论文 PDF</a>
+        </aside>
       </section>
     </main>
     <footer class="site-footer contact-footer">
@@ -93,6 +98,7 @@
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
       <span class="footer-version">Version 1.7.6</span>
     </footer>
+
     <script src="js/data.js?v=v1.7.6" charset="utf-8"></script>
     <script src="js/script.js?v=v1.7.6" charset="utf-8"></script>
   </body>
