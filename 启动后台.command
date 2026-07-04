@@ -13,7 +13,8 @@ if [ -z "$NODE_BIN" ]; then
   exit 1
 fi
 
-echo "正在启动本地网站预览..."
-echo "浏览器会自动打开：http://localhost:8787/index.html"
-echo "保持这个窗口打开；预览结束后按 Ctrl+C 关闭。"
-ADMIN_OPEN_PATH="/index.html" "$NODE_BIN" scripts/admin-server.mjs
+echo "正在启动本地后台..."
+echo "浏览器会自动打开：http://localhost:8787/admin.html"
+echo "内容会写入 js/data.js，文件会写入 resources/images/、resources/papers/、resources/videos/ 和 resources/frames/。"
+echo "保持这个窗口打开；维护结束后按 Ctrl+C 关闭。"
+"$NODE_BIN" scripts/admin-server.mjs

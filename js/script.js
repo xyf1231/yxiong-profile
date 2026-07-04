@@ -16,15 +16,25 @@ const ASSET_CACHE_BUSTER = (() => {
     return "";
   }
 })();
+const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
+
+function assetUrl(src = "") {
+  const value = String(src || "");
+  if (!value || /^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
+  const normalized = value.replace(/^\/+/, "");
+  if (!ASSET_BASE_URL) return value;
+  if (!normalized.startsWith("resources/")) return value;
+  return `${ASSET_BASE_URL}/${normalized}`;
+}
 
 function withAssetCacheBuster(src) {
   if (!src || !ASSET_CACHE_BUSTER) return src;
   try {
-    const url = new URL(src, window.location.href);
+    const url = new URL(assetUrl(src), window.location.href);
     url.searchParams.set("v", ASSET_CACHE_BUSTER);
     return url.toString();
   } catch (e) {
-    return src;
+    return assetUrl(src);
   }
 }
 
@@ -567,10 +577,10 @@ function renderProfile(data) {
   });
   document.querySelectorAll("[data-profile-image]").forEach((node) => {
     if (data.profile.photo) {
-      node.src = data.profile.photo;
+      node.src = withAssetCacheBuster(data.profile.photo);
       const picture = node.closest("picture");
       const source = picture && picture.querySelector("[data-profile-source]");
-      if (source) source.srcset = data.profile.photo;
+      if (source) source.srcset = withAssetCacheBuster(data.profile.photo);
     }
   });
 }
@@ -624,7 +634,7 @@ function renderNews(items) {
       const mediumAt = currentLang === "en" ? 42 : 18;
       const longAt = currentLang === "en" ? 70 : 30;
       const titleSize = titleLength >= longAt ? "long" : titleLength >= mediumAt ? "medium" : "short";
-      const href = item.url || "#";
+      const href = assetUrl(item.url || "#");
       const image = item.image
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
@@ -1017,7 +1027,7 @@ function renderNewsDetail(items = []) {
 
   const pdf = document.querySelector("#news-detail-pdf");
   if (pdf) {
-    if (detail.pdf) pdf.setAttribute("href", detail.pdf);
+    if (detail.pdf) pdf.setAttribute("href", assetUrl(detail.pdf));
     else pdf.hidden = true;
     pdf.innerHTML = `<span>${escapeHtml(localizeText("下载"))}</span><i aria-hidden="true"></i>`;
     pdf.setAttribute("target", "_blank");
@@ -1050,7 +1060,7 @@ function pdfDownloadLink(url) {
       <span class="pdf-download-link no-resource"><span>${escapeHtml(noResourceText)}</span></span>
     </div>`;
   }
-  const safeUrl = escapeHtml(url);
+  const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
   const downloadText = localizeText("下载") || "下载";
   return `<div class="pdf-actions">
@@ -1098,7 +1108,7 @@ function renderPublications(items) {
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1165,7 +1175,7 @@ function renderAllPublications(items) {
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1210,7 +1220,7 @@ function renderProjects(items) {
         <article class="detail-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
-            <h3>${item.url ? `<a href="${escapeHtml(item.url)}">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
+            <h3>${item.url ? `<a href="${escapeHtml(assetUrl(item.url))}">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
             <p>${escapeHtml(text)}</p>
           </div>
         </article>
@@ -1287,7 +1297,7 @@ function renderContacts(items) {
   const target = document.querySelector("#contact-links");
   if (!target) return;
   target.innerHTML = items
-    .map((item) => `<a href="${escapeHtml(item.url || "#")}">${escapeHtml(item.value || item.label)}</a>`)
+    .map((item) => `<a href="${escapeHtml(assetUrl(item.url || "#"))}">${escapeHtml(item.value || item.label)}</a>`)
     .join("");
 }
 

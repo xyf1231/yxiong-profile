@@ -10,6 +10,11 @@ const scriptDir = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(scriptDir, "..");
 const port = Number(process.env.ADMIN_PORT || 8787);
 const allowedBuckets = new Set(["assets", "papers"]);
+const pythonCandidates = [
+  process.env.PYTHON_BIN,
+  "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+  "python3",
+].filter(Boolean);
 
 // ── 本地预览服务器状态 ──
 let previewServer = null;
@@ -41,6 +46,18 @@ function readRequestBody(req) {
     req.on("data", (chunk) => chunks.push(chunk));
     req.on("end", () => resolve(Buffer.concat(chunks)));
     req.on("error", reject);
+  });
+}
+
+function runCommand(command, args, options = {}) {
+  return new Promise((resolve) => {
+    const child = spawn(command, args, { cwd: rootDir, ...options });
+    let stdout = "";
+    let stderr = "";
+    child.stdout.on("data", (chunk) => (stdout += chunk));
+    child.stderr.on("data", (chunk) => (stderr += chunk));
+    child.on("close", (code) => resolve({ code, stdout, stderr }));
+    child.on("error", (error) => resolve({ code: 1, stdout, stderr: String(error.message || error) }));
   });
 }
 
@@ -125,6 +142,35 @@ async function deleteFile(res, url) {
   const { relativePath, fullPath } = bucketFilePath(bucket, url.searchParams.get("path"));
   await unlink(fullPath);
   sendJson(res, 200, { ok: true, bucket, path: relativePath });
+}
+
+async function runOptimizeImages(req, res) {
+  try {
+    const body = req.method === "POST" ? await readRequestBody(req) : Buffer.from("");
+    const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+    const target = String(payload.target || "resources/images").trim();
+    const normalizedTarget = safeRelativePath(target, "resources/images");
+    const targetDir = resolve(rootDir, normalizedTarget);
+    if (!targetDir.startsWith(resolve(rootDir, "resources") + "/") && targetDir !== resolve(rootDir, "resources")) {
+      throw new Error("只允许压缩 resources/ 下的图片目录。");
+    }
+    const python = pythonCandidates.find((candidate) => candidate === "python3" || existsSync(candidate));
+    if (!python) {
+      throw new Error("没有找到可用的 Python 3。");
+    }
+
+    const result = await runCommand(python, ["scripts/optimize-images.py", normalizedTarget]);
+    const output = `${result.stdout}\n${result.stderr}`.trim();
+    sendJson(res, result.code === 0 ? 200 : 500, {
+      ok: result.code === 0,
+      code: result.code,
+      target: normalizedTarget,
+      output,
+      message: result.code === 0 ? "图片压缩完成" : "图片压缩失败",
+    });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
 }
 
 // ── 发布工具 API ──
@@ -448,6 +494,10 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/files" && req.method === "DELETE") {
       await deleteFile(res, url);
+      return;
+    }
+    if (url.pathname === "/api/images/optimize" && req.method === "POST") {
+      await runOptimizeImages(req, res);
       return;
     }
 

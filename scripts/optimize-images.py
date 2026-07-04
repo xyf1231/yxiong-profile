@@ -26,7 +26,7 @@ except ImportError:
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_TARGET_DIR = ROOT_DIR / "assets"
+DEFAULT_TARGET_DIR = ROOT_DIR / "resources" / "images"
 WEBP_QUALITY = 80
 SOURCE_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
 
@@ -131,7 +131,7 @@ def main() -> int:
         return 1
 
     print("已只保留 WebP 图片，SVG 图标保持不变。")
-    print("提示: 优化后如需上线，请运行一键部署到 Vercel。")
+    print("提示: 优化后如需上线，请在后台执行发布到线上。")
     return 0
 
 

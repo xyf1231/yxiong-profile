@@ -130,6 +130,10 @@ const storageFile = document.querySelector("#storage-file");
 
 // 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
+const optimizeLogEl = document.querySelector("#optimize-log");
+const optimizeProgressEl = document.querySelector("#optimize-progress");
+const optimizeStatusTextEl = document.querySelector("#optimize-status-text");
+const optimizeTargetEl = document.querySelector("#optimize-target");
 const sbVersion = document.querySelector("#sb-version");
 const sbGit = document.querySelector("#sb-git");
 const sbPreview = document.querySelector("#sb-preview");
@@ -617,6 +621,21 @@ function clearDeployLog() {
   deployLog("日志已清空");
 }
 
+function optimizeLog(message, type = "info") {
+  if (!optimizeLogEl) return;
+  const entry = document.createElement("div");
+  entry.className = `deploy-log-entry ${type}`;
+  const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+  entry.textContent = `[${time}] ${message}`;
+  optimizeLogEl.appendChild(entry);
+  optimizeLogEl.scrollTop = optimizeLogEl.scrollHeight;
+}
+
+function setOptimizeRunning(running, text = "") {
+  optimizeProgressEl?.classList.toggle("running", running);
+  if (optimizeStatusTextEl && text) optimizeStatusTextEl.textContent = text;
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  版本更新 — 版本管理
 // ═══════════════════════════════════════════════════════════════
@@ -941,6 +960,32 @@ async function loadDeployData() {
   deployLog("版本仪表盘数据加载完成", "success");
 }
 
+async function optimizeImages() {
+  const btn = document.querySelector("#btn-optimize-images");
+  if (!btn) return;
+  const target = (optimizeTargetEl?.value || "resources/images").trim() || "resources/images";
+  btn.disabled = true;
+  setOptimizeRunning(true, "正在压缩...");
+  optimizeLog(`开始压缩目录: ${target}`, "cmd");
+  try {
+    const result = await apiPost("/api/images/optimize", { target });
+    if (result.ok) {
+      optimizeLog(`✅ ${result.message}`, "success");
+      if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) optimizeLog(line, "info"); });
+      setOptimizeRunning(false, "压缩完成");
+    } else {
+      optimizeLog(`❌ ${result.message || "压缩失败"}`, "error");
+      if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) optimizeLog(line, "info"); });
+      setOptimizeRunning(false, "压缩失败");
+    }
+  } catch (err) {
+    optimizeLog(`❌ 错误: ${err.message}`, "error");
+    setOptimizeRunning(false, "执行失败");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 //  文件管理器
 // ═══════════════════════════════════════════════════════════════
@@ -1196,6 +1241,7 @@ function init() {
   document.querySelector("#btn-bump")?.addEventListener("click", runBump);
   document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
   document.querySelector("#btn-test-git")?.addEventListener("click", testGitHubConnection);
+  document.querySelector("#btn-optimize-images")?.addEventListener("click", optimizeImages);
   document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
   document.querySelector("#btn-preview-stop")?.addEventListener("click", stopPreview);

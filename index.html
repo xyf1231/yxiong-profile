@@ -4,6 +4,9 @@
     <meta charset="utf-8" />
     <script>
       document.documentElement.dataset.langReady = "pending";
+      if (!["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+        window.ASSET_BASE_URL = "https://cdn.jsdelivr.net/gh/xyf1231/yxiong-profile@main";
+      }
       try {
         if (localStorage.getItem("academicSiteLanguage") !== "en") {
           document.documentElement.lang = "zh-CN";
@@ -24,8 +27,8 @@
       content="熊毅丰的个人学术网站，展示研究方向、论文成果、项目经历、专利会议与联系方式。"
     />
     <title>熊毅丰 | Yifeng Xiong</title>
-    <link rel="preload" href="css/styles.css?v=v1.7.6" as="style" />
-    <link rel="stylesheet" href="css/styles.css?v=v1.7.6" />
+    <link rel="preload" href="css/styles.css?v=v1.7.8" as="style" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.7.8" />
   </head>
   <body class="home-dark">
     <header class="site-header" data-elevated="false">
@@ -158,7 +161,7 @@
       <span class="footer-version">Version 1.7.6</span>
     </footer>
 
-    <script src="js/data.js?v=v1.7.6" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.7.6" charset="utf-8" defer></script>
+    <script src="js/data.js?v=v1.7.8" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.7.8" charset="utf-8" defer></script>
   </body>
 </html>

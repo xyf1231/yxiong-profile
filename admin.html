@@ -20,7 +20,7 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台管理 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.7.6" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.7.8" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -320,6 +320,36 @@
       .deploy-status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--muted); }
       .deploy-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display: inline-block; }
       .deploy-status-badge.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.4); }
+      .deploy-progress {
+        margin-top: 12px;
+        display: none;
+        align-items: center;
+        gap: 10px;
+        color: rgba(255,255,255,0.65);
+        font-size: 0.78rem;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+      .deploy-progress.running { display: inline-flex; }
+      .deploy-progress .bar {
+        width: 120px;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.08);
+        overflow: hidden;
+      }
+      .deploy-progress .bar::before {
+        content: "";
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #2997FF, #30d158);
+        animation: progressPulse 1.1s ease-in-out infinite;
+      }
+      @keyframes progressPulse {
+        0% { transform: translateX(-35%); }
+        100% { transform: translateX(180%); }
+      }
 
       /* ── 移动端 ── */
       @media (max-width: 900px) {
@@ -514,6 +544,19 @@
                   <div class="deploy-file-list empty" id="git-status-list">点击「刷新状态」查看变更文件</div>
                 </div>
 
+                <div class="deploy-card">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">🖼️</div><h2 class="deploy-card-title">图片压缩</h2></div>
+                  <p class="deploy-card-desc">一键压缩 <code>resources/images/</code> 下的图片，自动转换为 WebP 并清理原图。</p>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn success" id="btn-optimize-images" type="button">压缩图片</button>
+                    <input type="text" id="optimize-target" class="deploy-input" value="resources/images" style="flex:1;min-width:0;" />
+                  </div>
+                  <div class="deploy-progress" id="optimize-progress"><span class="deploy-spinner"></span><span class="bar"></span><span id="optimize-status-text">等待执行</span></div>
+                  <div class="deploy-log" id="optimize-log" style="margin-top:12px; max-height:180px;">
+                    <div class="deploy-log-entry info">未开始压缩。</div>
+                  </div>
+                </div>
+
                 <!-- 快捷链接 -->
                 <div class="deploy-card full-width">
                   <div class="deploy-card-header"><div class="deploy-card-icon">🔗</div><h2 class="deploy-card-title">快捷链接</h2></div>
@@ -578,7 +621,7 @@
       </main>
     </div>
 
-    <script src="js/data.js?v=v1.7.6" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.7.6" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.7.8" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.7.8" charset="utf-8"></script>
   </body>
 </html>
