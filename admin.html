@@ -20,7 +20,7 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台管理 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.7.10" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.7.11" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -481,12 +481,12 @@
                 <div class="storage-manager-head">
                   <div>
                     <h3>素材文件</h3>
-                    <p>管理 resources/ 图片和 resources/ 论文 PDF。</p>
+                    <p>管理 resources/images、resources/papers、resources/videos、resources/frames 和 resources/news。</p>
                   </div>
                   <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
                 </div>
                 <div class="storage-form">
-                  <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="assets">assets 图片</option><option value="papers">papers 论文</option></select></label>
+                  <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
                   <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
                   <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
                   <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
@@ -628,7 +628,7 @@
       </main>
     </div>
 
-    <script src="js/data.js?v=v1.7.10" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.7.10" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.7.11" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.7.11" charset="utf-8"></script>
   </body>
 </html>

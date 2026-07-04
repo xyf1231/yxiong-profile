@@ -9,7 +9,14 @@ import { fileURLToPath } from "node:url";
 const scriptDir = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(scriptDir, "..");
 const port = Number(process.env.ADMIN_PORT || 8787);
-const allowedBuckets = new Set(["assets", "papers"]);
+const storageBuckets = {
+  images: "resources/images",
+  papers: "resources/papers",
+  videos: "resources/videos",
+  frames: "resources/frames",
+  news: "resources/news",
+};
+const allowedBuckets = new Set(Object.keys(storageBuckets));
 const pythonCandidates = [
   process.env.PYTHON_BIN,
   "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
@@ -100,8 +107,8 @@ function bumpVersionString(version, strategy = "patch") {
 }
 
 function safeBucket(value) {
-  const bucket = String(value || "assets");
-  if (!allowedBuckets.has(bucket)) throw new Error("只允许写入 assets 或 papers 文件夹。");
+  const bucket = String(value || "images");
+  if (!allowedBuckets.has(bucket)) throw new Error("只允许写入 resources/images、resources/papers、resources/videos、resources/frames、resources/news。");
   return bucket;
 }
 
@@ -120,8 +127,9 @@ function safeRelativePath(rawPath, fallbackName = "file") {
 
 function bucketFilePath(bucket, rawPath) {
   const relativePath = safeRelativePath(rawPath, "file");
-  const fullPath = resolve(rootDir, bucket, relativePath);
-  const bucketRoot = resolve(rootDir, bucket);
+  const bucketRootPath = storageBuckets[bucket];
+  const fullPath = resolve(rootDir, bucketRootPath, relativePath);
+  const bucketRoot = resolve(rootDir, bucketRootPath);
   if (!fullPath.startsWith(bucketRoot + "/") && fullPath !== bucketRoot) {
     throw new Error("文件路径超出允许目录。");
   }
@@ -129,7 +137,8 @@ function bucketFilePath(bucket, rawPath) {
 }
 
 async function listFilesInBucket(bucket) {
-  const bucketRoot = resolve(rootDir, bucket);
+  const bucketRootPath = storageBuckets[bucket];
+  const bucketRoot = resolve(rootDir, bucketRootPath);
   if (!existsSync(bucketRoot)) await mkdir(bucketRoot, { recursive: true });
   const files = [];
   async function walk(dir) {
@@ -172,7 +181,7 @@ async function uploadFile(req, res, url) {
   const body = await readRequestBody(req);
   await mkdir(resolve(fullPath, ".."), { recursive: true });
   await writeFile(fullPath, body);
-  sendJson(res, 200, { ok: true, bucket, path: relativePath, url: `${bucket}/${relativePath}`, bytes: body.length });
+  sendJson(res, 200, { ok: true, bucket, path: relativePath, url: `${storageBuckets[bucket]}/${relativePath}`, bytes: body.length });
 }
 
 async function deleteFile(res, url) {
@@ -543,7 +552,7 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
   console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
-  console.log("内容写入 data.js；文件写入 resources/；发布使用 GitHub + 自动部署。");
+  console.log("内容写入 data.js；文件写入 resources/images、resources/papers、resources/videos、resources/frames、resources/news；发布使用 GitHub + 自动部署。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];

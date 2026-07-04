@@ -210,11 +210,26 @@ function cleanStoragePath(value = "") {
   return String(value).replace(/^\/+/, "").replace(/\/+/g, "/").trim();
 }
 
+function storageFolderPath(bucket = "images") {
+  const map = {
+    images: "resources/images",
+    papers: "resources/papers",
+    videos: "resources/videos",
+    frames: "resources/frames",
+    news: "resources/news",
+  };
+  return map[bucket] || map.images;
+}
+
+function fileFieldForBucket(bucket = "images") {
+  return ["papers", "videos", "news"].includes(bucket) ? "file" : "image";
+}
+
 function activeFileFieldName() {
   const schema = schemas[activeTab];
   const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
   const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
-  return storageBucket?.value === "papers" ? fileField || "url" : imageField || "image";
+  return fileFieldForBucket(storageBucket?.value) === "file" ? fileField || "url" : imageField || "image";
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -252,14 +267,20 @@ async function localRequest(path, options = {}) {
 
 async function ensureWritableDirectory(name) {
   if (!siteDirectoryHandle) return null;
-  return siteDirectoryHandle.getDirectoryHandle(name, { create: true });
+  const segments = String(name || "").split("/").filter(Boolean);
+  let current = siteDirectoryHandle;
+  for (const segment of segments) {
+    current = await current.getDirectoryHandle(segment, { create: true });
+  }
+  return current;
 }
 
 async function saveFileToSiteFolder(file, key, kind, target) {
-  const folder = kind === "image" ? "assets" : "papers";
+  const bucket = kind === "image" ? "images" : "papers";
+  const folder = storageFolderPath(bucket);
   const filename = buildUploadFilename(file, key, target);
   if (USE_LOCAL_ADMIN_SERVER) {
-    const response = await fetch(`/api/upload?bucket=${encodeURIComponent(folder)}&path=${encodeURIComponent(filename)}`, {
+    const response = await fetch(`/api/upload?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(filename)}`, {
       method: "POST",
       headers: { "Content-Type": file.type || "application/octet-stream" },
       body: file,
@@ -1097,11 +1118,12 @@ function buildStoragePath(file, bucket) {
   const manual = cleanStoragePath(storagePath?.value || "");
   if (manual) return manual;
   const target = schemas[activeTab].type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
-  const stem = buildUploadFilename(file, bucket === "assets" ? "image" : "file", bucket === "assets" ? "image" : "file", target).replace(/\.[^.]+$/, "");
+  const kind = fileFieldForBucket(bucket);
+  const stem = buildUploadFilename(file, kind === "image" ? "image" : "file", target).replace(/\.[^.]+$/, "");
   return `${stem || slugify(file.name.replace(/\.[^.]+$/, "")) || "file"}${extensionOf(file.name)}`;
 }
 
-async function listLocalFiles(bucket = storageBucket?.value || "assets") {
+async function listLocalFiles(bucket = storageBucket?.value || "images") {
   if (!storageList) return;
   storageList.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
   try {
@@ -1138,7 +1160,7 @@ async function listLocalFiles(bucket = storageBucket?.value || "assets") {
 
 async function uploadLocalFile() {
   const file = storageFile?.files?.[0];
-  const bucket = storageBucket?.value || "assets";
+  const bucket = storageBucket?.value || "images";
   if (!file) { setLocalStatus("请先选择一个要上传的文件。", "error"); return; }
   if (!USE_LOCAL_ADMIN_SERVER) { setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开，才能写入项目文件夹。", "error"); return; }
   const path = buildStoragePath(file, bucket);
@@ -1189,7 +1211,7 @@ async function checkLocalServer() {
   try {
     const status = await localRequest("/api/status");
     setLocalStatus(`本地后台已连接：${status.rootDir}`, "success");
-    await listLocalFiles(storageBucket?.value || "assets");
+    await listLocalFiles(storageBucket?.value || "images");
   } catch (error) {
     setLocalStatus(`本地后台连接失败：${error.message}`, "error");
   }
@@ -1301,8 +1323,8 @@ function init() {
   });
 
   // ── 文件管理器 ──
-  document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
-  document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "assets"));
+  document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "images"));
+  document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "images"));
   document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
   storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
   storageList?.addEventListener("click", async (event) => {
@@ -1318,7 +1340,7 @@ function init() {
       if (field) { field.value = button.dataset.url; setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success"); }
       else setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
     } else if (action === "delete") {
-      await deleteLocalFile(storageBucket?.value || "assets", button.dataset.path);
+      await deleteLocalFile(storageBucket?.value || "images", button.dataset.path);
     }
   });
 
