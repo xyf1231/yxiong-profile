@@ -1160,7 +1160,7 @@ function renderAllPublications(items) {
       const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
-      const date = (item.date || item.year || "").toString().slice(0, 4);
+      const date = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = item.image
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;

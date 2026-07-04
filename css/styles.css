@@ -1652,12 +1652,9 @@ html[lang="en"] .subtle-name {
 .detail-list,
 .profile-publication-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-.all-publication-list > a,
-.all-publication-list > article,
-  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .timeline li {
@@ -1671,19 +1668,12 @@ html[lang="en"] .subtle-name {
   transition: border-color 200ms ease, background 200ms ease;
 }
 
-.all-publication-list > a:hover,
-.all-publication-list > article:hover,
-.all-publication-list .publication-item:hover,
 .detail-item:hover,
 .profile-publication-item:hover,
 .timeline li:hover {
   border-color: rgba(100, 210, 255, 0.24);
 }
 
-.all-publication-list .publication-item {
-  grid-template-columns: 72px minmax(160px, 0.42fr) 1fr;
-  padding: 26px;
-}
 
 .all-publication-list time,
 .detail-item time,
@@ -1759,7 +1749,8 @@ html[lang="en"] .subtle-name {
   color: var(--muted);
 }
 
-.publication-item {
+.publication-item,
+.all-publication-list .publication-item {
   position: relative;
   display: grid;
   grid-template-columns: 72px minmax(160px, 0.42fr) 1fr;
@@ -1769,15 +1760,18 @@ html[lang="en"] .subtle-name {
   transition: background var(--duration-fast) var(--ease-material);
 }
 
-.publication-item:hover {
+.publication-item:hover,
+.all-publication-list .publication-item:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.publication-item[data-paper-url] {
+.publication-item[data-paper-url],
+.all-publication-list .publication-item[data-paper-url] {
   cursor: pointer;
 }
 
-.publication-item[data-paper-url]:hover {
+.publication-item[data-paper-url]:hover,
+.all-publication-list .publication-item[data-paper-url]:hover {
   border-color: rgba(100, 210, 255, 0.24);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
@@ -3006,9 +3000,8 @@ html[lang="en"] .subtle-name {
     grid-template-columns: 1fr;
   }
 
-  .all-publication-list > a,
-  .all-publication-list > article,
-    .all-publication-list .publication-item,
+  .publication-item,
+  .all-publication-list .publication-item,
   .detail-item {
     grid-template-columns: 1fr;
   }
@@ -3158,6 +3151,7 @@ html[lang="en"] .subtle-name {
 
   .metric-row,
   .publication-item,
+  .all-publication-list .publication-item,
   .timeline li {
     grid-template-columns: 1fr;
   }
@@ -4500,9 +4494,7 @@ body.nav-mega-open::after {
 .news-card,
 .publication-list,
 .publication-item,
-.all-publication-list > a,
-.all-publication-list > article,
-  .all-publication-list .publication-item,
+.all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .project-card,
@@ -4514,9 +4506,7 @@ body.nav-mega-open::after {
 
 .news-card,
 .publication-item,
-.all-publication-list > a,
-.all-publication-list > article,
-  .all-publication-list .publication-item,
+.all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .project-card,
@@ -4533,9 +4523,7 @@ body.nav-mega-open::after {
 
 .news-card:hover,
 .publication-item:hover,
-.all-publication-list > a:hover,
-.all-publication-list > article:hover,
-  .all-publication-list .publication-item,
+.all-publication-list .publication-item:hover,
 .detail-item:hover,
 .profile-publication-item:hover,
 .project-card:hover,
@@ -4904,9 +4892,7 @@ body.nav-mega-open::after {
 
   .news-card,
   .publication-item,
-  .all-publication-list > a,
-  .all-publication-list > article,
-    .all-publication-list .publication-item,
+  .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item,
   .project-card,
@@ -4919,9 +4905,7 @@ body.nav-mega-open::after {
 
   .news-card:hover,
   .publication-item:hover,
-  .all-publication-list > a:hover,
-  .all-publication-list > article:hover,
-    .all-publication-list .publication-item,
+  .all-publication-list .publication-item:hover,
   .detail-item:hover,
   .profile-publication-item:hover,
   .project-card:hover,
@@ -6154,9 +6138,7 @@ body.nav-mega-open::after {
 }
 
 .publication-item,
-.all-publication-list > article,
-  .all-publication-list .publication-item,
-.all-publication-list > a,
+.all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .timeline li,
@@ -6164,13 +6146,11 @@ body.nav-mega-open::after {
   align-items: start;
 }
 
-.publication-item {
+.publication-item,
+.all-publication-list .publication-item {
   grid-template-columns: minmax(48px, 64px) minmax(180px, 0.38fr) 1fr !important;
 }
 
-.all-publication-list > a,
-.all-publication-list > article,
-  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item {
   grid-template-columns: minmax(48px, 64px) 1fr !important;
@@ -6245,9 +6225,7 @@ body.nav-mega-open::after {
   }
 
   .publication-item,
-  .all-publication-list > a,
-  .all-publication-list > article,
-    .all-publication-list .publication-item,
+  .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item,
   .timeline li,
@@ -6514,9 +6492,7 @@ body.nav-mega-open::after {
   .feature-card,
   .detail-item,
   .profile-publication-item,
-  .all-publication-list > article,
-    .all-publication-list .publication-item,
-  .all-publication-list > a,
+  .all-publication-list .publication-item,
   .achievement-item,
   .timeline li {
     position: relative;
@@ -6622,9 +6598,7 @@ body.nav-mega-open::after {
   .feature-card,
   .detail-item,
   .profile-publication-item,
-  .all-publication-list > article,
-    .all-publication-list .publication-item,
-  .all-publication-list > a,
+  .all-publication-list .publication-item,
   .achievement-item,
   .timeline li,
   .publication-item {
