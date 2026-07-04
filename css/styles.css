@@ -1657,6 +1657,7 @@ html[lang="en"] .subtle-name {
 
 .all-publication-list > a,
 .all-publication-list > article,
+  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .timeline li {
@@ -1672,11 +1673,16 @@ html[lang="en"] .subtle-name {
 
 .all-publication-list > a:hover,
 .all-publication-list > article:hover,
+.all-publication-list .publication-item:hover,
 .detail-item:hover,
 .profile-publication-item:hover,
 .timeline li:hover {
   border-color: rgba(100, 210, 255, 0.24);
-  background: rgba(255, 255, 255, 0.07);
+}
+
+.all-publication-list .publication-item {
+  grid-template-columns: 72px minmax(160px, 0.42fr) 1fr;
+  padding: 26px;
 }
 
 .all-publication-list time,
@@ -3002,6 +3008,7 @@ html[lang="en"] .subtle-name {
 
   .all-publication-list > a,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .detail-item {
     grid-template-columns: 1fr;
   }
@@ -4495,6 +4502,7 @@ body.nav-mega-open::after {
 .publication-item,
 .all-publication-list > a,
 .all-publication-list > article,
+  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .project-card,
@@ -4508,6 +4516,7 @@ body.nav-mega-open::after {
 .publication-item,
 .all-publication-list > a,
 .all-publication-list > article,
+  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item,
 .project-card,
@@ -4526,6 +4535,7 @@ body.nav-mega-open::after {
 .publication-item:hover,
 .all-publication-list > a:hover,
 .all-publication-list > article:hover,
+  .all-publication-list .publication-item,
 .detail-item:hover,
 .profile-publication-item:hover,
 .project-card:hover,
@@ -4896,6 +4906,7 @@ body.nav-mega-open::after {
   .publication-item,
   .all-publication-list > a,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item,
   .project-card,
@@ -4910,6 +4921,7 @@ body.nav-mega-open::after {
   .publication-item:hover,
   .all-publication-list > a:hover,
   .all-publication-list > article:hover,
+    .all-publication-list .publication-item,
   .detail-item:hover,
   .profile-publication-item:hover,
   .project-card:hover,
@@ -6143,6 +6155,7 @@ body.nav-mega-open::after {
 
 .publication-item,
 .all-publication-list > article,
+  .all-publication-list .publication-item,
 .all-publication-list > a,
 .detail-item,
 .profile-publication-item,
@@ -6157,6 +6170,7 @@ body.nav-mega-open::after {
 
 .all-publication-list > a,
 .all-publication-list > article,
+  .all-publication-list .publication-item,
 .detail-item,
 .profile-publication-item {
   grid-template-columns: minmax(48px, 64px) 1fr !important;
@@ -6233,6 +6247,7 @@ body.nav-mega-open::after {
   .publication-item,
   .all-publication-list > a,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item,
   .timeline li,
@@ -6500,6 +6515,7 @@ body.nav-mega-open::after {
   .detail-item,
   .profile-publication-item,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .all-publication-list > a,
   .achievement-item,
   .timeline li {
@@ -6607,6 +6623,7 @@ body.nav-mega-open::after {
   .detail-item,
   .profile-publication-item,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .all-publication-list > a,
   .achievement-item,
   .timeline li,
@@ -6775,6 +6792,7 @@ body.nav-mega-open::after {
 
   .all-publication-list > a,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item {
     position: relative;
@@ -6871,6 +6889,7 @@ body.nav-mega-open::after {
   .detail-item,
   .profile-publication-item,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .all-publication-list > a,
   .achievement-item,
   .timeline li {
@@ -7182,6 +7201,7 @@ body.nav-mega-open::after {
 
   .all-publication-list > a,
   .all-publication-list > article,
+    .all-publication-list .publication-item,
   .detail-item,
   .profile-publication-item,
   .achievement-item,
@@ -7194,6 +7214,7 @@ body.nav-mega-open::after {
 
   .all-publication-list > a > div,
   .all-publication-list > article > div,
+    .all-publication-list .publication-item,
   .detail-item > div,
   .profile-publication-item > div,
   .achievement-item > div,

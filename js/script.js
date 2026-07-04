@@ -1161,10 +1161,14 @@ function renderAllPublications(items) {
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
       const date = (item.date || item.year || "").toString().slice(0, 4);
+      const image = item.image
+        ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
+        : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class=""${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
-          <div>
+          ${image}
+          <div class="publication-copy">
             <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
