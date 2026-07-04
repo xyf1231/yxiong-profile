@@ -139,6 +139,10 @@ const sbVersion = document.querySelector("#sb-version");
 const sbGit = document.querySelector("#sb-git");
 const sbPreview = document.querySelector("#sb-preview");
 const sbConnection = document.querySelector("#sb-connection");
+const sbVersionInline = document.querySelector("#sb-version-inline");
+const sbGitInline = document.querySelector("#sb-git-inline");
+const sbPreviewInline = document.querySelector("#sb-preview-inline");
+const sbConnectionInline = document.querySelector("#sb-connection-inline");
 
 // ═══════════════════════════════════════════════════════════════
 //  工具函数
@@ -313,7 +317,7 @@ async function writeDataJsToSiteFolder() {
 
 async function persistAndWrite() {
   persist();
-  const saveButtons = [document.querySelector("#save-all"), document.querySelector("#local-save-top")].filter(Boolean);
+  const saveButtons = [document.querySelector("#save-all")].filter(Boolean);
   saveButtons.forEach((button) => {
     button.disabled = true;
     button.dataset.originalText = button.dataset.originalText || button.textContent;
@@ -804,6 +808,7 @@ async function loadVersion() {
 
 function updateVersionPill(version) {
   if (sbVersion) sbVersion.innerHTML = `<span class="dot"></span>${version}`;
+  if (sbVersionInline) sbVersionInline.textContent = version;
 }
 
 async function updateVersion() {
@@ -883,9 +888,11 @@ function updateGitPill(result) {
   if (count > 0) {
     sbGit.innerHTML = `<span class="dot"></span>${count} 个未提交`;
     sbGit.classList.add("has-changes");
+    if (sbGitInline) sbGitInline.textContent = `${count} 个未提交`;
   } else {
     sbGit.innerHTML = `<span class="dot"></span>Git 干净`;
     sbGit.classList.remove("has-changes");
+    if (sbGitInline) sbGitInline.textContent = "Git 干净";
   }
 }
 
@@ -1014,9 +1021,11 @@ function updatePreviewUI(running) {
     if (running) {
       sbPreview.innerHTML = `<span class="dot"></span>预览运行中`;
       sbPreview.classList.add("running");
+      if (sbPreviewInline) sbPreviewInline.textContent = "预览运行中";
     } else {
       sbPreview.innerHTML = `<span class="dot"></span>预览未运行`;
       sbPreview.classList.remove("running");
+      if (sbPreviewInline) sbPreviewInline.textContent = "预览未运行";
     }
   }
   const statusEl = document.querySelector("#preview-status");
@@ -1036,6 +1045,7 @@ async function pollStatus() {
       sbConnection.innerHTML = `<span class="dot"></span>本地模式`;
       sbConnection.classList.remove("connected", "disconnected");
     }
+    if (sbConnectionInline) sbConnectionInline.textContent = "本地模式";
     return;
   }
   try {
@@ -1061,12 +1071,14 @@ async function pollStatus() {
       sbConnection.classList.add("connected");
       sbConnection.classList.remove("disconnected");
     }
+    if (sbConnectionInline) sbConnectionInline.textContent = "服务器已连接";
   } catch {
     if (sbConnection) {
       sbConnection.innerHTML = `<span class="dot"></span>服务器断开`;
       sbConnection.classList.add("disconnected");
       sbConnection.classList.remove("connected");
     }
+    if (sbConnectionInline) sbConnectionInline.textContent = "服务器断开";
   }
 }
 
@@ -1230,9 +1242,7 @@ function init() {
   // ── CMS 编辑器事件 ──
   addButton?.addEventListener("click", clearForm);
   document.querySelector("#clear-form")?.addEventListener("click", clearForm);
-  document.querySelector("#save-item")?.addEventListener("click", saveCurrent);
-  document.querySelector("#save-item-bottom")?.addEventListener("click", saveCurrent);
-  document.querySelector("#save-all")?.addEventListener("click", persistAndWrite);
+  document.querySelector("#save-all")?.addEventListener("click", saveCurrent);
   document.querySelector("#reset-data")?.addEventListener("click", async () => {
     if (!confirm("确定恢复默认数据？")) return;
     data = clone(window.DEFAULT_SITE_DATA);

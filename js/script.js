@@ -46,6 +46,12 @@ function pictureTag(webpSrc, alt, cls, priority = false) {
   return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
 }
 
+function publicationImageMarkup(item, title, priority = false) {
+  const fallbackImage = "resources/images/Blank-paper.webp";
+  const imageSrc = item.image || fallbackImage;
+  return `<div class="publication-visual">${pictureTag(imageSrc, title, "", priority)}</div>`;
+}
+
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
@@ -98,6 +104,8 @@ const translations = {
     quickActivitiesText: "会议报告、学术服务与审稿",
     quickNewsTitle: "新闻",
     quickNewsText: "最新动态与论文故事",
+    download: "下载",
+    noResource: "暂无资源",
     navHome: "主页",
     results: "成果",
     honors: "荣誉",
@@ -179,6 +187,8 @@ const translations = {
     quickActivitiesText: "Talks, service, and reviewing",
     quickNewsTitle: "News",
     quickNewsText: "Updates and research stories",
+    download: "Download",
+    noResource: "No resource",
     navHome: "Home",
     results: "Results",
     honors: "Honors",
@@ -681,6 +691,8 @@ function setupNewsCarousel(root) {
   // 用户手动滑动后，自动播放暂停，但可通过按钮恢复
   let autoPlaying = true;
   let timer = null;
+  let statusTimer = null;
+  let autoplayStartedAt = 0;
   let isDragging = false;
   let dragStartX = 0;
   let dragStartY = 0;
@@ -691,6 +703,11 @@ function setupNewsCarousel(root) {
   let suppressClick = false;
   const swipeThreshold = 64;
   const angleLockThreshold = 10;
+  let wheelAccumulated = 0;
+  let wheelResetTimer = null;
+  let wheelCooldownTimer = null;
+  const wheelThreshold = 88;
+  const wheelCooldownMs = 420;
 
   const getCurrentOffset = () => Number(track.dataset.offset || 0);
   let dragBaseOffset = 0;
@@ -701,10 +718,11 @@ function setupNewsCarousel(root) {
     dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === activeIndex)));
   };
 
-  const goTo = (index, behavior = "smooth", wrap = false) => {
+  const goTo = (index, behavior = "smooth", wrap = false, manual = false) => {
     const nextIndex = wrap
       ? (index + cards.length) % cards.length
       : Math.max(0, Math.min(cards.length - 1, index));
+    if (manual) pauseAutoForManualNav();
     const card = cards[nextIndex];
     update(nextIndex);
     if (behavior === "auto") {
@@ -734,12 +752,19 @@ function setupNewsCarousel(root) {
   const pauseAuto = () => {
     autoPlaying = false;
     stopAuto();
+    window.clearInterval(statusTimer);
+    statusTimer = null;
     if (play) {
       play.textContent = "▶";
       play.setAttribute("aria-label", currentLang === "en" ? "Resume auto play" : "继续自动播放");
       play.removeAttribute("aria-disabled");
       play.disabled = false;
     }
+    update();
+  };
+
+  const pauseAutoForManualNav = () => {
+    if (autoPlaying) pauseAuto();
   };
 
   const startAuto = () => {
@@ -748,14 +773,15 @@ function setupNewsCarousel(root) {
     timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), 5200);
   };
 
-  prev?.addEventListener("click", () => { goTo(activeIndex - 1); });
-  next?.addEventListener("click", () => { goTo(activeIndex + 1); });
-  dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index); }));
+  prev?.addEventListener("click", () => { goTo(activeIndex - 1, "smooth", false, true); });
+  next?.addEventListener("click", () => { goTo(activeIndex + 1, "smooth", false, true); });
+  dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index, "smooth", false, true); }));
   play?.addEventListener("click", () => {
     autoPlaying = !autoPlaying;
     play.textContent = autoPlaying ? "Ⅱ" : "▶";
     play.setAttribute("aria-label", autoPlaying ? (currentLang === "en" ? "Pause auto play" : "暂停自动播放") : (currentLang === "en" ? "Resume auto play" : "继续自动播放"));
-    startAuto();
+    if (autoPlaying) startAuto();
+    else pauseAuto();
   });
 
   const beginDrag = (event) => {
@@ -769,7 +795,7 @@ function setupNewsCarousel(root) {
     dragPointerId = event.pointerId;
     dragLocked = null;
     // 用户开始拖拽，立即关闭自动播放，但保留按钮可恢复
-    pauseAuto();
+    pauseAutoForManualNav();
     dragBaseOffset = getCurrentOffset();
     track.style.transitionDuration = "0ms";
     root.classList.add("is-dragging");
@@ -834,7 +860,7 @@ function setupNewsCarousel(root) {
       ? (dragDeltaX < 0 ? Math.min(cards.length - 1, activeIndex + 1) : Math.max(0, activeIndex - 1))
       : activeIndex;
 
-    goTo(targetIndex);
+    goTo(targetIndex, "smooth", false, true);
 
     window.setTimeout(() => {
       suppressClick = false;
@@ -854,7 +880,7 @@ function setupNewsCarousel(root) {
     touchDeltaY = 0;
     touchLocked = null;
     touchActive = true;
-    pauseAuto();
+    pauseAutoForManualNav();
     dragBaseOffset = getCurrentOffset();
     track.style.transitionDuration = "0ms";
     root.classList.add("is-dragging");
@@ -901,9 +927,9 @@ function setupNewsCarousel(root) {
       const targetIndex = touchDeltaX < 0 
         ? Math.min(cards.length - 1, activeIndex + 1) 
         : Math.max(0, activeIndex - 1);
-      goTo(targetIndex);
+      goTo(targetIndex, "smooth", false, true);
     } else {
-      goTo(activeIndex);
+      goTo(activeIndex, "smooth", false, true);
     }
     
     touchLocked = null;
@@ -913,6 +939,27 @@ function setupNewsCarousel(root) {
   viewport.addEventListener("pointermove", moveDrag);
   viewport.addEventListener("pointerup", finishDrag);
   viewport.addEventListener("pointercancel", finishDrag);
+  viewport.addEventListener("wheel", (event) => {
+    const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
+    if (!horizontalIntent) return;
+    event.preventDefault();
+    pauseAutoForManualNav();
+    if (wheelCooldownTimer) return;
+    const delta = event.deltaX || event.deltaY;
+    if (!delta) return;
+    wheelAccumulated += delta;
+    window.clearTimeout(wheelResetTimer);
+    wheelResetTimer = window.setTimeout(() => {
+      wheelAccumulated = 0;
+    }, 120);
+    if (Math.abs(wheelAccumulated) < wheelThreshold) return;
+    const targetIndex = wheelAccumulated > 0 ? Math.min(cards.length - 1, activeIndex + 1) : Math.max(0, activeIndex - 1);
+    wheelAccumulated = 0;
+    if (targetIndex !== activeIndex) goTo(targetIndex, "smooth", false, true);
+    wheelCooldownTimer = window.setTimeout(() => {
+      wheelCooldownTimer = null;
+    }, wheelCooldownMs);
+  }, { passive: false });
   root.addEventListener("click", (event) => {
     if (!suppressClick) return;
     event.preventDefault();
@@ -920,8 +967,8 @@ function setupNewsCarousel(root) {
   }, true);
 
   viewport.addEventListener("keydown", (event) => {
-    if (event.key === "ArrowLeft") goTo(activeIndex - 1);
-    if (event.key === "ArrowRight") goTo(activeIndex + 1);
+    if (event.key === "ArrowLeft") goTo(activeIndex - 1, "smooth", false, true);
+    if (event.key === "ArrowRight") goTo(activeIndex + 1, "smooth", false, true);
   });
 
   let resizeTimer = null;
@@ -1055,16 +1102,16 @@ function isPdfUrl(url = "") {
 
 function pdfDownloadLink(url) {
   if (!url) {
-    const noResourceText = localizeText("暂无资源") || "暂无资源";
+    const noResourceText = localizeText("noResource") || localizeText("暂无资源") || "暂无资源";
     return `<div class="pdf-actions">
-      <span class="pdf-download-link no-resource"><span>${escapeHtml(noResourceText)}</span></span>
+      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceText)}</span></span>
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
-  const downloadText = localizeText("下载") || "下载";
+  const downloadText = localizeText("download") || localizeText("下载") || "下载";
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -1104,11 +1151,9 @@ function renderPublications(items) {
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
       const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
-      const image = item.image
-        ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
-        : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
+      const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1138,11 +1183,9 @@ function renderProfilePublications(items) {
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
       const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
-      const image = item.image
-        ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
-        : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
+      const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item">
+        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1171,11 +1214,9 @@ function renderAllPublications(items) {
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
       const venue = item.venue;
       const date = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
-      const image = item.image
-        ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
-        : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
+      const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1734,22 +1775,6 @@ function translateLooseHeadings(dict) {
 }
 
 
-function parseHsl(value = "195 90 70") {
-  const match = String(value).match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
-  if (!match) return { h: 195, s: 90, l: 70 };
-  return { h: Number(match[1]), s: Number(match[2]), l: Number(match[3]) };
-}
-
-function buildGlowVars(glowColor = "195 90 70", intensity = 1) {
-  const { h, s, l } = parseHsl(glowColor);
-  const values = [100, 60, 50, 40, 30, 20, 10];
-  const keys = ["", "-60", "-50", "-40", "-30", "-20", "-10"];
-  return keys.reduce((vars, key, index) => {
-    vars[`--glow-color${key}`] = `hsl(${h}deg ${s}% ${l}% / ${Math.min(values[index] * intensity, 100)}%)`;
-    return vars;
-  }, {});
-}
-
 function setupBorderGlow() {
   if (isCompactNav()) return;
   const cards = document.querySelectorAll(
@@ -1760,46 +1785,8 @@ function setupBorderGlow() {
     card.dataset.glowReady = "true";
     card.classList.add("border-glow-card");
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
-    card.style.setProperty("--edge-sensitivity", "28");
     card.style.setProperty("--border-radius", window.getComputedStyle(card).borderRadius || "18px");
-    card.style.setProperty("--glow-padding", "28px");
-    card.style.setProperty("--cone-spread", "22");
-    card.style.setProperty("--fill-opacity", "0.32");
-    Object.entries(buildGlowVars("195 90 70", 1.0)).forEach(([key, value]) => {
-      card.style.setProperty(key, value);
-    });
-    if (!card.querySelector(":scope > .edge-light")) {
-      card.insertAdjacentHTML("afterbegin", '<span class="edge-light" aria-hidden="true"></span>');
-    }
-    card.addEventListener("pointermove", handleGlowPointerMove);
-    card.classList.add("sweep-active");
-    requestAnimationFrame(() => {
-      card.style.setProperty("--edge-proximity", "80");
-      card.style.setProperty("--cursor-angle", "125deg");
-      setTimeout(() => {
-        card.style.setProperty("--edge-proximity", "0");
-        card.classList.remove("sweep-active");
-      }, 900 + index * 35);
-    });
   });
-}
-
-function handleGlowPointerMove(event) {
-  const card = event.currentTarget;
-  const rect = card.getBoundingClientRect();
-  const x = event.clientX - rect.left;
-  const y = event.clientY - rect.top;
-  const cx = rect.width / 2;
-  const cy = rect.height / 2;
-  const dx = x - cx;
-  const dy = y - cy;
-  const kx = dx === 0 ? Infinity : cx / Math.abs(dx);
-  const ky = dy === 0 ? Infinity : cy / Math.abs(dy);
-  const edge = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-  let angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-  if (angle < 0) angle += 360;
-  card.style.setProperty("--edge-proximity", `${(edge * 100).toFixed(3)}`);
-  card.style.setProperty("--cursor-angle", `${angle.toFixed(3)}deg`);
 }
 
 function setupGlassSurface() {
@@ -1809,6 +1796,40 @@ function setupGlassSurface() {
   const glassTargets = document.querySelectorAll(selector);
   glassTargets.forEach((node) => {
     node.classList.add("glass-surface", "glass-surface--fallback");
+  });
+}
+
+function setupRevealAnimations() {
+  const targets = document.querySelectorAll(
+    ".reveal, .section-heading, .home-bento-grid, .news-grid, .feature-grid, .detail-list, .timeline-section .timeline, .publication-list, .project-list, .achievement-list, .profile-combo, .profile-photo, .contact-inner, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > .glass-surface, .detail-item, .project-card, .achievement-item, .home-bento-card",
+  );
+  if (!targets.length) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    targets.forEach((node) => node.classList.add("is-revealed"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-revealed");
+        observer.unobserve(entry.target);
+      });
+    },
+    {
+      threshold: 0.14,
+      rootMargin: "0px 0px -8% 0px",
+    },
+  );
+
+  targets.forEach((node, index) => {
+    if (node.classList.contains("home-bento-card") || node.classList.contains("publication-item") || node.classList.contains("detail-item") || node.classList.contains("achievement-item") || node.classList.contains("feature-card") || node.classList.contains("news-card")) {
+      node.style.setProperty("--reveal-delay", `${Math.min(index * 45, 420)}ms`);
+    }
+    observer.observe(node);
   });
 }
 
@@ -2092,16 +2113,10 @@ function setupHomeFrameSequence() {
 async function initSite() {
   renderSite();
   setupHomeFrameSequence();
+  setupRevealAnimations();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }
-
-document.addEventListener("click", (event) => {
-  renderSite();
-  setupHomeFrameSequence();
-  window.addEventListener("resize", resizeCanvas);
-  window.addEventListener("scroll", updateHeader, { passive: true });
-});
 
 document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-pdf-download]");
@@ -2110,11 +2125,10 @@ document.addEventListener("click", (event) => {
 });
 
 document.addEventListener("click", (event) => {
-  const card = event.target.closest("[data-paper-url]");
+  const card = event.target.closest("[data-paper-preview]");
   if (!card) return;
-  // 如果点击的是下载按钮或序号，不触发跳转
   if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
-  window.open(card.dataset.paperUrl, "_blank", "noopener,noreferrer");
+  window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
 });
 
 

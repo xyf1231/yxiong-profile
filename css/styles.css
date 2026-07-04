@@ -16,9 +16,14 @@
   --ease-apple: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-material: cubic-bezier(0.4, 0.0, 0.2, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 160ms;
   --duration-normal: 280ms;
   --duration-slow: 520ms;
+  --reveal-distance: 28px;
+  --reveal-blur: 10px;
+  --reveal-duration: 1200ms;
+  --reveal-delay-step: 120ms;
 
   --font-hero: clamp(3.2rem, 8vw, 7.4rem);        /* 首页大标题 */
   --font-h1: clamp(2.8rem, 6vw, 5.8rem);          /* 页面标题 */
@@ -1766,13 +1771,13 @@ html[lang="en"] .subtle-name {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.publication-item[data-paper-url],
-.all-publication-list .publication-item[data-paper-url] {
+.publication-item[data-paper-preview],
+.all-publication-list .publication-item[data-paper-preview] {
   cursor: pointer;
 }
 
-.publication-item[data-paper-url]:hover,
-.all-publication-list .publication-item[data-paper-url]:hover {
+.publication-item[data-paper-preview]:hover,
+.all-publication-list .publication-item[data-paper-preview]:hover {
   border-color: rgba(100, 210, 255, 0.24);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
@@ -2211,133 +2216,45 @@ html[lang="en"] .subtle-name {
 }
 
 .border-glow-card {
-  --edge-proximity: 0;
-  --cursor-angle: 45deg;
-  --edge-sensitivity: 26;
-  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
-  --border-radius: 8px;
-  --glow-padding: 34px;
-  --cone-spread: 24;
-
   position: relative;
   isolation: isolate;
-  transform: translate3d(0, 0, 0.01px);
-  overflow: visible;
+  overflow: hidden;
+  --border-radius: 8px;
 }
 
-.border-glow-card::before,
-.border-glow-card::after,
-.border-glow-card > .edge-light {
+.border-glow-card::before {
   position: absolute;
   inset: 0;
   border-radius: var(--border-radius);
   content: "";
-  opacity: 1;
   pointer-events: none;
-  transition: opacity 0.25s ease-out;
   z-index: 0;
 }
 
-.border-glow-card:not(:hover):not(.sweep-active)::before,
-.border-glow-card:not(:hover):not(.sweep-active)::after,
-.border-glow-card:not(:hover):not(.sweep-active) > .edge-light {
-  opacity: 0;
-  transition: opacity 0.75s ease-in-out;
-}
-
 .border-glow-card::before {
-  border: 1.5px solid transparent;
+  border: 1px solid rgba(255,255,255,0.08);
   background:
-    linear-gradient(var(--card-bg, #080810) 0 100%) padding-box,
-    linear-gradient(rgb(255 255 255 / 0%) 0% 100%) border-box,
-    radial-gradient(at 80% 55%, #2997FF 0px, transparent 50%) border-box,
-    radial-gradient(at 69% 34%, #64D2FF 0px, transparent 50%) border-box,
-    radial-gradient(at 8% 6%, #FF9F0A 0px, transparent 50%) border-box,
-    radial-gradient(at 41% 38%, #64D2FF 0px, transparent 50%) border-box,
-    radial-gradient(at 86% 85%, #64D2FF 0px, transparent 50%) border-box,
-    linear-gradient(#2997FF 0 100%) border-box;
-  mask-image:
-    conic-gradient(
-      from var(--cursor-angle) at center,
-      black calc(var(--cone-spread) * 1%),
-      transparent calc((var(--cone-spread) + 15) * 1%),
-      transparent calc((100 - var(--cone-spread) - 15) * 1%),
-      black calc((100 - var(--cone-spread)) * 1%)
-    );
-  opacity: calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
-}
-
-.border-glow-card::after {
-  border: 1.5px solid transparent;
-  background:
-    radial-gradient(at 80% 55%, #2997FF 0px, transparent 50%) padding-box,
-    radial-gradient(at 69% 34%, #64D2FF 0px, transparent 50%) padding-box,
-    radial-gradient(at 8% 6%, #FF9F0A 0px, transparent 50%) padding-box,
-    radial-gradient(at 41% 38%, #64D2FF 0px, transparent 50%) padding-box,
-    radial-gradient(at 86% 85%, #64D2FF 0px, transparent 50%) padding-box;
-  mask-image:
-    linear-gradient(to bottom, black, black),
-    radial-gradient(ellipse at 50% 50%, black 40%, transparent 65%),
-    radial-gradient(ellipse at 66% 66%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 33% 33%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 66% 33%, black 5%, transparent 40%),
-    radial-gradient(ellipse at 33% 66%, black 5%, transparent 40%),
-    conic-gradient(from var(--cursor-angle) at center, transparent 5%, black 15%, black 85%, transparent 95%);
-  mask-composite: subtract, add, add, add, add, add;
-  mix-blend-mode: soft-light;
-  opacity: calc(var(--fill-opacity, 0.35) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity)));
-}
-
-.border-glow-card > .edge-light {
-  inset: calc(var(--glow-padding) * -1);
-  z-index: 1;
-  mask-image: conic-gradient(from var(--cursor-angle) at center, black 2.5%, transparent 10%, transparent 90%, black 97.5%);
-  mix-blend-mode: plus-lighter;
-  opacity: calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity)));
-}
-
-.border-glow-card > .edge-light::before {
-  position: absolute;
-  inset: var(--glow-padding);
-  border-radius: inherit;
-  content: "";
+    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)),
+    linear-gradient(180deg, rgba(8, 10, 16, 0.88), rgba(8, 10, 16, 0.88));
   box-shadow:
-    inset 0 0 0 1.5px var(--glow-color, hsl(195deg 90% 70% / 100%)),
-    inset 0 0 3px 0 var(--glow-color-50, hsl(195deg 90% 70% / 50%)),
-    inset 0 0 15px 0 var(--glow-color-30, hsl(195deg 90% 70% / 30%)),
-    inset 0 0 50px 2px var(--glow-color-10, hsl(195deg 90% 70% / 10%)),
-    0 0 3px 0 var(--glow-color-50, hsl(195deg 90% 70% / 50%)),
-    0 0 15px 0 var(--glow-color-30, hsl(195deg 90% 70% / 30%)),
-    0 0 50px 2px var(--glow-color-10, hsl(195deg 90% 70% / 10%));
+    inset 0 1px 0 rgba(255,255,255,0.08),
+    inset 0 -1px 0 rgba(255,255,255,0.03),
+    0 12px 28px rgba(0,0,0,0.26);
+  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
 }
 
-.border-glow-card > :not(.edge-light) {
+.border-glow-card > * {
   position: relative;
   z-index: 2;
 }
 
-@keyframes orbitPulse {
-  0%,
-  100% {
-    transform: scale(0.96);
-    opacity: 0.45;
-  }
-
-  50% {
-    transform: scale(1.04);
-    opacity: 1;
-  }
-}
-
-@keyframes chipFloat {
-  0%,
-  100% {
-    transform: translateY(-8px) rotateX(0deg);
-  }
-
-  50% {
-    transform: translateY(10px) rotateX(4deg);
-  }
+.border-glow-card:hover::before,
+.border-glow-card:focus-within::before {
+  border-color: rgba(100, 210, 255, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.1),
+    inset 0 0 0 1px rgba(100, 210, 255, 0.06),
+    0 16px 34px rgba(0,0,0,0.28);
 }
 
 @keyframes fiberBreath {
@@ -2477,7 +2394,10 @@ html[lang="en"] .subtle-name {
 }
 
 .editor-panel {
-  padding: 22px;
+  padding: 16px 18px 18px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
 }
 
 .form-grid {
@@ -2533,9 +2453,7 @@ html[lang="en"] .subtle-name {
   font-size: var(--font-small);
 }
 
-.editor-actions {
-  margin-top: 18px;
-}
+.editor-actions { margin-top: 4px; }
 
 .item-list {
   display: grid;
@@ -2941,12 +2859,6 @@ html[lang="en"] .subtle-name {
   .border-glow-card {
     overflow: hidden;
   }
-
-  .border-glow-card > .edge-light {
-    inset: 0;
-  }
-
-
   .intro,
   .profile-combo,
   .split,
@@ -4651,10 +4563,7 @@ body.nav-mega-open::after {
   border-radius: var(--border-radius, inherit) !important;
 }
 
-.border-glow-card::before,
-.border-glow-card::after,
-.border-glow-card > .edge-light,
-.border-glow-card > .edge-light::before {
+.border-glow-card::before {
   border-radius: var(--border-radius, inherit) !important;
 }
 
@@ -4877,12 +4786,6 @@ body.nav-mega-open::after {
 }
 
 @media (max-width: 860px), (hover: none) {
-  .border-glow-card::before,
-  .border-glow-card::after,
-  .border-glow-card > .edge-light {
-    display: none !important;
-  }
-
   .border-glow-card {
     isolation: auto !important;
     transform: none !important;
@@ -5473,17 +5376,84 @@ body.nav-mega-open::after {
   opacity: 1;
 }
 
+.news-section {
+  overflow: hidden;
+  position: relative;
+}
+
+.news-carousel-track .news-card,
+.news-carousel-track .news-card:first-child,
+.news-carousel-track .news-card:nth-child(2),
+.news-carousel-track .news-card:nth-child(n + 3) {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-carousel-track .news-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.10) 62%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.18) 52%, rgba(0, 0, 0, 0.32) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.78;
+}
+
 .news-carousel-track .news-card-image::after {
   background:
-    linear-gradient(180deg, rgb(0 0 0 / 36%) 0%, rgb(0 0 0 / 10%) 30%, rgb(0 0 0 / 86%) 100%),
-    radial-gradient(ellipse at 50% 20%, transparent 0%, rgb(0 0 0 / 18%) 48%, rgb(0 0 0 / 76%) 100%),
-    linear-gradient(90deg, rgb(0 0 0 / 46%) 0%, transparent 38%, rgb(0 0 0 / 44%) 100%);
+    linear-gradient(180deg, rgb(0 0 0 / 12%) 0%, rgb(0 0 0 / 8%) 56%, rgb(0 0 0 / 18%) 100%) !important;
 }
 
 .news-carousel-track .news-card-body {
   min-height: inherit;
   justify-content: flex-end;
   padding: clamp(30px, 4.4vw, 72px);
+}
+
+.news-carousel-track .news-card-body {
+  width: min(540px, 36%) !important;
+  max-width: 36% !important;
+  padding: clamp(18px, 1.7vw, 26px) !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, rgba(26, 28, 34, 0.72), rgba(34, 38, 46, 0.54) 42%, rgba(22, 24, 30, 0.68) 100%) !important;
+  box-shadow:
+    0 18px 50px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 -1px 0 rgb(255 255 255 / 5%),
+    inset 0 0 0 1px rgb(255 255 255 / 7%) !important;
+  backdrop-filter: blur(24px) saturate(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.news-carousel-track .news-card-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 14%, rgb(255 255 255 / 12%), transparent 28%),
+    radial-gradient(circle at 82% 78%, rgb(125 180 255 / 8%), transparent 34%),
+    linear-gradient(135deg, rgb(255 255 255 / 6%), transparent 58%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.news-carousel-track .news-card-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.news-carousel-track .news-card time {
+  color: #6da8ff !important;
+  font-size: clamp(1.05rem, 1.35vw, 1.35rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: 0 1px 10px rgb(109 168 255 / 20%);
 }
 
 .news-carousel-track .news-card h3,
@@ -5876,7 +5846,7 @@ body.nav-mega-open::after {
 
 .pdf-download-link::before,
 .news-info-card .button[data-pdf-download]::before {
-  content: "↓";
+  content: attr(data-icon);
   display: inline-grid;
   place-items: center;
   width: 20px;
@@ -7626,6 +7596,104 @@ body.home-dark::before {
 .clean-copy h1 { text-wrap: balance; }
 html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-size: var(--font-hero) !important; line-height: 0.92 !important; overflow-wrap: normal; word-break: normal; hyphens: none; }
 .section-heading h2, .section-wrap > h2 { font-size: var(--font-h1) !important; line-height: 0.96; letter-spacing: 0; }
+
+.reveal,
+.section-heading,
+.home-bento-grid,
+.news-grid,
+.feature-grid,
+.detail-list,
+.timeline-section .timeline,
+.publication-list,
+.project-list,
+.achievement-list,
+.profile-combo,
+.profile-photo,
+.contact-inner,
+.news-card,
+.news-article-card,
+.news-info-card,
+.feature-card,
+.publication-item,
+.profile-publication-item,
+.all-publication-list > .glass-surface,
+.detail-item,
+.project-card,
+.achievement-item,
+.home-bento-card {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+  filter: blur(var(--reveal-blur));
+  will-change: transform, opacity, filter;
+  transition:
+    opacity var(--reveal-duration) var(--ease-smooth),
+    transform var(--reveal-duration) var(--ease-smooth),
+    filter var(--reveal-duration) var(--ease-smooth);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.is-revealed,
+.reveal.is-revealed,
+.section-heading.is-revealed,
+.home-bento-grid.is-revealed,
+.news-grid.is-revealed,
+.feature-grid.is-revealed,
+.detail-list.is-revealed,
+.timeline-section .timeline.is-revealed,
+.publication-list.is-revealed,
+.project-list.is-revealed,
+.achievement-list.is-revealed,
+.profile-combo.is-revealed,
+.profile-photo.is-revealed,
+.contact-inner.is-revealed,
+.news-card.is-revealed,
+.news-article-card.is-revealed,
+.news-info-card.is-revealed,
+.feature-card.is-revealed,
+.publication-item.is-revealed,
+.profile-publication-item.is-revealed,
+.all-publication-list > .glass-surface.is-revealed,
+.detail-item.is-revealed,
+.project-card.is-revealed,
+.achievement-item.is-revealed,
+.home-bento-card.is-revealed {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  filter: blur(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .section-heading,
+  .home-bento-grid,
+  .news-grid,
+  .feature-grid,
+  .detail-list,
+  .timeline-section .timeline,
+  .publication-list,
+  .project-list,
+  .achievement-list,
+  .profile-combo,
+  .profile-photo,
+  .contact-inner,
+  .news-card,
+  .news-article-card,
+  .news-info-card,
+  .feature-card,
+  .publication-item,
+  .profile-publication-item,
+  .all-publication-list > .glass-surface,
+  .detail-item,
+  .project-card,
+  .achievement-item,
+  .home-bento-card {
+    opacity: 1;
+    transform: none;
+    filter: none;
+    transition: none;
+    will-change: auto;
+  }
+}
 .home-frame-heading,
 .news-section .section-heading,
 .home-bento-nav .section-heading {
@@ -7657,7 +7725,7 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
   letter-spacing: -0.02em;
   padding-bottom: 0.12em;
   transform-origin: left center;
-  animation: headingTitleIn 820ms var(--ease-apple) both;
+  animation: headingTitleIn 1200ms var(--ease-smooth) both;
 }
 
 .home-frame-heading {
@@ -7670,8 +7738,25 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 }
 
 @keyframes headingKickerIn {
-  from { opacity: 0; transform: translateY(10px); letter-spacing: 0.28em; filter: blur(5px); }
+  from { opacity: 0; transform: translate3d(0, 14px, 0); letter-spacing: 0.28em; filter: blur(6px); }
   to { opacity: 1; transform: translateY(0); letter-spacing: .18em; filter: blur(0); }
+}
+
+@keyframes headingTitleIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0);
+    filter: blur(10px);
+  }
+  70% {
+    opacity: 0.92;
+    filter: blur(2px);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    filter: blur(0);
+  }
 }
 
 
@@ -9271,4 +9356,79 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   body.home-dark main > .section-wrap.news-section {
     margin-top: clamp(14px, 5vw, 26px) !important;
   }
+}
+
+/* news card final pass */
+.news-section {
+  overflow: hidden;
+  position: relative;
+}
+
+.news-section .news-carousel-track .news-card,
+.news-section .news-carousel-track .news-card:first-child,
+.news-section .news-carousel-track .news-card:nth-child(2),
+.news-section .news-carousel-track .news-card:nth-child(n + 3) {
+  position: relative;
+  overflow: hidden;
+}
+
+.news-section .news-carousel-track .news-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background:
+    radial-gradient(ellipse at center, transparent 42%, rgba(0, 0, 0, 0.10) 62%, rgba(0, 0, 0, 0.28) 100%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.30) 0%, rgba(0, 0, 0, 0.18) 52%, rgba(0, 0, 0, 0.32) 100%);
+  mix-blend-mode: multiply;
+  opacity: 0.78;
+}
+
+.news-section .news-carousel-track .news-card-image::after {
+  background:
+    linear-gradient(180deg, rgb(0 0 0 / 12%) 0%, rgb(0 0 0 / 8%) 56%, rgb(0 0 0 / 18%) 100%) !important;
+}
+
+.news-section .news-carousel-track .news-card-body {
+  width: min(540px, 36%) !important;
+  max-width: 36% !important;
+  padding: clamp(18px, 1.7vw, 26px) !important;
+  border-radius: 24px !important;
+  background: linear-gradient(145deg, rgba(26, 28, 34, 0.72), rgba(34, 38, 46, 0.54) 42%, rgba(22, 24, 30, 0.68) 100%) !important;
+  box-shadow:
+    0 18px 50px rgb(0 0 0 / 28%),
+    inset 0 1px 0 rgb(255 255 255 / 10%),
+    inset 0 -1px 0 rgb(255 255 255 / 5%),
+    inset 0 0 0 1px rgb(255 255 255 / 7%) !important;
+  backdrop-filter: blur(24px) saturate(1.12);
+  -webkit-backdrop-filter: blur(24px) saturate(1.12);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.news-section .news-carousel-track .news-card-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 14%, rgb(255 255 255 / 12%), transparent 28%),
+    radial-gradient(circle at 82% 78%, rgb(125 180 255 / 8%), transparent 34%),
+    linear-gradient(135deg, rgb(255 255 255 / 6%), transparent 58%);
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.news-section .news-carousel-track .news-card-body > * {
+  position: relative;
+  z-index: 1;
+}
+
+.news-section .news-carousel-track .news-card time {
+  color: #6da8ff !important;
+  font-size: clamp(1.05rem, 1.35vw, 1.35rem) !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.04em !important;
+  text-shadow: 0 1px 10px rgb(109 168 255 / 20%);
 }

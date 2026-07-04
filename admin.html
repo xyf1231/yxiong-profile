@@ -20,7 +20,7 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台管理 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.7.11" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.7.13" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -64,33 +64,50 @@
       }
       .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
       .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
-      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 18px; }
+      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 14px; }
       .sidebar-group-label {
-        padding: 8px 12px 4px;
-        color: rgba(255,255,255,0.35);
-        font-size: 0.7rem;
+        padding: 4px 10px 8px;
+        color: rgba(255,255,255,0.42);
+        font-size: 0.68rem;
         font-weight: 800;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
       }
-      .sidebar-group { display: flex; flex-direction: column; gap: 2px; }
+      .sidebar-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 8px;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+      }
       .tab-button {
         width: 100%;
-        min-height: 38px;
-        border: 0;
-        border-radius: 8px;
+        min-height: 40px;
+        border: 1px solid transparent;
+        border-radius: 12px;
         background: transparent;
-        color: var(--muted);
+        color: rgba(255,255,255,0.62);
         font: inherit;
-        font-weight: 700;
+        font-weight: 750;
         text-align: left;
         cursor: pointer;
         padding: 0 12px;
-        transition: all 0.15s ease;
+        transition: all 0.16s ease;
       }
-      .tab-button:hover { background: rgba(255,255,255,0.06); color: var(--ink); }
-      .tab-button[aria-selected="true"] { background: #fff; color: #000; }
-      .tab-button[data-tab="deploy"] { border: 1.5px solid rgba(41,151,255,0.2); }
+      .tab-button:hover {
+        background: rgba(255,255,255,0.06);
+        color: #fff;
+        border-color: rgba(255,255,255,0.08);
+      }
+      .tab-button[aria-selected="true"] {
+        background: rgba(255,255,255,0.92);
+        color: #000;
+        border-color: rgba(255,255,255,0.4);
+        box-shadow: 0 10px 24px rgba(0,0,0,0.24);
+      }
+      .tab-button[data-tab="deploy"] { border-color: rgba(41,151,255,0.2); }
       .tab-button[data-tab="deploy"][aria-selected="true"] { background: #2997FF; color: #fff; border-color: #2997FF; }
       .sidebar-footer {
         padding: 12px 6px 0;
@@ -161,7 +178,7 @@
         gap: 18px;
         margin-bottom: 18px;
       }
-      .cms-editor-col { display: flex; flex-direction: column; gap: 18px; }
+      .cms-editor-col { display: flex; flex-direction: column; gap: 18px; align-self: start; }
       /* ── 条目列表列 ── */
       .cms-list-col {
         display: flex;
@@ -259,26 +276,102 @@
       .storage-item { transition: background 0.15s ease, border-color 0.15s ease; }
       .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
 
-      /* ── 版本仪表盘 ── */
-      .deploy-dashboard { display: grid; gap: 16px; }
-      .deploy-dashboard-grid {
+      /* ── 版本控制台 ── */
+      .deploy-dashboard { display: grid; gap: 18px; }
+      .deploy-console {
         display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-      }
-      .deploy-card {
+        gap: 16px;
+        padding: 18px;
         border: 1.5px solid rgba(255,255,255,0.1);
-        border-radius: 20px;
-        background: rgba(255,255,255,0.04);
-        padding: 22px;
-        transition: border-color 0.2s ease, background 0.2s ease;
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at top left, rgba(41,151,255,0.12), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        box-shadow: 0 20px 54px rgba(0,0,0,0.22);
       }
-      .deploy-card:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.14); }
-      .deploy-card.full-width { grid-column: 1 / -1; }
-      .deploy-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-      .deploy-card-icon { width: 34px; height: 34px; border-radius: 10px; background: rgba(41,151,255,0.1); border: 1px solid rgba(41,151,255,0.18); display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
-      .deploy-card-title { font-size: 1rem; font-weight: 700; margin: 0; }
-      .deploy-card-desc { font-size: 0.82rem; color: var(--muted); margin: 0 0 14px; line-height: 1.5; }
+      .deploy-status-rail {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .deploy-status-chip {
+        display: grid;
+        gap: 6px;
+        min-height: 88px;
+        padding: 14px 16px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 20px;
+        background: rgba(0,0,0,0.18);
+      }
+      .deploy-status-chip span {
+        color: var(--muted);
+        font-size: 0.76rem;
+      }
+      .deploy-status-chip strong {
+        font-size: 1rem;
+        line-height: 1.25;
+      }
+      .deploy-status-chip .dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+        background: #2997FF;
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+      .deploy-console-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+        gap: 16px;
+      }
+      .deploy-console-pane,
+      .deploy-link-panel,
+      .deploy-log-panel {
+        padding: 18px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        background: rgba(0,0,0,0.16);
+      }
+      .deploy-console-pane {
+        display: grid;
+        gap: 16px;
+      }
+      .deploy-console-head {
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .deploy-console-head h2,
+      .deploy-link-panel h2,
+      .deploy-log-panel h2 {
+        margin: 0;
+        font-size: 1rem;
+      }
+      .deploy-console-head p,
+      .deploy-link-panel p,
+      .deploy-log-panel p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.55;
+      }
+      .deploy-action-group {
+        display: grid;
+        gap: 12px;
+      }
+      .deploy-action-group + .deploy-action-group {
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      .deploy-action-label {
+        color: #c9d4e5;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
       .deploy-btn-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
       .deploy-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.05); color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 650; cursor: pointer; transition: all 0.15s ease; white-space: nowrap; }
       .deploy-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); transform: translateY(-1px); }
@@ -314,7 +407,7 @@
       .deploy-log-entry.cmd { color: #2997FF; opacity: 0.8; }
       .deploy-spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(255,255,255,0.12); border-top-color: #2997FF; border-radius: 50%; animation: deploySpin 0.8s linear infinite; vertical-align: middle; }
       @keyframes deploySpin { to { transform: rotate(360deg); } }
-      .deploy-link-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .deploy-link-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
       .deploy-link-btn { display: flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.03); color: var(--ink); font: inherit; font-size: 0.8rem; font-weight: 650; text-decoration: none; cursor: pointer; transition: all 0.15s ease; }
       .deploy-link-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); transform: translateY(-1px); }
       .deploy-status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--muted); }
@@ -361,8 +454,12 @@
         .sidebar-footer { width: 100%; border-top: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
         .admin-main { padding: 16px; max-height: none; }
         .cms-primary { grid-template-columns: 1fr; }
-        .deploy-dashboard-grid { grid-template-columns: 1fr; }
+        .deploy-status-rail,
+        .deploy-console-grid,
         .deploy-link-grid { grid-template-columns: 1fr; }
+        .deploy-console-head {
+          flex-direction: column;
+        }
       }
     </style>
   </head>
@@ -421,7 +518,7 @@
               <div>
                 <p class="section-kicker" id="active-kicker">Profile</p>
                 <h1 id="active-title">基本资料</h1>
-                <p class="hero-copy">编辑下方内容，保存当前条目后自动同步到 data.js。所有公开素材会随站点自动部署。</p>
+                <p class="hero-copy">编辑下方内容，点击“保存到本地”即可把当前条目写回 data.js。推送到 GitHub 是单独的发布操作。</p>
               </div>
               <div class="admin-actions">
                 <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
@@ -443,18 +540,16 @@
                     <button class="admin-button" id="add-item" type="button">新增</button>
                   </div>
                   <form class="form-grid" id="content-form"></form>
-                  <p class="upload-note">上传 PDF 会自动保存到 resources/，图片会自动保存到 resources/；保存当前条目后 data.js 会同步更新。</p>
+                  <p class="upload-note">上传 PDF 会自动保存到 resources/，图片会自动保存到 resources/；“保存到本地”会同步当前条目并更新 data.js。</p>
                   <div class="editor-actions">
-                    <button class="admin-button primary" id="save-item" type="button">保存当前</button>
                     <button class="admin-button" id="clear-form" type="button">清空</button>
                   </div>
                   <div class="editor-save-bar">
                     <div>
                       <strong>完成修改后</strong>
-                      <span>先保存当前条目，再保存到本地；确认后推送到 GitHub。</span>
+                      <span>先点击“保存到本地”，确认内容已写入 data.js；需要上线时再推送到 GitHub。</span>
                     </div>
                     <div class="editor-save-actions">
-                      <button class="admin-button primary" id="save-item-bottom" type="button">保存当前条目</button>
                       <button class="admin-button" id="local-deploy-bottom" type="button">推送到 GitHub</button>
                     </div>
                   </div>
@@ -501,134 +596,130 @@
             <section class="admin-hero" style="grid-template-columns:1fr;">
               <div>
                 <p class="section-kicker">Deploy Dashboard</p>
-                <h1>版本仪表盘</h1>
-                <p class="hero-copy">管理版本号、查看 Git 状态、推送到 GitHub、启动本地预览。所有操作记录显示在下方日志中。</p>
+                <h1>版本控制台</h1>
+                <p class="hero-copy">把版本、Git、预览和维护工具收拢到同一条操作动线里，减少来回跳转。</p>
               </div>
             </section>
 
             <div class="deploy-dashboard">
-              <div class="deploy-dashboard-grid">
-                <!-- 版本号管理 -->
-                <div class="deploy-card">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🏷️</div><h2 class="deploy-card-title">版本号管理</h2></div>
-                  <p class="deploy-card-desc">更新 VERSION 文件并同步到所有 HTML 的缓存戳和页脚。</p>
-                  <div class="deploy-segmented" id="version-strategy">
-                    <button class="active" data-strategy="patch">patch +1</button>
-                    <button data-strategy="minor">minor +1</button>
-                    <button data-strategy="manual">手动</button>
-                  </div>
-                  <div id="manual-version-row" style="display:none; margin-top:10px; gap:8px; align-items:center;">
-                    <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.1" maxlength="12" style="flex:1;min-width:0;" />
-                    <button class="deploy-btn primary" id="btn-set-version">设置</button>
-                  </div>
-                  <div class="deploy-btn-row" style="margin-top:12px;">
-                    <button class="deploy-btn primary" id="btn-update-version">
-                      <span id="version-spinner" class="deploy-spinner" style="display:none"></span>
-                      <span id="version-btn-text">更新版本号</span>
-                    </button>
-                  </div>
+              <section class="deploy-console">
+                <div class="deploy-status-rail">
+                  <article class="deploy-status-chip">
+                    <span>版本</span>
+                    <strong id="sb-version-inline">--</strong>
+                  </article>
+                  <article class="deploy-status-chip">
+                    <span>Git</span>
+                    <strong id="sb-git-inline">Git --</strong>
+                  </article>
+                  <article class="deploy-status-chip">
+                    <span>预览</span>
+                    <strong id="sb-preview-inline">预览 --</strong>
+                  </article>
+                  <article class="deploy-status-chip">
+                    <span>连接</span>
+                    <strong id="sb-connection-inline">连接中…</strong>
+                  </article>
                 </div>
 
-                <!-- Git 状态 -->
-                <div class="deploy-card">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">📦</div><h2 class="deploy-card-title">Git 变更</h2></div>
-                  <p class="deploy-card-desc">查看当前工作区的文件变更状态。</p>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn" id="btn-refresh-git">刷新状态</button>
-                    <button class="deploy-btn" id="btn-test-git">测试 GitHub 连接</button>
-                  </div>
-                  <div class="deploy-file-list empty" id="git-status-list">点击「刷新状态」查看变更文件</div>
-                </div>
+                <div class="deploy-console-grid">
+                  <div class="deploy-console-pane">
+                    <div class="deploy-console-head">
+                      <div>
+                        <h2>操作台</h2>
+                        <p>把常用动作收在一处，按“检查 - 修改 - 推送 - 验证”的顺序执行。</p>
+                      </div>
+                    </div>
 
-                <div class="deploy-card">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🧪</div><h2 class="deploy-card-title">网络诊断</h2></div>
-                  <p class="deploy-card-desc">逐项测试页面脚本、后台接口和静态资源的加载耗时，帮助定位“慢在哪一步”。</p>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
-                  </div>
-                  <div class="deploy-log" id="network-diagnostics-log" style="margin-top:12px; max-height:220px;">
-                    <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
-                  </div>
-                </div>
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">版本管理</div>
+                      <div class="deploy-segmented" id="version-strategy">
+                        <button class="active" data-strategy="patch">patch +1</button>
+                        <button data-strategy="minor">minor +1</button>
+                        <button data-strategy="manual">手动</button>
+                      </div>
+                      <div id="manual-version-row" style="display:none; gap:8px; align-items:center;">
+                        <input type="text" id="manual-version" class="deploy-input" placeholder="例如: v1.7.1" maxlength="12" style="flex:1;min-width:0;" />
+                        <button class="deploy-btn primary" id="btn-set-version">设置</button>
+                      </div>
+                      <div class="deploy-btn-row">
+                        <button class="deploy-btn primary" id="btn-update-version">
+                          <span id="version-spinner" class="deploy-spinner" style="display:none"></span>
+                          <span id="version-btn-text">更新版本号</span>
+                        </button>
+                      </div>
+                    </div>
 
-                <div class="deploy-card">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🖼️</div><h2 class="deploy-card-title">图片压缩</h2></div>
-                  <p class="deploy-card-desc">一键压缩 <code>resources/images/</code> 下的图片，自动转换为 WebP 并清理原图。</p>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn success" id="btn-optimize-images" type="button">压缩图片</button>
-                    <input type="text" id="optimize-target" class="deploy-input" value="resources/images" style="flex:1;min-width:0;" />
-                  </div>
-                  <div class="deploy-progress" id="optimize-progress"><span class="deploy-spinner"></span><span class="bar"></span><span id="optimize-status-text">等待执行</span></div>
-                  <div class="deploy-log" id="optimize-log" style="margin-top:12px; max-height:180px;">
-                    <div class="deploy-log-entry info">未开始压缩。</div>
-                  </div>
-                </div>
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">发布与验证</div>
+                      <div class="deploy-btn-row">
+                        <button class="deploy-btn success" id="btn-deploy">
+                          <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
+                          <span id="deploy-btn-text">推送到 GitHub</span>
+                        </button>
+                        <button class="deploy-btn" id="btn-refresh-git">刷新 Git 状态</button>
+                        <button class="deploy-btn" id="btn-test-git">测试 GitHub 连接</button>
+                      </div>
+                      <div class="deploy-btn-row">
+                        <button class="deploy-btn primary" id="btn-preview-start">
+                          <span id="preview-spinner" class="deploy-spinner" style="display:none"></span>
+                          启动本地预览
+                        </button>
+                        <button class="deploy-btn danger" id="btn-preview-stop">停止预览</button>
+                        <a class="deploy-link-btn" href="http://localhost:3456" target="_blank" rel="noopener" id="preview-link" style="display:none">打开 localhost:3456</a>
+                        <span class="deploy-status-badge" id="preview-status"><span class="dot"></span>未运行</span>
+                      </div>
+                    </div>
 
-                <!-- 快捷链接 -->
-                <div class="deploy-card full-width">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🔗</div><h2 class="deploy-card-title">快捷链接</h2></div>
-                  <div class="deploy-link-grid">
-                    <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
-                    <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
-                    <a class="deploy-link-btn" href="https://github.com/xyf1231/yxiong-profile" target="_blank" rel="noopener">🐙 GitHub 仓库</a>
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">维护工具</div>
+                      <div class="deploy-btn-row">
+                        <button class="deploy-btn success" id="btn-optimize-images" type="button">压缩图片</button>
+                        <input type="text" id="optimize-target" class="deploy-input" value="resources/images" style="flex:1;min-width:0;" />
+                      </div>
+                      <div class="deploy-progress" id="optimize-progress"><span class="deploy-spinner"></span><span class="bar"></span><span id="optimize-status-text">等待执行</span></div>
+                      <div class="deploy-log" id="optimize-log" style="max-height:180px;">
+                        <div class="deploy-log-entry info">未开始压缩。</div>
+                      </div>
+                    </div>
                   </div>
-                </div>
 
-                <!-- 发布操作 -->
-                <div class="deploy-card full-width">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🚀</div><h2 class="deploy-card-title">发布到线上</h2></div>
-                  <p class="deploy-card-desc">执行 git add → commit → push，触发自动部署。</p>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn success" id="btn-deploy">
-                      <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
-                      <span id="deploy-btn-text">推送到 GitHub</span>
-                    </button>
-                    <span style="color:var(--muted);font-size:0.76rem;margin-left:4px;align-self:center">自动执行: git add -A → git commit → git push origin main</span>
+                  <aside class="deploy-link-panel">
+                    <h2>快捷入口</h2>
+                    <p>只保留两个常用跳转，减少重复信息。</p>
+                    <div class="deploy-link-grid">
+                      <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
+                      <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
+                    </div>
+                  </aside>
+                </div>
+              </section>
+
+              <section class="deploy-log-panel">
+                <div class="deploy-console-head">
+                  <div>
+                    <h2>操作日志</h2>
+                    <p>所有版本更新、推送、预览和诊断结果都集中在这里。</p>
                   </div>
-                </div>
-
-                <!-- 快捷链接 -->
-                <div class="deploy-card full-width">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">🔗</div><h2 class="deploy-card-title">快捷链接</h2></div>
-                  <div class="deploy-link-grid">
-                    <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
-                    <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
-                  </div>
-                </div>
-
-                <!-- 本地预览 -->
-                <div class="deploy-card full-width">
-                  <div class="deploy-card-header"><div class="deploy-card-icon">💻</div><h2 class="deploy-card-title">本地预览</h2></div>
-                  <p class="deploy-card-desc">在浏览器中启动本地 HTTP 服务器预览网站。</p>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn primary" id="btn-preview-start">
-                      <span id="preview-spinner" class="deploy-spinner" style="display:none"></span>
-                      启动本地预览
-                    </button>
-                    <button class="deploy-btn danger" id="btn-preview-stop">停止预览</button>
-                    <a class="deploy-link-btn" href="http://localhost:3456" target="_blank" rel="noopener" id="preview-link" style="display:none">打开 localhost:3456</a>
-                    <span class="deploy-status-badge" id="preview-status"><span class="dot"></span>未运行</span>
-                  </div>
-                </div>
-              </div>
-
-              <!-- 操作日志 -->
-              <div class="deploy-card full-width">
-                <div class="deploy-card-header"><div class="deploy-card-icon">📋</div><h2 class="deploy-card-title">操作日志</h2></div>
-                <div class="deploy-log" id="deploy-log">
-                  <div class="deploy-log-entry info">版本仪表盘已就绪。</div>
-                </div>
-                <div class="deploy-btn-row" style="margin-top:10px;">
                   <button class="deploy-btn" id="btn-clear-log">清空日志</button>
                 </div>
-              </div>
+                <div class="deploy-log" id="deploy-log">
+                  <div class="deploy-log-entry info">版本控制台已就绪。</div>
+                </div>
+                <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
+                  <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
+                </div>
+                <div class="deploy-btn-row" style="margin-top:10px;">
+                  <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
+                </div>
+              </section>
             </div>
           </div>
         </div>
       </main>
     </div>
 
-    <script src="js/data.js?v=v1.7.11" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.7.11" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.7.13" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.7.13" charset="utf-8"></script>
   </body>
 </html>
