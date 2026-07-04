@@ -1098,11 +1098,11 @@ function renderPublications(items) {
         ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
         : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="publication-item">
+        <article class="publication-item"${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
-            <h3>${item.url ? `<a class="publication-title-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
+            <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
             <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${year ? ` <span class="publication-year">${escapeHtml(year)}</span>` : ""}</p>
@@ -1124,19 +1124,23 @@ function renderProfilePublications(items) {
   if (!target) return;
   target.innerHTML = getRepresentativePublications(items, 5)
     .map((item, index) => {
+      const title = item.title;
       const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
+      const venue = item.venue;
+      const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = item.image
-        ? `<div class="publication-visual profile-publication-visual">${pictureTag(item.image, item.title)}</div>`
-        : `<div class="publication-visual profile-publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
+        ? `<div class="publication-visual">${pictureTag(item.image, title)}</div>`
+        : `<div class="publication-visual placeholder-visual"><span>${escapeHtml(item.year)}</span></div>`;
       return `
-        <article class="profile-publication-item">
-          <span>${String(index + 1).padStart(2, "0")}</span>
+        <article class="publication-item">
+          <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
-          <div>
-            <h3>${escapeHtml(item.title)}</h3>
+          <div class="publication-copy">
+            <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(item.venue || "")}</strong>${(item.date || item.year) ? ` <span class="publication-year">${escapeHtml((item.date || item.year || "").toString().slice(0, 4))}</span>` : ""}</p>
+            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${year ? ` <span class="publication-year">${escapeHtml(year)}</span>` : ""}</p>
+            ${pdfDownloadLink(item.url)}
           </div>
         </article>
       `;
@@ -1158,10 +1162,10 @@ function renderAllPublications(items) {
       const venue = item.venue;
       const date = (item.date || item.year || "").toString().slice(0, 4);
       return `
-        <article class="">
+        <article class=""${item.url ? ` data-paper-url="${escapeHtml(item.url)}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
-            <h3>${item.url ? `<a class="publication-title-link" href="${escapeHtml(item.url)}" target="_blank" rel="noopener">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
+            <h3>${escapeHtml(title)}</h3>
             ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
             <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
             <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${date ? ` <span class="publication-year">${escapeHtml(date)}</span>` : ""}</p>
@@ -2244,6 +2248,14 @@ document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-pdf-download]");
   if (!link) return;
   showPdfLoading(link);
+});
+
+document.addEventListener("click", (event) => {
+  const card = event.target.closest("[data-paper-url]");
+  if (!card) return;
+  // 如果点击的是下载按钮或序号，不触发跳转
+  if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
+  window.open(card.dataset.paperUrl, "_blank", "noopener,noreferrer");
 });
 
 
