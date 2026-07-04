@@ -131,6 +131,7 @@ const storageFile = document.querySelector("#storage-file");
 // 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
 const optimizeLogEl = document.querySelector("#optimize-log");
+const networkDiagnosticsLogEl = document.querySelector("#network-diagnostics-log");
 const optimizeProgressEl = document.querySelector("#optimize-progress");
 const optimizeStatusTextEl = document.querySelector("#optimize-status-text");
 const optimizeTargetEl = document.querySelector("#optimize-target");
@@ -629,6 +630,134 @@ function optimizeLog(message, type = "info") {
   entry.textContent = `[${time}] ${message}`;
   optimizeLogEl.appendChild(entry);
   optimizeLogEl.scrollTop = optimizeLogEl.scrollHeight;
+}
+
+function networkDiagLog(message, type = "info") {
+  if (!networkDiagnosticsLogEl) return;
+  const entry = document.createElement("div");
+  entry.className = `deploy-log-entry ${type}`;
+  const time = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+  entry.textContent = `[${time}] ${message}`;
+  networkDiagnosticsLogEl.appendChild(entry);
+  networkDiagnosticsLogEl.scrollTop = networkDiagnosticsLogEl.scrollHeight;
+}
+
+function clearNetworkDiagLog() {
+  if (!networkDiagnosticsLogEl) return;
+  networkDiagnosticsLogEl.innerHTML = "";
+  networkDiagLog("点击「开始诊断」后会显示各项耗时。");
+}
+
+function formatDuration(ms) {
+  if (!Number.isFinite(ms)) return "n/a";
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  return `${(ms / 1000).toFixed(ms < 10000 ? 2 : 1)}s`;
+}
+
+async function timedFetch(label, url, options = {}) {
+  const controller = new AbortController();
+  const timeoutMs = options.timeoutMs || 12000;
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  const startedAt = performance.now();
+  try {
+    const response = await fetch(url, {
+      cache: "no-store",
+      ...options.fetchOptions,
+      signal: controller.signal,
+    });
+    const duration = performance.now() - startedAt;
+    let body = "";
+    if ((options.readBody ?? true) && response.status !== 204) {
+      body = await response.text();
+    }
+    return {
+      label,
+      url: response.url || url,
+      ok: response.ok,
+      status: response.status,
+      duration,
+      size: body.length,
+      sample: body.slice(0, 160),
+    };
+  } catch (error) {
+    const duration = performance.now() - startedAt;
+    return {
+      label,
+      url,
+      ok: false,
+      status: 0,
+      duration,
+      error: error.name === "AbortError" ? `超时 ${timeoutMs}ms` : error.message,
+    };
+  } finally {
+    window.clearTimeout(timeout);
+  }
+}
+
+async function runNetworkDiagnostics() {
+  const btn = document.querySelector("#btn-network-diagnostics");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = "诊断中…";
+  }
+  if (networkDiagnosticsLogEl) networkDiagnosticsLogEl.innerHTML = "";
+  networkDiagLog("开始网络诊断…", "cmd");
+
+  const nav = performance.getEntriesByType("navigation")[0];
+  if (nav) {
+    networkDiagLog(
+      `页面导航: 总耗时 ${formatDuration(nav.duration)} | TTFB ${formatDuration(nav.responseStart - nav.startTime)} | DOMContentLoaded ${formatDuration(nav.domContentLoadedEventEnd - nav.startTime)} | load ${formatDuration(nav.loadEventEnd - nav.startTime)}`,
+      "info"
+    );
+  } else {
+    networkDiagLog("当前浏览器未提供 navigation timing。", "warn");
+  }
+
+  const pagePath = `${window.location.pathname}${window.location.search || ""}`;
+  const scriptSrc = document.querySelector('script[src*="js/admin.js"]')?.src || "js/admin.js";
+  const tasks = [
+    ["后台 HTML", pagePath, { readBody: true, timeoutMs: 12000 }],
+    ["后台脚本", scriptSrc, { readBody: true, timeoutMs: 12000 }],
+    ["版本接口", "/api/version", { readBody: true, timeoutMs: 12000 }],
+    ["Git 状态", "/api/git/status", { readBody: true, timeoutMs: 12000 }],
+    ["预览状态", "/api/preview/status", { readBody: true, timeoutMs: 12000 }],
+    ["首页视频", "resources/videos/frame-lq.mp4", { readBody: false, timeoutMs: 20000, fetchOptions: { method: "HEAD" } }],
+    ["代表图片", "resources/images/profile.webp", { readBody: false, timeoutMs: 12000, fetchOptions: { method: "HEAD" } }],
+    ["代表论文", "resources/papers/light-fingerprint-2026.pdf", { readBody: false, timeoutMs: 20000, fetchOptions: { method: "HEAD" } }],
+    ["静态首帧", "resources/frames/frame_001.webp", { readBody: false, timeoutMs: 12000, fetchOptions: { method: "HEAD" } }],
+  ];
+
+  const results = [];
+  for (const [label, url, options] of tasks) {
+    networkDiagLog(`测试 ${label}…`, "cmd");
+    const result = await timedFetch(label, url, options);
+    results.push(result);
+    if (result.ok) {
+      const extra = result.size ? `, ${result.size} 字符` : "";
+      networkDiagLog(`✅ ${label}: ${formatDuration(result.duration)} (${result.status})${extra}`, "success");
+      if (result.sample && label !== "静态首帧" && label !== "首页视频") {
+        networkDiagLog(`   预览: ${result.sample.replace(/\s+/g, " ").slice(0, 120)}`, "info");
+      }
+    } else {
+      networkDiagLog(`❌ ${label}: ${result.error || `HTTP ${result.status}`}`, "error");
+    }
+  }
+
+  const slowest = results.filter((item) => item.ok).sort((a, b) => b.duration - a.duration)[0];
+  if (slowest) {
+    networkDiagLog(`最慢项：${slowest.label}（${formatDuration(slowest.duration)}）`, "warn");
+  }
+  const failed = results.filter((item) => !item.ok);
+  if (failed.length) {
+    networkDiagLog(`有 ${failed.length} 项失败，优先看失败项对应的错误。`, "warn");
+  } else {
+    networkDiagLog("诊断完成，未发现明显失败项。", "success");
+  }
+
+  if (btn) {
+    btn.disabled = false;
+    btn.textContent = "重新诊断";
+  }
 }
 
 function setOptimizeRunning(running, text = "") {
@@ -1213,6 +1342,7 @@ function init() {
   document.querySelector("#btn-update-version")?.addEventListener("click", updateVersion);
   document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
   document.querySelector("#btn-test-git")?.addEventListener("click", testGitHubConnection);
+  document.querySelector("#btn-network-diagnostics")?.addEventListener("click", runNetworkDiagnostics);
   document.querySelector("#btn-optimize-images")?.addEventListener("click", optimizeImages);
   document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
@@ -1225,6 +1355,7 @@ function init() {
   // ── 初始化 ──
   jsonBuffer.value = JSON.stringify(data, null, 2);
   setActiveTab(activeTab);
+  clearNetworkDiagLog();
   checkLocalServer();
 
   // ── 启动状态轮询 ──

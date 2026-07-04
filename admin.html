@@ -541,6 +541,17 @@
                 </div>
 
                 <div class="deploy-card">
+                  <div class="deploy-card-header"><div class="deploy-card-icon">🧪</div><h2 class="deploy-card-title">网络诊断</h2></div>
+                  <p class="deploy-card-desc">逐项测试页面脚本、后台接口和静态资源的加载耗时，帮助定位“慢在哪一步”。</p>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
+                  </div>
+                  <div class="deploy-log" id="network-diagnostics-log" style="margin-top:12px; max-height:220px;">
+                    <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
+                  </div>
+                </div>
+
+                <div class="deploy-card">
                   <div class="deploy-card-header"><div class="deploy-card-icon">🖼️</div><h2 class="deploy-card-title">图片压缩</h2></div>
                   <p class="deploy-card-desc">一键压缩 <code>resources/images/</code> 下的图片，自动转换为 WebP 并清理原图。</p>
                   <div class="deploy-btn-row">
