@@ -1,11 +1,11 @@
 # xyfoptics 个人学术网站维护手册
 
-熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + Cloudflare Pages 托管公开页面和公开素材**。
+熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + GitHub 作为源站 + Cloudflare Pages 自动部署公开页面和公开素材**。
 
 - 线上地址：https://xyfoptics.xyz
 - 项目目录：`/Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站`
 - 本地后台：`http://localhost:8787/admin.html`
-- 当前版本：`v1.6.2`
+- 当前版本：`v1.7.8`
 - 稳定流程：`docs/WORKFLOW.md`
 - 更新日志：`docs/CHANGELOG.md`
 
@@ -25,24 +25,26 @@
 ├── honors.html             # 荣誉：奖励、创新创业
 ├── activities.html        # 学术活动：会议、学术服务、审稿服务
 ├── admin.html              # 本地后台维护界面
-├── VERSION                 # 全站统一版本号（如 v1.6.2）
+├── VERSION                 # 全站统一版本号（如 v1.7.8）
 ├── js/
 │   ├── data.js             # 网站内容数据库，最核心
 │   ├── script.js            # 前台渲染、语言、导航、轮播、交互
 │   └── admin.js             # 后台编辑界面逻辑
 ├── css/
 │   └── styles.css           # 全站样式
-├── resources/                  # 图片、头像、论文主图、新闻图、研究图
-│   └── frames/              # 帧动画序列
-├── resources/                  # 公开论文 PDF
-├── resources/                  # 视频文件
+├── resources/
+│   ├── images/             # 图片、头像、论文主图、新闻图、研究图
+│   ├── papers/             # 公开论文 PDF
+│   ├── videos/             # 视频文件
+│   ├── frames/             # 帧动画序列
+│   └── news/               # 新闻页面
 ├── scripts/
 │   ├── admin-server.mjs     # 本地后台服务，负责保存 js/data.js 和上传文件
 │   ├── check-site.mjs       # 静态检查
 │   ├── optimize-images.py   # 图片压缩为 WebP
 │   └── backup.sh            # 本地备份脚本
 ├── docs/                   # 维护文档、部署清单、交接说明、更新日志
-├── 快捷命令/               # 双击启动、预览、压缩图片、部署入口
+├── Commands/               # 双击启动、预览、压缩图片、部署入口
 ├── package.json            # 项目命令
 └── vercel-archive/         # 旧 Vercel 资料和历史脚本归档
 ```
@@ -53,17 +55,17 @@
 
 ### 文件
 
-- `VERSION` — 只写一行版本号，例如 `v1.6.2`
-- `scripts/bump-version.mjs` — 自动遍历所有 HTML，批量替换 `?v=vX.Y.Z` 格式
+- `VERSION` — 只写一行版本号，例如 `v1.7.8`
+- `scripts/bump-version.mjs` — 自动遍历所有 HTML，批量替换 `?v=vX.Y.Z` 格式，并同步 `package.json`
 
 ### 升级步骤
 
 ```bash
 # 1. 修改 VERSION
-echo "v1.6.3" > VERSION
+echo "v1.7.9" > VERSION
 
 # 2. 运行脚本
-npm run bump -- 1.6.3
+npm run bump -- 1.7.9
 ```
 
 脚本会自动：
@@ -74,31 +76,23 @@ npm run bump -- 1.6.3
 
 ### 特性
 
-- **自动识别任意旧版本号**（v1.5.167、v1.6.1 等）
+- **自动识别任意旧版本号**（v1.5.167、v1.7.7 等）
 - **格式校验**：版本号必须符合 `vX.Y.Z`，否则提示确认
 - **跳过无版本戳文件**：不会误改学术活动文件
 - **macOS / Linux 兼容**
 
-### 旧方案（保留兼容）
-
-```bash
-npm run bump -- 1.6.2
-```
-
-`scripts/bump-version.mjs` 仍可运行，也可由后台和命令行直接调用。
-
 ## 日常维护流程
 
 1. 进入项目目录。
-2. 启动后台：`npm run admin`，或双击 `快捷命令/启动后台.command`。
+2. 启动后台：`npm run admin`，或双击 `Commands/启动后台.command`。
 3. 打开 `http://localhost:8787/admin.html`。
-4. 上传图片到 `resources/`，上传 PDF 到 `resources/`。
+4. 上传图片到 `resources/images/`，上传 PDF 到 `resources/papers/`，视频放 `resources/videos/`，帧序列放 `resources/frames/`。
 5. 在后台编辑对应栏目内容。
 6. 点击条目内的保存按钮，再点击"保存到本地"。
 7. 预览页面。
 8. 运行 `npm run check`。
-9. 更新版本号（`echo "vX.Y.Z" > VERSION && npm run bump -- X.Y.Z`）和 `docs/CHANGELOG.md`。
-10. 用户要求发布时执行 `vercel deploy --prod --yes`。
+9. 更新版本号：在后台改 `VERSION`，或执行 `echo "vX.Y.Z" > VERSION && npm run bump -- X.Y.Z`。
+10. 用户要求发布时，在后台点“推送到 GitHub”触发 Cloudflare Pages 自动部署。
 
 ## 常用命令
 
@@ -107,8 +101,8 @@ cd /Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站
 npm run admin
 npm run check
 npm run bump -- 1.6.2        # 新版本号管理
-npm run bump -- 1.6.2       # 旧版本号管理（兼容）
-vercel deploy --prod --yes
+npm run bump -- 1.7.8
+git push origin main          # 通过 SSH 推送并触发线上部署
 ```
 
 如果系统找不到 `node`，可以使用当前 Codex 环境里的 Node：
@@ -213,7 +207,7 @@ Intelligence
 - PDF 下载路径是 `resources/...`。
 - 图片路径是 `resources/...`。
 - `docs/CHANGELOG.md` 已新增记录。
-- `VERSION` 文件已更新，`npm run bump` 已运行。
+- `VERSION` 文件已更新，`npm run bump` 已运行，或已在后台保存版本号。
 
 ## 交给学术活动 AI 的提示词
 
@@ -224,7 +218,7 @@ Intelligence
 先阅读 README.md、docs/WORKFLOW.md、docs/CHANGELOG.md。
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
 内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
-当前稳定流程是本地维护 data.js、resources/、resources/，再由 Cloudflare Pages 托管。
-每次迭代必须更新版本号（修改 VERSION 后运行 `npm run bump -- X.Y.Z`）、写 docs/CHANGELOG.md、运行 npm run check。
+当前稳定流程是本地维护 `data.js`、`resources/`，再通过 GitHub 推送触发 Cloudflare Pages 自动部署。
+每次迭代必须更新版本号（修改 `VERSION` 后运行 `npm run bump -- X.Y.Z` 或后台保存版本号）、写 `docs/CHANGELOG.md`、运行 `npm run check`。
 只有用户明确要求发布时才部署。
 ```

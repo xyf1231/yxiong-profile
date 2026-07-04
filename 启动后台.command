@@ -1,6 +1,6 @@
 #!/bin/zsh
 set -e
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")"
 
 NODE_BIN="/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node"
 if [ ! -x "$NODE_BIN" ]; then

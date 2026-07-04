@@ -61,6 +61,44 @@ function runCommand(command, args, options = {}) {
   });
 }
 
+async function readVersionFile() {
+  const versionPath = resolve(rootDir, "VERSION");
+  if (!existsSync(versionPath)) return "v0.0.0";
+  return (await readFile(versionPath, "utf8")).trim() || "v0.0.0";
+}
+
+async function writeVersionFile(version) {
+  const versionPath = resolve(rootDir, "VERSION");
+  await writeFile(versionPath, `${version}\n`, "utf8");
+}
+
+async function syncVersionArtifacts(version) {
+  const child = spawn("node", ["scripts/bump-version.mjs", version], { cwd: rootDir });
+  let stdout = "";
+  let stderr = "";
+  child.stdout.on("data", (chunk) => (stdout += chunk));
+  child.stderr.on("data", (chunk) => (stderr += chunk));
+  const code = await new Promise((resolve) => child.on("close", resolve));
+  return { code, output: `${stdout}\n${stderr}`.trim() };
+}
+
+function normalizeVersionInput(rawValue = "") {
+  const value = String(rawValue).trim();
+  const match = value.match(/^v?(\d+)\.(\d+)\.(\d+)$/);
+  if (!match) throw new Error("版本号格式不正确，请使用 v1.7.8 这种格式。");
+  return `v${match[1]}.${match[2]}.${match[3]}`;
+}
+
+function bumpVersionString(version, strategy = "patch") {
+  const match = String(version).match(/^v?(\d+)\.(\d+)\.(\d+)$/);
+  if (!match) throw new Error("VERSION 文件格式不正确。");
+  const major = Number(match[1]);
+  const minor = Number(match[2]);
+  const patch = Number(match[3]);
+  if (strategy === "minor") return `v${major}.${minor + 1}.0`;
+  return `v${major}.${minor}.${patch + 1}`;
+}
+
 function safeBucket(value) {
   const bucket = String(value || "assets");
   if (!allowedBuckets.has(bucket)) throw new Error("只允许写入 assets 或 papers 文件夹。");
@@ -177,11 +215,7 @@ async function runOptimizeImages(req, res) {
 
 async function getVersion(res) {
   try {
-    const versionPath = resolve(rootDir, "VERSION");
-    let version = "v0.0.0";
-    if (existsSync(versionPath)) {
-      version = (await readFile(versionPath, "utf8")).trim();
-    }
+    const version = await readVersionFile();
     sendJson(res, 200, { ok: true, version });
   } catch (error) {
     sendJson(res, 500, { ok: false, message: error.message });
@@ -194,58 +228,16 @@ async function updateVersion(req, res) {
     const payload = JSON.parse(body.toString("utf8") || "{}");
     const strategy = payload.strategy || "patch"; // patch | minor | manual
     const manualVersion = payload.version || "";
-
-    const versionPath = resolve(rootDir, "VERSION");
-    let current = "v0.0.0";
-    if (existsSync(versionPath)) {
-      current = (await readFile(versionPath, "utf8")).trim();
+    const current = await readVersionFile();
+    const newVersion = strategy === "manual" && manualVersion
+      ? normalizeVersionInput(manualVersion)
+      : bumpVersionString(current, strategy);
+    await writeVersionFile(newVersion);
+    const syncResult = await syncVersionArtifacts(newVersion.replace(/^v/, ""));
+    if (syncResult.code !== 0) {
+      throw new Error(syncResult.output || "同步版本信息失败");
     }
-
-    let major = 1, minor = 0, patch = 0;
-    const match = current.match(/^v?(\d+)\.(\d+)\.(\d+)/);
-    if (match) {
-      major = parseInt(match[1], 10);
-      minor = parseInt(match[2], 10);
-      patch = parseInt(match[3], 10);
-    }
-
-    let newVersion;
-    if (strategy === "manual" && manualVersion) {
-      newVersion = manualVersion.startsWith("v") ? manualVersion : `v${manualVersion}`;
-    } else if (strategy === "minor") {
-      newVersion = `v${major}.${minor + 1}.0`;
-    } else {
-      // patch (default)
-      newVersion = `v${major}.${minor}.${patch + 1}`;
-    }
-
-    await writeFile(versionPath, `${newVersion}\n`, "utf8");
-    sendJson(res, 200, { ok: true, previous: current, version: newVersion, strategy });
-  } catch (error) {
-    sendJson(res, 500, { ok: false, message: error.message });
-  }
-}
-
-async function runBumpVersion(res) {
-  try {
-    const versionPath = resolve(rootDir, "VERSION");
-    const current = existsSync(versionPath) ? readFileSync(versionPath, "utf8").trim() : "v0.0.0";
-    const match = current.match(/^v?(\d+)\.(\d+)\.(\d+)$/);
-    if (!match) {
-      sendJson(res, 400, { ok: false, message: "VERSION 文件格式不正确" });
-      return;
-    }
-    const nextVersion = `v${match[1]}.${match[2]}.${Number(match[3]) + 1}`;
-    await writeFile(versionPath, `${nextVersion}\n`, "utf8");
-    const child = spawn("node", ["scripts/bump-version.mjs", nextVersion], { cwd: rootDir });
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk) => (stdout += chunk));
-    child.stderr.on("data", (chunk) => (stderr += chunk));
-    child.on("close", (code) => {
-      const output = `${stdout}\n${stderr}`.trim();
-      sendJson(res, code === 0 ? 200 : 500, { ok: code === 0, code, output });
-    });
+    sendJson(res, 200, { ok: true, previous: current, version: newVersion, strategy, output: syncResult.output });
   } catch (error) {
     sendJson(res, 500, { ok: false, message: error.message });
   }
@@ -510,10 +502,6 @@ const server = createServer(async (req, res) => {
       await updateVersion(req, res);
       return;
     }
-    if (url.pathname === "/api/bump" && req.method === "POST") {
-      await runBumpVersion(res);
-      return;
-    }
     if (url.pathname === "/api/git/status" && req.method === "GET") {
       await getGitStatus(res);
       return;
@@ -555,7 +543,7 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
   console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
-  console.log("内容写入 data.js；文件写入 resources/ 和 resources/；发布使用 GitHub + Cloudflare Pages。");
+  console.log("内容写入 data.js；文件写入 resources/；发布使用 GitHub + Cloudflare Pages。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];

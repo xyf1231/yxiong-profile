@@ -691,32 +691,6 @@ async function updateVersion() {
   }
 }
 
-async function runBump() {
-  if (deployState.isDeploying) return;
-  deployState.isDeploying = true;
-  const spinner = document.querySelector("#bump-spinner");
-  const btn = document.querySelector("#btn-bump");
-  spinner.style.display = "inline-block";
-  btn.disabled = true;
-  try {
-    deployLog("正在运行版本批量更新…", "cmd");
-    const result = await apiPost("/api/bump");
-    if (result.ok) {
-      deployLog("✅ 版本批量更新成功", "success");
-      if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) deployLog(line, "info"); });
-      await loadVersion();
-    } else {
-      deployLog(`❌ 执行失败: ${result.message || result.output}`, "error");
-    }
-  } catch (err) {
-    deployLog(`❌ 错误: ${err.message}`, "error");
-  } finally {
-    deployState.isDeploying = false;
-    spinner.style.display = "none";
-    btn.disabled = false;
-  }
-}
-
 // ═══════════════════════════════════════════════════════════════
 //  版本更新 — Git 状态
 // ═══════════════════════════════════════════════════════════════
@@ -1066,11 +1040,10 @@ async function deleteLocalFile(bucket, path) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  旧版部署兼容
+//  发布到线上（GitHub -> Cloudflare Pages）
 // ═══════════════════════════════════════════════════════════════
 
-async function deployToCloudflare() {
-  // 重定向到新的 GitHub 推送
+async function publishToGitHub() {
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再发布。", "error");
     return;
@@ -1221,9 +1194,9 @@ function init() {
   });
 
   // ── 旧版部署按钮兼容 ──
-  document.querySelector("#local-deploy")?.addEventListener("click", deployToCloudflare);
-  document.querySelector("#local-deploy-top")?.addEventListener("click", deployToCloudflare);
-  document.querySelector("#local-deploy-bottom")?.addEventListener("click", deployToCloudflare);
+  document.querySelector("#local-deploy")?.addEventListener("click", publishToGitHub);
+  document.querySelector("#local-deploy-top")?.addEventListener("click", publishToGitHub);
+  document.querySelector("#local-deploy-bottom")?.addEventListener("click", publishToGitHub);
 
   // ── 版本更新事件 ──
   document.querySelectorAll("#version-strategy button").forEach((btn) => {
@@ -1238,7 +1211,6 @@ function init() {
   });
   document.querySelector("#btn-set-version")?.addEventListener("click", updateVersion);
   document.querySelector("#btn-update-version")?.addEventListener("click", updateVersion);
-  document.querySelector("#btn-bump")?.addEventListener("click", runBump);
   document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
   document.querySelector("#btn-test-git")?.addEventListener("click", testGitHubConnection);
   document.querySelector("#btn-optimize-images")?.addEventListener("click", optimizeImages);
