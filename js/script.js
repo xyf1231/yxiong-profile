@@ -1381,16 +1381,7 @@ function applyLanguage() {
   document.querySelectorAll(".footer-address").forEach((node) => {
     node.textContent = localizeText("通信地址：南京大学仙林校区现代工学院A302");
   });
-  document.querySelectorAll(".footer-powered").forEach((node) => {
-    node.textContent = getPoweredByLabel();
-  });
   document.documentElement.dataset.langReady = "ready";
-}
-
-function getPoweredByLabel() {
-  const host = window.location.hostname || "";
-  if (host.endsWith(".vercel.app")) return "Hosted on Vercel";
-  return "Hosted on Cloudflare";
 }
 
 function translateNavigation(dict) {
@@ -2030,220 +2021,71 @@ function setupHomeFrameSequence() {
   const video = document.querySelector("#home-frame-video");
   const replayButton = document.querySelector(".home-frame-replay");
   if (!media || !video || !replayButton) return;
+  if (media.dataset.homeFrameBound === "1") return;
+  media.dataset.homeFrameBound = "1";
 
-  const isIOS = /iP(hone|od|ad)/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
-  let hasTriggeredLoad = false;
-  let hasAutoPlayed = false;
-  let rafId = 0;
-  let retryId = 0;
-  let loadTimeoutId = 0;
-  let isInViewport = false;
+  let hasLoaded = false;
 
-  // 创建加载指示器
-  const loader = document.createElement("div");
-  loader.className = "home-frame-loader";
-  loader.innerHTML = `
-    <div class="home-frame-loader-inner" aria-hidden="true">
-      <div class="home-frame-loader-spinner"></div>
-      <span class="home-frame-loader-percent">0%</span>
-      <div class="home-frame-loader-progress">
-        <div class="home-frame-loader-progress-bar"></div>
-      </div>
-      <span class="home-frame-loader-text">加载中</span>
-    </div>
-  `;
-  media.appendChild(loader);
-  const progressBar = loader.querySelector(".home-frame-loader-progress-bar");
-  const loaderText = loader.querySelector(".home-frame-loader-text");
-  const loaderPercent = loader.querySelector(".home-frame-loader-percent");
-
-  function showLoader() {
-    loader.classList.add("is-visible");
-  }
-
-  function hideLoader() {
-    loader.classList.remove("is-visible");
-  }
-
-  function updateProgress() {
-    if (!video.buffered || !video.buffered.length || !video.duration) return;
-    const end = video.buffered.end(video.buffered.length - 1);
-    const pct = end / video.duration;
-    progressBar.style.transform = `scaleX(${Math.min(pct, 1)})`;
-    if (loaderPercent) {
-      loaderPercent.textContent = `${Math.round(pct * 100)}%`;
-    }
-  }
-
-  function shouldArm() {
-    const rect = media.getBoundingClientRect();
-    const viewportCenter = window.innerHeight * 0.52;
-    const elementCenter = rect.top + rect.height / 2;
-    const distance = Math.abs(elementCenter - viewportCenter);
-    const threshold = window.innerHeight * 0.22;
-    return distance <= threshold;
-  }
-
-  function showFinalFrame() {
-    video.pause();
-  }
-
-  function playFromStart() {
-    video.currentTime = 0;
-    const playPromise = video.play();
-    if (playPromise && typeof playPromise.then === "function") {
-      playPromise.then(() => {
-        hasAutoPlayed = true;
-        hideLoader();
-        window.clearTimeout(loadTimeoutId);
-      }).catch(() => {
-        // 播放被浏览器阻止，保持 hasAutoPlayed 为 false
-        if (shouldArm()) showLoader();
-        scheduleRetry(isIOS ? 250 : 150);
-      });
-    } else {
-      hasAutoPlayed = true;
-      hideLoader();
-      window.clearTimeout(loadTimeoutId);
-    }
-  }
-
-  function triggerLoad() {
-    if (hasTriggeredLoad) return;
-    hasTriggeredLoad = true;
-    showLoader();
+  function loadVideo() {
+    if (hasLoaded) return;
+    hasLoaded = true;
     video.load();
-
-    // 加载超时：3 秒后仍未开始播放，提示用户（CDN 直链通常更快，缩短超时）
-    loadTimeoutId = window.setTimeout(() => {
-      if (video.paused && !video.ended && shouldArm() && loaderText) {
-        loaderText.textContent = "加载较慢，请稍候";
-      }
-    }, 3000);
   }
 
-  function scheduleRetry(delay = isIOS ? 180 : 120) {
-    if (retryId) return;
-    retryId = window.setTimeout(() => {
-      retryId = 0;
-      if (shouldArm() && video.paused && !video.ended && video.readyState >= 2) {
-        playFromStart();
-      }
-    }, delay);
-  }
-
-  function tryAutoPlay() {
-    if (hasAutoPlayed || video.ended) return;
-    if (shouldArm() && video.readyState >= 2 && video.paused) {
-      playFromStart();
+  function playVideo() {
+    loadVideo();
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {});
     }
   }
 
-  function updatePlayback() {
-    rafId = 0;
-    if (shouldArm()) {
-      if (!hasTriggeredLoad) {
-        triggerLoad();
-      }
-      tryAutoPlay();
-    }
-    if (!video.ended) {
-      rafId = window.requestAnimationFrame(updatePlayback);
+  function pauseVideo() {
+    if (!video.paused) {
+      video.pause();
     }
   }
 
-  // 视频事件监听
-  video.addEventListener("ended", showFinalFrame);
-  video.addEventListener("progress", updateProgress);
-  // loadedmetadata：只更新进度，不尝试播放（readyState 可能不足）
-  video.addEventListener("loadedmetadata", updateProgress);
-  // loadeddata / canplay：尝试播放，但不隐藏加载器（后续可能 still waiting）
-  video.addEventListener("loadeddata", () => { tryAutoPlay(); });
-  video.addEventListener("canplay", () => { tryAutoPlay(); });
-  // canplaythrough：确认可连续播放，隐藏加载器并尝试播放
-  video.addEventListener("canplaythrough", () => {
-    window.clearTimeout(loadTimeoutId);
-    hideLoader();
-    tryAutoPlay();
-  });
-  // playing：视频真正开始播放，确认隐藏加载器
-  video.addEventListener("playing", () => {
-    window.clearTimeout(loadTimeoutId);
-    hideLoader();
-  });
-  video.addEventListener("error", () => {
-    window.clearTimeout(loadTimeoutId);
-    if (loaderText) loaderText.textContent = "加载失败";
-    scheduleRetry(500);
-  });
-  // waiting：只在已经开始播放后（currentTime > 0）才显示加载器
-  video.addEventListener("waiting", () => {
-    if (video.currentTime > 0) showLoader();
-    scheduleRetry(200);
+  function shouldAutoplay() {
+    const rect = media.getBoundingClientRect();
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    return rect.top < viewportHeight * 0.85 && rect.bottom > viewportHeight * 0.15;
+  }
+
+  video.addEventListener("ended", () => {
+    pauseVideo();
   });
 
-  // 重播按钮
   replayButton.addEventListener("click", () => {
-    hasAutoPlayed = false;
-    if (!hasTriggeredLoad) {
-      triggerLoad();
-    }
-    playFromStart();
+    video.currentTime = 0;
+    playVideo();
   });
 
-  // IntersectionObserver：提前加载视频数据
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          isInViewport = entry.isIntersecting;
-          if (isInViewport && !hasTriggeredLoad) {
-            triggerLoad();
-          }
-          if (!isInViewport && !video.paused && !video.ended) {
-            video.pause();
+          if (entry.isIntersecting) {
+            loadVideo();
+            playVideo();
+          } else {
+            pauseVideo();
           }
         });
       },
-      { threshold: 0, rootMargin: "200px 0px" }
+      { threshold: 0.01, rootMargin: "120px 0px" }
     );
     observer.observe(media);
+  } else if (shouldAutoplay()) {
+    playVideo();
   }
 
-  // 滚动触发——保持 RAF 循环用于播放同步
-  window.addEventListener("scroll", () => {
-    if (rafId) return;
-    rafId = window.requestAnimationFrame(updatePlayback);
-  }, { passive: true });
-
-  // 窗口大小变化
-  window.addEventListener("resize", () => {
-    if (rafId) return;
-    rafId = window.requestAnimationFrame(updatePlayback);
-  });
-
-  // 触摸结束（移动端用户手势后尝试播放）
-  window.addEventListener("touchend", () => {
-    if (shouldArm() && video.paused && !video.ended && video.readyState >= 2) {
-      scheduleRetry(80);
-    }
-  }, { passive: true });
-
-  // 页面重新可见时尝试播放
-  document.addEventListener("visibilitychange", () => {
-    if (!document.hidden && shouldArm() && video.paused && !video.ended) {
-      scheduleRetry(100);
+  window.addEventListener("pageshow", () => {
+    if (shouldAutoplay()) {
+      loadVideo();
+      playVideo();
     }
   });
-
-  // 首次启动——只启动 RAF 监听，不立即加载视频
-  const start = () => {
-    if (!rafId) rafId = window.requestAnimationFrame(updatePlayback);
-    if (!hasTriggeredLoad && shouldArm()) {
-      triggerLoad();
-    }
-  };
-  start();
 }
 
 

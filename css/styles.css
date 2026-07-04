@@ -2047,21 +2047,6 @@ html[lang="en"] .subtle-name {
   font-variant-numeric: tabular-nums;
 }
 
-.footer-powered {
-  color: rgba(41, 151, 255, 0.82);
-  font-size: var(--font-tiny);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-
-
-
-
-
-
 .split-char {
   display: inline-block;
 }
@@ -9104,99 +9089,6 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   transition: opacity 180ms ease-out;
 }
 
-.home-frame-loader {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 12;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 300ms ease-out;
-  will-change: opacity;
-}
-
-.home-frame-loader.is-visible {
-  opacity: 1;
-}
-
-.home-frame-loader-inner {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  animation: home-frame-loader-float 1.8s ease-in-out infinite;
-}
-
-.home-frame-loader-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(255, 255, 255, 0.2);
-  border-top-color: rgba(255, 255, 255, 0.92);
-  border-radius: 50%;
-  animation: home-frame-spin 0.8s linear infinite;
-}
-
-.home-frame-loader-percent {
-  color: rgba(255, 255, 255, 0.92);
-  font-size: var(--font-h3);
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 16px rgba(255, 255, 255, 0.24), 0 0 6px rgba(255, 255, 255, 0.12);
-  transition: opacity 200ms ease, transform 200ms ease;
-  min-width: 3.5ch;
-  text-align: center;
-}
-
-@keyframes home-frame-spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes home-frame-loader-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-}
-
-.home-frame-loader-progress {
-  width: 120px;
-  height: 2px;
-  border-radius: 2px;
-  background: rgba(255, 255, 255, 0.18);
-  overflow: hidden;
-}
-
-.home-frame-loader-progress-bar {
-  width: 100%;
-  height: 100%;
-  border-radius: 2px;
-  background: linear-gradient(90deg, rgba(255,255,255,0.18), rgba(255,255,255,0.92), rgba(255,255,255,0.18));
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 200ms ease-out;
-  animation: home-frame-loader-sheen 1.2s linear infinite;
-}
-
-.home-frame-loader-text {
-  color: rgba(255, 255, 255, 0.64);
-  font-size: var(--font-small);
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  line-height: 1;
-}
-
-@keyframes home-frame-loader-sheen {
-  0% { filter: saturate(1); opacity: 0.72; }
-  50% { filter: saturate(1.35); opacity: 1; }
-  100% { filter: saturate(1); opacity: 0.72; }
-}
-
 .home-frame-replay {
   position: absolute;
   right: clamp(12px, 1.4vw, 18px);
@@ -9251,15 +9143,6 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   line-height: 1;
   font-weight: 900;
   letter-spacing: 0;
-}
-
-.home-frame-hint {
-  display: none;
-  margin: 10px 0 0;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.58);
-  font-size: var(--font-small);
-  letter-spacing: 0.08em;
 }
 
 .home-frame-media::before {
@@ -9322,16 +9205,9 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   .home-frame-replay {
     display: inline-grid !important;
   }
-
-  .home-frame-hint {
-    display: block;
-    margin-top: 6px;
-    margin-bottom: 0;
-  }
 }
 
 
-/* v1.5.79: restore earlier autoplay behavior for iPhone */
 .home-frame-replay {
   width: clamp(64px, 4.8vw, 86px) !important;
   height: clamp(64px, 4.8vw, 86px) !important;
@@ -9355,10 +9231,6 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
   color: rgba(255, 255, 255, 0.98) !important;
   font-size: var(--font-h3) !important;
   font-weight: 900 !important;
-}
-
-.home-frame-hint {
-  display: none !important;
 }
 
 @media (max-width: 760px) {
@@ -9398,10 +9270,6 @@ html[lang="en"] .news-carousel-track .news-card[data-title-size="long"] h3 {
 
   .home-frame-replay-icon {
     font-size: clamp(1rem, 3.7vw, 1.33rem) !important;
-  }
-
-  .home-frame-hint {
-    display: none !important;
   }
 
   body.home-dark main > .section-wrap.news-section {

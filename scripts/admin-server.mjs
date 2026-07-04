@@ -543,7 +543,7 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
   console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
-  console.log("内容写入 data.js；文件写入 resources/；发布使用 GitHub + Cloudflare Pages。");
+  console.log("内容写入 data.js；文件写入 resources/；发布使用 GitHub + 自动部署。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];

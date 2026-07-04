@@ -20,7 +20,7 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台管理 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.7.9" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.7.10" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -421,7 +421,7 @@
               <div>
                 <p class="section-kicker" id="active-kicker">Profile</p>
                 <h1 id="active-title">基本资料</h1>
-                <p class="hero-copy">编辑下方内容，保存当前条目后自动同步到 data.js。所有公开素材由 Cloudflare Pages 托管。</p>
+                <p class="hero-copy">编辑下方内容，保存当前条目后自动同步到 data.js。所有公开素材会随站点自动部署。</p>
               </div>
               <div class="admin-actions">
                 <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
@@ -475,7 +475,7 @@
               <div class="admin-sync-copy">
                 <p class="section-kicker">File Manager</p>
                 <h2 id="admin-sync-title">文件管理</h2>
-                <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起由 Cloudflare Pages 托管。</p>
+                <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起自动部署上线。</p>
               </div>
               <div class="storage-manager">
                 <div class="storage-manager-head">
@@ -566,7 +566,7 @@
                 <!-- 发布操作 -->
                 <div class="deploy-card full-width">
                   <div class="deploy-card-header"><div class="deploy-card-icon">🚀</div><h2 class="deploy-card-title">发布到线上</h2></div>
-                  <p class="deploy-card-desc">执行 git add → commit → push，触发 Cloudflare Pages 自动部署。</p>
+                  <p class="deploy-card-desc">执行 git add → commit → push，触发自动部署。</p>
                   <div class="deploy-btn-row">
                     <button class="deploy-btn success" id="btn-deploy">
                       <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
@@ -617,7 +617,7 @@
       </main>
     </div>
 
-    <script src="js/data.js?v=v1.7.9" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.7.9" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.7.10" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.7.10" charset="utf-8"></script>
   </body>
 </html>

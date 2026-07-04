@@ -788,8 +788,8 @@ async function deployToGitHub() {
         deployLog("✅ 推送成功！", "success");
         if (result.output?.commit) deployLog(result.output.commit, "info");
         if (result.output?.push) deployLog(result.output.push, "info");
-        deployLog("🌐 Cloudflare Pages 将自动构建部署", "success");
-        deployLog("⏱️ jsDelivr CDN 缓存约 5-10 分钟后生效", "info");
+        deployLog("🌐 站点将自动构建部署", "success");
+        deployLog("⏱️ CDN 缓存约 5-10 分钟后生效", "info");
       } else {
         deployLog("✅ 没有新的更改需要提交", "success");
       }
@@ -1040,7 +1040,7 @@ async function deleteLocalFile(bucket, path) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-//  发布到线上（GitHub -> Cloudflare Pages）
+//  发布到线上（GitHub -> 自动部署）
 // ═══════════════════════════════════════════════════════════════
 
 async function publishToGitHub() {
