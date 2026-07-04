@@ -1381,7 +1381,16 @@ function applyLanguage() {
   document.querySelectorAll(".footer-address").forEach((node) => {
     node.textContent = localizeText("通信地址：南京大学仙林校区现代工学院A302");
   });
+  document.querySelectorAll(".footer-powered").forEach((node) => {
+    node.textContent = getPoweredByLabel();
+  });
   document.documentElement.dataset.langReady = "ready";
+}
+
+function getPoweredByLabel() {
+  const host = window.location.hostname || "";
+  if (host.endsWith(".vercel.app")) return "Hosted on Vercel";
+  return "Hosted on Cloudflare";
 }
 
 function translateNavigation(dict) {

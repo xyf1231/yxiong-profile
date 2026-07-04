@@ -2047,6 +2047,15 @@ html[lang="en"] .subtle-name {
   font-variant-numeric: tabular-nums;
 }
 
+.footer-powered {
+  color: rgba(41, 151, 255, 0.82);
+  font-size: var(--font-tiny);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
 
 
 
