@@ -742,6 +742,7 @@ function setupNewsCarousel(root) {
       track.dataset.offset = String(targetOffset);
       track.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
       updateProgress(0);
+      if (autoPlaying && !manual) startProgress();
       if (behavior === "auto") {
         window.setTimeout(() => {
           track.style.transitionDuration = "";
@@ -779,7 +780,6 @@ function setupNewsCarousel(root) {
     stopAuto();
     if (!autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) return;
     timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), progressDuration);
-    startProgress();
   };
 
   const stopProgress = () => {
@@ -1152,18 +1152,24 @@ function isPdfUrl(url = "") {
   return /\.pdf(?:[?#].*)?$/i.test(String(url));
 }
 
+function downloadLabel() {
+  return currentLang === "en" ? "Download" : "下载";
+}
+
+function noResourceLabel() {
+  return currentLang === "en" ? "No resource" : "暂无资源";
+}
+
 function pdfDownloadLink(url) {
   if (!url) {
-    const noResourceText = localizeText("noResource") || localizeText("暂无资源") || "暂无资源";
     return `<div class="pdf-actions">
-      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceText)}</span></span>
+      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceLabel())}</span></span>
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
-  const downloadText = localizeText("download") || localizeText("下载") || "下载";
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadLabel())}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
