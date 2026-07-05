@@ -649,7 +649,7 @@ function renderNews(items) {
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
       return `
-        <a class="news-card" href="${escapeHtml(href)}" data-news-slide="${index}" data-title-size="${titleSize}">
+        <a class="news-card" href="${escapeHtml(href)}" data-news-slide="${index}" data-title-size="${titleSize}" data-news-date="${escapeHtml(item.date || "")}">
           ${image}
           <div class="news-card-body">
             <time>${escapeHtml(item.date || "")}</time>
@@ -666,15 +666,18 @@ function renderNews(items) {
     </div>
     <div class="news-carousel-controls" aria-label="${escapeHtml(currentLang === "en" ? "News carousel controls" : "新闻切换控制")}">
       <button class="news-carousel-arrow" data-news-prev type="button" aria-label="${escapeHtml(currentLang === "en" ? "Previous news" : "上一条新闻")}">‹</button>
-      <div class="news-carousel-dots">${items
-        .map((_, index) => `<button type="button" data-news-dot="${index}" aria-label="${escapeHtml(currentLang === "en" ? `Go to news ${index + 1}` : `跳转到第 ${index + 1} 条新闻`)}"><span class="news-carousel-dot-fill"></span></button>`)
-        .join("")}</div>
+      <div class="news-carousel-dots">
+        ${items
+        .map((_, index) => `<button type="button" data-news-dot="${index}" aria-label="${escapeHtml(currentLang === "en" ? `Go to news ${index + 1}` : `跳转到第 ${index + 1} 条新闻`)}"></button>`)
+        .join("")}
+      </div>
       <button class="news-carousel-arrow" data-news-next type="button" aria-label="${escapeHtml(currentLang === "en" ? "Next news" : "下一条新闻")}">›</button>
       <button class="news-carousel-play" data-news-play type="button" aria-label="${escapeHtml(currentLang === "en" ? "Pause auto play" : "暂停自动播放")}">Ⅱ</button>
     </div>
   `;
   setupNewsCarousel(target);
 }
+
 
 function setupNewsCarousel(root) {
   const viewport = root.querySelector(".news-carousel-viewport");
@@ -707,11 +710,9 @@ function setupNewsCarousel(root) {
   let wheelCooldownTimer = null;
   const wheelThreshold = 88;
   const wheelCooldownMs = 420;
-  let progressFrame = null;
 
   const getCurrentOffset = () => Number(track.dataset.offset || 0);
   let dragBaseOffset = 0;
-  const progressDuration = 6200;
 
   const update = (index = activeIndex) => {
     activeIndex = Math.max(0, Math.min(cards.length - 1, index));
@@ -719,9 +720,14 @@ function setupNewsCarousel(root) {
     dots.forEach((dot, i) => {
       const isCurrent = i === activeIndex;
       dot.setAttribute("aria-current", String(isCurrent));
-      dot.style.setProperty("--news-progress", isCurrent ? "0" : "0");
+      if (!isCurrent) dot.style.removeProperty("--news-progress");
+      else {
+      const progress = autoPlaying && cards.length > 1
+        ? Math.min(1, Math.max(0, (Date.now() - autoplayStartedAt) / 5200))
+        : 0;
+        dot.style.setProperty("--news-progress", `${(progress * 100).toFixed(2)}%`);
+      }
     });
-    root.style.setProperty("--news-progress", "0");
   };
 
   const goTo = (index, behavior = "smooth", wrap = false, manual = false) => {
@@ -741,8 +747,6 @@ function setupNewsCarousel(root) {
       const targetOffset = Math.round(viewport.clientWidth / 2 - (card.offsetLeft + card.offsetWidth / 2));
       track.dataset.offset = String(targetOffset);
       track.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
-      updateProgress(0);
-      if (autoPlaying && !manual) startProgress();
       if (behavior === "auto") {
         window.setTimeout(() => {
           track.style.transitionDuration = "";
@@ -760,7 +764,6 @@ function setupNewsCarousel(root) {
   const pauseAuto = () => {
     autoPlaying = false;
     stopAuto();
-    stopProgress();
     window.clearInterval(statusTimer);
     statusTimer = null;
     if (play) {
@@ -779,61 +782,32 @@ function setupNewsCarousel(root) {
   const startAuto = () => {
     stopAuto();
     if (!autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) return;
-    timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), progressDuration);
-  };
-
-  const stopProgress = () => {
-    if (progressFrame) window.cancelAnimationFrame(progressFrame);
-    progressFrame = null;
-  };
-
-  const updateProgress = (value) => {
-    const clamped = Math.max(0, Math.min(1, value));
-    root.style.setProperty("--news-progress", String(clamped));
-    dots.forEach((dot, i) => {
-      if (i === activeIndex) dot.style.setProperty("--news-progress", String(clamped));
-      else dot.style.setProperty("--news-progress", "0");
-    });
-  };
-
-  const startProgress = () => {
-    stopProgress();
-    if (!autoPlaying || cards.length < 2) return;
-    const startedAt = performance.now();
-    const tick = (now) => {
-      if (!autoPlaying) {
-        stopProgress();
-        return;
-      }
-      const progress = (now - startedAt) / progressDuration;
-      updateProgress(progress >= 1 ? 1 : progress);
-      if (progress < 1) progressFrame = window.requestAnimationFrame(tick);
-    };
-    progressFrame = window.requestAnimationFrame(tick);
+    autoplayStartedAt = Date.now();
+    timer = window.setInterval(() => {
+      autoplayStartedAt = Date.now();
+      goTo(activeIndex + 1, "smooth", true);
+    }, 5200);
+    window.clearInterval(statusTimer);
+    statusTimer = window.setInterval(() => update(), 100);
+    update();
   };
 
   prev?.addEventListener("click", () => { goTo(activeIndex - 1, "smooth", false, true); });
   next?.addEventListener("click", () => { goTo(activeIndex + 1, "smooth", false, true); });
   dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index, "smooth", false, true); }));
+  cards.forEach((card, index) => {
+    card.addEventListener("click", (event) => {
+      if (index === activeIndex) return;
+      event.preventDefault();
+      goTo(index, "smooth", false, true);
+    });
+  });
   play?.addEventListener("click", () => {
     autoPlaying = !autoPlaying;
     play.textContent = autoPlaying ? "Ⅱ" : "▶";
     play.setAttribute("aria-label", autoPlaying ? (currentLang === "en" ? "Pause auto play" : "暂停自动播放") : (currentLang === "en" ? "Resume auto play" : "继续自动播放"));
     if (autoPlaying) startAuto();
-    else {
-      stopProgress();
-      pauseAuto();
-    }
-  });
-
-  root.addEventListener("click", (event) => {
-    const card = event.target.closest?.(".news-card");
-    if (!card) return;
-    const index = Number(card.dataset.newsSlide || 0);
-    if (index !== activeIndex) {
-      event.preventDefault();
-      goTo(index, "smooth", false, true);
-    }
+    else pauseAuto();
   });
 
   const beginDrag = (event) => {
@@ -912,7 +886,8 @@ function setupNewsCarousel(root) {
       ? (dragDeltaX < 0 ? Math.min(cards.length - 1, activeIndex + 1) : Math.max(0, activeIndex - 1))
       : activeIndex;
 
-    goTo(targetIndex, "smooth", false, true);
+    if (targetIndex !== activeIndex) goTo(targetIndex, "smooth", false, true);
+    else goTo(activeIndex, "smooth", false, true);
 
     window.setTimeout(() => {
       suppressClick = false;
@@ -976,10 +951,11 @@ function setupNewsCarousel(root) {
     }
     
     if (Math.abs(touchDeltaX) >= swipeThreshold) {
-      const targetIndex = touchDeltaX < 0 
-        ? Math.min(cards.length - 1, activeIndex + 1) 
+      const targetIndex = touchDeltaX < 0
+        ? Math.min(cards.length - 1, activeIndex + 1)
         : Math.max(0, activeIndex - 1);
-      goTo(targetIndex, "smooth", false, true);
+      if (targetIndex !== activeIndex) goTo(targetIndex, "smooth", false, true);
+      else goTo(activeIndex, "smooth", false, true);
     } else {
       goTo(activeIndex, "smooth", false, true);
     }
@@ -1037,7 +1013,9 @@ function setupNewsCarousel(root) {
   goTo(0, "auto");
   window.addEventListener("load", () => goTo(activeIndex, "auto"), { once: true });
   startAuto();
+  update();
 }
+
 function sanitizeRichHtml(html = "") {
   const template = document.createElement("template");
   template.innerHTML = String(html);
