@@ -1,0 +1,25 @@
+/* Activities page-specific overrides */
+.detail-item,
+.profile-publication-item,
+.timeline li {
+  display: grid;
+  grid-template-columns: 118px 1fr;
+  gap: 24px;
+  padding: 20px 22px;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.055);
+  transition: border-color 200ms ease, background 200ms ease;
+}
+
+.timeline-section {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.75fr) minmax(320px, 1.25fr);
+  gap: clamp(34px, 7vw, 92px);
+}
+
+.detail-item {
+  grid-template-columns: 118px 1fr;
+  gap: 24px;
+  padding: 20px 22px;
+}

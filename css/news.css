@@ -1,0 +1,46 @@
+/* News page-specific overrides */
+.news-detail-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 860px) minmax(280px, 340px);
+  justify-content: center;
+  gap: clamp(22px, 4vw, 42px);
+  align-items: start;
+  width: min(100% - 64px, 1320px);
+  margin-top: 104px;
+}
+
+.news-detail-layout {
+  /* retained for specificity if the shared sheet still sets defaults */
+}
+
+.news-article-card,
+.news-info-card {
+  border-radius: 18px;
+  padding: clamp(24px, 4vw, 48px);
+}
+
+.news-article-card {
+  display: grid;
+  gap: clamp(24px, 4vw, 42px);
+}
+
+.news-info-card {
+  position: sticky;
+  top: 96px;
+  backdrop-filter: blur(20px) saturate(1.4);
+}
+
+.news-carousel-viewport {
+  width: auto;
+  padding-inline: clamp(28px, 4vw, 72px);
+  margin-inline: calc(clamp(28px, 4vw, 72px) * -1);
+  scroll-padding-inline: clamp(28px, 4vw, 72px);
+}
+
+.news-carousel-track .news-card,
+.news-carousel-track .news-card:first-child,
+.news-carousel-track .news-card:nth-child(2),
+.news-carousel-track .news-card:nth-child(n + 3) {
+  flex-basis: min(78vw, 1080px);
+  overflow: hidden;
+}

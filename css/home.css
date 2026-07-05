@@ -1,0 +1,95 @@
+/* Home page-specific overrides */
+.home-dark .fiber-hero.clean-hero {
+  min-height: clamp(620px, 78vh, 820px);
+}
+
+.home-dark .section-wrap {
+  padding-top: clamp(52px, 5.4vw, 82px);
+  padding-bottom: clamp(64px, 6.4vw, 96px);
+}
+
+.home-dark .news-section {
+  padding-top: clamp(30px, 3.8vw, 56px);
+  margin-top: 0;
+}
+
+.news-section .section-heading .text-link {
+  display: none;
+}
+
+.news-carousel-track .news-card {
+  flex: 0 0 min(76vw, 1120px);
+  aspect-ratio: 16 / 9;
+  border-radius: clamp(28px, 3.2vw, 44px);
+  overflow: hidden;
+}
+
+.home-bento-nav {
+  padding-top: clamp(18px, 3vw, 38px);
+}
+
+.home-bento-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 26px);
+}
+
+.home-bento-card {
+  min-height: clamp(220px, 24vw, 330px);
+  border-radius: clamp(22px, 2.2vw, 30px);
+  --border-radius: clamp(22px, 2.2vw, 30px);
+  padding: clamp(24px, 3vw, 42px);
+  color: var(--text);
+  text-decoration: none;
+  border: 1.5px solid rgba(255, 255, 255, 0.14);
+  background: radial-gradient(circle at 18% 12%, rgba(255,255,255,.16), transparent 30%), linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.025));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 24px 70px rgba(0,0,0,.34);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+.home-bento-card strong {
+  font-size: var(--font-h2);
+  line-height: 1;
+}
+
+.home-bento-card p {
+  color: var(--muted);
+  font-weight: 700;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.reveal,
+.section-heading,
+.home-bento-grid,
+.news-grid,
+.feature-grid,
+.detail-list,
+.timeline-section .timeline,
+.publication-list,
+.project-list,
+.achievement-list,
+.profile-combo,
+.profile-photo,
+.contact-inner,
+.news-card,
+.news-article-card,
+.news-info-card,
+.feature-card,
+.publication-item,
+.profile-publication-item,
+.all-publication-list > .glass-surface,
+.detail-item,
+.project-card,
+.achievement-item,
+.home-bento-card {
+  opacity: 0;
+  transform: translate3d(0, var(--reveal-distance), 0);
+  filter: none;
+  transition: opacity var(--reveal-duration) var(--ease-smooth), transform var(--reveal-duration) var(--ease-smooth);
+}

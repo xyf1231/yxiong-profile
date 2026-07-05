@@ -1,0 +1,38 @@
+/* Results page-specific overrides */
+.publications {
+  background: #0a0a14;
+  color: #fff;
+}
+
+.publication-list {
+  border-radius: var(--radius);
+}
+
+.all-publication-list,
+.detail-list,
+.profile-publication-list {
+  display: grid;
+  gap: 14px;
+}
+
+.publication-item {
+  grid-template-columns: 72px minmax(160px, 0.42fr) 1fr;
+  gap: 24px;
+  padding: 26px;
+}
+
+.all-publication-list time,
+.detail-item time,
+.profile-publication-item > span {
+  color: var(--accent);
+  font-weight: 850;
+}
+
+.publication-visual {
+  overflow: hidden;
+  align-self: start;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.08);
+  aspect-ratio: 16 / 10;
+}

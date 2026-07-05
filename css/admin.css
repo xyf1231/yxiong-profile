@@ -1,0 +1,22 @@
+/* Admin page-specific overrides */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  min-height: 100vh;
+}
+
+.admin-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.admin-grid,
+.admin-hero {
+  grid-template-columns: 1fr;
+}
+
+.admin-tabs {
+  position: static;
+}
