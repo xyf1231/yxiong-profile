@@ -51,7 +51,6 @@ function publicationImageMarkup(item, title, priority = false) {
   const imageSrc = item.image || fallbackImage;
   return `<div class="publication-visual">${pictureTag(imageSrc, title, "", priority)}</div>`;
 }
-
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
@@ -122,8 +121,6 @@ const translations = {
     experienceTitle: "学习工作经历",
     selectedWorkTitle: "代表论文",
     appointmentsTitle: "学术任职",
-    homeFrameKicker: "Highlights",
-    homeFrameTitle: "研究亮点",
     newsKicker: "News",
     news: "新闻动态",
     quickNavKicker: "Explore",
@@ -205,8 +202,6 @@ const translations = {
     experienceTitle: "Education and Works",
     selectedWorkTitle: "Selected Publications",
     appointmentsTitle: "Academic Participation",
-    homeFrameKicker: "研究亮点",
-    homeFrameTitle: "Research Highlights",
     newsKicker: "新闻动态",
     news: "News",
     quickNavKicker: "快速导航",
@@ -506,6 +501,10 @@ function localizeText(value = "") {
   return currentLang === "en" ? textEnglish[text] || text : text;
 }
 
+function uiLabel(zhText, enText) {
+  return currentLang === "en" ? enText : zhText;
+}
+
 function localizePageTitlePrefix(prefix = "") {
   const text = String(prefix || "").trim();
   const pairs = [
@@ -677,7 +676,6 @@ function renderNews(items) {
   `;
   setupNewsCarousel(target);
 }
-
 
 function setupNewsCarousel(root) {
   const viewport = root.querySelector(".news-carousel-viewport");
@@ -1015,7 +1013,6 @@ function setupNewsCarousel(root) {
   startAuto();
   update();
 }
-
 function sanitizeRichHtml(html = "") {
   const template = document.createElement("template");
   template.innerHTML = String(html);
@@ -1106,7 +1103,7 @@ function renderNewsDetail(items = []) {
   if (pdf) {
     if (detail.pdf) pdf.setAttribute("href", assetUrl(detail.pdf));
     else pdf.hidden = true;
-    pdf.innerHTML = `<span>${escapeHtml(localizeText("下载"))}</span><i aria-hidden="true"></i>`;
+    pdf.innerHTML = `<span>${escapeHtml(uiLabel("下载", "Download"))}</span><i aria-hidden="true"></i>`;
     pdf.setAttribute("target", "_blank");
     pdf.setAttribute("rel", "noopener");
     pdf.setAttribute("data-pdf-download", "");
@@ -1130,24 +1127,18 @@ function isPdfUrl(url = "") {
   return /\.pdf(?:[?#].*)?$/i.test(String(url));
 }
 
-function downloadLabel() {
-  return currentLang === "en" ? "Download" : "下载";
-}
-
-function noResourceLabel() {
-  return currentLang === "en" ? "No resource" : "暂无资源";
-}
-
 function pdfDownloadLink(url) {
   if (!url) {
+    const noResourceText = uiLabel("暂无资源", "No resource");
     return `<div class="pdf-actions">
-      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceLabel())}</span></span>
+      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceText)}</span></span>
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
+  const downloadText = uiLabel("下载", "Download");
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadLabel())}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -1723,8 +1714,6 @@ function translateLooseHeadings(dict) {
     简介: dict.profile,
     主页: dict.navHome,
     研究内容: dict.researchTitle,
-    研究亮点: dict.homeFrameTitle,
-    "Research Highlights": dict.homeFrameTitle,
     Research: dict.researchTitle,
     Timeline: currentLang === "en" ? "Education and Works" : "时间线",
     Papers: dict.publications,
@@ -1842,44 +1831,56 @@ function setupRevealAnimations() {
   if (!targets.length) return;
 
   const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (reducedMotion || !("IntersectionObserver" in window)) {
+  if (reducedMotion) {
     targets.forEach((node) => node.classList.add("is-revealed"));
     return;
   }
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("is-revealed");
-        observer.unobserve(entry.target);
-      });
-    },
-    {
-      threshold: 0.14,
-      rootMargin: "0px 0px -8% 0px",
-    },
-  );
-
-  targets.forEach((node, index) => {
+  let rafId = 0;
+  const revealList = Array.from(targets).map((node, index) => {
     if (node.classList.contains("home-bento-card") || node.classList.contains("publication-item") || node.classList.contains("detail-item") || node.classList.contains("achievement-item") || node.classList.contains("feature-card") || node.classList.contains("news-card")) {
       node.style.setProperty("--reveal-delay", `${Math.min(index * 45, 420)}ms`);
     }
-    observer.observe(node);
+    return node;
   });
+
+  const revealInView = () => {
+    rafId = 0;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const startLine = viewportHeight * 0.985;
+    const endLine = viewportHeight * 0.02;
+
+    for (const node of revealList) {
+      if (node.classList.contains("is-revealed")) continue;
+      const rect = node.getBoundingClientRect();
+      if (rect.top < startLine && rect.bottom > endLine) {
+        node.classList.add("is-revealed");
+      }
+    }
+  };
+
+  const scheduleRevealCheck = () => {
+    if (rafId) return;
+    rafId = window.requestAnimationFrame(revealInView);
+  };
+
+  revealInView();
+  window.addEventListener("scroll", scheduleRevealCheck, { passive: true });
+  window.addEventListener("resize", scheduleRevealCheck, { passive: true });
 }
 
 function resizeCanvas() {
   if (!canvas || !ctx) return;
-  const dpr = document.body.classList.contains("home-dark") ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+  const isHomePage = document.body.classList.contains("home-dark");
+  const dpr = isHomePage ? 1 : Math.min(window.devicePixelRatio || 1, 2);
   width = canvas.offsetWidth;
   height = canvas.offsetHeight;
   canvas.width = Math.floor(width * dpr);
   canvas.height = Math.floor(height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const count = document.body.classList.contains("home-dark")
-    ? Math.max(42, Math.min(92, Math.floor(width / 18)))
+  const count = isHomePage
+    ? Math.max(18, Math.min(34, Math.floor(width / 30)))
     : Math.max(28, Math.min(78, Math.floor(width / 18)));
   particles = Array.from({ length: count }, (_, index) => ({
     x: (index * 97) % width,
@@ -1889,7 +1890,9 @@ function resizeCanvas() {
     r: 1.3 + Math.random() * 2.4,
   }));
 
-  lightStreaks = Array.from({ length: Math.max(72, Math.min(150, Math.floor(width / 11))) }, () => createLightStreak(true));
+  lightStreaks = isHomePage
+    ? Array.from({ length: Math.max(12, Math.min(18, Math.floor(width / 120))) }, () => createLightStreak(true))
+    : Array.from({ length: Math.max(72, Math.min(150, Math.floor(width / 11))) }, () => createLightStreak(true));
 }
 
 function drawNetwork() {
@@ -1942,7 +1945,6 @@ function drawNetwork() {
 
 function drawFiberSystem() {
   ctx.clearRect(0, 0, width, height);
-  frame += 1;
 
   const base = ctx.createLinearGradient(0, 0, width, height);
   base.addColorStop(0, "#030411");
@@ -1967,7 +1969,6 @@ function drawFiberSystem() {
   drawLightfallStreaks();
 
   ctx.globalCompositeOperation = "source-over";
-  rafId = requestAnimationFrame(drawNetwork);
 }
 
 function createLightStreak(randomY = false) {
@@ -1988,16 +1989,16 @@ function createLightStreak(randomY = false) {
 function drawLightfallStars() {
   for (let i = 0; i < particles.length; i += 1) {
     const point = particles[i];
-    point.y += 0.18 + (i % 5) * 0.018;
-    point.x -= 0.05 + (i % 7) * 0.006;
+    point.y += 0.02 + (i % 5) * 0.003;
+    point.x -= 0.01 + (i % 7) * 0.002;
     if (point.y > height + 20) point.y = -20;
     if (point.x < -20) point.x = width + 20;
-    const twinkle = 0.42 + Math.sin(frame * 0.035 + point.x * 0.01 + point.y * 0.02) * 0.32;
+    const twinkle = 0.32 + Math.sin(point.x * 0.01 + point.y * 0.02) * 0.18;
     ctx.beginPath();
     ctx.arc(point.x, point.y, point.r * (0.52 + twinkle * 0.28), 0, Math.PI * 2);
     ctx.fillStyle = `rgba(166, 200, 255, ${0.1 + twinkle * 0.34})`;
-    ctx.shadowColor = "rgba(82, 39, 255, 0.62)";
-    ctx.shadowBlur = 7 + twinkle * 7;
+    ctx.shadowColor = "rgba(82, 39, 255, 0.28)";
+    ctx.shadowBlur = 2 + twinkle * 3;
     ctx.fill();
   }
   ctx.shadowBlur = 0;
@@ -2006,9 +2007,8 @@ function drawLightfallStars() {
 function drawLightfallStreaks() {
   for (let i = 0; i < lightStreaks.length; i += 1) {
     const streak = lightStreaks[i];
-    const strength = 0;
-    const pulse = 0.72 + Math.sin(frame * 0.055 + streak.phase) * 0.28;
-    const alpha = Math.min(1, streak.alpha * pulse + strength * 0.42);
+    const pulse = 0.9 + Math.sin(streak.phase) * 0.08;
+    const alpha = Math.min(1, streak.alpha * pulse);
     const dx = streak.length * streak.drift;
     const dy = streak.length;
     const headX = streak.x;
@@ -2024,18 +2024,18 @@ function drawLightfallStreaks() {
     ctx.moveTo(tailX, tailY);
     ctx.lineTo(headX, headY);
     ctx.strokeStyle = gradient;
-    ctx.lineWidth = streak.width * (1 + strength * 1.4);
+    ctx.lineWidth = streak.width;
     ctx.shadowColor = streak.color;
-    ctx.shadowBlur = 18 + strength * 22;
+    ctx.shadowBlur = 6;
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(headX, headY, 1.6 + strength * 3.4, 0, Math.PI * 2);
+    ctx.arc(headX, headY, 1.6, 0, Math.PI * 2);
     ctx.fillStyle = hexToRgba(streak.color, alpha);
     ctx.fill();
 
-    streak.y += streak.speed * (1 + strength * 0.65);
-    streak.x += streak.drift * streak.speed * 0.55;
+    streak.y += streak.speed * 0.14;
+    streak.x += streak.drift * 0.12;
 
     if (streak.y - streak.length > height + 80 || streak.x < -width * 0.35 || streak.x > width * 1.25) {
       lightStreaks[i] = createLightStreak(false);
