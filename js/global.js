@@ -17,12 +17,13 @@ const ASSET_CACHE_BUSTER = (() => {
   }
 })();
 const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
+const ASSET_SOURCE = (window.DEFAULT_SITE_DATA?.assetSource || "vercel").toLowerCase();
 
 function assetUrl(src = "") {
   const value = String(src || "");
   if (!value || /^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
   const normalized = value.replace(/^\/+/, "");
-  if (!ASSET_BASE_URL) return value;
+  if (!ASSET_BASE_URL || ASSET_SOURCE !== "cdn") return value;
   if (!normalized.startsWith("resources/")) return value;
   return `${ASSET_BASE_URL}/${normalized}`;
 }
@@ -30,7 +31,9 @@ function assetUrl(src = "") {
 function withAssetCacheBuster(src) {
   if (!src || !ASSET_CACHE_BUSTER) return src;
   try {
-    const url = new URL(assetUrl(src), window.location.href);
+    const resolved = assetUrl(src);
+    const url = new URL(resolved, window.location.href);
+    if (url.origin !== window.location.origin) return resolved;
     url.searchParams.set("v", ASSET_CACHE_BUSTER);
     return url.toString();
   } catch (e) {

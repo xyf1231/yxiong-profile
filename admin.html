@@ -174,8 +174,8 @@
       /* ── CMS 主工作区：编辑表单 + 条目列表 ── */
       .cms-primary {
         display: grid;
-        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 320px);
-        gap: 14px;
+        grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
+        gap: 16px;
         margin-bottom: 18px;
         align-items: start;
       }
@@ -200,11 +200,6 @@
         align-items: start;
         grid-template-columns: auto 1fr auto;
         gap: 10px;
-      }
-        background: rgba(255,255,255,0.09);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 14px;
-        align-items: start;
       }
       .cms-list-col .managed-item:last-child { border-bottom: none; }
       .cms-list-col .managed-item:hover { background: rgba(255,255,255,0.12); }
@@ -277,6 +272,10 @@
       .managed-item.drag-over-after { box-shadow: inset 0 -3px 0 var(--accent) !important; }
       .storage-item { transition: background 0.15s ease, border-color 0.15s ease; }
       .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+      .storage-item.is-targeted {
+        border-color: rgba(41,151,255,0.45);
+        box-shadow: 0 0 0 1px rgba(41,151,255,0.18), 0 10px 30px rgba(41,151,255,0.08);
+      }
 
       /* ── 版本控制台 ── */
       .deploy-dashboard { display: grid; gap: 18px; }
@@ -290,11 +289,6 @@
           radial-gradient(circle at top left, rgba(41,151,255,0.12), transparent 34%),
           linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
         box-shadow: 0 20px 54px rgba(0,0,0,0.22);
-      }
-      .deploy-status-rail {
-        display: grid;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-        gap: 12px;
       }
       .deploy-status-chip {
         display: grid;
@@ -322,14 +316,38 @@
         margin-right: 6px;
         vertical-align: middle;
       }
-      .deploy-console-grid {
+      .deploy-overview {
         display: grid;
-        grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+        grid-template-columns: repeat(12, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .deploy-overview .deploy-status-chip:nth-child(1),
+      .deploy-overview .deploy-status-chip:nth-child(2),
+      .deploy-overview .deploy-status-chip:nth-child(3),
+      .deploy-overview .deploy-status-chip:nth-child(4) {
+        grid-column: span 3;
+      }
+      .deploy-overview .deploy-status-chip:nth-child(5) {
+        grid-column: span 12;
+        min-height: 72px;
+      }
+      .deploy-overview .deploy-status-chip {
+        min-height: 84px;
+        padding: 14px 16px;
+        border-radius: 22px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03)),
+          rgba(0,0,0,0.18);
+      }
+      .deploy-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.9fr);
         gap: 16px;
       }
       .deploy-console-pane,
       .deploy-link-panel,
-      .deploy-log-panel {
+      .deploy-log-panel,
+      .deploy-backup-panel {
         padding: 18px;
         border: 1px solid rgba(255,255,255,0.1);
         border-radius: 24px;
@@ -344,6 +362,10 @@
         align-items: start;
         justify-content: space-between;
         gap: 16px;
+      }
+      .deploy-console-head .deploy-status-badge {
+        margin-top: 4px;
+        justify-self: end;
       }
       .deploy-console-head h2,
       .deploy-link-panel h2,
@@ -464,6 +486,12 @@
       .deploy-input { height: 36px; padding: 0 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.03); color: var(--ink); font: inherit; font-size: 0.82rem; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
       .deploy-input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(41,151,255,0.12); }
       .deploy-input::placeholder { color: rgba(255,255,255,0.25); }
+      .deploy-note {
+        margin: -4px 0 0;
+        color: rgba(255,255,255,0.45);
+        font-size: 0.78rem;
+        line-height: 1.55;
+      }
       .deploy-file-list { max-height: 200px; overflow-y: auto; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.25); padding: 10px 14px; margin-top: 12px; font-size: 0.76rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
       .deploy-file-list.empty { color: var(--muted); text-align: center; padding: 20px; }
       .deploy-file-item { display: flex; align-items: center; gap: 8px; padding: 3px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
@@ -487,6 +515,28 @@
       .deploy-status-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 0.78rem; color: var(--muted); }
       .deploy-status-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); display: inline-block; }
       .deploy-status-badge.running .dot { background: #30d158; box-shadow: 0 0 5px rgba(48,209,88,0.4); }
+      .deploy-metrics {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .deploy-metric {
+        display: grid;
+        gap: 6px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(0,0,0,0.18);
+      }
+      .deploy-metric span {
+        color: var(--muted);
+        font-size: 0.74rem;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .deploy-metric strong {
+        font-size: 0.95rem;
+      }
       .deploy-progress {
         margin-top: 12px;
         display: none;
@@ -517,6 +567,48 @@
         0% { transform: translateX(-35%); }
         100% { transform: translateX(180%); }
       }
+      .deploy-stack {
+        display: grid;
+        gap: 16px;
+      }
+      .deploy-side-stack {
+        display: grid;
+        gap: 16px;
+        align-content: start;
+      }
+      .deploy-side-panel {
+        display: grid;
+        gap: 14px;
+        padding: 18px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 24px;
+        background: rgba(0,0,0,0.16);
+      }
+      .deploy-side-panel .deploy-link-grid {
+        margin-top: 0;
+      }
+      .deploy-mini-list {
+        display: grid;
+        gap: 10px;
+      }
+      .deploy-mini-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.03);
+      }
+      .deploy-mini-item span {
+        color: var(--muted);
+        font-size: 0.78rem;
+      }
+      .deploy-mini-item strong {
+        font-size: 0.84rem;
+        text-align: right;
+      }
 
       /* ── 移动端 ── */
       @media (max-width: 900px) {
@@ -527,10 +619,14 @@
         .sidebar-group { flex: 1; min-width: 140px; }
         .sidebar-footer { width: 100%; border-top: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
         .admin-main { padding: 16px; max-height: none; }
+        .admin-hero { grid-template-columns: 1fr; gap: 16px; }
+        .coverage-panel { grid-template-columns: 1fr 1fr; }
         .cms-primary { grid-template-columns: 1fr; }
-        .deploy-status-rail,
-        .deploy-console-grid,
+        .deploy-overview,
+        .deploy-metrics,
+        .deploy-grid,
         .deploy-link-grid { grid-template-columns: 1fr; }
+        .deploy-overview .deploy-status-chip:nth-child(n) { grid-column: auto; }
         .deploy-console-head {
           flex-direction: column;
         }
@@ -571,9 +667,9 @@
             </div>
           </div>
           <div class="sidebar-group">
-            <div class="sidebar-group-label">备份管理</div>
+            <div class="sidebar-group-label">文件管理</div>
             <div class="sidebar-group">
-              <button class="tab-button" data-tab="backup" type="button">💾 备份控制台</button>
+              <button class="tab-button" data-tab="files" type="button">📁 文件管理</button>
             </div>
           </div>
         </nav>
@@ -598,12 +694,34 @@
               <div>
                 <p class="section-kicker" id="active-kicker">Profile</p>
                 <h1 id="active-title">基本资料</h1>
-                <p class="hero-copy">编辑下方内容，点击“保存到本地”即可把当前条目写回 data.js。推送到 GitHub 是单独的发布操作。</p>
+                <p class="hero-copy">编辑下方内容，点击“保存到本地”即可把当前条目写回 data.js。文件、图片、PDF 和版本发布都在同一套后台里完成。</p>
               </div>
               <div class="admin-actions">
                 <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
                 <button class="admin-button" id="export-json" type="button">导出 JSON</button>
                 <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
+              </div>
+              <div class="coverage-panel" aria-label="维护覆盖范围">
+                <div class="coverage-item">
+                  <span>内容页面</span>
+                  <strong><a href="profile.html" target="_blank" rel="noopener">简介</a> / <a href="results.html" target="_blank" rel="noopener">成果</a> / <a href="activities.html" target="_blank" rel="noopener">活动</a> / <a href="honors.html" target="_blank" rel="noopener">荣誉</a></strong>
+                  <small>这些页面的内容都在后台的内容管理里维护。</small>
+                </div>
+                <div class="coverage-item">
+                  <span>独立内容</span>
+                  <strong><a href="resources/news/light-fingerprint.html" target="_blank" rel="noopener">新闻详情页</a> / <a href="results.html#papers" target="_blank" rel="noopener">全部论文</a> / 论文图片</strong>
+                  <small>新闻详情、论文图片和 PDF 都能通过文件管理补齐。</small>
+                </div>
+                <div class="coverage-item">
+                  <span>素材管理</span>
+                  <strong>images / papers / videos / frames / news</strong>
+                  <small>上传、复制路径、打开文件夹、填入当前项都集中在这里。</small>
+                </div>
+                <div class="coverage-item">
+                  <span>发布维护</span>
+                  <strong>版本仪表盘 / 备份 / 预览 / Git</strong>
+                  <small>版本号、资源来源、推送和预览都在同一处。</small>
+                </div>
               </div>
               <p class="folder-status" id="folder-status">本地后台已准备好：内容写入 data.js，图片写入 resources/，论文 PDF 写入 resources/。</p>
             </section>
@@ -624,15 +742,6 @@
                   <div class="editor-actions">
                     <button class="admin-button" id="clear-form" type="button">清空</button>
                   </div>
-                  <div class="editor-save-bar">
-                    <div>
-                      <strong>完成修改后</strong>
-                      <span>先点击“保存到本地”，确认内容已写入 data.js；需要上线时再推送到 GitHub。</span>
-                    </div>
-                    <div class="editor-save-actions">
-                      <button class="admin-button" id="local-deploy-bottom" type="button">推送到 GitHub</button>
-                    </div>
-                  </div>
                 </section>
 
                 <section class="json-panel">
@@ -645,18 +754,29 @@
               </div>
             </div>
 
-            <!-- 文件管理器 -->
+          </div>
+
+          <!-- ===== 文件管理面板 ===== -->
+          <div class="admin-panel" id="panel-files">
+            <section class="admin-hero" style="grid-template-columns:1fr;">
+              <div>
+                <p class="section-kicker">File Manager</p>
+                <h1>文件管理</h1>
+                <p class="hero-copy">上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起自动部署上线。</p>
+              </div>
+            </section>
+
             <section class="admin-sync-panel glass-surface glass-surface--fallback" aria-labelledby="admin-sync-title">
               <div class="admin-sync-copy">
-                <p class="section-kicker">File Manager</p>
-                <h2 id="admin-sync-title">文件管理</h2>
-                <p>上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起自动部署上线。</p>
+                <p class="section-kicker">Assets</p>
+                <h2 id="admin-sync-title">素材文件</h2>
+                <p>管理 resources/images、resources/papers、resources/videos、resources/frames 和 resources/news。打开文件管理后可以直接复制路径、填入当前条目或打开对应文件夹。</p>
               </div>
               <div class="storage-manager">
                 <div class="storage-manager-head">
                   <div>
-                    <h3>素材文件</h3>
-                    <p>管理 resources/images、resources/papers、resources/videos、resources/frames 和 resources/news。</p>
+                    <h3>文件操作</h3>
+                    <p>先选文件夹，再上传或从列表里反向填入当前条目。</p>
                   </div>
                   <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
                 </div>
@@ -683,10 +803,14 @@
 
             <div class="deploy-dashboard">
               <section class="deploy-console">
-                <div class="deploy-status-rail">
+                <div class="deploy-overview">
                   <article class="deploy-status-chip">
                     <span>版本</span>
                     <strong id="sb-version-inline">--</strong>
+                  </article>
+                  <article class="deploy-status-chip">
+                    <span>资源来源</span>
+                    <strong id="sb-asset-source-inline">--</strong>
                   </article>
                   <article class="deploy-status-chip">
                     <span>Git</span>
@@ -701,16 +825,32 @@
                     <strong id="sb-connection-inline">连接中…</strong>
                   </article>
                 </div>
+                <div class="deploy-metrics">
+                  <div class="deploy-metric">
+                    <span>当前发布策略</span>
+                    <strong id="deploy-strategy-text">patch +1</strong>
+                  </div>
+                  <div class="deploy-metric">
+                    <span>本地预览</span>
+                    <strong id="deploy-preview-text">未运行</strong>
+                  </div>
+                  <div class="deploy-metric">
+                    <span>最近诊断</span>
+                    <strong id="deploy-diagnostic-text">等待执行</strong>
+                  </div>
+                </div>
+              </section>
 
-                <div class="deploy-console-grid">
-                  <div class="deploy-console-pane">
-                    <div class="deploy-console-head">
-                      <div>
-                        <h2>操作台</h2>
-                        <p>把常用动作收在一处，按“检查 - 修改 - 推送 - 验证”的顺序执行。</p>
-                      </div>
+              <div class="deploy-grid">
+                <section class="deploy-console-pane">
+                  <div class="deploy-console-head">
+                    <div>
+                      <h2>操作台</h2>
+                      <p>把版本、资源源、发布和预览收拢到一条顺手的工作流里。</p>
                     </div>
+                  </div>
 
+                  <div class="deploy-stack">
                     <div class="deploy-action-group">
                       <div class="deploy-action-label">版本管理</div>
                       <div class="deploy-segmented" id="version-strategy">
@@ -731,7 +871,16 @@
                     </div>
 
                     <div class="deploy-action-group">
-                      <div class="deploy-action-label">发布与验证</div>
+                      <div class="deploy-action-label">资源分发</div>
+                      <div class="deploy-segmented" id="asset-source-switch">
+                        <button class="active" data-asset-source="vercel">Vercel / 同域</button>
+                        <button data-asset-source="cdn">jsDelivr / CDN</button>
+                      </div>
+                      <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留同域，最顺手。</p>
+                    </div>
+
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">发布与预览</div>
                       <div class="deploy-btn-row">
                         <button class="deploy-btn success" id="btn-deploy">
                           <span id="deploy-spinner" class="deploy-spinner" style="display:none"></span>
@@ -763,84 +912,103 @@
                       </div>
                     </div>
                   </div>
+                </section>
 
-                  <aside class="deploy-link-panel">
-                    <h2>快捷入口</h2>
-                    <p>只保留两个常用跳转，减少重复信息。</p>
+                <aside class="deploy-side-stack">
+                  <section class="deploy-side-panel">
+                    <div class="deploy-console-head">
+                      <div>
+                        <h2>快捷入口</h2>
+                        <p>站点跳转和状态一眼可见，少切页面。</p>
+                      </div>
+                    </div>
                     <div class="deploy-link-grid">
                       <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
                       <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
                     </div>
-                  </aside>
-                </div>
-              </section>
+                  </section>
 
-              <section class="deploy-log-panel">
-                <div class="deploy-console-head">
-                  <div>
-                    <h2>操作日志</h2>
-                    <p>所有版本更新、推送、预览和诊断结果都集中在这里。</p>
-                  </div>
-                  <button class="deploy-btn" id="btn-clear-log">清空日志</button>
-                </div>
-                <div class="deploy-log" id="deploy-log">
-                  <div class="deploy-log-entry info">版本控制台已就绪。</div>
-                </div>
-                <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
-                  <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
-                </div>
-                <div class="deploy-btn-row" style="margin-top:10px;">
-                  <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
-                </div>
-              </section>
-            </div>
-          </div>
-
-          <!-- ===== 备份控制台面板 ===== -->
-          <div class="admin-panel" id="panel-backup">
-            <section class="admin-hero" style="grid-template-columns:1fr;">
-              <div>
-                <p class="section-kicker">Backup Console</p>
-                <h1>备份管理</h1>
-                <p class="hero-copy">查看历史备份、刷新列表、选择指定备份还原，或直接删除不需要的旧版本。</p>
+                  <section class="deploy-side-panel">
+                    <div class="deploy-console-head">
+                      <div>
+                        <h2>当前状态</h2>
+                        <p>把最常看的几个状态收在这里，减少来回扫视。</p>
+                      </div>
+                    </div>
+                    <div class="deploy-mini-list">
+                      <div class="deploy-mini-item">
+                        <span>Git 状态</span>
+                        <strong id="deploy-mini-git">--</strong>
+                      </div>
+                      <div class="deploy-mini-item">
+                        <span>预览服务</span>
+                        <strong id="deploy-mini-preview">--</strong>
+                      </div>
+                      <div class="deploy-mini-item">
+                        <span>资源分发</span>
+                        <strong id="deploy-mini-source">--</strong>
+                      </div>
+                    </div>
+                  </section>
+                </aside>
               </div>
-            </section>
 
-            <div class="backup-dashboard">
-              <section class="backup-console">
-                <div class="deploy-console-head">
-                  <div>
-                    <h2>备份控制台</h2>
-                    <p>所有备份操作集中在这一处，支持创建、刷新、选择还原和删除。</p>
+              <div class="deploy-grid">
+                <section class="deploy-log-panel">
+                  <div class="deploy-console-head">
+                    <div>
+                      <h2>操作日志</h2>
+                      <p>所有版本更新、推送、预览和诊断结果都集中在这里。出了问题先看这里最快。</p>
+                    </div>
+                    <button class="deploy-btn" id="btn-clear-log">清空日志</button>
                   </div>
-                  <button class="deploy-btn" id="btn-refresh-backups" type="button">刷新列表</button>
-                </div>
-
-                <div class="backup-action-group">
-                  <div class="backup-action-label">创建备份</div>
-                  <div class="deploy-btn-row">
-                    <button class="deploy-btn success" id="backup-site" type="button">备份网页</button>
-                    <span class="deploy-status-badge" id="backup-count-badge"><span class="dot"></span>加载中</span>
+                  <div class="deploy-log" id="deploy-log">
+                    <div class="deploy-log-entry info">版本控制台已就绪。</div>
                   </div>
-                </div>
-
-                <div class="backup-action-group">
-                  <div class="backup-action-label">历史还原</div>
-                  <div class="deploy-btn-row">
-                    <select class="deploy-input" id="restore-backup" aria-label="选择备份" style="flex:1;min-width:240px;">
-                      <option value="">还原最新备份</option>
-                    </select>
-                    <button class="deploy-btn primary" id="restore-site" type="button">还原所选备份</button>
+                  <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
+                    <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
                   </div>
-                </div>
+                  <div class="deploy-btn-row" style="margin-top:10px;">
+                    <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
+                  </div>
+                </section>
 
-                <div class="backup-action-group">
-                  <div class="backup-action-label">历史列表</div>
-                  <div class="backup-list" id="backup-list" aria-live="polite"></div>
-                </div>
-              </section>
+                <section class="deploy-backup-panel">
+                  <div class="deploy-console-head">
+                    <div>
+                      <h2>备份管理</h2>
+                      <p>备份和还原放在同一块，和上面的发布链路并列，不再挤在一起，也更符合日常操作顺序。</p>
+                    </div>
+                    <button class="deploy-btn" id="btn-refresh-backups" type="button">刷新列表</button>
+                  </div>
+
+                  <div class="backup-action-group">
+                    <div class="backup-action-label">创建备份</div>
+                    <div class="deploy-btn-row">
+                      <button class="deploy-btn success" id="backup-site" type="button">备份网页</button>
+                      <span class="deploy-status-badge" id="backup-count-badge"><span class="dot"></span>加载中</span>
+                    </div>
+                  </div>
+
+                  <div class="backup-action-group">
+                    <div class="backup-action-label">历史还原</div>
+                    <div class="deploy-btn-row">
+                      <select class="deploy-input" id="restore-backup" aria-label="选择备份" style="flex:1;min-width:240px;">
+                        <option value="">还原最新备份</option>
+                      </select>
+                      <button class="deploy-btn primary" id="restore-site" type="button">还原所选备份</button>
+                    </div>
+                  </div>
+
+                  <div class="backup-action-group">
+                    <div class="backup-action-label">历史列表</div>
+                    <div class="backup-list" id="backup-list" aria-live="polite"></div>
+                  </div>
+                </section>
+              </div>
             </div>
           </div>
+
         </div>
       </main>
     </div>

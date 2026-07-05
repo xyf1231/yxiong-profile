@@ -84,6 +84,7 @@ const schemas = {
       ["venue", "期刊英文"],
       ["venueZh", "期刊中文"],
       ["date", "发表日期"],
+      ["image", "图片", "image"],
       ["url", "PDF/链接", "file"],
     ],
   },
@@ -130,6 +131,8 @@ const storageFile = document.querySelector("#storage-file");
 const restoreBackupSelect = document.querySelector("#restore-backup");
 const backupList = document.querySelector("#backup-list");
 const backupCountBadge = document.querySelector("#backup-count-badge");
+let pendingStorageFieldName = "";
+let pendingStorageBucket = "images";
 
 // 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
@@ -143,9 +146,17 @@ const sbGit = document.querySelector("#sb-git");
 const sbPreview = document.querySelector("#sb-preview");
 const sbConnection = document.querySelector("#sb-connection");
 const sbVersionInline = document.querySelector("#sb-version-inline");
+const sbAssetSourceInline = document.querySelector("#sb-asset-source-inline");
 const sbGitInline = document.querySelector("#sb-git-inline");
 const sbPreviewInline = document.querySelector("#sb-preview-inline");
 const sbConnectionInline = document.querySelector("#sb-connection-inline");
+const deployStrategyText = document.querySelector("#deploy-strategy-text");
+const deployPreviewText = document.querySelector("#deploy-preview-text");
+const deployDiagnosticText = document.querySelector("#deploy-diagnostic-text");
+const deployMiniGit = document.querySelector("#deploy-mini-git");
+const deployMiniPreview = document.querySelector("#deploy-mini-preview");
+const deployMiniSource = document.querySelector("#deploy-mini-source");
+const assetSourceButtons = Array.from(document.querySelectorAll("#asset-source-switch [data-asset-source]"));
 
 // ═══════════════════════════════════════════════════════════════
 //  工具函数
@@ -163,6 +174,29 @@ function mergeWithDefaultData(source) {
     }
   });
   return merged;
+}
+
+function currentAssetSource() {
+  return String(data.assetSource || window.DEFAULT_SITE_DATA.assetSource || "vercel").toLowerCase();
+}
+
+function updateAssetSourceUI(source = currentAssetSource()) {
+  assetSourceButtons.forEach((btn) => {
+    btn.classList.toggle("active", btn.dataset.assetSource === source);
+  });
+  if (sbAssetSourceInline) {
+    sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+  }
+  if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+}
+
+async function setAssetSource(source) {
+  const next = source === "cdn" ? "cdn" : "vercel";
+  if (currentAssetSource() === next) return;
+  data.assetSource = next;
+  updateAssetSourceUI(next);
+  await persistAndWrite();
+  deployLog(`资源源已切换为: ${next === "cdn" ? "jsDelivr/CDN" : "Vercel/同域"}`, "success");
 }
 
 function loadData() {
@@ -233,10 +267,21 @@ function fileFieldForBucket(bucket = "images") {
 }
 
 function activeFileFieldName() {
+  if (pendingStorageFieldName) return pendingStorageFieldName;
   const schema = schemas[activeTab];
   const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
   const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
   return fileFieldForBucket(storageBucket?.value) === "file" ? fileField || "url" : imageField || "image";
+}
+
+function openFileManager(bucket = "images", fieldName = "") {
+  pendingStorageBucket = bucket;
+  pendingStorageFieldName = fieldName;
+  activeTab = "files";
+  editingIndex = 0;
+  setActiveTab("files");
+  if (storageBucket && bucket) storageBucket.value = bucket;
+  refreshFileManager();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -499,7 +544,8 @@ function buildForm() {
       if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
       if (kind === "image" || kind === "file") {
         const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
-        return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><input name="${key}Upload" type="file" accept="${accept}" /></label>`;
+        const bucket = kind === "image" ? "images" : "papers";
+        return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><div class="field-inline-actions"><input name="${key}Upload" type="file" accept="${accept}" /><button class="admin-button" type="button" data-open-file-manager="${bucket}" data-open-field="${key}">打开文件管理</button></div></label>`;
       }
       return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
     })
@@ -549,6 +595,17 @@ function renderList() {
       `,
     )
     .join("");
+}
+
+function openBucketForFileItem(bucket, path) {
+  if (storageBucket) storageBucket.value = bucket;
+  pendingStorageBucket = bucket;
+  listLocalFiles(bucket).then(() => {
+    const item = storageList?.querySelector(`.storage-item[data-path="${CSS.escape(path)}"]`);
+    item?.scrollIntoView({ block: "center", behavior: "smooth" });
+    item?.classList.add("is-targeted");
+    window.setTimeout(() => item?.classList.remove("is-targeted"), 1200);
+  });
 }
 
 async function reorderCurrentCollection(fromIndex, toIndex) {
@@ -611,18 +668,18 @@ function setActiveTab(tab) {
 
   // 切换面板
   const isDeploy = tab === "deploy";
-  const isBackup = tab === "backup";
-  document.querySelector("#panel-cms").classList.toggle("active", !isDeploy);
-  document.querySelector("#panel-deploy").classList.toggle("active", isDeploy);
-  document.querySelector("#panel-backup")?.classList.toggle("active", isBackup);
+  const isFiles = tab === "files";
+  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles);
+  document.querySelector("#panel-deploy")?.classList.toggle("active", isDeploy);
+  document.querySelector("#panel-files")?.classList.toggle("active", isFiles);
 
   if (isDeploy) {
     // 加载版本仪表盘初始数据
     loadDeployData();
     return;
   }
-  if (isBackup) {
-    loadBackupsPanel();
+  if (isFiles) {
+    refreshFileManager();
     return;
   }
 
@@ -734,6 +791,7 @@ async function runNetworkDiagnostics() {
     btn.disabled = true;
     btn.textContent = "诊断中…";
   }
+  if (deployDiagnosticText) deployDiagnosticText.textContent = "诊断中";
   if (networkDiagnosticsLogEl) networkDiagnosticsLogEl.innerHTML = "";
   networkDiagLog("开始网络诊断…", "cmd");
 
@@ -780,6 +838,9 @@ async function runNetworkDiagnostics() {
   const slowest = results.filter((item) => item.ok).sort((a, b) => b.duration - a.duration)[0];
   if (slowest) {
     networkDiagLog(`最慢项：${slowest.label}（${formatDuration(slowest.duration)}）`, "warn");
+    if (deployDiagnosticText) deployDiagnosticText.textContent = `${slowest.label} ${formatDuration(slowest.duration)}`;
+  } else if (deployDiagnosticText) {
+    deployDiagnosticText.textContent = "无可用结果";
   }
   const failed = results.filter((item) => !item.ok);
   if (failed.length) {
@@ -787,6 +848,7 @@ async function runNetworkDiagnostics() {
   } else {
     networkDiagLog("诊断完成，未发现明显失败项。", "success");
   }
+  if (!slowest && deployDiagnosticText) deployDiagnosticText.textContent = "诊断完成";
 
   if (btn) {
     btn.disabled = false;
@@ -898,10 +960,12 @@ function updateGitPill(result) {
     sbGit.innerHTML = `<span class="dot"></span>${count} 个未提交`;
     sbGit.classList.add("has-changes");
     if (sbGitInline) sbGitInline.textContent = `${count} 个未提交`;
+    if (deployMiniGit) deployMiniGit.textContent = `${count} 个未提交`;
   } else {
     sbGit.innerHTML = `<span class="dot"></span>Git 干净`;
     sbGit.classList.remove("has-changes");
     if (sbGitInline) sbGitInline.textContent = "Git 干净";
+    if (deployMiniGit) deployMiniGit.textContent = "Git 干净";
   }
 }
 
@@ -1031,10 +1095,14 @@ function updatePreviewUI(running) {
       sbPreview.innerHTML = `<span class="dot"></span>预览运行中`;
       sbPreview.classList.add("running");
       if (sbPreviewInline) sbPreviewInline.textContent = "预览运行中";
+      if (deployPreviewText) deployPreviewText.textContent = "运行中";
+      if (deployMiniPreview) deployMiniPreview.textContent = "运行中";
     } else {
       sbPreview.innerHTML = `<span class="dot"></span>预览未运行`;
       sbPreview.classList.remove("running");
       if (sbPreviewInline) sbPreviewInline.textContent = "预览未运行";
+      if (deployPreviewText) deployPreviewText.textContent = "未运行";
+      if (deployMiniPreview) deployMiniPreview.textContent = "未运行";
     }
   }
   const statusEl = document.querySelector("#preview-status");
@@ -1097,10 +1165,14 @@ async function pollStatus() {
 
 async function loadDeployData() {
   deployLog("加载版本仪表盘数据…", "cmd");
+  updateAssetSourceUI();
+  if (deployStrategyText) deployStrategyText.textContent = "patch +1";
+  if (deployDiagnosticText) deployDiagnosticText.textContent = "等待执行";
   await Promise.all([
     loadVersion(),
     refreshGitStatus(true),
     checkPreviewStatus(),
+    loadBackupsPanel(),
   ]);
   deployLog("版本仪表盘数据加载完成", "success");
 }
@@ -1164,7 +1236,7 @@ async function listLocalFiles(bucket = storageBucket?.value || "images") {
             <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
           </div>
           <div class="item-actions">
-            <a class="icon-button" href="${escapeHtml(relativeUrl)}" target="_blank" rel="noopener">打开</a>
+            <button class="icon-button" data-storage-action="folder" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">打开文件夹</button>
             <button class="icon-button" data-storage-action="copy" data-url="${escapeHtml(relativeUrl)}" type="button">复制路径</button>
             <button class="icon-button" data-storage-action="use" data-url="${escapeHtml(relativeUrl)}" type="button">填入当前项</button>
             <button class="icon-button danger" data-storage-action="delete" data-path="${escapeHtml(file.path)}" type="button">删除</button>
@@ -1302,6 +1374,11 @@ async function loadBackupsPanel() {
   }
 }
 
+async function refreshFileManager() {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  await listLocalFiles(storageBucket?.value || "images");
+}
+
 async function restoreSite() {
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再还原。", "error");
@@ -1362,6 +1439,7 @@ async function checkLocalServer() {
 // ═══════════════════════════════════════════════════════════════
 
 function init() {
+  const isFilesPage = document.body.dataset.page === "files";
   // ── 标签切换 ──
   document.querySelectorAll(".tab-button").forEach((btn) => {
     btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
@@ -1482,33 +1560,9 @@ function init() {
     });
   });
 
-  // ── 文件管理器 ──
-  document.querySelector("#local-refresh-files")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "images"));
-  document.querySelector("#local-refresh-files-bottom")?.addEventListener("click", () => listLocalFiles(storageBucket?.value || "images"));
-  document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
-  storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
-  storageList?.addEventListener("click", async (event) => {
-    const button = event.target.closest("button[data-storage-action]");
-    if (!button) return;
-    const action = button.dataset.storageAction;
-    if (action === "copy") {
-      await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
-      setLocalStatus("已复制相对路径。", "success");
-    } else if (action === "use") {
-      const fieldName = activeFileFieldName();
-      const field = form.elements[fieldName];
-      if (field) { field.value = button.dataset.url; setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success"); }
-      else setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
-    } else if (action === "delete") {
-      await deleteLocalFile(storageBucket?.value || "images", button.dataset.path);
-    }
-  });
-
   // ── 旧版部署按钮兼容 ──
   document.querySelector("#local-deploy")?.addEventListener("click", publishToGitHub);
   document.querySelector("#local-deploy-top")?.addEventListener("click", publishToGitHub);
-  document.querySelector("#local-deploy-bottom")?.addEventListener("click", publishToGitHub);
-
   // ── 版本更新事件 ──
   document.querySelectorAll("#version-strategy button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1517,6 +1571,14 @@ function init() {
       deployState.versionStrategy = btn.dataset.strategy;
       const manualRow = document.querySelector("#manual-version-row");
       if (manualRow) manualRow.style.display = deployState.versionStrategy === "manual" ? "flex" : "none";
+      if (deployStrategyText) {
+        const label = deployState.versionStrategy === "patch"
+          ? "patch +1"
+          : deployState.versionStrategy === "minor"
+            ? "minor +1"
+            : "手动输入";
+        deployStrategyText.textContent = label;
+      }
       deployLog(`版本号策略切换为: ${deployState.versionStrategy}`);
     });
   });
@@ -1530,16 +1592,56 @@ function init() {
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
   document.querySelector("#btn-preview-stop")?.addEventListener("click", stopPreview);
   document.querySelector("#btn-clear-log")?.addEventListener("click", clearDeployLog);
+  assetSourceButtons.forEach((btn) => {
+    btn.addEventListener("click", () => setAssetSource(btn.dataset.assetSource));
+  });
+
+  // ── 文件管理面板 ──
+  document.querySelector("#local-refresh-files")?.addEventListener("click", refreshFileManager);
+  document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
+  storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
+  storageList?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-storage-action]");
+    if (!button) return;
+    const action = button.dataset.storageAction;
+    if (action === "folder") {
+      const bucket = button.dataset.bucket || storageBucket?.value || "images";
+      if (storageBucket) storageBucket.value = bucket;
+      pendingStorageBucket = bucket;
+      pendingStorageFieldName = "";
+      await listLocalFiles(bucket);
+      return;
+    }
+    if (action === "copy") {
+      await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+      setLocalStatus("已复制相对路径。", "success");
+    } else if (action === "use") {
+      const fieldName = activeFileFieldName();
+      const field = form.elements[fieldName];
+      if (field) { field.value = button.dataset.url; setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success"); }
+      else setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
+    } else if (action === "delete") {
+      await deleteLocalFile(storageBucket?.value || "images", button.dataset.path);
+    }
+  });
+
+  form?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-open-file-manager]");
+    if (!button) return;
+    const bucket = button.dataset.openFileManager || "images";
+    const fieldName = button.dataset.openField || "";
+    openFileManager(bucket, fieldName);
+  });
 
   // ── 状态栏点击刷新 ──
   sbGit?.addEventListener("click", () => refreshGitStatus());
 
   // ── 初始化 ──
   jsonBuffer.value = JSON.stringify(data, null, 2);
-  setActiveTab(activeTab);
+  updateAssetSourceUI();
+  setActiveTab(isFilesPage ? "files" : activeTab);
   clearNetworkDiagLog();
   checkLocalServer();
-  loadBackupsPanel();
 
   // ── 启动状态轮询 ──
   if (USE_LOCAL_ADMIN_SERVER) {

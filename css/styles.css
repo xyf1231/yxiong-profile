@@ -2239,6 +2239,7 @@ html[lang="en"] .subtle-name {
 .news-info-list dd {
   margin: 0;
   color: rgba(255, 255, 255, 0.75);
+  overflow-wrap: anywhere;
 }
 
 .news-info-card .button {
@@ -2345,9 +2346,9 @@ html[lang="en"] .subtle-name {
 }
 
 .admin-shell {
-  width: min(100% - 40px, 1280px);
+  width: min(100% - 32px, 1440px);
   margin: 0 auto;
-  padding: 108px 0 54px;
+  padding: 84px 0 54px;
 }
 
 .admin-hero {
@@ -2355,7 +2356,54 @@ html[lang="en"] .subtle-name {
   grid-template-columns: minmax(300px, 1fr) auto;
   gap: 24px;
   align-items: end;
-  margin-bottom: 28px;
+  margin-bottom: 18px;
+}
+
+.coverage-panel {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.coverage-item {
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.coverage-item span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.coverage-item strong {
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.coverage-item a {
+  color: #8dc5ff;
+  text-decoration: none;
+}
+
+.coverage-item a:hover {
+  text-decoration: underline;
+}
+
+.coverage-item small {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.76rem;
+  line-height: 1.4;
 }
 
 .folder-status {
@@ -2431,6 +2479,18 @@ html[lang="en"] .subtle-name {
   align-content: start;
 }
 
+.editor-panel .section-heading.inline {
+  margin-bottom: 2px;
+}
+
+.editor-panel .form-grid {
+  margin-top: -2px;
+}
+
+.editor-panel .upload-note {
+  margin-top: -2px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2450,6 +2510,23 @@ html[lang="en"] .subtle-name {
   color: var(--muted);
   font-size: var(--font-small);
   font-weight: 700;
+}
+
+.field-inline-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field-inline-actions input[type="file"] {
+  flex: 1 1 220px;
+  min-width: 0;
+}
+
+.field-inline-actions .admin-button {
+  flex-shrink: 0;
+  min-height: 36px;
 }
 
 .field input,
@@ -4994,6 +5071,10 @@ body.nav-mega-open::after {
   font-size: var(--font-small);
 }
 
+.storage-item p {
+  overflow-wrap: anywhere;
+}
+
 .icon-button.danger {
   color: #ff6b63;
 }
@@ -5102,6 +5183,11 @@ body.nav-mega-open::after {
   backdrop-filter: blur(18px) saturate(1.3);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   padding: 14px 16px;
+}
+
+.editor-save-bar[hidden],
+.editor-save-bar.is-hidden {
+  display: none !important;
 }
 
 .editor-save-bar strong,
@@ -6570,7 +6656,8 @@ body.nav-mega-open::after {
   }
 
   .publication-copy > p:not(.publication-subtitle):not(.publication-authors) {
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
   }
 }
 
@@ -6973,14 +7060,15 @@ body.nav-mega-open::after {
   .publication-item .publication-copy > h3,
   .all-publication-list .publication-copy > h3 {
     max-width: 980px;
-    overflow-wrap: normal;
+    overflow-wrap: anywhere;
     word-break: normal;
-    hyphens: none;
+    hyphens: auto;
   }
 
   .publication-item .publication-authors,
   .all-publication-list .publication-authors {
     max-width: 1040px;
+    overflow-wrap: anywhere;
   }
 
   .publication-item .pdf-actions .pdf-download-link,
@@ -7210,9 +7298,9 @@ body.nav-mega-open::after {
     max-width: min(100%, 1180px);
     font-size: clamp(1.06rem, 1.35vw, 1.26rem);
     line-height: 1.32;
-    overflow-wrap: normal;
+    overflow-wrap: anywhere;
     word-break: normal;
-    hyphens: none;
+    hyphens: auto;
   }
 
   .all-publication-list p,
@@ -7399,7 +7487,7 @@ html[lang="en"] .publication-title,
 html[lang="en"] .publication-copy,
 html[lang="en"] .news-card-body {
   word-break: normal !important;
-  overflow-wrap: normal !important;
+  overflow-wrap: anywhere !important;
   hyphens: none !important;
 }
 
