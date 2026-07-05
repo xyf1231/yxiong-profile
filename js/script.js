@@ -56,33 +56,186 @@ function publicationImageMarkup(item, title, priority = false) {
   return `<div class="publication-visual">${pictureTag(imageSrc, title, "", priority)}</div>`;
 }
 
+function getLoadingGreeting() {
+  const lang = loadLanguagePreference();
+  const path = window.location.pathname;
+  if (lang === "en") {
+    if (path.endsWith("profile.html")) return "Welcome — Profile";
+    if (path.endsWith("results.html")) return "Welcome — Results";
+    if (path.endsWith("honors.html")) return "Welcome — Honors";
+    if (path.endsWith("activities.html")) return "Welcome — Activities";
+    if (path.includes("/resources/")) return "Welcome — Resources";
+    return "Welcome — Home";
+  }
+  if (path.endsWith("profile.html")) return "欢迎访问 — 简介";
+  if (path.endsWith("results.html")) return "欢迎访问 — 成果";
+  if (path.endsWith("honors.html")) return "欢迎访问 — 荣誉";
+  if (path.endsWith("activities.html")) return "欢迎访问 — 学术活动";
+  if (path.includes("/resources/")) return "欢迎访问 — 资源页";
+  return "欢迎访问 — 主页";
+}
+  const path = window.location.pathname;
+  if (path.endsWith("profile.html")) return "欢迎访问 — 简介";
+  if (path.endsWith("results.html")) return "欢迎访问 — 成果";
+  if (path.endsWith("honors.html")) return "欢迎访问 — 荣誉";
+  if (path.endsWith("activities.html")) return "欢迎访问 — 学术活动";
+  if (path.includes("/resources/")) return "欢迎访问 — 资源页";
+  return "欢迎访问 — 主页";
+}
+
+function formatTransferRate(bytesPerSecond) {
+  if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return "--";
+  const kibPerSecond = bytesPerSecond / 1024;
+  if (kibPerSecond < 1024) return `${kibPerSecond.toFixed(kibPerSecond >= 100 ? 0 : 1)} KB/s`;
+  const mibPerSecond = kibPerSecond / 1024;
+  return `${mibPerSecond.toFixed(mibPerSecond >= 10 ? 0 : 1)} MB/s`;
+}
+
 function setupSiteLoadingGate() {
   const root = document.documentElement;
   if (root.dataset.siteLoading !== "ready") root.dataset.siteLoading = "pending";
 
+  let overlay = null;
+  let percentEl = null;
+  let barEl = null;
+
   let finished = false;
+  let current = 0;
+  let intervalId = null;
+  let finishTimerId = null;
+  let readyTimerId = null;
+  let lockedScrollY = 0;
+  const setProgress = (next) => {
+    current = Math.max(0, Math.min(100, next));
+    if (percentEl) percentEl.textContent = current >= 100 ? "即将展现" : `${Math.round(current)}%`;
+    if (barEl) barEl.style.width = `${current}%`;
+  };
+  const startProgress = () => {
+    if (intervalId) return;
+    intervalId = window.setInterval(() => {
+      if (current < 100) setProgress(current + Math.max(0.5, (100 - current) * 0.05));
+    }, 140);
+  };
+  const settleProgressThenFinish = () => {
+    if (current >= 99.5) {
+      setProgress(100);
+      return;
+    }
+    const step = Math.max(0.8, (100 - current) * 0.28);
+    setProgress(current + step);
+    finishTimerId = window.setTimeout(settleProgressThenFinish, 42);
+  };
   const finish = () => {
     if (finished) return;
     finished = true;
-    root.dataset.siteLoading = "ready";
+    if (intervalId) window.clearInterval(intervalId);
+    if (finishTimerId) window.clearTimeout(finishTimerId);
+    settleProgressThenFinish();
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    readyTimerId = window.setTimeout(() => {
+      root.dataset.siteLoading = "ready";
+    }, 240);
+    if (overlay) {
+      overlay.classList.add("is-hidden");
+      window.setTimeout(() => overlay.remove(), 320);
+    }
+    document.body.style.top = "";
+    window.scrollTo(0, lockedScrollY);
+  };
+
+  const ensureOverlay = () => {
+    if (overlay) return;
+    overlay = document.querySelector(".site-loading-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.className = "site-loading-overlay";
+      overlay.innerHTML = `
+        <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
+          <div class="site-loading-kicker">${getLoadingGreeting()}</div>
+          <h1 class="site-loading-title">加载中 / Loading</h1>
+          <div class="site-loading-meta">
+            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
+          </div>
+          <div class="site-loading-percent" aria-label="加载进度"><strong>0%</strong><span>Progress</span></div>
+          <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+        </div>
+      `;
+      document.documentElement.appendChild(overlay);
+    }
+    percentEl = overlay.querySelector(".site-loading-percent strong");
+    barEl = overlay.querySelector(".site-loading-bar");
+    const speedEl = overlay.querySelector(".site-loading-speed strong");
+    const renderSpeed = (value) => {
+      if (!speedEl) return;
+      speedEl.textContent = formatTransferRate(value);
+    };
+    let speedState = 0;
+    let speedTickerId = 0;
+    const pushSpeedSample = (bytesPerSecond) => {
+      if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return;
+      speedState = bytesPerSecond;
+      renderSpeed(speedState);
+    };
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (connection?.downlink) pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
+    if (connection?.addEventListener) {
+      connection.addEventListener("change", () => {
+        if (connection.downlink) pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
+      });
+    }
+    if ("PerformanceObserver" in window) {
+      try {
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) {
+            const bytes = entry.transferSize || entry.decodedBodySize || 0;
+            if (!bytes || entry.duration <= 0) continue;
+            pushSpeedSample(bytes / (entry.duration / 1000));
+          }
+        });
+        observer.observe({ type: "resource", buffered: true });
+        window.addEventListener("pagehide", () => {
+          observer.disconnect();
+          if (speedTickerId) window.clearInterval(speedTickerId);
+        }, { once: true });
+      } catch (error) {
+        // ignore observer setup issues
+      }
+    }
   };
 
   const waitForReady = async () => {
     try {
+      ensureOverlay();
+      lockedScrollY = window.scrollY || 0;
+      document.body.style.top = `-${lockedScrollY}px`;
+      startProgress();
       const loadPromise = document.readyState === "complete"
         ? Promise.resolve()
         : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+      setProgress(18);
       await Promise.all([
         document.fonts?.ready || Promise.resolve(),
         loadPromise,
       ]);
+      setProgress(48);
       const mediaTasks = [...document.images]
         .filter((img) => !img.complete)
         .map((img) => new Promise((resolve) => {
           img.addEventListener("load", resolve, { once: true });
           img.addEventListener("error", resolve, { once: true });
         }));
-      await Promise.allSettled(mediaTasks);
+      const videoEl = document.querySelector("video");
+      const videoTasks = videoEl
+        ? [new Promise((resolve) => {
+            if (videoEl.readyState >= 3) return resolve();
+            videoEl.addEventListener("loadeddata", resolve, { once: true });
+            videoEl.addEventListener("canplay", resolve, { once: true });
+            videoEl.addEventListener("error", resolve, { once: true });
+          })]
+        : [];
+      setProgress(68);
+      await Promise.allSettled([...mediaTasks, ...videoTasks]);
+      setProgress(90);
     } finally {
       window.setTimeout(finish, 120);
     }
@@ -90,8 +243,10 @@ function setupSiteLoadingGate() {
 
   if (document.readyState === "complete") {
     waitForReady();
+  } else if (document.body) {
+    waitForReady();
   } else {
-    window.addEventListener("load", waitForReady, { once: true });
+    document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
 
   window.setTimeout(finish, 15000);
@@ -2128,6 +2283,14 @@ function setupHomeFrameSequence() {
   if (!media || !video || !replayButton) return;
   if (media.dataset.homeFrameBound === "1") return;
   media.dataset.homeFrameBound = "1";
+
+  // PC 端使用比例更适配的专用视频
+  if (!isCompactNav()) {
+    const source = video.querySelector("source");
+    if (source && source.src.includes("frame-lq.mp4")) {
+      source.src = "resources/videos/frame-pc-lq.mp4";
+    }
+  }
 
   let hasLoaded = false;
 
