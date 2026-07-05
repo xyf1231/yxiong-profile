@@ -747,6 +747,30 @@
                 <section class="json-panel">
                   <textarea id="json-buffer" spellcheck="false"></textarea>
                 </section>
+
+                <section class="admin-sync-panel glass-surface glass-surface--fallback" id="cms-file-manager" aria-labelledby="cms-file-manager-title">
+                  <div class="admin-sync-copy">
+                    <p class="section-kicker">Assets</p>
+                    <h2 id="cms-file-manager-title">文件管理</h2>
+                    <p>选中当前条目后，可以直接上传素材、复制路径、打开文件夹，或把引用链接填回当前字段。</p>
+                  </div>
+                  <div class="storage-manager">
+                    <div class="storage-manager-head">
+                      <div>
+                        <h3>文件操作</h3>
+                        <p>先选文件夹，再上传或从列表里反向填入当前条目。</p>
+                      </div>
+                      <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
+                    </div>
+                    <div class="storage-form">
+                      <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
+                      <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
+                      <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
+                      <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
+                    </div>
+                    <div class="storage-list" id="storage-list" aria-live="polite"></div>
+                  </div>
+                </section>
               </div>
 
               <div class="cms-list-col">
@@ -754,41 +778,6 @@
               </div>
             </div>
 
-          </div>
-
-          <!-- ===== 文件管理面板 ===== -->
-          <div class="admin-panel" id="panel-files">
-            <section class="admin-hero" style="grid-template-columns:1fr;">
-              <div>
-                <p class="section-kicker">File Manager</p>
-                <h1>文件管理</h1>
-                <p class="hero-copy">上传、复制路径、填入当前条目或删除本地素材。发布后这些文件会随网站一起自动部署上线。</p>
-              </div>
-            </section>
-
-            <section class="admin-sync-panel glass-surface glass-surface--fallback" aria-labelledby="admin-sync-title">
-              <div class="admin-sync-copy">
-                <p class="section-kicker">Assets</p>
-                <h2 id="admin-sync-title">素材文件</h2>
-                <p>管理 resources/images、resources/papers、resources/videos、resources/frames 和 resources/news。打开文件管理后可以直接复制路径、填入当前条目或打开对应文件夹。</p>
-              </div>
-              <div class="storage-manager">
-                <div class="storage-manager-head">
-                  <div>
-                    <h3>文件操作</h3>
-                    <p>先选文件夹，再上传或从列表里反向填入当前条目。</p>
-                  </div>
-                  <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
-                </div>
-                <div class="storage-form">
-                  <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
-                  <label class="field"><span>保存路径/文件名</span><input id="storage-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
-                  <label class="field full"><span>选择文件</span><input id="storage-file" type="file" /></label>
-                  <button class="admin-button primary" id="storage-upload" type="button">上传到本地文件夹</button>
-                </div>
-                <div class="storage-list" id="storage-list" aria-live="polite"></div>
-              </div>
-            </section>
           </div>
 
           <!-- ===== 版本仪表盘面板 ===== -->

@@ -277,11 +277,11 @@ function activeFileFieldName() {
 function openFileManager(bucket = "images", fieldName = "") {
   pendingStorageBucket = bucket;
   pendingStorageFieldName = fieldName;
-  activeTab = "files";
-  editingIndex = 0;
-  setActiveTab("files");
+  const tab = schemas[activeTab] ? activeTab : "profile";
+  setActiveTab(tab);
   if (storageBucket && bucket) storageBucket.value = bucket;
   refreshFileManager();
+  document.querySelector("#cms-file-manager")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -669,9 +669,8 @@ function setActiveTab(tab) {
   // 切换面板
   const isDeploy = tab === "deploy";
   const isFiles = tab === "files";
-  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles);
+  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy);
   document.querySelector("#panel-deploy")?.classList.toggle("active", isDeploy);
-  document.querySelector("#panel-files")?.classList.toggle("active", isFiles);
 
   if (isDeploy) {
     // 加载版本仪表盘初始数据
@@ -680,6 +679,7 @@ function setActiveTab(tab) {
   }
   if (isFiles) {
     refreshFileManager();
+    document.querySelector("#cms-file-manager")?.scrollIntoView({ behavior: "smooth", block: "start" });
     return;
   }
 
