@@ -157,6 +157,7 @@ const deployMiniGit = document.querySelector("#deploy-mini-git");
 const deployMiniPreview = document.querySelector("#deploy-mini-preview");
 const deployMiniSource = document.querySelector("#deploy-mini-source");
 const assetSourceButtons = Array.from(document.querySelectorAll("#asset-source-switch [data-asset-source]"));
+const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
 
 // ═══════════════════════════════════════════════════════════════
 //  工具函数
@@ -188,6 +189,15 @@ function updateAssetSourceUI(source = currentAssetSource()) {
     sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
   }
   if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+}
+
+function assetUrlForDiagnostics(src = "") {
+  const value = String(src || "");
+  if (!value || /^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
+  const normalized = value.replace(/^\/+/, "");
+  if (!ASSET_BASE_URL || currentAssetSource() !== "cdn") return value;
+  if (!normalized.startsWith("resources/")) return value;
+  return `${ASSET_BASE_URL}/${normalized}`;
 }
 
 async function setAssetSource(source) {
@@ -807,12 +817,15 @@ async function runNetworkDiagnostics() {
 
   const pagePath = `${window.location.pathname}${window.location.search || ""}`;
   const scriptSrc = document.querySelector('script[src*="js/admin.js"]')?.src || "js/admin.js";
+  const resourceProbe = assetUrlForDiagnostics("resources/images/profile.webp");
+  const assetModeLabel = currentAssetSource() === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+  networkDiagLog(`资源分发模式：${assetModeLabel}`, "info");
   const tasks = [
     ["后台 HTML", pagePath, { readBody: true, timeoutMs: 12000 }],
     ["后台脚本", scriptSrc, { readBody: true, timeoutMs: 12000 }],
     ["版本接口", "/api/version", { readBody: true, timeoutMs: 12000 }],
-    ["Git 状态", "/api/git/status", { readBody: true, timeoutMs: 12000 }],
     ["预览状态", "/api/preview/status", { readBody: true, timeoutMs: 12000 }],
+    ["资源分发", resourceProbe, { readBody: false, timeoutMs: 12000, fetchOptions: { method: "HEAD" } }],
     ["首页视频", "resources/videos/frame-lq.mp4", { readBody: false, timeoutMs: 20000, fetchOptions: { method: "HEAD" } }],
     ["代表图片", "resources/images/profile.webp", { readBody: false, timeoutMs: 12000, fetchOptions: { method: "HEAD" } }],
     ["代表论文", "resources/papers/light-fingerprint-2026.pdf", { readBody: false, timeoutMs: 20000, fetchOptions: { method: "HEAD" } }],

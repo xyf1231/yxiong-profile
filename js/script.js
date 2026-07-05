@@ -1883,7 +1883,7 @@ function resizeCanvas() {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
   const count = isHomePage
-    ? Math.max(18, Math.min(34, Math.floor(width / 30)))
+    ? Math.max(45, Math.min(90, Math.floor(width / 12)))
     : Math.max(28, Math.min(78, Math.floor(width / 18)));
   particles = Array.from({ length: count }, (_, index) => ({
     x: (index * 97) % width,
@@ -1894,7 +1894,7 @@ function resizeCanvas() {
   }));
 
   lightStreaks = isHomePage
-    ? Array.from({ length: Math.max(12, Math.min(18, Math.floor(width / 120))) }, () => createLightStreak(true))
+    ? Array.from({ length: Math.max(18, Math.min(35, Math.floor(width / 72))) }, () => createLightStreak(true))
     : Array.from({ length: Math.max(72, Math.min(150, Math.floor(width / 11))) }, () => createLightStreak(true));
 }
 
@@ -1950,9 +1950,9 @@ function drawFiberSystem() {
   ctx.clearRect(0, 0, width, height);
 
   const base = ctx.createLinearGradient(0, 0, width, height);
-  base.addColorStop(0, "#030411");
-  base.addColorStop(0.44, "#091f55");
-  base.addColorStop(1, "#020308");
+  base.addColorStop(0, "#010208");
+  base.addColorStop(0.44, "#040a22");
+  base.addColorStop(1, "#010105");
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, width, height);
 
@@ -1972,6 +1972,7 @@ function drawFiberSystem() {
   drawLightfallStreaks();
 
   ctx.globalCompositeOperation = "source-over";
+  rafId = requestAnimationFrame(drawFiberSystem);
 }
 
 function createLightStreak(randomY = false) {
@@ -1992,8 +1993,8 @@ function createLightStreak(randomY = false) {
 function drawLightfallStars() {
   for (let i = 0; i < particles.length; i += 1) {
     const point = particles[i];
-    point.y += 0.02 + (i % 5) * 0.003;
-    point.x -= 0.01 + (i % 7) * 0.002;
+    point.y += 0.06 + (i % 5) * 0.008;
+    point.x -= 0.03 + (i % 7) * 0.005;
     if (point.y > height + 20) point.y = -20;
     if (point.x < -20) point.x = width + 20;
     const twinkle = 0.32 + Math.sin(point.x * 0.01 + point.y * 0.02) * 0.18;
@@ -2037,8 +2038,8 @@ function drawLightfallStreaks() {
     ctx.fillStyle = hexToRgba(streak.color, alpha);
     ctx.fill();
 
-    streak.y += streak.speed * 0.14;
-    streak.x += streak.drift * 0.12;
+    streak.y += streak.speed * 0.32;
+    streak.x += streak.drift * 0.28;
 
     if (streak.y - streak.length > height + 80 || streak.x < -width * 0.35 || streak.x > width * 1.25) {
       lightStreaks[i] = createLightStreak(false);
