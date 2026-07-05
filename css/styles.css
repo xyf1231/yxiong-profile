@@ -9672,10 +9672,10 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
   }
 
   main > .profile-combo.section-wrap:first-child .profile-card-left {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    justify-items: center !important;
+    display: flex !important;
+    flex-direction: column !important;
     align-items: center !important;
+    justify-content: center !important;
     text-align: center !important;
     gap: 12px !important;
   }

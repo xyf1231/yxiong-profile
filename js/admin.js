@@ -127,6 +127,9 @@ const storageList = document.querySelector("#storage-list");
 const storageBucket = document.querySelector("#storage-bucket");
 const storagePath = document.querySelector("#storage-path");
 const storageFile = document.querySelector("#storage-file");
+const restoreBackupSelect = document.querySelector("#restore-backup");
+const backupList = document.querySelector("#backup-list");
+const backupCountBadge = document.querySelector("#backup-count-badge");
 
 // 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
@@ -608,12 +611,18 @@ function setActiveTab(tab) {
 
   // 切换面板
   const isDeploy = tab === "deploy";
+  const isBackup = tab === "backup";
   document.querySelector("#panel-cms").classList.toggle("active", !isDeploy);
   document.querySelector("#panel-deploy").classList.toggle("active", isDeploy);
+  document.querySelector("#panel-backup")?.classList.toggle("active", isBackup);
 
   if (isDeploy) {
     // 加载版本仪表盘初始数据
     loadDeployData();
+    return;
+  }
+  if (isBackup) {
+    loadBackupsPanel();
     return;
   }
 
@@ -1215,6 +1224,125 @@ async function publishToGitHub() {
   await deployToGitHub();
 }
 
+async function backupSite() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再备份。", "error");
+    return;
+  }
+  if (!confirm("确定备份整个网页吗？这会把当前站点文件复制到本地备份目录。")) return;
+  try {
+    setLocalStatus("正在创建网页备份…", "info");
+    const result = await localRequest("/api/backup-site", { method: "POST" });
+    setLocalStatus(`备份完成：${result.path}`, "success");
+  } catch (error) {
+    setLocalStatus(`备份失败：${error.message}`, "error");
+  }
+}
+
+function formatBackupLabel(item) {
+  const shortName = item.name.replace(/^site-backup-/, "");
+  const date = new Date(item.mtime);
+  const readable = Number.isNaN(date.getTime())
+    ? shortName
+    : date.toLocaleString("zh-CN", { hour12: false });
+  return `${shortName} · ${readable}`;
+}
+
+function renderBackupSelection(backups, preserveValue = true) {
+  if (!restoreBackupSelect) return;
+  const previous = preserveValue ? restoreBackupSelect.value : "";
+  restoreBackupSelect.innerHTML = '<option value="">还原最新备份</option>';
+  for (const item of backups) {
+    const option = document.createElement("option");
+    option.value = item.name;
+    option.textContent = formatBackupLabel(item);
+    restoreBackupSelect.appendChild(option);
+  }
+  if (previous && backups.some((item) => item.name === previous)) {
+    restoreBackupSelect.value = previous;
+  }
+}
+
+function renderBackupList(backups) {
+  if (!backupList) return;
+  if (!backups.length) {
+    backupList.innerHTML = `<div class="backup-empty">暂无备份。先点击“备份网页”创建第一个备份。</div>`;
+    if (backupCountBadge) backupCountBadge.innerHTML = `<span class="dot"></span>0 个备份`;
+    return;
+  }
+  backupList.innerHTML = backups
+    .map(
+      (item) => `
+        <article class="backup-item" data-backup-name="${item.name}">
+          <div class="backup-item-copy">
+            <h3>${escapeHtml(item.name.replace(/^site-backup-/, ""))}</h3>
+            <p>${escapeHtml(formatBackupLabel(item))}</p>
+            <code>${escapeHtml(item.path)}</code>
+          </div>
+          <div class="backup-item-actions">
+            <button class="deploy-btn primary" type="button" data-backup-action="restore" data-backup-name="${escapeHtml(item.name)}">还原</button>
+            <button class="deploy-btn" type="button" data-backup-action="select" data-backup-name="${escapeHtml(item.name)}">选中</button>
+            <button class="deploy-btn danger" type="button" data-backup-action="delete" data-backup-name="${escapeHtml(item.name)}">删除</button>
+          </div>
+        </article>`,
+    )
+    .join("");
+  if (backupCountBadge) backupCountBadge.innerHTML = `<span class="dot"></span>${backups.length} 个备份`;
+}
+
+async function loadBackupsPanel() {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  try {
+    const result = await localRequest("/api/backups");
+    const backups = Array.isArray(result.backups) ? result.backups : [];
+    renderBackupSelection(backups, true);
+    renderBackupList(backups);
+  } catch (error) {
+    console.warn("加载历史备份失败", error);
+  }
+}
+
+async function restoreSite() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再还原。", "error");
+    return;
+  }
+  const backupName = restoreBackupSelect?.value || "";
+  const message = backupName
+    ? `确定还原选中的备份「${backupName}」吗？当前站点文件会被覆盖。`
+    : "确定从最新备份还原网页吗？当前站点文件会被覆盖。";
+  if (!confirm(message)) return;
+  try {
+    setLocalStatus("正在还原网页…", "info");
+    const result = await localRequest("/api/restore-site", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ backupName }),
+    });
+    setLocalStatus(`还原完成：${result.path}`, "success");
+  } catch (error) {
+    setLocalStatus(`还原失败：${error.message}`, "error");
+  }
+}
+
+async function deleteBackup(backupName) {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  if (!backupName) return;
+  if (!confirm(`确定删除备份「${backupName}」吗？此操作无法撤销。`)) return;
+  try {
+    setLocalStatus("正在删除备份…", "info");
+    const result = await localRequest("/api/backups", {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ backupName }),
+    });
+    setLocalStatus(`已删除备份：${result.name}`, "success");
+    await loadBackupsPanel();
+  } catch (error) {
+    setLocalStatus(`删除备份失败：${error.message}`, "error");
+  }
+}
+
 async function checkLocalServer() {
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("当前不是本地后台模式：请双击「站点维护.command」，再从 http://localhost:8787/admin.html 打开。", "error");
@@ -1257,6 +1385,28 @@ function init() {
     link.download = "academic-site-data.json";
     link.click();
     URL.revokeObjectURL(link.href);
+  });
+  document.querySelector("#backup-site")?.addEventListener("click", backupSite);
+  document.querySelector("#restore-site")?.addEventListener("click", restoreSite);
+  document.querySelector("#btn-refresh-backups")?.addEventListener("click", loadBackupsPanel);
+  restoreBackupSelect?.addEventListener("change", () => {
+    if (!restoreBackupSelect.value) return;
+    setLocalStatus(`已选择备份：${restoreBackupSelect.value}`, "info");
+  });
+  backupList?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-backup-action]");
+    if (!button) return;
+    const backupName = button.dataset.backupName || "";
+    const action = button.dataset.backupAction;
+    if (action === "select") {
+      if (restoreBackupSelect) restoreBackupSelect.value = backupName;
+      setLocalStatus(`已选中备份：${backupName}`, "success");
+    } else if (action === "restore") {
+      if (restoreBackupSelect) restoreBackupSelect.value = backupName;
+      await restoreSite();
+    } else if (action === "delete") {
+      await deleteBackup(backupName);
+    }
   });
 
   // ── 条目列表事件 ──
@@ -1389,6 +1539,7 @@ function init() {
   setActiveTab(activeTab);
   clearNetworkDiagLog();
   checkLocalServer();
+  loadBackupsPanel();
 
   // ── 启动状态轮询 ──
   if (USE_LOCAL_ADMIN_SERVER) {

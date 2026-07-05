@@ -20,7 +20,7 @@
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>后台管理 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.8.1" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.8.3" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -174,16 +174,18 @@
       /* ── CMS 主工作区：编辑表单 + 条目列表 ── */
       .cms-primary {
         display: grid;
-        grid-template-columns: minmax(0, 1fr) 360px;
-        gap: 18px;
+        grid-template-columns: minmax(0, 1.2fr) minmax(280px, 320px);
+        gap: 14px;
         margin-bottom: 18px;
+        align-items: start;
       }
-      .cms-editor-col { display: flex; flex-direction: column; gap: 18px; align-self: start; }
+      .cms-editor-col { display: flex; flex-direction: column; gap: 14px; align-self: start; min-width: 0; }
       /* ── 条目列表列 ── */
       .cms-list-col {
         display: flex;
         flex-direction: column;
         overflow: hidden;
+        min-width: 0;
       }
       .cms-list-col .item-list {
         flex: 1;
@@ -378,6 +380,78 @@
       .deploy-btn:active { transform: translateY(0); }
       .deploy-btn.primary { background: #2997FF; border-color: #2997FF; color: #fff; }
       .deploy-btn.primary:hover { background: #1a85f0; border-color: #1a85f0; }
+
+      /* ── 备份控制台 ── */
+      .backup-dashboard { display: grid; gap: 18px; }
+      .backup-console {
+        display: grid;
+        gap: 16px;
+        padding: 18px;
+        border: 1.5px solid rgba(255,255,255,0.1);
+        border-radius: 28px;
+        background:
+          radial-gradient(circle at top left, rgba(96,165,250,0.12), transparent 34%),
+          linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        box-shadow: 0 20px 54px rgba(0,0,0,0.22);
+      }
+      .backup-action-group {
+        display: grid;
+        gap: 12px;
+      }
+      .backup-action-group + .backup-action-group {
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+      }
+      .backup-action-label {
+        color: #c9d4e5;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .backup-list {
+        display: grid;
+        gap: 10px;
+      }
+      .backup-item {
+        display: grid;
+        gap: 12px;
+        padding: 14px 16px;
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 18px;
+        background: rgba(0,0,0,0.18);
+      }
+      .backup-item-copy h3 {
+        margin: 0;
+        font-size: 0.92rem;
+        color: #fff;
+      }
+      .backup-item-copy p {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.8rem;
+        line-height: 1.5;
+      }
+      .backup-item-copy code {
+        display: block;
+        margin-top: 8px;
+        color: rgba(255,255,255,0.44);
+        font-size: 0.74rem;
+        word-break: break-all;
+      }
+      .backup-item-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .backup-empty {
+        padding: 16px;
+        border: 1px dashed rgba(255,255,255,0.12);
+        border-radius: 16px;
+        color: rgba(255,255,255,0.42);
+        font-size: 0.82rem;
+        line-height: 1.6;
+      }
       .deploy-btn.success { background: rgba(48,209,88,0.12); border-color: rgba(48,209,88,0.25); color: #30d158; }
       .deploy-btn.success:hover { background: rgba(48,209,88,0.2); }
       .deploy-btn.danger { background: rgba(255,69,58,0.1); border-color: rgba(255,69,58,0.2); color: #ff453a; }
@@ -494,6 +568,12 @@
             <div class="sidebar-group-label">版本更新</div>
             <div class="sidebar-group">
               <button class="tab-button" data-tab="deploy" type="button">🚀 版本仪表盘</button>
+            </div>
+          </div>
+          <div class="sidebar-group">
+            <div class="sidebar-group-label">备份管理</div>
+            <div class="sidebar-group">
+              <button class="tab-button" data-tab="backup" type="button">💾 备份控制台</button>
             </div>
           </div>
         </nav>
@@ -715,11 +795,57 @@
               </section>
             </div>
           </div>
+
+          <!-- ===== 备份控制台面板 ===== -->
+          <div class="admin-panel" id="panel-backup">
+            <section class="admin-hero" style="grid-template-columns:1fr;">
+              <div>
+                <p class="section-kicker">Backup Console</p>
+                <h1>备份管理</h1>
+                <p class="hero-copy">查看历史备份、刷新列表、选择指定备份还原，或直接删除不需要的旧版本。</p>
+              </div>
+            </section>
+
+            <div class="backup-dashboard">
+              <section class="backup-console">
+                <div class="deploy-console-head">
+                  <div>
+                    <h2>备份控制台</h2>
+                    <p>所有备份操作集中在这一处，支持创建、刷新、选择还原和删除。</p>
+                  </div>
+                  <button class="deploy-btn" id="btn-refresh-backups" type="button">刷新列表</button>
+                </div>
+
+                <div class="backup-action-group">
+                  <div class="backup-action-label">创建备份</div>
+                  <div class="deploy-btn-row">
+                    <button class="deploy-btn success" id="backup-site" type="button">备份网页</button>
+                    <span class="deploy-status-badge" id="backup-count-badge"><span class="dot"></span>加载中</span>
+                  </div>
+                </div>
+
+                <div class="backup-action-group">
+                  <div class="backup-action-label">历史还原</div>
+                  <div class="deploy-btn-row">
+                    <select class="deploy-input" id="restore-backup" aria-label="选择备份" style="flex:1;min-width:240px;">
+                      <option value="">还原最新备份</option>
+                    </select>
+                    <button class="deploy-btn primary" id="restore-site" type="button">还原所选备份</button>
+                  </div>
+                </div>
+
+                <div class="backup-action-group">
+                  <div class="backup-action-label">历史列表</div>
+                  <div class="backup-list" id="backup-list" aria-live="polite"></div>
+                </div>
+              </section>
+            </div>
+          </div>
         </div>
       </main>
     </div>
 
-    <script src="js/data.js?v=v1.8.1" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.8.1" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.8.3" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.8.3" charset="utf-8"></script>
   </body>
 </html>

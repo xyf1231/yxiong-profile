@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { createServer } from "node:http";
-import { mkdir, readFile, readdir, stat, unlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, rm, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { basename, extname, join, normalize, relative, resolve } from "node:path";
@@ -16,6 +16,7 @@ const storageBuckets = {
   frames: "resources/frames",
   news: "resources/news",
 };
+const backupRoot = resolve(process.env.ADMIN_BACKUP_DIR || "/Users/xiongyifeng/Documents/02-个人/01-个人网站/备份");
 const allowedBuckets = new Set(Object.keys(storageBuckets));
 const pythonCandidates = [
   process.env.PYTHON_BIN,
@@ -215,6 +216,117 @@ async function runOptimizeImages(req, res) {
       output,
       message: result.code === 0 ? "图片压缩完成" : "图片压缩失败",
     });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
+function formatBackupStamp(date = new Date()) {
+  const pad = (value) => String(value).padStart(2, "0");
+  return [
+    date.getFullYear(),
+    pad(date.getMonth() + 1),
+    pad(date.getDate()),
+    "-",
+    pad(date.getHours()),
+    pad(date.getMinutes()),
+    pad(date.getSeconds()),
+  ].join("");
+}
+
+async function backupSite(res) {
+  try {
+    await mkdir(backupRoot, { recursive: true });
+    const backupDir = resolve(backupRoot, `site-backup-${formatBackupStamp()}`);
+    await cp(rootDir, backupDir, {
+      recursive: true,
+      force: true,
+      filter: (source) => {
+        const relativePath = relative(rootDir, source).replace(/\\/g, "/");
+        if (!relativePath) return true;
+        if (relativePath === ".git" || relativePath.startsWith(".git/")) return false;
+        if (relativePath === "node_modules" || relativePath.startsWith("node_modules/")) return false;
+        if (relativePath === "备份" || relativePath.startsWith("备份/")) return false;
+        return true;
+      },
+    });
+    sendJson(res, 200, { ok: true, path: backupDir, rootDir });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
+async function listBackupDirs() {
+  try {
+    await mkdir(backupRoot, { recursive: true });
+    const entries = await readdir(backupRoot, { withFileTypes: true });
+    const dirs = [];
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      if (!entry.name.startsWith("site-backup-")) continue;
+      const fullPath = resolve(backupRoot, entry.name);
+      const info = await stat(fullPath);
+      dirs.push({ name: entry.name, path: fullPath, mtime: info.mtimeMs });
+    }
+    return dirs.sort((a, b) => b.mtime - a.mtime);
+  } catch {
+    return [];
+  }
+}
+
+async function getBackups(res) {
+  try {
+    const backups = await listBackupDirs();
+    sendJson(res, 200, {
+      ok: true,
+      root: backupRoot,
+      backups: backups.map((entry) => ({
+        name: entry.name,
+        path: entry.path,
+        mtime: new Date(entry.mtime).toISOString(),
+      })),
+    });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
+async function restoreSite(res, backupName = "") {
+  try {
+    const backups = await listBackupDirs();
+    const selected = backupName
+      ? backups.find((entry) => entry.name === backupName || entry.path === backupName)
+      : backups[0];
+    if (!selected) {
+      throw new Error("没有找到可用的备份。");
+    }
+    await cp(selected.path, rootDir, {
+      recursive: true,
+      force: true,
+      filter: (source) => {
+        const relativePath = relative(selected.path, source).replace(/\\/g, "/");
+        if (!relativePath) return true;
+        if (relativePath === ".git" || relativePath.startsWith(".git/")) return false;
+        if (relativePath === "node_modules" || relativePath.startsWith("node_modules/")) return false;
+        if (relativePath === "备份" || relativePath.startsWith("备份/")) return false;
+        return true;
+      },
+    });
+    sendJson(res, 200, { ok: true, path: selected.path, rootDir });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
+async function deleteBackup(res, backupName = "") {
+  try {
+    const backups = await listBackupDirs();
+    const selected = backups.find((entry) => entry.name === backupName || entry.path === backupName);
+    if (!selected) {
+      throw new Error("没有找到要删除的备份。");
+    }
+    await rm(selected.path, { recursive: true, force: true });
+    sendJson(res, 200, { ok: true, name: selected.name, path: selected.path });
   } catch (error) {
     sendJson(res, 500, { ok: false, message: error.message });
   }
@@ -499,6 +611,26 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/images/optimize" && req.method === "POST") {
       await runOptimizeImages(req, res);
+      return;
+    }
+    if (url.pathname === "/api/backup-site" && req.method === "POST") {
+      await backupSite(res);
+      return;
+    }
+    if (url.pathname === "/api/backups" && req.method === "GET") {
+      await getBackups(res);
+      return;
+    }
+    if (url.pathname === "/api/restore-site" && req.method === "POST") {
+      const body = await readRequestBody(req);
+      const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+      await restoreSite(res, payload.backupName || "");
+      return;
+    }
+    if (url.pathname === "/api/backups" && req.method === "DELETE") {
+      const body = await readRequestBody(req);
+      const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+      await deleteBackup(res, payload.backupName || "");
       return;
     }
 
