@@ -200,7 +200,7 @@ html[data-site-loading="pending"]::after {
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: clamp(4rem, 12vw, 7rem);
+  font-size: clamp(4rem, 12vw, 7rem) !important;
   line-height: 1;
   font-weight: 900;
   letter-spacing: -0.06em;
@@ -9669,9 +9669,8 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   min-height: 100vh;
   width: 100%;
   display: grid;
-  place-items: center;
-  justify-items: center;
-  padding: clamp(4px, 0.8vw, 10px) 0;
+  place-items: start center;
+  padding: clamp(20px, 2.5vw, 32px) 0;
 }
 
 .home-frame-media {
@@ -9840,6 +9839,14 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 
   .home-frame-replay {
     display: inline-grid !important;
+    width: 44px;
+    height: 44px;
+    right: 10px;
+    bottom: 10px;
+  }
+
+  .home-frame-replay-icon {
+    font-size: clamp(1rem, 2.8vw, 1.2rem);
   }
 
   .home-frame-heading {
