@@ -46,13 +46,52 @@ html {
 }
 
 
-html[data-lang-ready="pending"] body {
+html[data-lang-ready="pending"] body,
+html[data-site-loading="pending"] body {
   opacity: 0;
 }
 
-html[data-lang-ready="ready"] body {
+html[data-lang-ready="ready"] body,
+html[data-site-loading="ready"] body {
   opacity: 1;
-  transition: opacity 140ms ease-out;
+  transition: opacity 220ms ease-out;
+}
+
+html[data-site-loading="pending"]::before {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  content: "加载中…";
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  background:
+    radial-gradient(circle at center, rgba(41, 151, 255, 0.14), transparent 58%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.98), rgba(0, 0, 0, 0.94));
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+}
+
+html[data-site-loading="pending"]::after {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  margin: auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-top-color: var(--accent);
+  content: "";
+  animation: siteLoadingSpin 0.9s linear infinite;
+}
+
+@keyframes siteLoadingSpin {
+  to { transform: rotate(360deg); }
 }
 
 body {

@@ -18,6 +18,7 @@ const ASSET_CACHE_BUSTER = (() => {
 })();
 const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
 const ASSET_SOURCE = (window.DEFAULT_SITE_DATA?.assetSource || "vercel").toLowerCase();
+const SITE_LOADING_KEY = "academicSiteLoading";
 
 function assetUrl(src = "") {
   const value = String(src || "");
@@ -54,6 +55,49 @@ function publicationImageMarkup(item, title, priority = false) {
   const imageSrc = item.image || fallbackImage;
   return `<div class="publication-visual">${pictureTag(imageSrc, title, "", priority)}</div>`;
 }
+
+function setupSiteLoadingGate() {
+  const root = document.documentElement;
+  if (root.dataset.siteLoading !== "ready") root.dataset.siteLoading = "pending";
+
+  let finished = false;
+  const finish = () => {
+    if (finished) return;
+    finished = true;
+    root.dataset.siteLoading = "ready";
+  };
+
+  const waitForReady = async () => {
+    try {
+      const loadPromise = document.readyState === "complete"
+        ? Promise.resolve()
+        : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
+      await Promise.all([
+        document.fonts?.ready || Promise.resolve(),
+        loadPromise,
+      ]);
+      const mediaTasks = [...document.images]
+        .filter((img) => !img.complete)
+        .map((img) => new Promise((resolve) => {
+          img.addEventListener("load", resolve, { once: true });
+          img.addEventListener("error", resolve, { once: true });
+        }));
+      await Promise.allSettled(mediaTasks);
+    } finally {
+      window.setTimeout(finish, 120);
+    }
+  };
+
+  if (document.readyState === "complete") {
+    waitForReady();
+  } else {
+    window.addEventListener("load", waitForReady, { once: true });
+  }
+
+  window.setTimeout(finish, 15000);
+}
+
+setupSiteLoadingGate();
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
