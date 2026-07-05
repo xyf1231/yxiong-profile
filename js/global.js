@@ -87,10 +87,20 @@ function setupSiteLoadingGate() {
   let intervalId = null;
   let finishTimerId = null;
   let readyTimerId = null;
+  let revealTimerId = null;
   let lockedScrollY = 0;
+  let resourceScanId = 0;
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
-    if (percentEl) percentEl.textContent = current >= 100 ? "即将展现" : `${Math.round(current)}%`;
+    if (percentEl) {
+      const valueEl = percentEl.querySelector(".site-loading-percent-value");
+      const readyEl = percentEl.querySelector(".site-loading-percent-ready");
+      if (valueEl && readyEl) {
+        if (current < 100) percentEl.classList.remove("is-ready");
+        valueEl.textContent = `${Math.round(current)}%`;
+        readyEl.textContent = "即将展现";
+      }
+    }
     if (barEl) barEl.style.width = `${current}%`;
   };
   const startProgress = () => {
@@ -113,14 +123,18 @@ function setupSiteLoadingGate() {
     finished = true;
     if (intervalId) window.clearInterval(intervalId);
     if (finishTimerId) window.clearTimeout(finishTimerId);
-    settleProgressThenFinish();
+    if (revealTimerId) window.clearTimeout(revealTimerId);
+    setProgress(100);
+    revealTimerId = window.setTimeout(() => {
+      if (percentEl) percentEl.classList.add("is-ready");
+    }, 180);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
       root.dataset.siteLoading = "ready";
-    }, 240);
+    }, 700);
     if (overlay) {
       overlay.classList.add("is-hidden");
-      window.setTimeout(() => overlay.remove(), 320);
+      window.setTimeout(() => overlay.remove(), 820);
     }
     document.body.style.top = "";
     window.scrollTo(0, lockedScrollY);
@@ -139,7 +153,13 @@ function setupSiteLoadingGate() {
           <div class="site-loading-meta">
             <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
           </div>
-          <div class="site-loading-percent" aria-label="加载进度"><strong>0%</strong><span>Progress</span></div>
+          <div class="site-loading-percent" aria-label="加载进度">
+            <strong>
+              <span class="site-loading-percent-value">0%</span>
+              <span class="site-loading-percent-ready">即将展现</span>
+            </strong>
+            <span>Progress</span>
+          </div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
         </div>
       `;
@@ -152,12 +172,33 @@ function setupSiteLoadingGate() {
       if (!speedEl) return;
       speedEl.textContent = formatTransferRate(value);
     };
-    let speedState = 0;
-    let speedTickerId = 0;
+    const speedSamples = [];
+    const MAX_SPEED_SAMPLES = 8;
+    let lastResourceCount = 0;
     const pushSpeedSample = (bytesPerSecond) => {
       if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return;
-      speedState = bytesPerSecond;
-      renderSpeed(speedState);
+      speedSamples.push(bytesPerSecond);
+      if (speedSamples.length > MAX_SPEED_SAMPLES) speedSamples.shift();
+    };
+    const getSmoothedSpeed = () => {
+      if (speedSamples.length === 0) return 0;
+      const sum = speedSamples.reduce((a, b) => a + b, 0);
+      return sum / speedSamples.length;
+    };
+    const scanResources = () => {
+      const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+      for (let i = lastResourceCount; i < entries.length; i += 1) {
+        const entry = entries[i];
+        const bytes = entry.transferSize || entry.decodedBodySize || 0;
+        if (!bytes || entry.duration <= 0) continue;
+        pushSpeedSample(bytes / (entry.duration / 1000));
+      }
+      lastResourceCount = entries.length;
+      renderSpeed(getSmoothedSpeed());
+    };
+    const startSpeedTicker = () => {
+      if (resourceScanId) return;
+      resourceScanId = window.setInterval(scanResources, 250);
     };
     const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (connection?.downlink) pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
@@ -174,11 +215,13 @@ function setupSiteLoadingGate() {
             if (!bytes || entry.duration <= 0) continue;
             pushSpeedSample(bytes / (entry.duration / 1000));
           }
+          scanResources();
         });
         observer.observe({ type: "resource", buffered: true });
+        startSpeedTicker();
         window.addEventListener("pagehide", () => {
           observer.disconnect();
-          if (speedTickerId) window.clearInterval(speedTickerId);
+          if (resourceScanId) window.clearInterval(resourceScanId);
         }, { once: true });
       } catch (error) {
         // ignore observer setup issues
