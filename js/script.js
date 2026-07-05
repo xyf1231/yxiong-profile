@@ -655,7 +655,6 @@ function renderNews(items) {
             <time>${escapeHtml(item.date || "")}</time>
             <h3>${escapeHtml(title || "")}</h3>
           </div>
-          <span>${String(index + 1).padStart(2, "0")}</span>
         </a>
       `;
     })
@@ -668,7 +667,7 @@ function renderNews(items) {
     <div class="news-carousel-controls" aria-label="${escapeHtml(currentLang === "en" ? "News carousel controls" : "新闻切换控制")}">
       <button class="news-carousel-arrow" data-news-prev type="button" aria-label="${escapeHtml(currentLang === "en" ? "Previous news" : "上一条新闻")}">‹</button>
       <div class="news-carousel-dots">${items
-        .map((_, index) => `<button type="button" data-news-dot="${index}" aria-label="${escapeHtml(currentLang === "en" ? `Go to news ${index + 1}` : `跳转到第 ${index + 1} 条新闻`)}"></button>`)
+        .map((_, index) => `<button type="button" data-news-dot="${index}" aria-label="${escapeHtml(currentLang === "en" ? `Go to news ${index + 1}` : `跳转到第 ${index + 1} 条新闻`)}"><span class="news-carousel-dot-fill"></span></button>`)
         .join("")}</div>
       <button class="news-carousel-arrow" data-news-next type="button" aria-label="${escapeHtml(currentLang === "en" ? "Next news" : "下一条新闻")}">›</button>
       <button class="news-carousel-play" data-news-play type="button" aria-label="${escapeHtml(currentLang === "en" ? "Pause auto play" : "暂停自动播放")}">Ⅱ</button>
@@ -708,14 +707,21 @@ function setupNewsCarousel(root) {
   let wheelCooldownTimer = null;
   const wheelThreshold = 88;
   const wheelCooldownMs = 420;
+  let progressFrame = null;
 
   const getCurrentOffset = () => Number(track.dataset.offset || 0);
   let dragBaseOffset = 0;
+  const progressDuration = 6200;
 
   const update = (index = activeIndex) => {
     activeIndex = Math.max(0, Math.min(cards.length - 1, index));
     cards.forEach((card, i) => card.classList.toggle("is-active", i === activeIndex));
-    dots.forEach((dot, i) => dot.setAttribute("aria-current", String(i === activeIndex)));
+    dots.forEach((dot, i) => {
+      const isCurrent = i === activeIndex;
+      dot.setAttribute("aria-current", String(isCurrent));
+      dot.style.setProperty("--news-progress", isCurrent ? "0" : "0");
+    });
+    root.style.setProperty("--news-progress", "0");
   };
 
   const goTo = (index, behavior = "smooth", wrap = false, manual = false) => {
@@ -735,6 +741,7 @@ function setupNewsCarousel(root) {
       const targetOffset = Math.round(viewport.clientWidth / 2 - (card.offsetLeft + card.offsetWidth / 2));
       track.dataset.offset = String(targetOffset);
       track.style.transform = `translate3d(${targetOffset}px, 0, 0)`;
+      updateProgress(0);
       if (behavior === "auto") {
         window.setTimeout(() => {
           track.style.transitionDuration = "";
@@ -752,6 +759,7 @@ function setupNewsCarousel(root) {
   const pauseAuto = () => {
     autoPlaying = false;
     stopAuto();
+    stopProgress();
     window.clearInterval(statusTimer);
     statusTimer = null;
     if (play) {
@@ -770,7 +778,38 @@ function setupNewsCarousel(root) {
   const startAuto = () => {
     stopAuto();
     if (!autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) return;
-    timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), 5200);
+    timer = window.setInterval(() => goTo(activeIndex + 1, "smooth", true), progressDuration);
+    startProgress();
+  };
+
+  const stopProgress = () => {
+    if (progressFrame) window.cancelAnimationFrame(progressFrame);
+    progressFrame = null;
+  };
+
+  const updateProgress = (value) => {
+    const clamped = Math.max(0, Math.min(1, value));
+    root.style.setProperty("--news-progress", String(clamped));
+    dots.forEach((dot, i) => {
+      if (i === activeIndex) dot.style.setProperty("--news-progress", String(clamped));
+      else dot.style.setProperty("--news-progress", "0");
+    });
+  };
+
+  const startProgress = () => {
+    stopProgress();
+    if (!autoPlaying || cards.length < 2) return;
+    const startedAt = performance.now();
+    const tick = (now) => {
+      if (!autoPlaying) {
+        stopProgress();
+        return;
+      }
+      const progress = (now - startedAt) / progressDuration;
+      updateProgress(progress >= 1 ? 1 : progress);
+      if (progress < 1) progressFrame = window.requestAnimationFrame(tick);
+    };
+    progressFrame = window.requestAnimationFrame(tick);
   };
 
   prev?.addEventListener("click", () => { goTo(activeIndex - 1, "smooth", false, true); });
@@ -781,7 +820,20 @@ function setupNewsCarousel(root) {
     play.textContent = autoPlaying ? "Ⅱ" : "▶";
     play.setAttribute("aria-label", autoPlaying ? (currentLang === "en" ? "Pause auto play" : "暂停自动播放") : (currentLang === "en" ? "Resume auto play" : "继续自动播放"));
     if (autoPlaying) startAuto();
-    else pauseAuto();
+    else {
+      stopProgress();
+      pauseAuto();
+    }
+  });
+
+  root.addEventListener("click", (event) => {
+    const card = event.target.closest?.(".news-card");
+    if (!card) return;
+    const index = Number(card.dataset.newsSlide || 0);
+    if (index !== activeIndex) {
+      event.preventDefault();
+      goTo(index, "smooth", false, true);
+    }
   });
 
   const beginDrag = (event) => {

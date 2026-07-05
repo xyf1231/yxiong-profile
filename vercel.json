@@ -1,0 +1,14 @@
+{
+  "rewrites": [
+    { "source": "/profile", "destination": "/profile.html" },
+    { "source": "/results", "destination": "/results.html" },
+    { "source": "/honors", "destination": "/honors.html" },
+    { "source": "/activities", "destination": "/activities.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/profile/", "destination": "/profile.html" },
+    { "source": "/results/", "destination": "/results.html" },
+    { "source": "/honors/", "destination": "/honors.html" },
+    { "source": "/activities/", "destination": "/activities.html" },
+    { "source": "/admin/", "destination": "/admin.html" }
+  ]
+}
