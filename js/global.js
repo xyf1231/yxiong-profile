@@ -2418,12 +2418,12 @@ function showPdfPreview(url) {
   if (!modal) {
     modal = document.createElement("div");
     modal.id = "pdf-preview-modal";
-    modal.innerHTML = \`<div class="pdf-preview-backdrop">
+    modal.innerHTML = `<div class="pdf-preview-backdrop">
       <div class="pdf-preview-container">
         <button class="pdf-preview-close" aria-label="Close">\u2715</button>
         <iframe class="pdf-preview-iframe" src=""></iframe>
       </div>
-    </div>\`;
+    </div>`;
     document.body.appendChild(modal);
     modal.querySelector(".pdf-preview-close").addEventListener("click", () => {
       modal.classList.remove("is-visible");
@@ -2444,6 +2444,8 @@ document.addEventListener("click", (event) => {
   const card = event.target.closest("[data-paper-preview]");
   if (!card) return;
   if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
+  event.preventDefault();
+  event.stopPropagation();
   showPdfPreview(card.dataset.paperPreview);
 });
 
