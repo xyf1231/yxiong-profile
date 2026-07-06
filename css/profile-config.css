@@ -1,0 +1,113 @@
+/**
+ * profile-config.css — 个人简介页排版变量
+ * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ */
+
+:root {
+  /* 页面容器 */
+  --profile-container-max-width: var(--max);
+  --profile-section-padding: clamp(72px, 10vw, 126px);
+  --profile-first-section-padding-top: clamp(112px, 12vw, 156px);
+
+  /* 页面顶部大标题 */
+  --profile-intro-title-size: var(--font-h1);
+  --profile-intro-title-line-height: 1.12;
+  --profile-intro-title-letter-spacing: -0.02em;
+  --profile-intro-title-color: rgba(255, 255, 255, 0.96);
+
+  /* Section kicker */
+  --profile-kicker-font-size: var(--font-kicker);
+  --profile-kicker-letter-spacing: 0.14em;
+  --profile-kicker-color: var(--accent);
+  --profile-kicker-margin-bottom: 14px;
+
+  /* Section title */
+  --profile-title-font-size: var(--font-h2);
+  --profile-title-line-height: 1.12;
+  --profile-title-letter-spacing: -0.02em;
+  --profile-title-color: rgba(255, 255, 255, 0.96);
+
+  /* 简介正文 */
+  --profile-bio-font-size: var(--font-body);
+  --profile-bio-line-height: 1.8;
+
+  /* 手机端 */
+  --profile-intro-title-size-mobile: clamp(2.8rem, 10vw, 4rem);
+  --profile-kicker-font-size-mobile: var(--font-kicker);
+  --profile-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
+  --profile-section-padding-mobile: clamp(56px, 8vw, 96px);
+  --profile-first-section-padding-top-mobile: clamp(96px, 10vw, 128px);
+}
+
+/* 容器 */
+.profile-page .section-wrap,
+.section-wrap {
+  width: min(100% - 40px, var(--profile-container-max-width));
+  padding: var(--profile-section-padding) 0;
+}
+
+main > .section-wrap:first-child,
+main > .section-band:first-child > .section-wrap {
+  padding-top: var(--profile-first-section-padding-top);
+}
+
+/* 页面顶部大标题 */
+.profile-intro-title {
+  font-size: var(--profile-intro-title-size) !important;
+  line-height: var(--profile-intro-title-line-height) !important;
+  letter-spacing: var(--profile-intro-title-letter-spacing) !important;
+  color: var(--profile-intro-title-color) !important;
+}
+
+/* Kicker */
+.section-kicker {
+  font-size: var(--profile-kicker-font-size) !important;
+  letter-spacing: var(--profile-kicker-letter-spacing) !important;
+  color: var(--profile-kicker-color) !important;
+  margin-bottom: var(--profile-kicker-margin-bottom) !important;
+}
+
+/* Section title */
+.section-heading h2,
+#profile-research-title,
+#profile-experience-title,
+#profile-selected-title,
+#profile-appointments-title {
+  font-size: var(--profile-title-font-size) !important;
+  line-height: var(--profile-title-line-height) !important;
+  letter-spacing: var(--profile-title-letter-spacing) !important;
+  color: var(--profile-title-color) !important;
+}
+
+/* 简介正文 */
+.profile-bio-text {
+  font-size: var(--profile-bio-font-size);
+  line-height: var(--profile-bio-line-height);
+}
+
+@media (max-width: 768px) {
+  .section-wrap {
+    padding: var(--profile-section-padding-mobile) 0;
+  }
+
+  main > .section-wrap:first-child,
+  main > .section-band:first-child > .section-wrap {
+    padding-top: var(--profile-first-section-padding-top-mobile);
+  }
+
+  .profile-intro-title {
+    font-size: var(--profile-intro-title-size-mobile) !important;
+  }
+
+  .section-kicker {
+    font-size: var(--profile-kicker-font-size-mobile) !important;
+  }
+
+  .section-heading h2,
+  #profile-research-title,
+  #profile-experience-title,
+  #profile-selected-title,
+  #profile-appointments-title {
+    font-size: var(--profile-title-font-size-mobile) !important;
+  }
+}

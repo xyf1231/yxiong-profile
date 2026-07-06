@@ -1,0 +1,85 @@
+/**
+ * results-config.css — 成果页排版变量
+ * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ */
+
+:root {
+  /* 页面容器 */
+  --results-container-max-width: var(--max);
+  --results-section-padding: clamp(72px, 10vw, 126px);
+  --results-first-section-padding-top: clamp(112px, 12vw, 156px);
+
+  /* Section kicker */
+  --results-kicker-font-size: var(--font-kicker);
+  --results-kicker-letter-spacing: 0.14em;
+  --results-kicker-color: var(--accent);
+  --results-kicker-margin-bottom: 14px;
+
+  /* Section title */
+  --results-title-font-size: var(--font-h2);
+  --results-title-line-height: 1.12;
+  --results-title-letter-spacing: -0.02em;
+  --results-title-color: rgba(255, 255, 255, 0.96);
+
+  /* 列表项间距 */
+  --results-list-gap: clamp(16px, 2vw, 24px);
+
+  /* 手机端 */
+  --results-kicker-font-size-mobile: var(--font-kicker);
+  --results-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
+  --results-section-padding-mobile: clamp(56px, 8vw, 96px);
+  --results-first-section-padding-top-mobile: clamp(96px, 10vw, 128px);
+}
+
+/* 容器 */
+.results-page .section-wrap,
+.section-wrap {
+  width: min(100% - 40px, var(--results-container-max-width));
+  padding: var(--results-section-padding) 0;
+}
+
+main > .section-wrap:first-child,
+main > .section-band:first-child > .section-wrap {
+  padding-top: var(--results-first-section-padding-top);
+}
+
+/* Kicker */
+.section-kicker {
+  font-size: var(--results-kicker-font-size) !important;
+  letter-spacing: var(--results-kicker-letter-spacing) !important;
+  color: var(--results-kicker-color) !important;
+  margin-bottom: var(--results-kicker-margin-bottom) !important;
+}
+
+/* Section title */
+.section-heading h2 {
+  font-size: var(--results-title-font-size) !important;
+  line-height: var(--results-title-line-height) !important;
+  letter-spacing: var(--results-title-letter-spacing) !important;
+  color: var(--results-title-color) !important;
+}
+
+/* 列表间距 */
+.all-publication-list,
+.detail-list {
+  gap: var(--results-list-gap);
+}
+
+@media (max-width: 768px) {
+  .section-wrap {
+    padding: var(--results-section-padding-mobile) 0;
+  }
+
+  main > .section-wrap:first-child,
+  main > .section-band:first-child > .section-wrap {
+    padding-top: var(--results-first-section-padding-top-mobile);
+  }
+
+  .section-kicker {
+    font-size: var(--results-kicker-font-size-mobile) !important;
+  }
+
+  .section-heading h2 {
+    font-size: var(--results-title-font-size-mobile) !important;
+  }
+}
