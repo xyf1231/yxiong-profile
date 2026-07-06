@@ -30,11 +30,44 @@
       content="熊毅丰的个人学术网站，展示研究方向、论文成果、项目经历、专利会议与联系方式。"
     />
     <title>熊毅丰 | Yifeng Xiong</title>
-    <link rel="preload" href="css/styles.css?v=v1.10.11" as="style" />
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.11" />
+    <link rel="preload" href="css/styles.css?v=v1.10.13" as="style" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.13" />
     <style>
       .site-loading-percent strong {
         font-size: clamp(4rem, 12vw, 7rem) !important;
+      }
+
+      /* Nav text larger */
+      .nav-desktop-items a {
+        font-size: 15px !important;
+      }
+
+
+      /* Scroll hint arrow */
+      .scroll-hint {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        margin-top: 50px;
+      }
+      .scroll-arrow {
+        width: 30px;
+        height: 30px;
+        border-right: 4px solid rgba(230, 230, 230, 0.55);
+        border-bottom: 4px solid rgba(230, 230, 230, 0.55);
+        transform: rotate(45deg);
+        animation: scrollBounce 1.8s ease-in-out infinite;
+        border-radius: 0 0 3px 0;
+      }
+      .scroll-arrow:nth-child(2) {
+        margin-top: -14px;
+        opacity: 0.4;
+        animation-delay: 0.25s;
+      }
+      @keyframes scrollBounce {
+        0%, 100% { transform: translateY(0) rotate(45deg); opacity: 0.35; }
+        50% { transform: translateY(14px) rotate(45deg); opacity: 1; }
       }
     </style>
   </head>
@@ -107,8 +140,10 @@
 智能光电子</h1>
             <p data-i18n="homeSubtitle">光纤集成 · 异质材料 · 智能感知</p>
             <div class="hero-actions" aria-label="快速入口">
-              <a class="button primary" href="profile.html" data-i18n="profile">个人简介</a>
-              <a class="button secondary" href="results.html#papers" data-i18n="publications">论文</a>
+              <span class="scroll-hint" aria-hidden="true">
+                <span class="scroll-arrow"></span>
+                <span class="scroll-arrow"></span>
+              </span>
             </div>
           </div>
         </div>
@@ -165,10 +200,10 @@
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.10.11</span>
+      <span class="footer-version">Version 1.10.13</span>
     </footer>
 
-    <script src="js/data.js?v=v1.10.11" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.10.11" charset="utf-8" defer></script>
+    <script src="js/data.js?v=v1.10.13" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.10.13" charset="utf-8" defer></script>
   </body>
 </html>

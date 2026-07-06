@@ -110,50 +110,94 @@ function setupSiteLoadingGate() {
         const isReady = current >= 100;
         if (!isReady) percentEl.classList.remove("is-ready");
         valueEl.textContent = `${Math.round(current)}%`;
-        readyEl.textContent = "即将展现";
+        readyEl.textContent = "正在进入";
       }
     }
     if (barEl) barEl.style.width = `${current}%`;
   };
 
-  // Real progress based on actual DOM loading state
+  // Smooth progress with byte-based loading
+  let targetProgress = 0;
+  let displayProgress = 0;
+  let rafId = null;
+  let totalBytes = 0;
+  let loadedBytes = 0;
+  let resourceEntries = new Map();
+
+  const lerp = (start, end, factor) => start + (end - start) * factor;
+
+  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
+
+  const animateProgress = () => {
+    if (finished) return;
+    const diff = targetProgress - displayProgress;
+    if (Math.abs(diff) < 0.1) {
+      displayProgress = targetProgress;
+    } else {
+      displayProgress = lerp(displayProgress, targetProgress, 0.08);
+    }
+    setProgress(displayProgress);
+    if (displayProgress < 100) {
+      rafId = requestAnimationFrame(animateProgress);
+    }
+  };
+
   const updateRealProgress = () => {
     if (finished) return;
 
-    let progress = 0;
-    const images = [...document.images].filter(img => img.src && !img.src.startsWith("data:"));
-    const totalImages = images.length || 1;
-    const loadedImages = images.filter(img => img.complete).length;
+    const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+    let newTotal = 0;
+    let newLoaded = 0;
 
-    // Phase 1: document ready state (0-25%)
-    if (document.readyState === "loading") progress = 5;
-    else if (document.readyState === "interactive") progress = 18;
-    else if (document.readyState === "complete") progress = 25;
-
-    // Phase 2: images (25-75%)
-    progress += (loadedImages / totalImages) * 50;
-
-    // Phase 3: fonts (75-90%)
-    if (document.fonts && document.fonts.status === "loaded") {
-      progress += 15;
-    } else if (document.readyState === "complete") {
-      progress += 8;
+    for (const entry of entries) {
+      const size = entry.transferSize || entry.decodedBodySize || 0;
+      if (!size) continue;
+      newTotal += size;
+      // 资源已完全加载（duration > 0 表示已完成）
+      if (entry.duration > 0) {
+        newLoaded += size;
+      }
     }
 
-    // Phase 4: video/other media (90-98%)
+    totalBytes = newTotal || 1;
+    loadedBytes = newLoaded;
+
+    let progress = 0;
+
+    // Phase 1: document ready state (0-15%)
+    if (document.readyState === "loading") progress = 3;
+    else if (document.readyState === "interactive") progress = 10;
+    else if (document.readyState === "complete") progress = 15;
+
+    // Phase 2: actual resource loading (15-90%) based on bytes
+    if (totalBytes > 0) {
+      progress += (loadedBytes / totalBytes) * 75;
+    }
+
+    // Phase 3: fonts (90-95%)
+    if (document.fonts && document.fonts.status === "loaded") {
+      progress += 5;
+    } else if (document.readyState === "complete") {
+      progress += 2;
+    }
+
+    // Phase 4: video (95-98%)
     const video = document.querySelector("video");
     if (!video || video.readyState >= 3) {
-      progress += 8;
-    } else if (video.readyState >= 1) {
       progress += 3;
+    } else if (video.readyState >= 1) {
+      progress += 1;
     }
 
-    setProgress(Math.min(progress, 98));
+    targetProgress = Math.min(progress, 98);
   };
 
   const startProgress = () => {
-    if (intervalId) return;
-    intervalId = window.setInterval(updateRealProgress, 100);
+    if (rafId) return;
+    updateRealProgress();
+    rafId = requestAnimationFrame(animateProgress);
+    // 每 50ms 更新一次目标进度
+    intervalId = window.setInterval(updateRealProgress, 50);
   };
 
   const finish = () => {
@@ -168,7 +212,7 @@ function setupSiteLoadingGate() {
     // 直接跳到 100%
     setProgress(100);
 
-    // 立即显示 "即将展现"（不用 setTimeout）
+    // 立即显示 "正在进入"（不用 setTimeout）
     if (percentEl) {
       const readyEl = percentEl.querySelector(".site-loading-percent-ready");
       const valueEl = percentEl.querySelector(".site-loading-percent-value");
@@ -203,19 +247,17 @@ function setupSiteLoadingGate() {
       overlay.className = "site-loading-overlay";
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
-          <div class="site-loading-kicker">${getLoadingGreeting()}</div>
-          <h1 class="site-loading-title">加载中 / Loading</h1>
-          <div class="site-loading-meta">
-            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
-          </div>
+          <div class="site-loading-lottie" id="site-loading-lottie"></div>
           <div class="site-loading-percent" aria-label="加载进度">
             <strong>
               <span class="site-loading-percent-value">0%</span>
-              <span class="site-loading-percent-ready">即将展现</span>
+              <span class="site-loading-percent-ready">正在进入</span>
             </strong>
-            <span>Progress</span>
           </div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+          <div class="site-loading-meta">
+            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
+          </div>
         </div>
       `;
       document.documentElement.appendChild(overlay);
@@ -225,6 +267,39 @@ function setupSiteLoadingGate() {
     if (percentNumEl) percentNumEl.style.setProperty("font-size", "clamp(4rem, 12vw, 7rem)", "important");
     barEl = overlay.querySelector(".site-loading-bar");
 
+    // 加载并播放 Lottie 欢迎动画
+    (async () => {
+      try {
+        const lottieEl = document.getElementById("site-loading-lottie");
+        if (!lottieEl || window.lottieLoadAttempted) return;
+        window.lottieLoadAttempted = true;
+        if (!window.lottie) {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js";
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+        const anim = window.lottie.loadAnimation({
+          container: lottieEl,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          path: "resources/Welcome.json",
+        });
+        anim.addEventListener("data_ready", () => {
+          lottieEl.dataset.loaded = "true";
+        });
+        anim.addEventListener("error", () => {
+          lottieEl.style.display = "none";
+        });
+      } catch (error) {
+        const lottieEl = document.getElementById("site-loading-lottie");
+        if (lottieEl) lottieEl.style.display = "none";
+      }
+    })();
     const speedEl = overlay.querySelector(".site-loading-speed strong");
     const renderSpeed = (value) => {
       if (!speedEl) return;
@@ -2475,6 +2550,7 @@ let paperTouchStartX = 0;
 let paperTouchStartY = 0;
 let paperTouchMoved = false;
 
+// 触摸开始时记录起点并复位状态
 document.addEventListener("touchstart", (event) => {
   if (event.touches.length === 1) {
     paperTouchStartX = event.touches[0].clientX;
@@ -2483,15 +2559,24 @@ document.addEventListener("touchstart", (event) => {
   }
 }, { passive: true });
 
+// 触摸移动时检测位移，阈值 6px 兼顾灵敏度与误触过滤
 document.addEventListener("touchmove", (event) => {
   if (event.touches.length === 1) {
     const dx = event.touches[0].clientX - paperTouchStartX;
     const dy = event.touches[0].clientY - paperTouchStartY;
     const distance = Math.sqrt(dx * dx + dy * dy);
-    if (distance > 10) {
+    // 以垂直分量为主：只要纵向滑动超过 4px，也视为滑动
+    if (distance > 6 || Math.abs(dy) > 4) {
       paperTouchMoved = true;
     }
   }
+}, { passive: true });
+
+// 触摸结束时复位，防止状态残留影响下一次点击
+document.addEventListener("touchend", () => {
+  window.setTimeout(() => {
+    paperTouchMoved = false;
+  }, 80);
 }, { passive: true });
 
 document.addEventListener("click", (event) => {
@@ -2503,7 +2588,13 @@ document.addEventListener("click", (event) => {
     paperTouchMoved = false;
     return;
   }
-  window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
+  event.preventDefault();
+  event.stopImmediatePropagation();
+  if (typeof showPdfPreview === 'function') {
+    showPdfPreview(card.dataset.paperPreview);
+  } else {
+    window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
+  }
 });
 
 

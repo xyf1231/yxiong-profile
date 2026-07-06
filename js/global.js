@@ -148,11 +148,9 @@ function setupSiteLoadingGate() {
       overlay.className = "site-loading-overlay";
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
+          <div class="site-loading-lottie" id="site-loading-lottie"></div>
           <div class="site-loading-kicker">${getLoadingGreeting()}</div>
           <h1 class="site-loading-title">加载中 / Loading</h1>
-          <div class="site-loading-meta">
-            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
-          </div>
           <div class="site-loading-percent" aria-label="加载进度">
             <strong>
               <span class="site-loading-percent-value">0%</span>
@@ -161,12 +159,49 @@ function setupSiteLoadingGate() {
             <span>Progress</span>
           </div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+          <div class="site-loading-meta">
+            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
+          </div>
         </div>
       `;
       document.documentElement.appendChild(overlay);
     }
     percentEl = overlay.querySelector(".site-loading-percent strong");
     barEl = overlay.querySelector(".site-loading-bar");
+
+    // 加载并播放 Lottie 欢迎动画
+    (async () => {
+      try {
+        const lottieEl = document.getElementById("site-loading-lottie");
+        if (!lottieEl || window.lottieLoadAttempted) return;
+        window.lottieLoadAttempted = true;
+        if (!window.lottie) {
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js";
+          await new Promise((resolve, reject) => {
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+          });
+        }
+        const anim = window.lottie.loadAnimation({
+          container: lottieEl,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+          path: "resources/Welcome.json",
+        });
+        anim.addEventListener("data_ready", () => {
+          lottieEl.dataset.loaded = "true";
+        });
+        anim.addEventListener("error", () => {
+          lottieEl.style.display = "none";
+        });
+      } catch (error) {
+        const lottieEl = document.getElementById("site-loading-lottie");
+        if (lottieEl) lottieEl.style.display = "none";
+      }
+    })();
     const speedEl = overlay.querySelector(".site-loading-speed strong");
     const renderSpeed = (value) => {
       if (!speedEl) return;

@@ -476,23 +476,49 @@ async function gitAddCommitPush(req, res) {
   }
 }
 
+// 预览服务器（不依赖外部 serve 包）
+function createPreviewServer() {
+  return createServer(async (req, res) => {
+    try {
+      const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+      let pathname = decodeURIComponent(url.pathname);
+      if (pathname === "/") pathname = "/index.html";
+      const filePath = normalize(join(rootDir, pathname));
+      if (!filePath.startsWith(rootDir)) {
+        res.writeHead(403);
+        res.end("Forbidden");
+        return;
+      }
+      const info = await stat(filePath);
+      if (!info.isFile()) throw new Error("not a file");
+      const body = await readFile(filePath);
+      res.writeHead(200, {
+        "Content-Type": mimeTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
+        "Cache-Control": "no-store",
+      });
+      res.end(body);
+    } catch {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+    }
+  });
+}
+
 async function startPreview(res) {
   if (previewServer) {
     sendJson(res, 200, { ok: true, running: true, url: `http://localhost:${previewPort}`, message: "预览服务器已在运行" });
     return;
   }
   try {
-    const serveBin = resolve(rootDir, "node_modules", ".bin", "serve");
-    const args = existsSync(serveBin)
-      ? [serveBin, ".", "-l", String(previewPort)]
-      : ["npx", "serve", ".", "-l", String(previewPort)];
-    const cmd = args.shift();
-    previewServer = spawn(cmd, args, { cwd: rootDir, detached: true, stdio: "ignore" });
-    previewServer.unref();
-
-    // 等待一小段时间确认启动
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
+    const server = createPreviewServer();
+    await new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(previewPort, "127.0.0.1", () => {
+        server.removeListener("error", reject);
+        resolve();
+      });
+    });
+    previewServer = server;
     sendJson(res, 200, {
       ok: true,
       running: true,
@@ -500,7 +526,8 @@ async function startPreview(res) {
       message: `本地预览已启动: http://localhost:${previewPort}`,
     });
   } catch (error) {
-    sendJson(res, 500, { ok: false, message: error.message });
+    previewServer = null;
+    sendJson(res, 500, { ok: false, message: `启动预览失败: ${error.message}` });
   }
 }
 
@@ -510,7 +537,7 @@ async function stopPreview(res) {
     return;
   }
   try {
-    previewServer.kill("SIGTERM");
+    previewServer.close();
     previewServer = null;
     sendJson(res, 200, { ok: true, running: false, message: "预览服务器已关闭" });
   } catch (error) {
