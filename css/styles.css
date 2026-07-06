@@ -42,6 +42,7 @@
 html {
   scroll-behavior: smooth;
   max-width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 
@@ -140,8 +141,8 @@ html[data-site-loading="pending"]::after {
 }
 
 .site-loading-overlay.is-hidden {
-  opacity: 0;
-  transform: scale(1.01);
+  opacity: 0 !important;
+  transform: scale(1.01) !important;
   pointer-events: none;
 }
 
@@ -234,13 +235,13 @@ html[data-site-loading="pending"]::after {
 }
 
 .site-loading-percent.is-ready .site-loading-percent-value {
-  opacity: 0;
-  transform: translateY(-10px);
+  opacity: 0 !important;
+  transform: translateY(-10px) !important;
 }
 
 .site-loading-percent.is-ready .site-loading-percent-ready {
-  opacity: 1;
-  transform: translateY(0);
+  opacity: 1 !important;
+  transform: translateY(0) !important;
 }
 
 .site-loading-percent span {
@@ -351,7 +352,8 @@ body {
   margin: 0;
   min-width: 320px;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: visible;
+  -webkit-overflow-scrolling: touch;
   background: #000000;
   color: var(--ink);
   font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Noto Sans SC", "PingFang SC", system-ui, BlinkMacSystemFont, sans-serif;
@@ -3017,7 +3019,6 @@ html[lang="en"] .subtle-name {
   html,
   body {
     width: 100%;
-    overflow-x: hidden;
     overscroll-behavior-x: none;
   }
 
@@ -3533,7 +3534,7 @@ html[lang="en"] .subtle-name {
 /* Apple-style global navigation refinement */
 body.nav-menu-open,
 body.nav-mega-open {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 body.nav-mega-open::after {
@@ -8043,7 +8044,7 @@ html[lang="en"] .news-carousel-track .news-card:first-child h3 {
 
 
 /* v1.5.62: tighter home entry, centered news carousel, research imagery, and bento navigation */
-html, body { overflow-x: hidden; }
+/* Removed overflow-x: hidden to prevent iOS Safari scroll blocking */
 body.home-dark {
   background: #000000;
 }
@@ -10063,7 +10064,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     align-items: center !important;
     justify-content: center !important;
     text-align: center !important;
-    gap: 12px !important;
+    gap: 20px !important;
   }
 
   main > .profile-combo.section-wrap:first-child .profile-photo {

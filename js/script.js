@@ -156,46 +156,49 @@ function setupSiteLoadingGate() {
     intervalId = window.setInterval(updateRealProgress, 100);
   };
 
-  const settleProgressThenFinish = (onDone) => {
-    if (current >= 99.5) {
-      setProgress(100);
-      if (onDone) onDone();
-      return;
-    }
-    const step = Math.max(0.6, (100 - current) * 0.18);
-    setProgress(current + step);
-    finishTimerId = window.setTimeout(() => settleProgressThenFinish(onDone), 60);
-  };
-
   const finish = () => {
     if (finished) return;
+
+    // 如果 overlay 不存在，先创建它
+    if (!overlay) ensureOverlay();
+    if (!overlay) return; // 如果 still 不存在，放弃
+
     finished = true;
-    if (intervalId) window.clearInterval(intervalId);
-    if (finishTimerId) window.clearTimeout(finishTimerId);
-    if (speedTickerId) window.clearInterval(speedTickerId);
-    if (resourceScanId) window.clearInterval(resourceScanId);
 
-    settleProgressThenFinish(() => {
-      // Show "即将展现" with fade-in
-      if (revealTimerId) window.clearTimeout(revealTimerId);
-      revealTimerId = window.setTimeout(() => {
-        if (percentEl) percentEl.classList.add("is-ready");
-      }, 120);
+    // 添加可见的调试标签
+    const debug = document.createElement("div");
+    debug.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:99999;background:rgba(255,0,0,0.9);color:white;padding:15px;font-size:16px;font-family:sans-serif;border-radius:8px;pointer-events:none;";
+    debug.textContent = `finish() called! current=${Math.round(current)}`;
+    document.body.appendChild(debug);
 
-      // Wait for "即将展现" animation, then fade out overlay
-      window.setTimeout(() => {
-        if (readyTimerId) window.clearTimeout(readyTimerId);
-        readyTimerId = window.setTimeout(() => {
-          root.dataset.siteLoading = "ready";
-        }, 600);
-        if (overlay) {
-          overlay.classList.add("is-hidden");
-          window.setTimeout(() => overlay.remove(), 1200);
-        }
-        document.body.style.top = "";
-        window.scrollTo(0, lockedScrollY);
-      }, 900);
-    });
+    // 直接跳到 100%
+    setProgress(100);
+
+    // 立即显示 "即将展现"（不用 setTimeout）
+    if (percentEl) {
+      const readyEl = percentEl.querySelector(".site-loading-percent-ready");
+      const valueEl = percentEl.querySelector(".site-loading-percent-value");
+      if (readyEl) {
+        readyEl.style.setProperty("opacity", "1", "important");
+        readyEl.style.setProperty("transform", "translateY(0)", "important");
+      }
+      if (valueEl) {
+        valueEl.style.setProperty("opacity", "0", "important");
+        valueEl.style.setProperty("transform", "translateY(-10px)", "important");
+      }
+    }
+
+    // 1.5s 后淡出 overlay
+    window.setTimeout(() => {
+      if (overlay) overlay.style.setProperty("opacity", "0", "important");
+    }, 1500);
+
+    // 2.5s 后移除
+    window.setTimeout(() => {
+      if (overlay) overlay.remove();
+      root.dataset.siteLoading = "ready";
+      document.body.style.top = "";
+    }, 2500);
   };
 
   const ensureOverlay = () => {
@@ -223,8 +226,9 @@ function setupSiteLoadingGate() {
       `;
       document.documentElement.appendChild(overlay);
     }
-    percentEl = overlay.querySelector(".site-loading-percent strong");
-    if (percentEl) percentEl.style.setProperty("font-size", "clamp(4rem, 12vw, 7rem)", "important");
+    percentEl = overlay.querySelector(".site-loading-percent");
+    const percentNumEl = overlay.querySelector(".site-loading-percent strong");
+    if (percentNumEl) percentNumEl.style.setProperty("font-size", "clamp(4rem, 12vw, 7rem)", "important");
     barEl = overlay.querySelector(".site-loading-bar");
 
     const speedEl = overlay.querySelector(".site-loading-speed strong");
@@ -312,9 +316,12 @@ function setupSiteLoadingGate() {
       const loadPromise = document.readyState === "complete"
         ? Promise.resolve()
         : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
-      await Promise.all([
-        document.fonts?.ready || Promise.resolve(),
-        loadPromise,
+      await Promise.race([
+        Promise.all([
+          document.fonts?.ready || Promise.resolve(),
+          loadPromise,
+        ]),
+        new Promise((resolve) => window.setTimeout(resolve, 5000)),
       ]);
       const mediaTasks = [...document.images]
         .filter((img) => !img.complete)
@@ -331,9 +338,12 @@ function setupSiteLoadingGate() {
             videoEl.addEventListener("error", resolve, { once: true });
           })]
         : [];
-      await Promise.allSettled([...mediaTasks, ...videoTasks]);
+      await Promise.race([
+        Promise.allSettled([...mediaTasks, ...videoTasks]),
+        new Promise((resolve) => window.setTimeout(resolve, 3000)),
+      ]);
     } finally {
-      window.setTimeout(finish, 120);
+      finish();
     }
   };
 
@@ -344,8 +354,6 @@ function setupSiteLoadingGate() {
   } else {
     document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
-
-  window.setTimeout(finish, 1000);
 }
 setupSiteLoadingGate();
 const header = document.querySelector(".site-header");

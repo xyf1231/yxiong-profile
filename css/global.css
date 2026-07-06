@@ -42,7 +42,7 @@
 html {
   scroll-behavior: smooth;
   max-width: 100%;
-  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 
@@ -59,7 +59,8 @@ body {
   margin: 0;
   min-width: 320px;
   max-width: 100%;
-  overflow-x: clip;
+  overflow-x: visible;
+  -webkit-overflow-scrolling: touch;
   background: #000000;
   color: var(--ink);
   font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Noto Sans SC", "PingFang SC", system-ui, BlinkMacSystemFont, sans-serif;
@@ -925,7 +926,6 @@ h3 {
   html,
   body {
     width: 100%;
-    overflow-x: hidden;
     overscroll-behavior-x: none;
   }
 
