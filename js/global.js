@@ -1400,9 +1400,10 @@ function pdfDownloadLink(url) {
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
+  const downloadAttr = isPdfUrl(url) ? ` download` : ``;
   const downloadText = uiLabel("下载", "Download");
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}" download data-pdf-download data-icon="↓"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -2474,15 +2475,6 @@ function showPdfPreview(url) {
   modal.querySelector("iframe").src = url;
   modal.classList.add("is-visible");
 }
-
-document.addEventListener("click", (event) => {
-  const card = event.target.closest("[data-paper-preview]");
-  if (!card) return;
-  if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
-  event.preventDefault();
-  event.stopPropagation();
-  showPdfPreview(card.dataset.paperPreview);
-});
 
 
 initSite();

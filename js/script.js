@@ -226,6 +226,20 @@ function setupSiteLoadingGate() {
       }
     }
 
+    // 触发 Letters 手写描边动画
+    const lettersContainer = document.getElementById("site-loading-letters");
+    if (lettersContainer && window.mountLettersAnimation) {
+      try {
+        lettersContainer.style.display = "block";
+        const text = lettersContainer.dataset.text || "正在进入";
+        const color = lettersContainer.dataset.color || "#ffffff";
+        const strokeWidth = parseFloat(lettersContainer.dataset.strokeWidth || "2");
+        window.mountLettersAnimation(lettersContainer, text, color, strokeWidth);
+      } catch (e) {
+        console.warn("Letters animation failed:", e);
+      }
+    }
+
     // 1.5s 后淡出 overlay
     window.setTimeout(() => {
       if (overlay) overlay.style.setProperty("opacity", "0", "important");
@@ -254,6 +268,7 @@ function setupSiteLoadingGate() {
               <span class="site-loading-percent-ready">正在进入</span>
             </strong>
           </div>
+          <div class="site-loading-letters" id="site-loading-letters" data-text="正在进入" data-color="#ffffff" data-stroke-width="2"></div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
           <div class="site-loading-meta">
             <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
@@ -2590,11 +2605,8 @@ document.addEventListener("click", (event) => {
   }
   event.preventDefault();
   event.stopImmediatePropagation();
-  if (typeof showPdfPreview === 'function') {
-    showPdfPreview(card.dataset.paperPreview);
-  } else {
-    window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
-  }
+  // 统一使用 window.open：iframe 弹窗对跨域PDF在手机端会触发下载
+  window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
 });
 
 

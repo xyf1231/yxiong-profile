@@ -329,6 +329,27 @@ html[data-site-loading="pending"]::after {
   font-size: inherit !important;
 }
 
+.site-loading-letters {
+  display: none;
+  width: 100%;
+  height: 80px;
+  justify-content: center;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.site-loading-letters .letters-animation-svg {
+  width: 100%;
+  height: 100%;
+}
+
+.site-loading-letters .letters-animation-svg path {
+  stroke: #ffffff;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+}
+
 .site-loading-meta {
   display: flex;
   flex-wrap: wrap;
@@ -7315,13 +7336,18 @@ body.nav-mega-open::after {
   .all-publication-list .publication-item {
     display: block;
     padding: 20px !important;
+    overflow: visible;
+  }
+
+  .publication-item[data-paper-preview],
+  .all-publication-list .publication-item[data-paper-preview] {
+    cursor: default;
   }
 
   .publication-item .publication-visual,
   .publication-item .publication-visual img,
   .all-publication-list .publication-item .publication-visual,
   .all-publication-list .publication-item .publication-visual img {
-    touch-action: pan-y;
     -webkit-user-drag: none;
     user-select: none;
     -webkit-touch-callout: none;
@@ -7339,6 +7365,7 @@ body.nav-mega-open::after {
   .all-publication-list .publication-visual {
     width: 100%;
     margin: 0 0 22px !important;
+    overflow: visible;
   }
 
   .publication-item .publication-copy,
