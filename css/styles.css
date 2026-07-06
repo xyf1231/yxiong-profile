@@ -193,6 +193,7 @@ html[data-site-loading="pending"]::after {
   display: grid;
   gap: 0;
   justify-items: center;
+  width: 100%;
 }
 
 .site-loading-percent strong {
@@ -202,6 +203,7 @@ html[data-site-loading="pending"]::after {
   align-items: center;
   justify-content: center;
   width: 100%;
+  min-width: min-content;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Noto Sans SC', sans-serif;
   font-size: clamp(4rem, 12vw, 7rem) !important;
@@ -220,6 +222,7 @@ html[data-site-loading="pending"]::after {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
   transition:
     opacity 800ms ease,
     transform 800ms ease;
@@ -10042,16 +10045,10 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     grid-template-columns: 1fr !important;
     justify-items: center !important;
     align-items: center !important;
-    gap: 16px !important;
+    gap: 6px !important;
     width: min(100% - 24px, 560px) !important;
     max-width: min(100% - 24px, 560px) !important;
     padding: 28px 22px 30px !important;
-    margin-inline: auto !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-card-left,
-  main > .profile-combo.section-wrap:first-child .profile-card-right {
-    width: 100% !important;
     margin-inline: auto !important;
   }
 
