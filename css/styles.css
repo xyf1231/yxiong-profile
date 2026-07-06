@@ -9823,8 +9823,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   }
 
   .home-frame-media {
-    width: min(84vw, 390px);
-    margin-inline: auto;
+    width: 100%;
     padding: 0;
     border-radius: 28px;
     overflow: hidden;
@@ -10084,6 +10083,8 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     width: min(78vw, 320px) !important;
     max-width: 100% !important;
     margin: 0 auto !important;
+    justify-self: center !important;
+    align-self: center !important;
   }
 
   main > .profile-combo.section-wrap:first-child .profile-photo picture,

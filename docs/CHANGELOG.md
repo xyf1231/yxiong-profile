@@ -1,5 +1,13 @@
 # 更新日志
 
+## v1.9.1 - 2025-07-06
+- 类型：样式
+- 变更：在手机端个人简介模块（`@media (max-width: 860px)`）中，为 `.profile-photo` 补充 `justify-self: center !important` 和 `align-self: center !important`，确保照片与姓名在手机端完全水平居中。
+- 检查：npm run check 通过
+- 部署：未部署
+
+## v1.8.3 - 2025-07-05
+
 ## v1.8.3 - 2025-07-05
 - 类型：回滚
 - 变更：回滚 v1.8.2 中尝试的 CSS 模块化拆分（base/nav/components/home/profile/publications/admin/animations）。拆分后 `@import` 方式会增加 HTTP 请求数，且调试复杂度上升，暂不适合当前项目阶段。恢复原单文件 `styles.css` 结构。

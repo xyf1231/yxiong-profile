@@ -178,7 +178,7 @@ function setupSiteLoadingGate() {
       document.documentElement.appendChild(overlay);
     }
     percentEl = overlay.querySelector(".site-loading-percent strong");
-    if (percentEl) percentEl.style.fontSize = "clamp(4rem, 12vw, 7rem)";
+    if (percentEl) percentEl.style.setProperty('font-size', 'clamp(4rem, 12vw, 7rem)', 'important');
     barEl = overlay.querySelector(".site-loading-bar");
     const speedEl = overlay.querySelector(".site-loading-speed strong");
     const renderSpeed = (value) => {
