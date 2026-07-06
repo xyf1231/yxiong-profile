@@ -27,7 +27,7 @@ let changedFiles = 0;
 for (const file of htmlFiles) {
   const filePath = path.join(root, file);
   const before = fs.readFileSync(filePath, "utf8");
-  let after = before.replace(/((?:css\/styles\.css|js\/(?:data|script|admin)\.js)\?v=)[^"']+/g, `$1${cacheToken}`);
+  let after = before.replace(/((?:css\/styles\.css|css\/[^"']*-config\.css|js\/(?:data|script|admin)\.js|js\/[^"']*-content\.js)\?v=)[^"']+/g, `$1${cacheToken}`);
   after = after.replace(/Version \d+\.\d+\.\d+/g, footerText);
 
   if (after !== before) {

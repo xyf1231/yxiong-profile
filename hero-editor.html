@@ -4,8 +4,8 @@
     <meta charset="utf-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>首页编辑器 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.26" />
+    <title>页面编辑器 | 熊毅丰</title>
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.27" />
     <style>
       :root {
         --editor-bg: #05050a;
@@ -120,6 +120,21 @@
 
       #status[data-type="success"] { color: var(--editor-success); }
       #status[data-type="error"] { color: var(--editor-error); }
+
+      .page-select {
+        appearance: none;
+        border: 1px solid var(--editor-border);
+        border-radius: 10px;
+        background: var(--editor-surface);
+        color: var(--editor-text);
+        padding: 8px 28px 8px 12px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23999' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+      }
 
       .editor-layout {
         display: grid;
@@ -402,10 +417,11 @@
   <body>
     <header class="editor-header">
       <div>
-        <h1>首页编辑器</h1>
-        <p>编辑首页各模块文案与 Hero 样式，右侧实时预览，保存后写回文件</p>
+        <h1>页面编辑器</h1>
+        <p>编辑各页面文案与排版样式，右侧实时预览，保存后写回文件</p>
       </div>
       <div class="header-actions">
+        <select id="page-select" class="page-select" aria-label="选择页面"></select>
         <div class="lang-switch">
           <button type="button" data-preview-lang="zh" class="active">中</button>
           <button type="button" data-preview-lang="en">EN</button>
@@ -424,9 +440,9 @@
       <section class="preview-panel">
         <div class="preview-toolbar">
           <h2>实时预览</h2>
-          <span class="editor-hint">首页 index.html</span>
+          <span class="editor-hint" id="preview-hint">首页 index.html</span>
         </div>
-        <iframe id="preview-frame" src="index.html" title="首页预览"></iframe>
+        <iframe id="preview-frame" src="index.html" title="页面预览"></iframe>
       </section>
     </main>
 

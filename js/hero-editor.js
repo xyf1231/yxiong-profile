@@ -350,6 +350,13 @@ function getCurrentSchema() {
   return pageSchemas[currentPageId] || pageSchemas.home;
 }
 
+function updatePreviewHint() {
+  const hint = document.getElementById("preview-hint");
+  if (!hint) return;
+  const page = getCurrentPage();
+  hint.textContent = `${page.label} ${page.file}`;
+}
+
 function setStatus(message, type = "info") {
   if (!elStatus) return;
   elStatus.textContent = message;
@@ -817,6 +824,7 @@ async function loadConfig() {
     currentContent = JSON.parse(JSON.stringify(originalContent));
     renderForm();
     updatePreview();
+    updatePreviewHint();
     setStatus(`${page.label} 配置已加载`, "success");
   } catch (error) {
     setStatus(`加载失败：${error.message}`, "error");
@@ -866,6 +874,7 @@ function reloadPreview() {
 function switchPage(pageId) {
   currentPageId = pageId;
   if (pageSelect) pageSelect.value = pageId;
+  updatePreviewHint();
   const page = getCurrentPage();
   if (elPreview) {
     elPreview.src = `${page.file}?t=${Date.now()}`;

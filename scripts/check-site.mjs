@@ -19,8 +19,18 @@ const requiredFiles = [
   "honors.html",
   "activities.html",
   "css/styles.css",
+  "css/home-config.css",
+  "css/profile-config.css",
+  "css/results-config.css",
+  "css/honors-config.css",
+  "css/activities-config.css",
   "js/script.js",
   "js/data.js",
+  "js/home-content.js",
+  "js/profile-content.js",
+  "js/results-content.js",
+  "js/honors-content.js",
+  "js/activities-content.js",
 ];
 
 // 收集检查错误与警告
@@ -45,6 +55,19 @@ for (const file of htmlFiles) {
   }
   if (content.includes("data.js") && !content.includes('charset="utf-8"')) {
     errors.push(`${file}: script tags should keep charset="utf-8"`);
+  }
+
+  // 检查主页面是否加载了对应的 config CSS 和 content JS
+  const pageName = file.replace(/\.html$/, "");
+  if (["index", "profile", "results", "honors", "activities"].includes(pageName)) {
+    const cssName = pageName === "index" ? "home-config" : `${pageName}-config`;
+    const jsName = pageName === "index" ? "home-content" : `${pageName}-content`;
+    if (!content.includes(`css/${cssName}.css`)) {
+      errors.push(`${file}: missing css/${cssName}.css`);
+    }
+    if (!content.includes(`js/${jsName}.js`)) {
+      errors.push(`${file}: missing js/${jsName}.js`);
+    }
   }
 }
 
