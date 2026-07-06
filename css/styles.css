@@ -2272,6 +2272,7 @@ html[lang="en"] .subtle-name {
   height: 100%;
   object-fit: cover;
   will-change: transform;
+  border-radius: inherit;
 }
 
 .placeholder-visual {

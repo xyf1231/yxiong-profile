@@ -501,7 +501,7 @@ const translations = {
     quickActivitiesText: "会议报告、学术服务与审稿",
     quickNewsTitle: "新闻",
     quickNewsText: "最新动态与论文故事",
-    download: "下载",
+    download: "查看PDF",
     noResource: "暂无资源",
     navHome: "主页",
     results: "成果",
@@ -582,7 +582,7 @@ const translations = {
     quickActivitiesText: "Talks, service, and reviewing",
     quickNewsTitle: "News",
     quickNewsText: "Updates and research stories",
-    download: "Download",
+    download: "View PDF",
     noResource: "No resource",
     navHome: "Home",
     results: "Results",
@@ -1543,7 +1543,7 @@ function pdfDownloadLink(url) {
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
-  const downloadText = uiLabel("下载", "Download");
+  const downloadText = uiLabel("查看PDF", "View PDF");
   return `<div class="pdf-actions">
     <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
@@ -1588,7 +1588,7 @@ function renderPublications(items) {
       const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1621,7 +1621,7 @@ function renderProfilePublications(items) {
       const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1653,7 +1653,7 @@ function renderAllPublications(items) {
       const date = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">

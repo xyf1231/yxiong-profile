@@ -569,7 +569,7 @@ async function loadConfig() {
 async function saveConfig() {
   setStatus("正在保存...");
   const css = buildCss(currentCssVars);
-  const contentJs = buildHeroContent(currentContent);
+  const contentJs = buildHomeContent(currentContent);
   try {
     await Promise.all([
       api("/api/save-file", {

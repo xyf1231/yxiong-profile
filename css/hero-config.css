@@ -16,13 +16,13 @@
   /* 眉标（Eyebrow） */
   --hero-eyebrow-display: block;
   --hero-eyebrow-color: #2997ff;
-  --hero-eyebrow-font-size: clamp(0.6rem, 3vw, 1.5rem);
+  --hero-eyebrow-font-size: clamp(0.6rem, 2.8vw, 1.5rem);
   --hero-eyebrow-letter-spacing: 0.18em;
   --hero-eyebrow-margin-bottom: 14px;
 
   /* 主标题 */
-  --hero-title-font-size-zh: clamp(3rem, 14vw, 7rem);
-  --hero-title-font-size-en: clamp(2.8rem, 14vw, 6.5rem);
+  --hero-title-font-size-zh: clamp(3rem, 12vw, 7rem);
+  --hero-title-font-size-en: clamp(2.8rem, 12vw, 6.5rem);
   --hero-title-line-height: 1.12;
   --hero-title-letter-spacing: 0em;
   --hero-title-font-weight: 700;
@@ -38,7 +38,7 @@
   /* 副标题 */
   --hero-subtitle-color: rgba(255, 255, 255, 0.6);
   --hero-subtitle-margin-top: 12px;
-  --hero-subtitle-font-size: clamp(0.7rem, 4vw, 2rem);
+  --hero-subtitle-font-size: clamp(0.7rem, 3.7vw, 2rem);
   --hero-subtitle-font-family: inherit;
 }
 
