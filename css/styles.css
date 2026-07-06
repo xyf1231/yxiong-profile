@@ -249,6 +249,17 @@ html[data-site-loading="pending"]::after {
   text-transform: uppercase;
 }
 
+.site-loading-percent-value,
+.site-loading-percent-ready {
+  font-size: inherit !important;
+}
+  color: rgba(170, 176, 190, 0.82);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
 .site-loading-meta {
   display: flex;
   flex-wrap: wrap;
@@ -7202,6 +7213,7 @@ body.nav-mega-open::after {
   .all-publication-list .publication-item {
     display: block;
     padding: 20px !important;
+    touch-action: pan-y;
   }
 
   .publication-item time,
@@ -7388,7 +7400,7 @@ body.nav-mega-open::after {
 
 @media (max-width: 860px) {
   .profile-combo {
-    display: flex !important;
+    display: grid !important;
     flex-direction: column;
     align-items: stretch;
     width: min(100% - 40px, 560px) !important;
@@ -8455,79 +8467,6 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
   }
 }
 
-@media (max-width: 860px) {
-  main > .profile-combo.section-wrap:first-child {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center !important;
-    width: min(100% - 24px, 560px) !important;
-    max-width: calc(100vw - 24px) !important;
-    overflow: hidden !important;
-    padding: 30px 26px 32px !important;
-    gap: 20px !important;
-    border-radius: 28px !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-card-left,
-  main > .profile-combo.section-wrap:first-child .profile-card-right {
-    display: flex !important;
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-card-left {
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    text-align: center !important;
-    margin-inline: auto !important;
-    max-width: min(100%, 420px) !important;
-    gap: 16px !important;
-    padding-right: 0 !important;
-    border-right: 0 !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-card-right {
-    justify-content: center !important;
-    padding-left: 0 !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-photo {
-    width: min(82vw, 330px) !important;
-    max-width: 100% !important;
-    margin-inline: auto !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-identity {
-    display: flex !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-width: 0;
-    text-align: center;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-identity h1 {
-    margin: 0;
-    font-size: clamp(3rem, 12vw, 4.6rem) !important;
-    text-wrap: balance;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-en-name {
-    margin: 8px 0 14px;
-    font-size: clamp(1.35rem, 5.8vw, 1.72rem) !important;
-  }
-
-  main > .profile-combo.section-wrap:first-child .profile-bio-text {
-    width: 100%;
-    max-width: 100%;
-    margin-top: 2px;
-    padding-top: 18px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    overflow-wrap: break-word;
-  }
-}
 
 /* v1.5.66: rollback card shimmer, restore centered hero and full-width research cards */
 :root {

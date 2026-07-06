@@ -2410,10 +2410,39 @@ document.addEventListener("click", (event) => {
   showPdfLoading(link);
 });
 
+// 论文卡片触摸滑动检测，避免将滑动误识别为点击
+let paperTouchStartX = 0;
+let paperTouchStartY = 0;
+let paperTouchMoved = false;
+
+document.addEventListener("touchstart", (event) => {
+  if (event.touches.length === 1) {
+    paperTouchStartX = event.touches[0].clientX;
+    paperTouchStartY = event.touches[0].clientY;
+    paperTouchMoved = false;
+  }
+}, { passive: true });
+
+document.addEventListener("touchmove", (event) => {
+  if (event.touches.length === 1) {
+    const dx = event.touches[0].clientX - paperTouchStartX;
+    const dy = event.touches[0].clientY - paperTouchStartY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    if (distance > 10) {
+      paperTouchMoved = true;
+    }
+  }
+}, { passive: true });
+
 document.addEventListener("click", (event) => {
   const card = event.target.closest("[data-paper-preview]");
   if (!card) return;
   if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
+  // 如果用户滑动了，不触发点击
+  if (paperTouchMoved) {
+    paperTouchMoved = false;
+    return;
+  }
   window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
 });
 
