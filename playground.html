@@ -9,8 +9,6 @@
     "imports": {
       "react": "https://esm.sh/react@19.2.7",
       "react-dom/client": "https://esm.sh/react-dom@19.2.7/client",
-      "framer-motion": "https://esm.sh/framer-motion@12.42.2",
-      "framer-motion/": "https://esm.sh/framer-motion@12.42.2/",
       "@kumailnanji/letters": "https://esm.sh/@kumailnanji/letters@0.1.1"
     }
   }
@@ -47,7 +45,6 @@
       transition: color 0.2s;
     }
     header a:hover { color: #fff; }
-    
     .main {
       flex: 1;
       display: flex;
@@ -58,7 +55,6 @@
       padding: 48px 32px;
       gap: 36px;
     }
-    
     .controls {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -89,10 +85,9 @@
       font-size: 0.95rem;
       outline: none;
       transition: border-color 0.2s;
+      font-family: inherit;
     }
-    .control-group input[type="text"]:focus {
-      border-color: #a855f7;
-    }
+    .control-group input[type="text"]:focus { border-color: #a855f7; }
     .control-group input[type="range"] {
       -webkit-appearance: none;
       width: 100%;
@@ -119,10 +114,7 @@
       background: transparent;
       cursor: pointer;
     }
-    .control-group input[type="color"]::-webkit-color-swatch-wrapper {
-      padding: 0;
-      border-radius: 10px;
-    }
+    .control-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; border-radius: 10px; }
     .control-group input[type="color"]::-webkit-color-swatch {
       border: 1px solid rgba(255,255,255,0.12);
       border-radius: 10px;
@@ -145,20 +137,18 @@
       height: 18px;
       accent-color: #a855f7;
     }
-    
     .preview {
       flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      min-height: 340px;
+      min-height: 360px;
       background: rgba(255,255,255,0.02);
       border: 1px solid rgba(255,255,255,0.06);
       border-radius: 16px;
       position: relative;
       overflow: hidden;
-      margin-bottom: 24px;
     }
     .preview::before {
       content: "";
@@ -187,15 +177,23 @@
       align-items: center;
       justify-content: center;
     }
-    .preview-svg-wrap svg {
-      width: 100%;
-      height: 100%;
+    .word-indicator {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: #a1a1aa;
+      min-height: 20px;
     }
-    
+    .word-indicator .current-preset {
+      color: #a855f7;
+      font-weight: 600;
+    }
     .actions {
       display: flex;
-      gap: 12px;
-      margin-top: 8px;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
     button {
       background: rgba(168, 85, 247, 0.15);
@@ -219,17 +217,156 @@
       border: none;
       color: #fff;
     }
-    button.primary:hover {
-      opacity: 0.9;
-    }
-    
-    .info {
+    button.primary:hover { opacity: 0.9; }
+    button.small {
+      padding: 5px 12px;
       font-size: 0.75rem;
-      color: #71717a;
-      text-align: center;
-      margin-top: 8px;
     }
-    
+    .variant-select, .mode-select, .gradient-type-select {
+      display: flex;
+      gap: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 4px;
+    }
+    .variant-select button, .mode-select button, .gradient-type-select button {
+      flex: 1;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: #a1a1aa;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .variant-select button.active, .mode-select button.active, .gradient-type-select button.active {
+      background: rgba(168, 85, 247, 0.2);
+      color: #fff;
+    }
+    .pool-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .pool-count {
+      font-size: 0.75rem;
+      color: #a1a1aa;
+    }
+    .pool-actions {
+      display: flex;
+      gap: 6px;
+    }
+    .filter-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .filter-tab {
+      padding: 5px 12px;
+      font-size: 0.75rem;
+      border-radius: 6px;
+      background: transparent;
+      border: none;
+      color: #a1a1aa;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .filter-tab:hover { color: #fff; background: rgba(255,255,255,0.04); }
+    .filter-tab.active {
+      background: rgba(168, 85, 247, 0.15);
+      color: #fff;
+    }
+    .gradient-grid {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 8px;
+    }
+    @media (max-width: 768px) {
+      .gradient-grid { grid-template-columns: repeat(6, 1fr); }
+      .main { padding: 24px 16px; }
+      .controls { grid-template-columns: 1fr; }
+      .preview-content { padding: 24px 16px; }
+    }
+    .swatch {
+      aspect-ratio: 2.2;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .swatch:hover { transform: scale(1.05); }
+    .swatch.active {
+      border-color: #fff;
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.5);
+    }
+    .swatch.inactive {
+      opacity: 0.3;
+      filter: grayscale(0.9);
+    }
+    .swatch-check {
+      position: absolute;
+      top: 2px;
+      right: 3px;
+      color: #fff;
+      font-size: 11px;
+      line-height: 1;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .swatch.active .swatch-check { display: block; }
+    .swatch-label {
+      position: absolute;
+      bottom: 2px;
+      left: 4px;
+      font-size: 9px;
+      color: rgba(255,255,255,0.85);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 90%;
+      pointer-events: none;
+    }
+    .custom-gradient-controls {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+    }
+    .custom-gradient-controls.show { display: flex; }
+    .custom-gradient-row {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .custom-gradient-row .color-input-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .custom-gradient-row .color-input-wrap label {
+      font-size: 0.7rem;
+      color: #a1a1aa;
+    }
+    .custom-gradient-row .color-input-wrap input[type="color"] {
+      height: 36px;
+      border-radius: 8px;
+    }
     .export-section {
       background: rgba(255,255,255,0.03);
       border: 1px solid rgba(255,255,255,0.06);
@@ -238,7 +375,7 @@
       display: flex;
       flex-direction: column;
       gap: 20px;
-      margin-top: 16px;
+      margin-bottom: 24px;
     }
     .export-section h2 {
       font-size: 1rem;
@@ -274,20 +411,13 @@
       transition: all 0.2s;
       font-family: inherit;
     }
-    .export-tab:hover {
-      color: #fff;
-      background: rgba(255,255,255,0.04);
-    }
+    .export-tab:hover { color: #fff; background: rgba(255,255,255,0.04); }
     .export-tab.active {
       color: #fff;
       background: rgba(168, 85, 247, 0.15);
     }
-    .export-panel {
-      display: none;
-    }
-    .export-panel.active {
-      display: block;
-    }
+    .export-panel { display: none; }
+    .export-panel.active { display: block; }
     .code-block {
       background: rgba(0,0,0,0.35);
       border: 1px solid rgba(255,255,255,0.06);
@@ -323,10 +453,7 @@
       transition: all 0.2s;
       font-family: inherit;
     }
-    .copy-btn:hover {
-      background: rgba(255,255,255,0.12);
-      color: #fff;
-    }
+    .copy-btn:hover { background: rgba(255,255,255,0.12); color: #fff; }
     .copy-btn.copied {
       background: rgba(39, 174, 96, 0.2);
       border-color: rgba(39, 174, 96, 0.4);
@@ -336,6 +463,7 @@
       font-size: 0.8rem;
       color: #a1a1aa;
       line-height: 1.5;
+      margin-bottom: 8px;
     }
     .export-tip code {
       background: rgba(255,255,255,0.06);
@@ -345,111 +473,10 @@
       font-size: 0.8rem;
       color: #d4d4d8;
     }
-    
-    .variant-select, .mode-select {
-      display: flex;
-      gap: 8px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 4px;
-    }
-    .variant-select button, .mode-select button {
-      flex: 1;
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: #a1a1aa;
-      font-size: 0.8rem;
-    }
-    .variant-select button.active, .mode-select button.active {
-      background: rgba(168, 85, 247, 0.2);
-      color: #fff;
-    }
-
-    .gradient-presets {
-      display: grid;
-      grid-template-columns: repeat(8, 1fr);
-      gap: 10px;
-      margin-top: 4px;
-    }
-    .gradient-preset {
-      height: 32px;
-      border-radius: 8px;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
-    }
-    .gradient-preset:hover {
-      transform: scale(1.08);
-      box-shadow: 0 0 12px rgba(168, 85, 247, 0.3);
-    }
-    .gradient-preset.active {
-      border-color: #fff;
-      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.5), 0 0 16px rgba(168, 85, 247, 0.2);
-    }
-    #solidColorWrap { display: flex; }
-    #gradientPresetsWrap { display: none; }
-    #gradientPresetsWrap.show { display: flex; }
-
-    .custom-gradient-controls {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 8px;
-      padding: 12px;
-      background: rgba(255,255,255,0.02);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 10px;
-    }
-    .custom-gradient-controls.show {
-      display: flex;
-    }
-    .custom-gradient-row {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-    .custom-gradient-row .color-input-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .custom-gradient-row .color-input-wrap label {
-      font-size: 0.7rem;
-      color: #a1a1aa;
-    }
-    .custom-gradient-row .color-input-wrap input[type="color"] {
-      height: 36px;
-      border-radius: 8px;
-    }
-
-    .gradient-type-select {
-      display: flex;
-      gap: 8px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 4px;
-    }
-    .gradient-type-select button {
-      flex: 1;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      background: transparent;
-      color: #a1a1aa;
-      font-size: 0.8rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      font-family: inherit;
-    }
-    .gradient-type-select button.active {
-      background: rgba(168, 85, 247, 0.2);
-      color: #fff;
+    .info {
+      font-size: 0.75rem;
+      color: #71717a;
+      text-align: center;
     }
   </style>
 </head>
@@ -458,62 +485,42 @@
     <h1>Letters Playground</h1>
     <a href="https://github.com/kumailnanji/letters" target="_blank">GitHub ↗</a>
   </header>
-  
   <div class="main">
     <div class="controls">
       <div class="control-group" style="grid-column: 1 / -1;">
-        <label>Text</label>
-        <input type="text" id="textInput" value="Hello" placeholder="输入文字...">
+        <label>Words</label>
+        <input type="text" id="wordsInput" value="Hello, Design, Create" placeholder="Comma or newline separated...">
       </div>
-      
-      <div class="control-group">
-        <label>Variant</label>
-        <div class="variant-select" id="variantSelect">
-          <button class="active" data-variant="simple">Simple</button>
-          <button data-variant="complex">Complex</button>
-        </div>
-      </div>
-      
       <div class="control-group">
         <label>Color Mode</label>
         <div class="mode-select" id="modeSelect">
-          <button class="active" data-mode="solid">Solid</button>
-          <button data-mode="rainbow">Rainbow</button>
-          <button data-mode="sunset">Sunset</button>
-          <button data-mode="ocean">Ocean</button>
-          <button data-mode="fire">Fire</button>
+          <button class="active" data-mode="preset">Preset</button>
+          <button data-mode="solid">Solid</button>
           <button data-mode="custom">Custom</button>
         </div>
       </div>
-      
-      <div class="control-group" id="solidColorWrap">
+      <div class="control-group" id="solidWrap" style="display:none;">
         <label>Solid Color</label>
-        <input type="color" id="colorInput" value="#ffffff">
+        <input type="color" id="solidColor" value="#ffffff">
       </div>
-      
-      <div class="control-group" id="gradientPresetsWrap" style="display:none">
-        <label>Gradient Preset</label>
-        <div class="gradient-presets" id="gradientPresets">
-          <div class="gradient-preset active" data-preset="rainbow" style="background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);"></div>
-          <div class="gradient-preset" data-preset="sunset" style="background: linear-gradient(90deg, #ff6b6b, #feca57, #ff9ff3, #54a0ff);"></div>
-          <div class="gradient-preset" data-preset="ocean" style="background: linear-gradient(90deg, #00d2d3, #5f27cd, #341f97);"></div>
-          <div class="gradient-preset" data-preset="fire" style="background: linear-gradient(90deg, #ff9f43, #ee5a24, #c44569);"></div>
-          <div class="gradient-preset" data-preset="neon" style="background: linear-gradient(90deg, #39ff14, #00ffff, #ff00ff);"></div>
-          <div class="gradient-preset" data-preset="gold" style="background: linear-gradient(90deg, #f39c12, #f1c40f, #e67e22);"></div>
-          <div class="gradient-preset" data-preset="aurora" style="background: linear-gradient(90deg, #00b894, #0984e3, #6c5ce7, #fd79a8, #ffeaa7);"></div>
-          <div class="gradient-preset" data-preset="berry" style="background: linear-gradient(90deg, #e84393, #a29bfe, #74b9ff);"></div>
-          <div class="gradient-preset" data-preset="forest" style="background: linear-gradient(90deg, #2ecc71, #1abc9c, #3498db);"></div>
-          <div class="gradient-preset" data-preset="candy" style="background: linear-gradient(90deg, #ff9ff3, #f368e0, #ff6b6b, #feca57);"></div>
-          <div class="gradient-preset" data-preset="midnight" style="background: linear-gradient(90deg, #2c3e50, #34495e, #8e44ad);"></div>
-          <div class="gradient-preset" data-preset="cherry" style="background: linear-gradient(90deg, #eb4d4b, #f9ca24, #f0932b);"></div>
-          <div class="gradient-preset" data-preset="cyan" style="background: linear-gradient(170deg, #00ffff, #00cccc);"></div>
-          <div class="gradient-preset" data-preset="magenta" style="background: linear-gradient(170deg, #ff00ff, #cc00cc);"></div>
-          <div class="gradient-preset" data-preset="lime" style="background: linear-gradient(170deg, #39ff14, #2ecc71);"></div>
-          <div class="gradient-preset" data-preset="violet" style="background: linear-gradient(170deg, #8e44ad, #9b59b6);"></div>
+      <div class="control-group" id="presetWrap" style="grid-column: 1 / -1;">
+        <div class="pool-header">
+          <label style="margin:0;">Gradient Pool</label>
+          <span class="pool-count" id="selectedCount">30 selected</span>
+          <div class="pool-actions">
+            <button class="small" id="selectAllBtn">Select All</button>
+            <button class="small" id="clearBtn">Clear</button>
+            <button class="small" id="shuffleBtn">Shuffle</button>
+          </div>
         </div>
+        <div class="filter-tabs" id="filterTabs">
+          <button class="filter-tab active" data-filter="all">All</button>
+          <button class="filter-tab" data-filter="apple">Apple Tones</button>
+          <button class="filter-tab" data-filter="morandi">Morandi</button>
+        </div>
+        <div class="gradient-grid" id="gradientPool"></div>
       </div>
-      
-      <div class="control-group" id="customGradientWrap" style="display:none">
+      <div class="control-group" id="customWrap" style="display:none;">
         <label>Custom Gradient</label>
         <div class="gradient-type-select" id="gradientTypeSelect">
           <button class="active" data-type="linear">Linear</button>
@@ -536,61 +543,63 @@
           </div>
         </div>
       </div>
-      
+      <div class="control-group">
+        <label>Variant</label>
+        <div class="variant-select" id="variantSelect">
+          <button class="active" data-variant="simple">Simple</button>
+          <button data-variant="complex">Complex</button>
+        </div>
+      </div>
       <div class="control-group">
         <label>Stroke Width <span class="range-value" id="strokeWidthValue">2</span></label>
         <input type="range" id="strokeWidthInput" min="0.5" max="8" step="0.5" value="2">
       </div>
-      
       <div class="control-group">
         <label>Duration <span class="range-value" id="durationValue">2.0s</span></label>
         <input type="range" id="durationInput" min="0.5" max="10" step="0.5" value="2">
       </div>
-      
       <div class="control-group">
         <label>Overlap <span class="range-value" id="overlapValue">0.02</span></label>
         <input type="range" id="overlapInput" min="0" max="0.5" step="0.01" value="0.02">
       </div>
-      
       <div class="control-group">
-        <label>Options</label>
+        <label>Sequence Options</label>
         <label class="checkbox-row">
-          <input type="checkbox" id="autoPlayInput" checked>
-          Auto Play
+          <input type="checkbox" id="loopSequenceInput">
+          Loop Sequence
         </label>
-        <label class="checkbox-row" style="margin-top: 6px;">
-          <input type="checkbox" id="loopInput">
-          Loop
+        <label class="checkbox-row" style="margin-top:6px;">
+          <input type="checkbox" id="perWordLoopInput">
+          Per-Word Loop
         </label>
       </div>
     </div>
-    
     <div class="preview">
       <div class="preview-content">
         <div class="preview-svg-wrap" id="previewContainer"></div>
+        <div class="word-indicator" id="wordIndicator"></div>
         <div class="actions">
           <button id="playBtn" class="primary">Play</button>
+          <button id="pauseBtn">Pause</button>
+          <button id="nextBtn">Next</button>
           <button id="replayBtn">Replay</button>
-          <button id="resetBtn">Reset</button>
+          <button id="shuffleBtn2">Shuffle</button>
         </div>
-        <p class="info">Powered by @kumailnanji/letters · React + framer-motion</p>
+        <p class="info">Powered by @kumailnanji/letters &middot; React</p>
       </div>
     </div>
-    
     <div class="export-section" id="exportSection">
       <h2>Export Code</h2>
       <div class="export-tabs">
         <button class="export-tab active" data-tab="react">React Component</button>
-        <button class="export-tab" data-tab="umd">UMD Build (Main Site)</button>
+        <button class="export-tab" data-tab="umd">UMD Build</button>
       </div>
-      
       <div class="export-panel active" id="panel-react">
         <div class="export-tip">Copy this code into your React project. Make sure you have installed <code>@kumailnanji/letters</code>.</div>
         <div class="code-block" id="code-react">
           <button class="copy-btn" data-copy="react">Copy</button>
         </div>
       </div>
-      
       <div class="export-panel" id="panel-umd">
         <div class="export-tip">Copy this config object and use with your <code>letters-animation.umd.js</code> build on the main site.</div>
         <div class="code-block" id="code-umd">
@@ -601,485 +610,540 @@
   </div>
 
   <script type="module">
-    import React from 'react';
+    import * as React from 'react';
     import { createRoot } from 'react-dom/client';
     import { Letters } from '@kumailnanji/letters';
 
-    const container = document.getElementById('previewContainer');
-    let root = null;
-    let lettersRef = null;
+    try {
+      const { useState, useEffect, useRef, useCallback, useImperativeHandle } = React;
+      const h = React.createElement;
 
-    const gradientDefs = {
-      rainbow: {
-        stops: [
-          { offset: '0%', color: '#ff0000' },
-          { offset: '14%', color: '#ff7f00' },
-          { offset: '28%', color: '#ffff00' },
-          { offset: '43%', color: '#00ff00' },
-          { offset: '57%', color: '#0000ff' },
-          { offset: '71%', color: '#4b0082' },
-          { offset: '85%', color: '#9400d3' },
-          { offset: '100%', color: '#ff0000' }
-        ]
-      },
-      sunset: {
-        stops: [
-          { offset: '0%', color: '#ff6b6b' },
-          { offset: '33%', color: '#feca57' },
-          { offset: '66%', color: '#ff9ff3' },
-          { offset: '100%', color: '#54a0ff' }
-        ]
-      },
-      ocean: {
-        stops: [
-          { offset: '0%', color: '#00d2d3' },
-          { offset: '50%', color: '#5f27cd' },
-          { offset: '100%', color: '#341f97' }
-        ]
-      },
-      fire: {
-        stops: [
-          { offset: '0%', color: '#ff9f43' },
-          { offset: '50%', color: '#ee5a24' },
-          { offset: '100%', color: '#c44569' }
-        ]
-      },
-      neon: {
-        stops: [
-          { offset: '0%', color: '#39ff14' },
-          { offset: '50%', color: '#00ffff' },
-          { offset: '100%', color: '#ff00ff' }
-        ]
-      },
-      gold: {
-        stops: [
-          { offset: '0%', color: '#f39c12' },
-          { offset: '50%', color: '#f1c40f' },
-          { offset: '100%', color: '#e67e22' }
-        ]
-      },
-      aurora: {
-        stops: [
-          { offset: '0%', color: '#00b894' },
-          { offset: '25%', color: '#0984e3' },
-          { offset: '50%', color: '#6c5ce7' },
-          { offset: '75%', color: '#fd79a8' },
-          { offset: '100%', color: '#ffeaa7' }
-        ]
-      },
-      berry: {
-        stops: [
-          { offset: '0%', color: '#e84393' },
-          { offset: '50%', color: '#a29bfe' },
-          { offset: '100%', color: '#74b9ff' }
-        ]
-      },
-      forest: {
-        stops: [
-          { offset: '0%', color: '#2ecc71' },
-          { offset: '50%', color: '#1abc9c' },
-          { offset: '100%', color: '#3498db' }
-        ]
-      },
-      candy: {
-        stops: [
-          { offset: '0%', color: '#ff9ff3' },
-          { offset: '33%', color: '#f368e0' },
-          { offset: '66%', color: '#ff6b6b' },
-          { offset: '100%', color: '#feca57' }
-        ]
-      },
-      midnight: {
-        stops: [
-          { offset: '0%', color: '#2c3e50' },
-          { offset: '50%', color: '#34495e' },
-          { offset: '100%', color: '#8e44ad' }
-        ]
-      },
-      cherry: {
-        stops: [
-          { offset: '0%', color: '#eb4d4b' },
-          { offset: '50%', color: '#f9ca24' },
-          { offset: '100%', color: '#f0932b' }
-        ]
-      },
-      cyan: {
-        stops: [
-          { offset: '0%', color: '#00ffff' },
-          { offset: '100%', color: '#00cccc' }
-        ]
-      },
-      magenta: {
-        stops: [
-          { offset: '0%', color: '#ff00ff' },
-          { offset: '100%', color: '#cc00cc' }
-        ]
-      },
-      lime: {
-        stops: [
-          { offset: '0%', color: '#39ff14' },
-          { offset: '100%', color: '#2ecc71' }
-        ]
-      },
-      violet: {
-        stops: [
-          { offset: '0%', color: '#8e44ad' },
-          { offset: '100%', color: '#9b59b6' }
-        ]
+      const gradientDefs = {
+        midnight: { cat: 'apple', stops: [{ offset: '0%', color: '#08081a' }, { offset: '33%', color: '#181838' }, { offset: '66%', color: '#282858' }, { offset: '100%', color: '#383878' }] },
+        graphite: { cat: 'apple', stops: [{ offset: '0%', color: '#161618' }, { offset: '33%', color: '#262628' }, { offset: '66%', color: '#363638' }, { offset: '100%', color: '#464648' }] },
+        pacific: { cat: 'apple', stops: [{ offset: '0%', color: '#002848' }, { offset: '33%', color: '#003868' }, { offset: '66%', color: '#004888' }, { offset: '100%', color: '#0058a8' }] },
+        alpine: { cat: 'apple', stops: [{ offset: '0%', color: '#182828' }, { offset: '33%', color: '#283838' }, { offset: '66%', color: '#384848' }, { offset: '100%', color: '#485858' }] },
+        slate: { cat: 'apple', stops: [{ offset: '0%', color: '#1a2a3a' }, { offset: '33%', color: '#2a3a4a' }, { offset: '66%', color: '#3a4a5a' }, { offset: '100%', color: '#4a5a6a' }] },
+        indigo: { cat: 'apple', stops: [{ offset: '0%', color: '#1a1a3a' }, { offset: '33%', color: '#2a2a5a' }, { offset: '66%', color: '#3a3a7a' }, { offset: '100%', color: '#4a4a9a' }] },
+        silver: { cat: 'apple', stops: [{ offset: '0%', color: '#707070' }, { offset: '33%', color: '#808080' }, { offset: '66%', color: '#909090' }, { offset: '100%', color: '#a0a0a0' }] },
+        'rose-gold': { cat: 'apple', stops: [{ offset: '0%', color: '#a86870' }, { offset: '33%', color: '#b88088' }, { offset: '66%', color: '#c8a0a8' }, { offset: '100%', color: '#d8c0c8' }] },
+        sky: { cat: 'apple', stops: [{ offset: '0%', color: '#0a3a5a' }, { offset: '33%', color: '#1a4a6a' }, { offset: '66%', color: '#2a5a7a' }, { offset: '100%', color: '#3a6a8a' }] },
+        sage: { cat: 'apple', stops: [{ offset: '0%', color: '#1a3a2a' }, { offset: '33%', color: '#2a4a3a' }, { offset: '66%', color: '#3a5a4a' }, { offset: '100%', color: '#4a6a5a' }] },
+        titanium: { cat: 'apple', stops: [{ offset: '0%', color: '#5a5a5a' }, { offset: '33%', color: '#6a6a6a' }, { offset: '66%', color: '#7a7a7a' }, { offset: '100%', color: '#8a8a8a' }] },
+        ocean: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a3a' }, { offset: '33%', color: '#1a3a4a' }, { offset: '66%', color: '#2a4a5a' }, { offset: '100%', color: '#3a5a6a' }] },
+        mist: { cat: 'apple', stops: [{ offset: '0%', color: '#5a6a7a' }, { offset: '33%', color: '#6a7a8a' }, { offset: '66%', color: '#7a8a9a' }, { offset: '100%', color: '#8a9aaa' }] },
+        orchid: { cat: 'apple', stops: [{ offset: '0%', color: '#4a2a4a' }, { offset: '33%', color: '#5a3a5a' }, { offset: '66%', color: '#6a4a6a' }, { offset: '100%', color: '#7a5a7a' }] },
+        bronze: { cat: 'apple', stops: [{ offset: '0%', color: '#4a3a2a' }, { offset: '33%', color: '#5a4a3a' }, { offset: '66%', color: '#6a5a4a' }, { offset: '100%', color: '#7a6a5a' }] },
+        'dusty-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#a07070' }, { offset: '33%', color: '#b08080' }, { offset: '66%', color: '#c09090' }, { offset: '100%', color: '#d0a0a0' }] },
+        'muted-sage': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a7a5a' }, { offset: '33%', color: '#6a8a6a' }, { offset: '66%', color: '#7a9a7a' }, { offset: '100%', color: '#8aaa8a' }] },
+        'steel-blue': { cat: 'morandi', stops: [{ offset: '0%', color: '#4a5a6a' }, { offset: '33%', color: '#5a6a7a' }, { offset: '66%', color: '#6a7a8a' }, { offset: '100%', color: '#7a8a9a' }] },
+        'warm-sand': { cat: 'morandi', stops: [{ offset: '0%', color: '#8a7a5a' }, { offset: '33%', color: '#9a8a6a' }, { offset: '66%', color: '#aa9a7a' }, { offset: '100%', color: '#baaa8a' }] },
+        'soft-lilac': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a5a7a' }, { offset: '33%', color: '#7a6a8a' }, { offset: '66%', color: '#8a7a9a' }, { offset: '100%', color: '#9a8aaa' }] },
+        terracotta: { cat: 'morandi', stops: [{ offset: '0%', color: '#8a5a4a' }, { offset: '33%', color: '#9a6a5a' }, { offset: '66%', color: '#aa7a6a' }, { offset: '100%', color: '#ba8a7a' }] },
+        seafoam: { cat: 'morandi', stops: [{ offset: '0%', color: '#4a7a6a' }, { offset: '33%', color: '#5a8a7a' }, { offset: '66%', color: '#6a9a8a' }, { offset: '100%', color: '#7aaaba' }] },
+        'soft-peach': { cat: 'morandi', stops: [{ offset: '0%', color: '#9a7a6a' }, { offset: '33%', color: '#aa8a7a' }, { offset: '66%', color: '#ba9a8a' }, { offset: '100%', color: '#caabaa' }] },
+        'dusty-lavender': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a4a6a' }, { offset: '33%', color: '#6a5a7a' }, { offset: '66%', color: '#7a6a8a' }, { offset: '100%', color: '#8a7a9a' }] },
+        'olive-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a6a4a' }, { offset: '33%', color: '#7a7a5a' }, { offset: '66%', color: '#8a8a6a' }, { offset: '100%', color: '#9a9a7a' }] },
+        'muted-blush': { cat: 'morandi', stops: [{ offset: '0%', color: '#a07070' }, { offset: '33%', color: '#b08080' }, { offset: '66%', color: '#c09090' }, { offset: '100%', color: '#d0a0a0' }] },
+        'slate-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a4a5a' }, { offset: '33%', color: '#7a5a6a' }, { offset: '66%', color: '#8a6a7a' }, { offset: '100%', color: '#9a7a8a' }] },
+        'cream-stone': { cat: 'morandi', stops: [{ offset: '0%', color: '#9a8a6a' }, { offset: '33%', color: '#aa9a7a' }, { offset: '66%', color: '#baaa8a' }, { offset: '100%', color: '#cabaaa' }] },
+        'mint-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a7a6a' }, { offset: '33%', color: '#6a8a7a' }, { offset: '66%', color: '#7a9a8a' }, { offset: '100%', color: '#8aaaba' }] },
+        'mauve-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a5a6a' }, { offset: '33%', color: '#7a6a7a' }, { offset: '66%', color: '#8a7a8a' }, { offset: '100%', color: '#9a8a9a' }] }
+      };
+
+      function createGradientSvgDefs(presetKey) {
+        const def = gradientDefs[presetKey];
+        if (!def) return null;
+        return h('linearGradient', {
+          id: 'letters-gradient',
+          x1: '0%', y1: '0%', x2: '100%', y2: '0%',
+          gradientUnits: 'userSpaceOnUse'
+        }, def.stops.map((stop, i) =>
+          h('stop', { key: i, offset: stop.offset, stopColor: stop.color })
+        ));
       }
-    };
 
-    const state = {
-      text: 'Hello',
-      variant: 'simple',
-      colorMode: 'solid',
-      solidColor: '#ffffff',
-      gradientPreset: 'rainbow',
-      customGradient: {
-        type: 'linear',
-        color1: '#00ffff',
-        color2: '#00cccc',
-        angle: 170
-      },
-      strokeWidth: 2,
-      duration: 2,
-      overlap: 0.02,
-      autoPlay: true,
-      loop: false
-    };
-
-    function createGradientSvgDefs(presetKey, custom) {
-      if (custom) {
+      function createCustomGradientSvgDefs(custom) {
         const { type, color1, color2, angle } = custom;
         if (type === 'radial') {
-          return React.createElement('radialGradient', {
+          return h('radialGradient', {
             id: 'letters-gradient',
             cx: '50%', cy: '50%', r: '50%', fx: '50%', fy: '50%'
           }, [
-            React.createElement('stop', { key: 0, offset: '0%', stopColor: color1 }),
-            React.createElement('stop', { key: 1, offset: '100%', stopColor: color2 })
+            h('stop', { key: 0, offset: '0%', stopColor: color1 }),
+            h('stop', { key: 1, offset: '100%', stopColor: color2 })
           ]);
         }
-        return React.createElement('linearGradient', {
+        return h('linearGradient', {
           id: 'letters-gradient',
           x1: '0%', y1: '0%', x2: '100%', y2: '0%',
           gradientUnits: 'userSpaceOnUse',
           gradientTransform: `rotate(${angle}, 0.5, 0.5)`
         }, [
-          React.createElement('stop', { key: 0, offset: '0%', stopColor: color1 }),
-          React.createElement('stop', { key: 1, offset: '100%', stopColor: color2 })
+          h('stop', { key: 0, offset: '0%', stopColor: color1 }),
+          h('stop', { key: 1, offset: '100%', stopColor: color2 })
         ]);
       }
-      const def = gradientDefs[presetKey];
-      if (!def) return null;
-      return React.createElement('linearGradient', {
-        id: 'letters-gradient',
-        x1: '0%', y1: '0%', x2: '100%', y2: '0%',
-        gradientUnits: 'userSpaceOnUse'
-      }, def.stops.map((stop, i) =>
-        React.createElement('stop', { key: i, offset: stop.offset, stopColor: stop.color })
-      ));
-    }
 
-    function render() {
-      if (!root) {
-        root = createRoot(container);
+      const SequentialLetters = React.forwardRef((props, ref) => {
+        const [step, setStep] = useState(0);
+        const [preset, setPreset] = useState(null);
+        const lettersRef = useRef(null);
+        const timerRef = useRef(null);
+        const stepRef = useRef(step);
+        stepRef.current = step;
+
+        const {
+          words, activePresets, colorMode, solidColor, customGradient,
+          variant, strokeWidth, duration, overlap, loopSequence, perWordLoop,
+          isPlaying, onPlayingChange, shuffleKey
+        } = props;
+
+        const currentIndex = words.length ? step % words.length : 0;
+        const currentWord = words[currentIndex] || '';
+
+        const pickPreset = useCallback(() => {
+          if (colorMode === 'solid') return null;
+          if (colorMode === 'custom') return 'custom';
+          if (activePresets.length === 0) return null;
+          return activePresets[Math.floor(Math.random() * activePresets.length)];
+        }, [colorMode, activePresets]);
+
+        useEffect(() => {
+          if (!isPlaying || words.length === 0) {
+            clearTimeout(timerRef.current);
+            return;
+          }
+          const newPreset = pickPreset();
+          setPreset(newPreset);
+          const playTimer = setTimeout(() => {
+            if (lettersRef.current?.play) lettersRef.current.play();
+          }, 50);
+          const animTime = duration * 1000;
+          const timer = setTimeout(() => {
+            if (perWordLoop && lettersRef.current?.replay) {
+              lettersRef.current.replay();
+              timerRef.current = setTimeout(() => {
+                const next = stepRef.current + 1;
+                if (next >= words.length && !loopSequence) {
+                  onPlayingChange(false);
+                } else {
+                  setStep(next % words.length);
+                }
+              }, animTime + 300);
+            } else {
+              const next = stepRef.current + 1;
+              if (next >= words.length && !loopSequence) {
+                onPlayingChange(false);
+              } else {
+                setStep(next % words.length);
+              }
+            }
+          }, animTime + 600);
+          timerRef.current = timer;
+          return () => {
+            clearTimeout(playTimer);
+            clearTimeout(timer);
+            clearTimeout(timerRef.current);
+          };
+        }, [isPlaying, step, shuffleKey, pickPreset, duration, perWordLoop, words.length, loopSequence, onPlayingChange]);
+
+        useImperativeHandle(ref, () => ({
+          next: () => {
+            const next = stepRef.current + 1;
+            if (next >= words.length && !loopSequence) {
+              onPlayingChange(false);
+              return;
+            }
+            setStep(next % words.length);
+            onPlayingChange(true);
+          },
+          replay: () => {
+            if (lettersRef.current?.replay) lettersRef.current.replay();
+          }
+        }), [words.length, loopSequence, onPlayingChange]);
+
+        let svgDefs = null;
+        let color = '#ffffff';
+        if (colorMode === 'preset' && preset) {
+          svgDefs = createGradientSvgDefs(preset);
+          color = 'url(#letters-gradient)';
+        } else if (colorMode === 'custom') {
+          svgDefs = createCustomGradientSvgDefs(customGradient);
+          color = 'url(#letters-gradient)';
+        } else if (colorMode === 'solid') {
+          color = solidColor;
+        }
+
+        return h('div', { style: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%' } },
+          h('div', { style: { fontSize: '0.75rem', color: '#a1a1aa', display: 'flex', alignItems: 'center', gap: '8px' } },
+            h('span', null, `${currentIndex + 1} / ${words.length}`),
+            preset && h('span', { className: 'current-preset' }, preset)
+          ),
+          h('div', { style: { width: '100%', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
+            h(Letters, {
+              key: `${currentWord}-${preset}-${step}`,
+              ref: (r) => { lettersRef.current = r; },
+              text: currentWord,
+              variant: variant,
+              strokeWidth: strokeWidth,
+              color: color,
+              autoPlay: false,
+              loop: false,
+              overlap: overlap,
+              animation: { type: 'tween', duration: duration, ease: 'easeInOut' },
+              svgDefs: svgDefs,
+              style: { width: '100%', height: '100%' }
+            })
+          )
+        );
+      });
+
+      const container = document.getElementById('previewContainer');
+      let root = null;
+      const seqRef = React.createRef();
+
+      const state = {
+        wordsInput: 'Hello, Design, Create',
+        activePresets: Object.keys(gradientDefs),
+        filter: 'all',
+        colorMode: 'preset',
+        solidColor: '#ffffff',
+        customGradient: { type: 'linear', color1: '#00ffff', color2: '#00cccc', angle: 170 },
+        variant: 'simple',
+        strokeWidth: 2,
+        duration: 2,
+        overlap: 0.02,
+        loopSequence: false,
+        perWordLoop: false,
+        isPlaying: false,
+        shuffleKey: 0
+      };
+
+      const getWords = () => state.wordsInput.split(/[,\n]+/).map(w => w.trim()).filter(w => w);
+
+      function renderPool() {
+        const pool = document.getElementById('gradientPool');
+        const keys = Object.keys(gradientDefs).filter(k => {
+          if (state.filter === 'all') return true;
+          return gradientDefs[k].cat === state.filter;
+        });
+        pool.innerHTML = '';
+        keys.forEach(key => {
+          const def = gradientDefs[key];
+          const gradient = `linear-gradient(90deg, ${def.stops.map(s => s.color).join(', ')})`;
+          const isActive = state.activePresets.includes(key);
+          const swatch = document.createElement('div');
+          swatch.className = 'swatch' + (isActive ? ' active' : ' inactive');
+          swatch.style.background = gradient;
+          swatch.dataset.preset = key;
+          swatch.title = key;
+          swatch.innerHTML = '<span class="swatch-check">✓</span><span class="swatch-label">' + key + '</span>';
+          swatch.addEventListener('click', () => {
+            if (state.activePresets.includes(key)) {
+              state.activePresets = state.activePresets.filter(k => k !== key);
+            } else {
+              state.activePresets = [...state.activePresets, key];
+            }
+            renderPool();
+            renderPreview();
+            updateExport();
+          });
+          pool.appendChild(swatch);
+        });
+        document.getElementById('selectedCount').textContent = state.activePresets.length + ' selected';
       }
-      
-      const isCustomGradient = state.colorMode === 'custom';
-      const isPresetGradient = state.colorMode !== 'solid' && state.colorMode !== 'custom';
-      const isGradient = isCustomGradient || isPresetGradient;
-      const color = isGradient ? 'url(#letters-gradient)' : state.solidColor;
-      const svgDefs = isCustomGradient 
-        ? createGradientSvgDefs(null, state.customGradient)
-        : isPresetGradient 
-          ? createGradientSvgDefs(state.gradientPreset)
-          : null;
-      
-      root.render(
-        React.createElement('div', { style: { width: '100%', height: '100%' } },
-          React.createElement(Letters, {
-            key: `${state.text}-${state.variant}-${state.duration}-${state.overlap}-${state.colorMode}-${state.gradientPreset}-${state.customGradient.color1}-${state.customGradient.color2}-${state.customGradient.angle}`,
-            ref: (ref) => { lettersRef = ref; },
-            text: state.text,
+
+      function renderPreview() {
+        if (!root) {
+          root = createRoot(container);
+        }
+        const words = getWords();
+        root.render(
+          h(SequentialLetters, {
+            key: words.join(','),
+            ref: seqRef,
+            words: words,
+            activePresets: state.activePresets,
+            colorMode: state.colorMode,
+            solidColor: state.solidColor,
+            customGradient: state.customGradient,
             variant: state.variant,
             strokeWidth: state.strokeWidth,
-            color: color,
-            autoPlay: state.autoPlay,
-            loop: state.loop,
+            duration: state.duration,
             overlap: state.overlap,
-            animation: {
-              type: 'tween',
-              duration: state.duration,
-              ease: 'easeInOut'
-            },
-            svgDefs: svgDefs,
-            style: { width: '100%', height: '100%' }
+            loopSequence: state.loopSequence,
+            perWordLoop: state.perWordLoop,
+            isPlaying: state.isPlaying,
+            onPlayingChange: handlePlayingChange,
+            shuffleKey: state.shuffleKey
           })
-        )
-      );
-    }
-
-    render();
-
-    // Text
-    document.getElementById('textInput').addEventListener('input', (e) => {
-      state.text = e.target.value || ' ';
-      render();
-    });
-
-    // Variant
-    document.getElementById('variantSelect').addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON') {
-        document.querySelectorAll('#variantSelect button').forEach(btn => btn.classList.remove('active'));
-        e.target.classList.add('active');
-        state.variant = e.target.dataset.variant;
-        render();
+        );
       }
-    });
 
-    // Color Mode
-    document.getElementById('modeSelect').addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON') {
-        document.querySelectorAll('#modeSelect button').forEach(btn => btn.classList.remove('active'));
+      function handlePlayingChange(playing) {
+        state.isPlaying = playing;
+        renderPreview();
+      }
+
+      function updateVisibility() {
+        document.getElementById('solidWrap').style.display = state.colorMode === 'solid' ? 'flex' : 'none';
+        document.getElementById('presetWrap').style.display = state.colorMode === 'preset' ? 'flex' : 'none';
+        document.getElementById('customWrap').style.display = state.colorMode === 'custom' ? 'flex' : 'none';
+      }
+
+      document.getElementById('wordsInput').addEventListener('input', (e) => {
+        state.wordsInput = e.target.value;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('modeSelect').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#modeSelect button').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
         state.colorMode = e.target.dataset.mode;
-        
-        // Hide all gradient-related controls first
-        document.getElementById('solidColorWrap').style.display = 'none';
-        document.getElementById('gradientPresetsWrap').style.display = 'none';
-        document.getElementById('customGradientWrap').style.display = 'none';
-        
-        if (state.colorMode === 'solid') {
-          document.getElementById('solidColorWrap').style.display = 'flex';
-        } else if (state.colorMode === 'custom') {
-          document.getElementById('customGradientWrap').style.display = 'flex';
-        } else {
-          document.getElementById('gradientPresetsWrap').style.display = 'flex';
-          // Map mode to preset if not already matching
-          if (gradientDefs[state.colorMode]) {
-            state.gradientPreset = state.colorMode;
-            document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
-            document.querySelector(`.gradient-preset[data-preset="${state.colorMode}"]`)?.classList.add('active');
-          }
-        }
-        render();
-      }
-    });
+        updateVisibility();
+        renderPreview();
+        updateExport();
+      });
 
-    // Solid Color
-    document.getElementById('colorInput').addEventListener('input', (e) => {
-      state.solidColor = e.target.value;
-      render();
-    });
+      document.getElementById('solidColor').addEventListener('input', (e) => {
+        state.solidColor = e.target.value;
+        renderPreview();
+        updateExport();
+      });
 
-    // Gradient Presets
-    document.getElementById('gradientPresets').addEventListener('click', (e) => {
-      const preset = e.target.closest('.gradient-preset');
-      if (!preset) return;
-      document.querySelectorAll('.gradient-preset').forEach(p => p.classList.remove('active'));
-      preset.classList.add('active');
-      state.gradientPreset = preset.dataset.preset;
-      render();
-    });
+      document.getElementById('filterTabs').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#filterTabs button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        state.filter = e.target.dataset.filter;
+        renderPool();
+      });
 
-    // Custom Gradient
-    document.getElementById('customColor1').addEventListener('input', (e) => {
-      state.customGradient.color1 = e.target.value;
-      render();
-    });
-    document.getElementById('customColor2').addEventListener('input', (e) => {
-      state.customGradient.color2 = e.target.value;
-      render();
-    });
-    document.getElementById('angleInput').addEventListener('input', (e) => {
-      state.customGradient.angle = parseInt(e.target.value);
-      document.getElementById('angleValue').textContent = state.customGradient.angle + '°';
-      render();
-    });
-    document.getElementById('gradientTypeSelect').addEventListener('click', (e) => {
-      if (e.target.tagName === 'BUTTON') {
-        document.querySelectorAll('#gradientTypeSelect button').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('selectAllBtn').addEventListener('click', () => {
+        const keys = Object.keys(gradientDefs).filter(k => {
+          if (state.filter === 'all') return true;
+          return gradientDefs[k].cat === state.filter;
+        });
+        state.activePresets = Array.from(new Set([...state.activePresets, ...keys]));
+        renderPool();
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('clearBtn').addEventListener('click', () => {
+        const keys = Object.keys(gradientDefs).filter(k => {
+          if (state.filter === 'all') return true;
+          return gradientDefs[k].cat === state.filter;
+        });
+        state.activePresets = state.activePresets.filter(k => !keys.includes(k));
+        renderPool();
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('shuffleBtn').addEventListener('click', () => {
+        state.shuffleKey++;
+        renderPreview();
+      });
+
+      document.getElementById('shuffleBtn2').addEventListener('click', () => {
+        state.shuffleKey++;
+        renderPreview();
+      });
+
+      document.getElementById('variantSelect').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#variantSelect button').forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        state.variant = e.target.dataset.variant;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('strokeWidthInput').addEventListener('input', (e) => {
+        state.strokeWidth = parseFloat(e.target.value);
+        document.getElementById('strokeWidthValue').textContent = state.strokeWidth;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('durationInput').addEventListener('input', (e) => {
+        state.duration = parseFloat(e.target.value);
+        document.getElementById('durationValue').textContent = state.duration + 's';
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('overlapInput').addEventListener('input', (e) => {
+        state.overlap = parseFloat(e.target.value);
+        document.getElementById('overlapValue').textContent = state.overlap;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('loopSequenceInput').addEventListener('change', (e) => {
+        state.loopSequence = e.target.checked;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('perWordLoopInput').addEventListener('change', (e) => {
+        state.perWordLoop = e.target.checked;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('playBtn').addEventListener('click', () => {
+        state.isPlaying = true;
+        renderPreview();
+      });
+
+      document.getElementById('pauseBtn').addEventListener('click', () => {
+        state.isPlaying = false;
+        renderPreview();
+      });
+
+      document.getElementById('nextBtn').addEventListener('click', () => {
+        if (seqRef.current?.next) seqRef.current.next();
+      });
+
+      document.getElementById('replayBtn').addEventListener('click', () => {
+        if (seqRef.current?.replay) seqRef.current.replay();
+      });
+
+      document.getElementById('customColor1').addEventListener('input', (e) => {
+        state.customGradient.color1 = e.target.value;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('customColor2').addEventListener('input', (e) => {
+        state.customGradient.color2 = e.target.value;
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('angleInput').addEventListener('input', (e) => {
+        state.customGradient.angle = parseInt(e.target.value);
+        document.getElementById('angleValue').textContent = state.customGradient.angle + '°';
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('gradientTypeSelect').addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') return;
+        document.querySelectorAll('#gradientTypeSelect button').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
         state.customGradient.type = e.target.dataset.type;
-        const angleRow = document.getElementById('angleRow');
-        if (angleRow) {
-          angleRow.style.display = state.customGradient.type === 'radial' ? 'none' : 'flex';
-        }
-        render();
+        document.getElementById('angleRow').style.display = state.customGradient.type === 'radial' ? 'none' : 'flex';
+        renderPreview();
+        updateExport();
+      });
+
+      function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
       }
-    });
 
-    // Sliders
-    document.getElementById('strokeWidthInput').addEventListener('input', (e) => {
-      state.strokeWidth = parseFloat(e.target.value);
-      document.getElementById('strokeWidthValue').textContent = state.strokeWidth;
-      render();
-    });
+      function highlightCode(code) {
+        return code
+          .replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>')
+          .replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>')
+          .replace(/(<[^>]+>)/g, '<span class="tag">$1</span>')
+          .replace(/\b(true|false|null)\b/g, '<span class="keyword">$1</span>')
+          .replace(/\b(import|from|function|return|const|let|var)\b/g, '<span class="keyword">$1</span>')
+          .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
+      }
 
-    document.getElementById('durationInput').addEventListener('input', (e) => {
-      state.duration = parseFloat(e.target.value);
-      document.getElementById('durationValue').textContent = state.duration + 's';
-      render();
-    });
+      function generateReactCode() {
+        const words = getWords();
+        const activeList = JSON.stringify(state.activePresets);
+        return `import * as React from 'react';
+import { Letters } from '@kumailnanji/letters';
 
-    document.getElementById('overlapInput').addEventListener('input', (e) => {
-      state.overlap = parseFloat(e.target.value);
-      document.getElementById('overlapValue').textContent = state.overlap;
-      render();
-    });
+// See playground.html for full gradientDefs and SequentialLetters source
 
-    document.getElementById('autoPlayInput').addEventListener('change', (e) => {
-      state.autoPlay = e.target.checked;
-      render();
-    });
+function App() {
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const seqRef = React.useRef(null);
+  return (
+    <SequentialLetters
+      ref={seqRef}
+      words={${JSON.stringify(words)}}
+      activePresets={${activeList}}
+      colorMode="${state.colorMode}"
+      solidColor="${state.solidColor}"
+      customGradient={${JSON.stringify(state.customGradient)}}
+      variant="${state.variant}"
+      strokeWidth={${state.strokeWidth}}
+      duration={${state.duration}}
+      overlap={${state.overlap}}
+      loopSequence={${state.loopSequence}}
+      perWordLoop={${state.perWordLoop}}
+      isPlaying={isPlaying}
+      onPlayingChange={setIsPlaying}
+    />
+  );
+}`;
+      }
 
-    document.getElementById('loopInput').addEventListener('change', (e) => {
-      state.loop = e.target.checked;
-      render();
-    });
+      function generateUmdCode() {
+        const words = getWords();
+        return `// Config for letters-animation.umd.js
+const lettersConfig = {
+  words: ${JSON.stringify(words)},
+  activePresets: ${JSON.stringify(state.activePresets)},
+  colorMode: '${state.colorMode}',
+  solidColor: '${state.solidColor}',
+  customGradient: ${JSON.stringify(state.customGradient)},
+  variant: '${state.variant}',
+  strokeWidth: ${state.strokeWidth},
+  duration: ${state.duration},
+  overlap: ${state.overlap},
+  loopSequence: ${state.loopSequence},
+  perWordLoop: ${state.perWordLoop}
+};`;
+      }
 
-    // Actions
-    document.getElementById('playBtn').addEventListener('click', () => {
-      if (lettersRef && lettersRef.play) lettersRef.play();
-    });
+      function updateExport() {
+        const reactCode = generateReactCode();
+        const umdCode = generateUmdCode();
+        document.getElementById('code-react').innerHTML = '<button class="copy-btn" data-copy="react">Copy</button>' + highlightCode(reactCode);
+        document.getElementById('code-umd').innerHTML = '<button class="copy-btn" data-copy="umd">Copy</button>' + highlightCode(umdCode);
+      }
 
-    document.getElementById('replayBtn').addEventListener('click', () => {
-      if (lettersRef && lettersRef.replay) lettersRef.replay();
-    });
+      document.getElementById('exportSection').addEventListener('click', (e) => {
+        const tab = e.target.closest('.export-tab');
+        if (tab) {
+          document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
+          document.querySelectorAll('.export-panel').forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+        }
+        const copyBtn = e.target.closest('.copy-btn');
+        if (copyBtn) {
+          const type = copyBtn.dataset.copy;
+          const code = type === 'react' ? generateReactCode() : generateUmdCode();
+          navigator.clipboard.writeText(code).then(() => {
+            copyBtn.textContent = 'Copied!';
+            copyBtn.classList.add('copied');
+            setTimeout(() => {
+              copyBtn.textContent = 'Copy';
+              copyBtn.classList.remove('copied');
+            }, 2000);
+          });
+        }
+      });
 
-    document.getElementById('resetBtn').addEventListener('click', () => {
-      if (lettersRef && lettersRef.reset) lettersRef.reset();
-    });
-
-    // ==================== Export Code ====================
-    function escapeHtmlForCode(str) {
-      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      renderPool();
+      renderPreview();
+      updateVisibility();
+      updateExport();
+    } catch (err) {
+      document.getElementById('previewContainer').innerHTML = '<div style="color:#ff6b6b;padding:40px;text-align:center;">Error: ' + (err?.message || err) + '</div>';
     }
-
-    function generateReactCode() {
-      const isCustom = state.colorMode === 'custom';
-      const isPreset = state.colorMode !== 'solid' && state.colorMode !== 'custom';
-      const isGradient = isCustom || isPreset;
-      let svgDefsCode = '';
-      if (isCustom) {
-        const { type, color1, color2, angle } = state.customGradient;
-        if (type === 'radial') {
-          svgDefsCode = `
-  svgDefs={(
-    <radialGradient id="letters-gradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-      <stop offset="0%" stopColor="${color1}" />
-      <stop offset="100%" stopColor="${color2}" />
-    </radialGradient>
-  )}`;
-        } else {
-          svgDefsCode = `
-  svgDefs={(
-    <linearGradient id="letters-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse" gradientTransform="rotate(${angle}, 0.5, 0.5)">
-      <stop offset="0%" stopColor="${color1}" />
-      <stop offset="100%" stopColor="${color2}" />
-    </linearGradient>
-  )}`;
-        }
-      } else if (isPreset) {
-        const def = gradientDefs[state.gradientPreset];
-        if (def) {
-          const stops = def.stops.map(s => `        <stop offset="${s.offset}" stopColor="${s.color}" />`).join('
-');
-          svgDefsCode = `
-  svgDefs={(
-    <linearGradient id="letters-gradient" x1="0%" y1="0%" x2="100%" y2="0%" gradientUnits="userSpaceOnUse">
-${stops}
-    </linearGradient>
-  )}`;
-        }
-      }
-      const color = isGradient ? 'url(#letters-gradient)' : state.solidColor;
-    function generateUmdCode() {
-      const isCustom = state.colorMode === 'custom';
-      const isPreset = state.colorMode !== 'solid' && state.colorMode !== 'custom';
-      const isGradient = isCustom || isPreset;
-      let gradientConfig = '';
-      if (isCustom) {
-        const { type, color1, color2, angle } = state.customGradient;
-        gradientConfig = `
-// Custom gradient config:
-const gradientType = '${type}';
-const gradientColor1 = '${color1}';
-const gradientColor2 = '${color2}';
-const gradientAngle = ${angle};`;
-      } else if (isPreset) {
-        const def = gradientDefs[state.gradientPreset];
-        if (def) {
-          const stops = def.stops.map(s => `    { offset: '${s.offset}', color: '${s.color}' }`).join(',
-');
-          gradientConfig = `
-// Gradient stops (inject via svgDefs prop):
-const gradientStops = [
-${stops}
-];`;
-        }
-      }
-      const color = isGradient ? 'url(#letters-gradient)' : state.solidColor;
-    function highlightCode(code) {
-      return code
-        .replace(/(\/\/.*$)/gm, '<span class="comment">$1</span>')
-        .replace(/('(?:[^'\\]|\\.)*')/g, '<span class="string">$1</span>')
-        .replace(/(<[^>]+>)/g, '<span class="tag">$1</span>')
-        .replace(/\b(true|false|null)\b/g, '<span class="keyword">$1</span>')
-        .replace(/\b(import|from|function|return|const|let|var)\b/g, '<span class="keyword">$1</span>')
-        .replace(/\b(\d+\.?\d*)\b/g, '<span class="number">$1</span>');
-    }
-
-    function updateExport() {
-      const reactCode = generateReactCode();
-      const umdCode = generateUmdCode();
-      document.getElementById('code-react').innerHTML = '<button class="copy-btn" data-copy="react">Copy</button>' + highlightCode(reactCode);
-      document.getElementById('code-umd').innerHTML = '<button class="copy-btn" data-copy="umd">Copy</button>' + highlightCode(umdCode);
-    }
-
-    // Export tabs
-    document.getElementById('exportSection').addEventListener('click', (e) => {
-      const tab = e.target.closest('.export-tab');
-      if (tab) {
-        document.querySelectorAll('.export-tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.export-panel').forEach(p => p.classList.remove('active'));
-        tab.classList.add('active');
-        document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-      }
-      const copyBtn = e.target.closest('.copy-btn');
-      if (copyBtn) {
-        const type = copyBtn.dataset.copy;
-        const code = type === 'react' ? generateReactCode() : generateUmdCode();
-        navigator.clipboard.writeText(code).then(() => {
-          copyBtn.textContent = 'Copied!';
-          copyBtn.classList.add('copied');
-          setTimeout(() => {
-            copyBtn.textContent = 'Copy';
-            copyBtn.classList.remove('copied');
-          }, 2000);
-        });
-      }
-    });
-
-    // Update export on every parameter change
-    const updateExportOnChange = () => { updateExport(); };
-    document.getElementById('textInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('strokeWidthInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('durationInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('overlapInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('colorInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('autoPlayInput').addEventListener('change', updateExportOnChange);
-    document.getElementById('loopInput').addEventListener('change', updateExportOnChange);
-    document.getElementById('variantSelect').addEventListener('click', updateExportOnChange);
-    document.getElementById('modeSelect').addEventListener('click', updateExportOnChange);
-    document.getElementById('gradientPresets').addEventListener('click', updateExportOnChange);
-    document.getElementById('customColor1').addEventListener('input', updateExportOnChange);
-    document.getElementById('customColor2').addEventListener('input', updateExportOnChange);
-    document.getElementById('angleInput').addEventListener('input', updateExportOnChange);
-    document.getElementById('gradientTypeSelect').addEventListener('click', updateExportOnChange);
-
-    updateExport();
   </script>
 </body>
 </html>

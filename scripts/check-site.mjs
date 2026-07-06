@@ -1,9 +1,17 @@
 #!/usr/bin/env node
+/**
+ * check-site.mjs — 站点静态检查脚本
+ * 检查：必需文件是否存在、HTML 缓存版本戳是否一致、页脚版本号是否一致、
+ *       UTF-8 声明、script 标签 charset、data.js BOM 等。
+ * 用法：npm run check
+ */
 
 import fs from "node:fs";
 import path from "node:path";
 
+// 项目根目录
 const root = process.cwd();
+// 站点必需文件清单
 const requiredFiles = [
   "index.html",
   "profile.html",
@@ -15,6 +23,7 @@ const requiredFiles = [
   "js/data.js",
 ];
 
+// 收集检查错误与警告
 const errors = [];
 const warnings = [];
 

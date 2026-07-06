@@ -1,9 +1,12 @@
 /**
- * xyfoptics 后台管理 — 内容管理 + 版本更新
- * 统一入口，实时状态，一键更新
+ * admin.js — 后台管理核心脚本
+ * 负责：内容管理（CRUD、拖拽排序、文件上传）、版本发布（版本号、Git、预览、诊断）、
+ *       备份管理、本地/远程服务通信。
+ * 仅在 admin.html 中加载，依赖 data.js 提供的 window.DEFAULT_SITE_DATA。
  */
 
 const STORAGE_KEY = "academicSiteData";
+// 是否使用本地后台服务（仅 localhost:8787）
 const USE_LOCAL_ADMIN_SERVER = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port === "8787";
 
 // ═══════════════════════════════════════════════════════════════

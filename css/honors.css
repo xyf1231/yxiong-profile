@@ -1,8 +1,11 @@
+/* honors.css — 荣誉页专有样式覆盖 */
 /* Honors page-specific overrides */
+/* 荣誉区背景 */
 .achievements {
   background: #000000;
 }
 
+/* 荣誉卡片：最小高度、圆角、渐变背景 */
 .achievement-item {
   min-height: 230px;
   padding: 22px;
@@ -10,12 +13,14 @@
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
 }
 
+/* 荣誉卡片网格：三列 */
 .achievement-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
 }
 
+/* 荣誉元信息：年份/类别与标题分隔 */
 .achievement-meta {
   display: flex;
   align-items: center;

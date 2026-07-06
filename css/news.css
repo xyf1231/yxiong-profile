@@ -1,4 +1,6 @@
+/* news.css — 新闻详情页专有样式覆盖 */
 /* News page-specific overrides */
+/* 新闻详情布局：正文 + 侧边信息 */
 .news-detail-layout {
   display: grid;
   grid-template-columns: minmax(0, 860px) minmax(280px, 340px);
@@ -13,7 +15,9 @@
   /* retained for specificity if the shared sheet still sets defaults */
 }
 
+/* 文章卡片与信息卡片：统一圆角和内边距 */
 .news-article-card,
+/* 信息卡片：粘性定位、毛玻璃 */
 .news-info-card {
   border-radius: 18px;
   padding: clamp(24px, 4vw, 48px);
@@ -30,6 +34,7 @@
   backdrop-filter: blur(20px) saturate(1.4);
 }
 
+/* 新闻轮播视口：负边距实现全宽滚动 */
 .news-carousel-viewport {
   width: auto;
   padding-inline: clamp(28px, 4vw, 72px);
@@ -37,6 +42,7 @@
   scroll-padding-inline: clamp(28px, 4vw, 72px);
 }
 
+/* 轮播中的新闻卡片统一宽度 */
 .news-carousel-track .news-card,
 .news-carousel-track .news-card:first-child,
 .news-carousel-track .news-card:nth-child(2),

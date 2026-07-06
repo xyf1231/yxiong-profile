@@ -1,0 +1,128 @@
+/* ═══════════════════════════════════════════════════════════════
+   首页 Hero 可配置参数
+   通过 hero-editor.html 读取/编辑，热重载后生效。
+   此文件在 styles.css 之后加载，覆盖首页首屏文字样式。
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Hero 区域整体 */
+  --hero-min-height: 100vh;
+
+  /* 文案容器 */
+  --hero-text-shadow: 0 0 34px rgba(0, 0, 0, 0.72);
+  --hero-text-align: center;
+  --hero-vertical-offset: 0;
+
+  /* 眉标（Eyebrow） */
+  --hero-eyebrow-display: none;
+  --hero-eyebrow-color: #2997ff;
+  --hero-eyebrow-font-size: clamp(0.6rem, 1.2vw, 1.5rem);
+  --hero-eyebrow-letter-spacing: 0.18em;
+  --hero-eyebrow-margin-bottom: 14px;
+
+  /* 主标题 */
+  --hero-title-font-size-zh: clamp(3rem, 14vw, 7rem);
+  --hero-title-font-size-en: clamp(2.8rem, 14vw, 6.5rem);
+  --hero-title-line-height: 1.12;
+  --hero-title-letter-spacing: 0em;
+  --hero-title-font-weight: 700;
+  --hero-title-margin: clamp(18px, 2vw, 30px) auto clamp(22px, 2.4vw, 34px);
+  --hero-title-padding-bottom: 0.12em;
+  --hero-title-gap: 0.08em;
+  --hero-title-font-family: inherit;
+
+  /* 主标题分行（.home-title-line） */
+  --hero-title-line-line-height: 1.12;
+  --hero-title-line-padding: 0.02em 0 0.08em;
+
+  /* 副标题 */
+  --hero-subtitle-color: rgba(255, 255, 255, 0.6);
+  --hero-subtitle-margin-top: 12px;
+  --hero-subtitle-font-size: clamp(0.7rem, 4vw, 2rem);
+  --hero-subtitle-font-family: inherit;
+}
+
+/* Hero 区域最小高度 */
+.hero.portal-hero,
+.fiber-hero,
+.clean-hero,
+.fiber-sticky.clean-stage {
+  min-height: var(--hero-min-height);
+}
+
+/* 文案容器文字阴影、对齐与垂直位置 */
+.story-copy.clean-copy,
+.clean-copy {
+  text-shadow: var(--hero-text-shadow);
+  text-align: var(--hero-text-align);
+  translate: -50% calc(-50% + var(--hero-vertical-offset));
+}
+
+/* 眉标 */
+body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy .eyebrow,
+.eyebrow {
+  display: var(--hero-eyebrow-display) !important;
+  color: var(--hero-eyebrow-color) !important;
+  font-size: var(--hero-eyebrow-font-size) !important;
+  letter-spacing: var(--hero-eyebrow-letter-spacing) !important;
+  text-align: var(--hero-text-align) !important;
+  margin-bottom: var(--hero-eyebrow-margin-bottom);
+}
+
+/* 主标题基础布局 */
+body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
+.clean-copy h1,
+.hero-content h1 {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: var(--hero-title-gap) !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: var(--hero-title-margin) !important;
+  padding-bottom: var(--hero-title-padding-bottom) !important;
+  line-height: var(--hero-title-line-height) !important;
+  letter-spacing: var(--hero-title-letter-spacing) !important;
+  font-weight: var(--hero-title-font-weight) !important;
+  font-family: var(--hero-title-font-family) !important;
+  white-space: pre-line !important;
+  text-align: var(--hero-text-align) !important;
+  text-wrap: nowrap !important;
+  overflow: visible !important;
+}
+
+/* 主标题分行 */
+body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1 .home-title-line {
+  display: block !important;
+  line-height: var(--hero-title-line-line-height) !important;
+  padding: var(--hero-title-line-padding) !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+
+/* 中文主标题字号 */
+html[lang="zh-CN"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
+html[lang="zh-CN"] .clean-copy h1 {
+  font-size: var(--hero-title-font-size-zh) !important;
+  letter-spacing: var(--hero-title-letter-spacing) !important;
+}
+
+/* 英文主标题字号 */
+html[lang="en"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
+html[lang="en"] .clean-copy h1 {
+  font-size: var(--hero-title-font-size-en) !important;
+  line-height: var(--hero-title-line-height) !important;
+  gap: var(--hero-title-gap) !important;
+  letter-spacing: var(--hero-title-letter-spacing) !important;
+}
+
+/* 副标题 */
+body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
+.clean-copy p:not(.eyebrow) {
+  color: var(--hero-subtitle-color) !important;
+  margin-top: var(--hero-subtitle-margin-top) !important;
+  font-size: var(--hero-subtitle-font-size) !important;
+  font-family: var(--hero-subtitle-font-family) !important;
+  text-align: var(--hero-text-align) !important;
+}

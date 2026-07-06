@@ -1,3 +1,12 @@
+/* ==========================================================================
+   styles.css — 全站核心样式
+   覆盖：设计令牌、加载动画、导航、Hero、通用组件、各页面模块、响应式。
+   页面级微调请优先写在 css/xxx.css，避免本文件过度膨胀。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   设计令牌（Design Tokens）：颜色、字体、缓动、间距等全局变量
+   -------------------------------------------------------------------------- */
 :root {
   color-scheme: dark;
   --bg: #000000;
@@ -35,10 +44,12 @@
   --font-tiny: 0.75rem;                             /* 最小字（版本号等） */
 }
 
+/* 盒模型统一为 border-box，简化宽高计算 */
 * {
   box-sizing: border-box;
 }
 
+/* HTML 与 Body 基础：平滑滚动、最大宽度、语言/加载状态过渡 */
 html {
   scroll-behavior: smooth;
   max-width: 100%;
@@ -91,6 +102,9 @@ html[data-site-loading="pending"]::after {
   pointer-events: none;
 }
 
+/* --------------------------------------------------------------------------
+   站点加载遮罩：Lottie 欢迎动画、百分比、进度条、速度显示
+   -------------------------------------------------------------------------- */
 .site-loading-overlay {
   position: fixed;
   inset: 0;
@@ -102,25 +116,6 @@ html[data-site-loading="pending"]::after {
   overflow: hidden;
   overflow: clip;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-  background:
-    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.16), transparent 20%),
-    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.18), transparent 24%),
-    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.12), transparent 32%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.985), rgba(2, 4, 9, 0.955));
-  backdrop-filter: blur(14px) saturate(1.1);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  transition: opacity 800ms ease, transform 800ms ease;
-}
-  position: fixed;
-  inset: 0;
-  z-index: 10000;
-  isolation: isolate;
-  display: grid;
-  place-items: center;
-  padding: 24px;
-  overflow: hidden;
-  overflow: clip;
   background:
     radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
     radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.16), transparent 20%),
@@ -477,6 +472,9 @@ body::before {
   background: #0a0a0f;
 }
 
+/* --------------------------------------------------------------------------
+   固定顶部导航栏：品牌、桌面菜单、移动端菜单、下拉导航
+   -------------------------------------------------------------------------- */
 .site-header[data-elevated="true"],
 .site-header {
   background: rgba(0, 0, 0, 0.55);
@@ -532,6 +530,9 @@ a {
   flex-shrink: 0;
 }
 
+/* --------------------------------------------------------------------------
+   玻璃拟态表面（Glass Surface）：卡片、面板通用背景效果
+   -------------------------------------------------------------------------- */
 .glass-surface {
   position: relative;
   overflow: hidden;
@@ -977,6 +978,7 @@ main > .section-band:first-child > .section-wrap {
   padding-top: clamp(112px, 12vw, 156px);
 }
 
+/* Hero 区域：首屏大图/视频背景、标题、行动按钮 */
 .hero {
   position: relative;
   min-height: 92vh;
@@ -1837,6 +1839,9 @@ html[lang="en"] .subtle-name {
   color: rgba(255, 255, 255, 0.55);
 }
 
+/* --------------------------------------------------------------------------
+   新闻动态模块：新闻卡片网格与轮播
+   -------------------------------------------------------------------------- */
 .news-section {
   border-top: 1px solid var(--line);
 }
@@ -2027,6 +2032,7 @@ html[lang="en"] .subtle-name {
   transform: translateY(-2px);
 }
 
+/* 研究内容卡片网格 */
 .feature-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2064,6 +2070,9 @@ html[lang="en"] .subtle-name {
   font-weight: 800;
 }
 
+/* --------------------------------------------------------------------------
+   论文/成果模块：代表论文、全部论文、专利、项目通用列表
+   -------------------------------------------------------------------------- */
 .publications {
   background: #0a0a14;
   color: #fff;
@@ -2351,6 +2360,9 @@ html[lang="en"] .subtle-name {
     #060610;
 }
 
+/* --------------------------------------------------------------------------
+   时间轴模块：学习工作经历
+   -------------------------------------------------------------------------- */
 .timeline-section {
   display: grid;
   grid-template-columns: minmax(240px, 0.75fr) minmax(320px, 1.25fr);
@@ -2469,6 +2481,9 @@ html[lang="en"] .subtle-name {
   background: rgba(41, 151, 255, 0.08);
 }
 
+/* --------------------------------------------------------------------------
+   页脚：版权、联系方式、地址、版本号
+   -------------------------------------------------------------------------- */
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -2755,6 +2770,9 @@ html[lang="en"] .subtle-name {
   }
 }
 
+/* --------------------------------------------------------------------------
+   后台管理界面模块：侧边栏、面板、表单、条目列表、JSON 编辑器
+   -------------------------------------------------------------------------- */
 .admin-body {
   background: #000000;
 }

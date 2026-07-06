@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * admin-server.mjs — 本地后台服务
+ * 提供 HTTP API：保存 data.js、文件上传/删除/列表、版本号管理、Git/预览/备份/图片压缩等。
+ * 默认监听 127.0.0.1:8787，仅本地访问。
+ */
 import { createServer } from "node:http";
 import { cp, mkdir, readFile, readdir, rm, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -6,9 +11,11 @@ import { spawn } from "node:child_process";
 import { basename, extname, join, normalize, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+// 目录与端口配置
 const scriptDir = fileURLToPath(new URL(".", import.meta.url));
 const rootDir = resolve(scriptDir, "..");
 const port = Number(process.env.ADMIN_PORT || 8787);
+// 允许上传的资源桶（对应 resources/ 下的子目录）
 const storageBuckets = {
   images: "resources/images",
   papers: "resources/papers",
@@ -16,6 +23,7 @@ const storageBuckets = {
   frames: "resources/frames",
   news: "resources/news",
 };
+// 本地备份根目录
 const backupRoot = resolve(process.env.ADMIN_BACKUP_DIR || "/Users/xiongyifeng/Documents/02-个人/01-个人网站/备份");
 const allowedBuckets = new Set(Object.keys(storageBuckets));
 const pythonCandidates = [
@@ -28,6 +36,7 @@ const pythonCandidates = [
 let previewServer = null;
 let previewPort = 3456;
 
+// 静态文件 MIME 类型映射
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",
@@ -554,6 +563,41 @@ async function getPreviewStatus(res) {
   });
 }
 
+// ── 通用文件读写 API（用于样式编辑器等工具页）──
+function isWritableProjectPath(fullPath, relativePath) {
+  const rel = relativePath.replace(/\\/g, "/");
+  if (rel.startsWith(".") || rel.includes("/.")) return false;
+  if (rel.startsWith("node_modules/") || rel === "node_modules") return false;
+  if (rel.startsWith(".git/") || rel === ".git") return false;
+  return fullPath.startsWith(rootDir + "/");
+}
+
+async function readTextFile(res, url) {
+  const rawPath = url.searchParams.get("path") || "";
+  const relativePath = safeRelativePath(rawPath, "");
+  const fullPath = resolve(rootDir, relativePath);
+  if (!isWritableProjectPath(fullPath, relativePath)) {
+    throw new Error("文件路径不被允许或超出项目目录。");
+  }
+  const content = await readFile(fullPath, "utf8");
+  sendJson(res, 200, { ok: true, path: relativePath, content });
+}
+
+async function saveTextFile(req, res) {
+  const body = await readRequestBody(req);
+  const payload = JSON.parse(body.toString("utf8") || "{}");
+  const rawPath = payload.path || "";
+  const relativePath = safeRelativePath(rawPath, "");
+  const fullPath = resolve(rootDir, relativePath);
+  if (!isWritableProjectPath(fullPath, relativePath)) {
+    throw new Error("文件路径不被允许或超出项目目录。");
+  }
+  await mkdir(resolve(fullPath, ".."), { recursive: true });
+  const content = String(payload.content ?? "");
+  await writeFile(fullPath, content, "utf8");
+  sendJson(res, 200, { ok: true, path: relativePath, bytes: Buffer.byteLength(content) });
+}
+
 // ── 统一状态 API ──
 async function getAllStatus(res) {
   try {
@@ -692,6 +736,16 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/preview/stop" && req.method === "POST") {
       await stopPreview(res);
+      return;
+    }
+
+    // ── 通用文件读写 API ──
+    if (url.pathname === "/api/read-file" && req.method === "GET") {
+      await readTextFile(res, url);
+      return;
+    }
+    if (url.pathname === "/api/save-file" && req.method === "POST") {
+      await saveTextFile(req, res);
       return;
     }
 

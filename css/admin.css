@@ -1,10 +1,13 @@
+/* admin.css — 后台管理页专有样式覆盖 */
 /* Admin page-specific overrides */
+/* 后台整体布局：左侧边栏 + 右侧主区域 */
 .admin-layout {
   display: grid;
   grid-template-columns: 210px 1fr;
   min-height: 100vh;
 }
 
+/* 左侧边栏：粘性定位、占满视口高度 */
 .admin-sidebar {
   position: sticky;
   top: 0;
@@ -12,11 +15,13 @@
   overflow-y: auto;
 }
 
+/* 后台网格与标题区：单列布局 */
 .admin-grid,
 .admin-hero {
   grid-template-columns: 1fr;
 }
 
+/* 后台标签：静态定位 */
 .admin-tabs {
   position: static;
 }

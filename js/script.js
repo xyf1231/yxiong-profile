@@ -1,3 +1,10 @@
+/**
+ * script.js — 前台核心脚本
+ * 负责：站点加载动画、多语言切换、资源路径处理、页面渲染（简介/成果/荣誉/活动/新闻）、
+ *       轮播交互、滚动动画、PDF 下载提示等。
+ */
+
+// ==================== 常量与配置 ====================
 const STORAGE_KEY = "academicSiteData";
 const LANG_KEY = "academicSiteLanguage";
 const isHomePage = /(^|\/)(index\.html)?$/.test(window.location.pathname) || window.location.pathname.endsWith('/');
@@ -20,6 +27,7 @@ const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
 const ASSET_SOURCE = (window.DEFAULT_SITE_DATA?.assetSource || "vercel").toLowerCase();
 const SITE_LOADING_KEY = "academicSiteLoading";
 
+// 资源路径处理：本地资源、CDN 资源、缓存戳
 function assetUrl(src = "") {
   const value = String(src || "");
   if (!value || /^https?:\/\//i.test(value) || value.startsWith("data:")) return value;
@@ -83,6 +91,7 @@ function formatTransferRate(bytesPerSecond) {
   return `${mibPerSecond.toFixed(mibPerSecond >= 10 ? 0 : 1)} MB/s`;
 }
 
+// ==================== 站点加载动画 ====================
 function setupSiteLoadingGate() {
   const root = document.documentElement;
   if (root.dataset.siteLoading !== "ready") root.dataset.siteLoading = "pending";
@@ -877,6 +886,7 @@ const newsDetailEnglish = {
   affiliation: "National Laboratory of Solid State Microstructures and School of Modern Engineering and Applied Sciences, Nanjing University, et al.",
 };
 
+// ==================== 多语言与本地化 ====================
 function loadLanguagePreference() {
   try {
     return localStorage.getItem(LANG_KEY) === "en" ? "en" : "zh";
@@ -935,6 +945,7 @@ function mergeWithDefaultData(source) {
   return merged;
 }
 
+// ==================== 数据获取与处理 ====================
 function getSiteData() {
   const saved = localStorage.getItem(STORAGE_KEY);
   if (!saved) return cloneData(window.DEFAULT_SITE_DATA);
@@ -959,6 +970,7 @@ function escapeHtml(value = "") {
     .replaceAll("'", "&#039;");
 }
 
+// ==================== 各页面渲染函数 ====================
 function renderProfile(data) {
   const prefix = document.title.split("|")[0].trim();
   const siteName = currentLang === "en" ? data.profile.nameEn : data.profile.nameCn;
@@ -998,6 +1010,7 @@ function renderMetrics(metrics) {
     .join("");
 }
 
+// 渲染研究内容卡片
 function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
@@ -1022,6 +1035,7 @@ function renderResearch(items) {
     .join("");
 }
 
+// 渲染新闻动态网格
 function renderNews(items) {
   const target = document.querySelector("#news-list");
   if (!target) return;
@@ -1066,6 +1080,7 @@ function renderNews(items) {
   setupNewsCarousel(target);
 }
 
+// 初始化新闻轮播：拖拽、触摸、自动播放、指示器
 function setupNewsCarousel(root) {
   const viewport = root.querySelector(".news-carousel-viewport");
   const track = root.querySelector(".news-carousel-track");
@@ -1432,6 +1447,7 @@ function sanitizeRichHtml(html = "") {
     });
 }
 
+// 渲染新闻详情页侧边信息
 function renderNewsDetail(items = []) {
   const contentTarget = document.querySelector("#news-detail-content");
   if (!contentTarget) return;
@@ -1559,6 +1575,7 @@ function showPdfLoading(link) {
   }, 4200);
 }
 
+// 渲染首页/成果页代表论文列表
 function renderPublications(items) {
   const target = document.querySelector("#publication-list");
   if (!target) return;
@@ -1592,6 +1609,7 @@ function getRepresentativePublications(items, limit = 5) {
   return items.slice(0, limit);
 }
 
+// 渲染简介页代表论文
 function renderProfilePublications(items) {
   const target = document.querySelector("#profile-publication-list");
   if (!target) return;
@@ -1619,6 +1637,7 @@ function renderProfilePublications(items) {
     .join("");
 }
 
+// 渲染全部论文列表（按年份分组）
 function renderAllPublications(items) {
   const target = document.querySelector("#all-publication-list");
   if (!target) return;
@@ -1668,6 +1687,7 @@ function publicationTime(item) {
   return new Date(year, month, day).getTime();
 }
 
+// 渲染项目列表
 function renderProjects(items) {
   const target = document.querySelector("#project-list");
   if (!target) return;
@@ -1688,6 +1708,7 @@ function renderProjects(items) {
     .join("");
 }
 
+// 渲染荣誉/成果列表
 function renderAchievements(items) {
   const target = document.querySelector("#achievement-list");
   if (!target) return;
@@ -1711,6 +1732,7 @@ function renderAchievements(items) {
     .join("");
 }
 
+// 渲染通用详情列表（专利、学术任职、会议报告等）
 function renderDetailLists(items) {
   document.querySelectorAll("[data-achievement-types]").forEach((target) => {
     const types = target.dataset.achievementTypes.split(",").map((type) => type.trim());
@@ -1733,6 +1755,7 @@ function renderDetailLists(items) {
   });
 }
 
+// 渲染学习工作经历时间轴
 function renderExperience(items) {
   const target = document.querySelector("#experience-list");
   if (!target) return;
@@ -1752,6 +1775,7 @@ function renderExperience(items) {
     .join("");
 }
 
+// 渲染联系方式
 function renderContacts(items) {
   const target = document.querySelector("#contact-links");
   if (!target) return;
@@ -1760,6 +1784,7 @@ function renderContacts(items) {
     .join("");
 }
 
+// 站点统一渲染入口：根据当前页面渲染对应模块
 function renderSite() {
   const data = getSiteData();
   renderProfile(data);
@@ -1781,6 +1806,7 @@ function renderSite() {
   setupNavigation();
 }
 
+// ==================== 导航与交互 ====================
 function setupLanguageToggle() {
   document.documentElement.lang = currentLang === "en" ? "en" : "zh-CN";
   const headerEl = document.querySelector(".site-header");
@@ -1817,9 +1843,12 @@ function applyLanguage() {
   setupLanguageToggle();
   const dict = translations[currentLang];
   document.documentElement.lang = currentLang === "en" ? "en" : "zh-CN";
+  const heroContent = window.HERO_CONTENT || {};
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
-    if (dict[key]) node.textContent = dict[key];
+    const heroText = heroContent[currentLang] && heroContent[currentLang][key];
+    const text = heroText !== undefined ? heroText : dict[key];
+    if (text !== undefined) node.textContent = text;
   });
   document.querySelectorAll(".language-toggle").forEach((button) => {
     button.textContent = dict.langButton;
@@ -1866,6 +1895,7 @@ function translateNavigation(dict) {
   });
 }
 
+// 初始化导航：当前页高亮、移动端菜单、滚动行为
 function setupNavigation() {
   const nav = document.querySelector("#site-nav");
   const toggle = document.querySelector(".nav-menu-toggle");
@@ -2191,6 +2221,7 @@ function translateLooseHeadings(dict) {
 }
 
 
+// ==================== 视觉动效 ====================
 function setupBorderGlow() {
   if (isCompactNav()) return;
   const cards = document.querySelectorAll(
@@ -2205,6 +2236,7 @@ function setupBorderGlow() {
   });
 }
 
+// 初始化玻璃拟态表面高光效果
 function setupGlassSurface() {
   const selector = isCompactNav()
     ? ".site-header, .profile-combo, .contact-inner, .admin-hero"
@@ -2215,6 +2247,7 @@ function setupGlassSurface() {
   });
 }
 
+// 初始化滚动 reveal 动画
 function setupRevealAnimations() {
   const targets = document.querySelectorAll(
     ".reveal, .section-heading, .home-bento-grid, .news-grid, .feature-grid, .detail-list, .timeline-section .timeline, .publication-list, .project-list, .achievement-list, .profile-combo, .profile-photo, .contact-inner, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > .glass-surface, .detail-item, .project-card, .achievement-item, .home-bento-card",
@@ -2465,6 +2498,7 @@ function updateStoryProgress() {
   document.documentElement.style.setProperty("--story-progress", raw.toFixed(3));
 }
 
+// 初始化首页视频/帧序列滚动交互
 function setupHomeFrameSequence() {
   const media = document.querySelector(".home-frame-media");
   const video = document.querySelector("#home-frame-video");

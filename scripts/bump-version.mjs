@@ -1,8 +1,15 @@
 #!/usr/bin/env node
+/**
+ * bump-version.mjs — 版本号统一更新脚本
+ * 读取命令行参数中的版本号，批量更新所有 HTML 的缓存戳、页脚版本号、
+ * package.json 版本以及 docs/WORKFLOW.md 中的当前版本记录。
+ * 用法：npm run bump -- 1.7.8
+ */
 
 import fs from "node:fs";
 import path from "node:path";
 
+// 项目根目录与目标版本号
 const root = process.cwd();
 const nextVersion = process.argv[2]?.replace(/^v/i, "");
 
@@ -11,6 +18,7 @@ if (!nextVersion || !/^\d+\.\d+\.\d+$/.test(nextVersion)) {
   process.exit(1);
 }
 
+// 缓存戳与页脚文本
 const cacheToken = `v${nextVersion}`;
 const footerText = `Version ${nextVersion}`;
 const htmlFiles = fs.readdirSync(root).filter((file) => file.endsWith(".html"));

@@ -1,3 +1,4 @@
+/* profile.css — 个人简介页专有样式覆盖 */
 /* Profile page-specific overrides */
 .intro,
 .profile-combo,
@@ -8,6 +9,7 @@
   grid-template-columns: 1fr;
 }
 
+/* 页面标题区：顶部间距与紧凑排版 */
 .profile-intro-heading {
   margin-top: calc(var(--nav-height, 68px) + 12px);
   margin-bottom: 12px;
@@ -15,6 +17,7 @@
   padding-bottom: 0;
 }
 
+/* 个人名片区：宽度、圆角、内边距 */
 .profile-combo {
   width: min(100% - 40px, var(--profile-wide-width));
   margin-top: 14px;
@@ -22,6 +25,7 @@
   border-radius: clamp(22px, 2.4vw, 32px);
 }
 
+/* 学习工作经历时间轴 */
 .profile-timeline {
   border-top: 1px solid var(--line);
 }
@@ -42,6 +46,7 @@
   background: rgba(255, 255, 255, 0.082);
 }
 
+/* 证件照容器：正方形比例、最大宽度 */
 .profile-photo {
   max-width: 310px;
   aspect-ratio: 1 / 1;

@@ -1,3 +1,11 @@
+/* ==========================================================================
+   global.css — 全站基础样式（styles.css 的精简替代/补充）
+   覆盖：设计令牌、页面基础、头部导航、玻璃拟态、通用组件。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   设计令牌（Design Tokens）
+   -------------------------------------------------------------------------- */
 :root {
   color-scheme: dark;
   --bg: #000000;
@@ -35,10 +43,12 @@
   --font-tiny: 0.75rem;                             /* 最小字（版本号等） */
 }
 
+/* 盒模型统一 */
 * {
   box-sizing: border-box;
 }
 
+/* 页面基础：平滑滚动、语言就绪淡入 */
 html {
   scroll-behavior: smooth;
   max-width: 100%;
@@ -55,6 +65,7 @@ html[data-lang-ready="ready"] body {
   transition: opacity 140ms ease-out;
 }
 
+/* Body 基础排版与深色背景 */
 body {
   margin: 0;
   min-width: 320px;
@@ -77,6 +88,7 @@ video {
   max-width: 100%;
 }
 
+/* 背景网格：微妙的科技感网格底纹 */
 body::before {
   position: fixed;
   inset: 0;
@@ -94,6 +106,7 @@ body::before {
   background: #0a0a0f;
 }
 
+/* 固定顶部导航栏：毛玻璃背景 */
 .site-header[data-elevated="true"],
 .site-header {
   background: rgba(0, 0, 0, 0.55);

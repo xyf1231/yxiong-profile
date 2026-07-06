@@ -1,4 +1,9 @@
-﻿window.DEFAULT_SITE_DATA = {
+/**
+ * data/global.js — 站点内容数据库（全局副本）
+ * 与 js/data.js 内容保持一致，用于兼容旧引用或全局注入场景。
+ * 实际渲染以 js/data.js 为准；修改时请同步更新两个文件。
+ */
+window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "assetSource": "vercel",
   "profile": {

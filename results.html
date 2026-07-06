@@ -1,10 +1,13 @@
 <!doctype html>
+<!-- 成果页：全部论文、专利、项目 -->
 <html lang="zh-CN">
   <head>
+    <!-- 基础元信息：字符编码、禁用缓存、视口设置 -->
     <meta charset="utf-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <!-- 页面级内联脚本：语言准备状态、CDN 资源基址、语言偏好回退 -->
     <script>
       document.documentElement.dataset.langReady = "pending";
       document.documentElement.dataset.siteLoading = "pending";
@@ -25,10 +28,12 @@
       }, 1800);
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>成果 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.15" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.16" />
   </head>
   <body>
+    <!-- 全站头部：品牌 Logo、桌面导航、移动端汉堡菜单、展开式卡片导航 -->
     <header class="site-header" data-elevated="false">
       <a href="index.html" class="nav-brand" aria-label="首页">YX</a>
       <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">
@@ -86,6 +91,7 @@
     </header>
 
     <main>
+      <!-- 全部论文区：按年份/类型分组渲染完整论文列表 -->
       <section class="section-wrap" id="all-publications" aria-labelledby="all-publications-title">
         <div class="section-heading inline reveal">
           <div>
@@ -96,6 +102,7 @@
         <div class="all-publication-list" id="all-publication-list"></div>
       </section>
 
+      <!-- 专利区：展示已授权专利信息 -->
       <section class="section-wrap" id="patents">
         <div class="section-heading inline reveal">
           <div>
@@ -106,6 +113,7 @@
         <div class="detail-list" id="patent-list" data-achievement-types="专利"></div>
       </section>
 
+      <!-- 项目区：展示主持或参与的研究项目 -->
       <section class="section-wrap" id="projects">
         <div class="section-heading inline reveal">
           <div>
@@ -116,13 +124,15 @@
         <div class="detail-list" id="project-list"></div>
       </section>
     </main>
+    <!-- 页脚：版权、邮箱、地址、版本号 -->
     <footer class="site-footer contact-footer">
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.10.15</span>
+      <span class="footer-version">Version 1.10.16</span>
     </footer>
-    <script src="js/data.js?v=v1.10.15" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.10.15" charset="utf-8"></script>
+    <!-- 核心脚本：data.js 为站点内容数据库，script.js 负责渲染与交互 -->
+    <script src="js/data.js?v=v1.10.16" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.10.16" charset="utf-8"></script>
   </body>
 </html>

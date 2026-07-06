@@ -1,10 +1,13 @@
 <!doctype html>
+<!-- 个人简介页：照片、简介、研究内容、经历、代表论文、学术任职 -->
 <html lang="zh-CN">
   <head>
+    <!-- 基础元信息：字符编码、禁用缓存、视口设置 -->
     <meta charset="utf-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
+    <!-- 页面级内联脚本：语言准备状态、CDN 资源基址、语言偏好回退 -->
     <script>
       document.documentElement.dataset.langReady = "pending";
       document.documentElement.dataset.siteLoading = "pending";
@@ -25,10 +28,12 @@
       }, 1800);
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>个人简介 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.15" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.16" />
   </head>
   <body>
+    <!-- 全站头部：品牌 Logo、桌面导航、移动端汉堡菜单、展开式卡片导航 -->
     <header class="site-header" data-elevated="false">
       <a href="index.html" class="nav-brand" aria-label="首页">YX</a>
       <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">
@@ -85,6 +90,7 @@
       </nav>
     </header>
     <main>
+      <!-- 页面标题区：显示“个人简介”大标题 -->
       <section class="section-wrap profile-intro-heading" aria-labelledby="intro-title">
         <div class="section-heading inline profile-intro-heading-inner">
           <div>
@@ -93,6 +99,7 @@
           </div>
         </div>
       </section>
+      <!-- 个人名片区：左侧证件照与姓名，右侧个人简介文本 -->
       <section class="profile-combo section-wrap" aria-labelledby="intro-title">
         <div class="profile-card-left">
           <div class="profile-photo">
@@ -110,6 +117,7 @@
           <p class="profile-bio-text" data-profile="bio"></p>
         </div>
       </section>
+      <!-- 研究内容区：以卡片网格形式展示研究方向 -->
       <section class="section-wrap" id="research" aria-labelledby="profile-research-title">
         <div class="section-heading">
           <div>
@@ -119,6 +127,7 @@
         </div>
         <div class="feature-grid" id="research-list"></div>
       </section>
+      <!-- 学习工作经历：时间轴形式渲染教育及工作履历 -->
       <section class="section-wrap timeline-section profile-timeline" aria-labelledby="profile-experience-title">
         <div class="section-heading">
           <div>
@@ -128,6 +137,7 @@
         </div>
         <ol class="timeline" id="experience-list"></ol>
       </section>
+      <!-- 代表论文区：精选论文列表，点击可跳转全部成果 -->
       <section class="section-wrap" aria-labelledby="profile-selected-title">
         <div class="section-heading inline">
           <div>
@@ -140,6 +150,7 @@
         </div>
         <div class="publication-list" id="profile-publication-list"></div>
       </section>
+      <!-- 学术任职区：展示学术组织任职情况 -->
       <section class="section-wrap" aria-labelledby="profile-appointments-title">
         <div class="section-heading">
           <div>
@@ -150,13 +161,15 @@
         <div class="detail-list" id="appointment-list" data-achievement-types="学术任职"></div>
       </section>
     </main>
+    <!-- 页脚：版权、邮箱、地址、版本号 -->
     <footer class="site-footer contact-footer">
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.10.15</span>
+      <span class="footer-version">Version 1.10.16</span>
     </footer>
-    <script src="js/data.js?v=v1.10.15" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.10.15" charset="utf-8"></script>
+    <!-- 核心脚本：data.js 为站点内容数据库，script.js 负责渲染与交互 -->
+    <script src="js/data.js?v=v1.10.16" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.10.16" charset="utf-8"></script>
   </body>
 </html>

@@ -1,4 +1,10 @@
-﻿window.DEFAULT_SITE_DATA = {
+﻿/**
+ * data.js — 站点内容数据库（核心数据源）
+ * 被前台 script.js / global.js 与后台 admin.js 共同引用。
+ * 维护内容：个人资料、研究内容、新闻、论文、项目、成果、经历、联系方式、多语言文案等。
+ * 修改后需在 admin.html 中点击“保存到本地”写回文件，或手动更新此文件。
+ */
+window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "assetSource": "vercel",
   "profile": {

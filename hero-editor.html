@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hero 样式编辑器 | 熊毅丰</title>
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.16" />
+    <style>
+      :root {
+        --editor-bg: #05050a;
+        --editor-surface: rgba(255, 255, 255, 0.04);
+        --editor-surface-hover: rgba(255, 255, 255, 0.07);
+        --editor-border: rgba(255, 255, 255, 0.08);
+        --editor-text: rgba(255, 255, 255, 0.9);
+        --editor-muted: rgba(255, 255, 255, 0.5);
+        --editor-accent: #2997ff;
+        --editor-success: #30d158;
+        --editor-error: #ff453a;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--editor-bg);
+        color: var(--editor-text);
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+        font-size: 14px;
+      }
+
+      .editor-header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 22px;
+        background: rgba(5, 5, 10, 0.88);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid var(--editor-border);
+      }
+
+      .editor-header h1 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+
+      .editor-header p {
+        margin: 3px 0 0;
+        font-size: 0.75rem;
+        color: var(--editor-muted);
+      }
+
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .lang-switch {
+        display: flex;
+        border: 1px solid var(--editor-border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: rgba(0, 0, 0, 0.25);
+      }
+
+      .lang-switch button {
+        border: none;
+        background: transparent;
+        color: var(--editor-muted);
+        padding: 7px 14px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.16s ease;
+      }
+
+      .lang-switch button.active {
+        background: var(--editor-accent);
+        color: #fff;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid var(--editor-border);
+        border-radius: 10px;
+        background: var(--editor-surface);
+        color: var(--editor-text);
+        padding: 8px 14px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.16s ease;
+      }
+
+      .btn:hover { background: var(--editor-surface-hover); }
+
+      .btn-primary {
+        background: var(--editor-accent);
+        border-color: var(--editor-accent);
+        color: #fff;
+      }
+
+      .btn-primary:hover { background: #4aa8ff; border-color: #4aa8ff; }
+
+      #status {
+        font-size: 0.78rem;
+        min-width: 90px;
+        text-align: right;
+        color: var(--editor-muted);
+      }
+
+      #status[data-type="success"] { color: var(--editor-success); }
+      #status[data-type="error"] { color: var(--editor-error); }
+
+      .editor-layout {
+        display: grid;
+        grid-template-columns: minmax(340px, 440px) 1fr;
+        gap: 18px;
+        padding: 18px 22px 36px;
+        min-height: calc(100vh - 74px);
+      }
+
+      .editor-panel {
+        background: var(--editor-surface);
+        border: 1px solid var(--editor-border);
+        border-radius: 18px;
+        padding: 18px;
+        overflow-y: auto;
+        max-height: calc(100vh - 110px);
+      }
+
+      .preview-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: var(--editor-surface);
+        border: 1px solid var(--editor-border);
+        border-radius: 18px;
+        padding: 14px;
+        overflow: hidden;
+      }
+
+      .preview-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      .preview-toolbar h2 {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 700;
+      }
+
+      #preview-frame {
+        flex: 1;
+        width: 100%;
+        min-height: 520px;
+        border: 1px solid var(--editor-border);
+        border-radius: 14px;
+        background: #000;
+      }
+
+      .editor-group {
+        border: 1px solid var(--editor-border);
+        border-radius: 14px;
+        padding: 14px;
+        margin: 0 0 14px;
+      }
+
+      .editor-group legend {
+        padding: 0 8px;
+        font-size: 0.72rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--editor-muted);
+      }
+
+      .field-row {
+        display: grid;
+        grid-template-columns: 110px 1fr;
+        align-items: start;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .field-row:last-child { margin-bottom: 0; }
+
+      .field-row label {
+        font-size: 0.8rem;
+        color: var(--editor-text);
+        font-weight: 600;
+        padding-top: 8px;
+      }
+
+      .field-row input,
+      .field-row select,
+      .field-row textarea {
+        width: 100%;
+        appearance: none;
+        background: rgba(0, 0, 0, 0.35);
+        border: 1px solid var(--editor-border);
+        border-radius: 10px;
+        padding: 8px 11px;
+        color: var(--editor-text);
+        font-size: 0.82rem;
+        outline: none;
+        transition: border-color 0.16s ease;
+        font-family: inherit;
+      }
+
+      .field-row input:focus,
+      .field-row select:focus,
+      .field-row textarea:focus { border-color: var(--editor-accent); }
+
+      .field-row select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23fff' fill-opacity='0.6' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 11px center;
+        padding-right: 30px;
+      }
+
+      .field-row textarea {
+        min-height: 60px;
+        resize: vertical;
+        line-height: 1.5;
+      }
+
+      .range-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .range-control .slider {
+        flex: 1;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 5px;
+        background: rgba(255, 255, 255, 0.12);
+        border-radius: 3px;
+        outline: none;
+        border: none;
+        padding: 0;
+      }
+
+      .range-control .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--editor-accent);
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      .range-control .slider::-moz-range-thumb {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: var(--editor-accent);
+        cursor: pointer;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      .range-control .number-input {
+        width: 72px;
+        text-align: center;
+        padding: 7px 6px;
+      }
+
+      .range-control .unit {
+        font-size: 0.75rem;
+        color: var(--editor-muted);
+        min-width: 22px;
+      }
+
+      .clamp-control { display: flex; flex-direction: column; gap: 8px; }
+
+      .raw-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .raw-row .raw-input {
+        flex: 1;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.75rem;
+      }
+
+      .clamp-hint {
+        font-size: 0.7rem;
+        color: var(--editor-muted);
+        white-space: nowrap;
+      }
+
+      .color-control {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .color-control .color-text {
+        flex: 1;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.78rem;
+      }
+
+      .color-preview {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        flex-shrink: 0;
+      }
+
+      .editor-hint {
+        margin: 8px 0 0;
+        font-size: 0.72rem;
+        color: var(--editor-muted);
+        line-height: 1.5;
+      }
+
+      @media (max-width: 900px) {
+        .editor-layout {
+          grid-template-columns: 1fr;
+          padding: 14px;
+        }
+        .editor-panel { max-height: none; }
+        #preview-frame { min-height: 380px; }
+      }
+
+      @media (max-width: 560px) {
+        .editor-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 10px;
+        }
+        .field-row {
+          grid-template-columns: 1fr;
+          gap: 5px;
+        }
+        .field-row label { padding-top: 0; }
+        .range-control .slider { min-width: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="editor-header">
+      <div>
+        <h1>Hero 样式编辑器</h1>
+        <p>拖动滑条调节首页首屏文字，右侧实时预览，保存后同时更新样式与文案</p>
+      </div>
+      <div class="header-actions">
+        <div class="lang-switch">
+          <button type="button" data-preview-lang="zh" class="active">中</button>
+          <button type="button" data-preview-lang="en">EN</button>
+        </div>
+        <span id="status"></span>
+        <button id="btn-reload-preview" class="btn" type="button">刷新预览</button>
+        <button id="btn-reset" class="btn" type="button">重置</button>
+        <button id="btn-save" class="btn btn-primary" type="button">保存</button>
+      </div>
+    </header>
+
+    <main class="editor-layout">
+      <section class="editor-panel">
+        <form id="editor-form"></form>
+      </section>
+      <section class="preview-panel">
+        <div class="preview-toolbar">
+          <h2>实时预览</h2>
+          <span class="editor-hint">首页 index.html</span>
+        </div>
+        <iframe id="preview-frame" src="index.html" title="首页预览"></iframe>
+      </section>
+    </main>
+
+    <script src="js/hero-editor.js"></script>
+  </body>
+</html>

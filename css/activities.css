@@ -1,4 +1,6 @@
+/* activities.css — 学术活动页专有样式覆盖 */
 /* Activities page-specific overrides */
+/* 活动/经历条目：双列布局（左侧年份 + 右侧内容） */
 .detail-item,
 .profile-publication-item,
 .timeline li {
@@ -12,12 +14,14 @@
   transition: border-color 200ms ease, background 200ms ease;
 }
 
+/* 时间轴区块：左右分栏 */
 .timeline-section {
   display: grid;
   grid-template-columns: minmax(240px, 0.75fr) minmax(320px, 1.25fr);
   gap: clamp(34px, 7vw, 92px);
 }
 
+/* 活动详情条目尺寸覆盖 */
 .detail-item {
   grid-template-columns: 118px 1fr;
   gap: 24px;
