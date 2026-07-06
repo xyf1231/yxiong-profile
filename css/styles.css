@@ -10227,22 +10227,27 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
 
 
 
-/* v1.10.23 mobile nav touch-friendly layout */
+/* v1.10.25 mobile nav Apple-style list layout */
 @media (max-width: 860px) {
   .nav-links {
-    padding: clamp(24px, 5vh, 44px) max(20px, env(safe-area-inset-right)) max(34px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important;
+    padding: clamp(30px, 7vh, 56px) max(26px, env(safe-area-inset-right)) max(42px, env(safe-area-inset-bottom)) max(26px, env(safe-area-inset-left)) !important;
+    background: rgba(0, 0, 0, 0.96) !important;
   }
 
   .nav-cards.nav-cards-five {
-    width: min(100%, 420px) !important;
-    gap: clamp(12px, 2.4vh, 20px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    gap: 0 !important;
+    margin: 0 !important;
   }
 
   .nav-cards-five .nav-card {
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
     padding: 0 !important;
-    border-radius: 18px !important;
-    background: rgba(255, 255, 255, 0.045) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
   }
 
   .nav-cards-five .nav-card-links {
@@ -10250,7 +10255,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     flex-direction: column !important;
     flex-wrap: nowrap !important;
     gap: 0 !important;
-    padding: 6px !important;
+    padding: 0 !important;
   }
 
   .nav-cards-five .nav-card-links a {
@@ -10259,12 +10264,13 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    min-height: 50px !important;
-    padding: 11px 14px !important;
-    border-radius: 12px !important;
+    min-height: 56px !important;
+    padding: 14px 6px !important;
+    border-radius: 0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     background: transparent !important;
     box-sizing: border-box !important;
-    line-height: 1.3 !important;
+    line-height: 1.25 !important;
   }
 
   .nav-cards-five .nav-card-links a::before {
@@ -10277,104 +10283,54 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
   .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:first-child,
   .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:first-child,
   .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:first-child {
-    font-size: clamp(1.35rem, 5.6vw, 1.85rem) !important;
-    font-weight: 720 !important;
+    font-size: clamp(1.65rem, 7vw, 2.35rem) !important;
+    font-weight: 640 !important;
     color: rgba(255, 255, 255, 0.96) !important;
+    letter-spacing: -0.3px !important;
   }
 
   .nav-cards-five .nav-sub-link,
   .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:not(:first-child),
   .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:not(:first-child),
   .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child) {
-    font-size: clamp(0.98rem, 4vw, 1.18rem) !important;
-    font-weight: 560 !important;
-    color: rgba(255, 255, 255, 0.68) !important;
-    padding-left: 14px !important;
+    font-size: clamp(1.05rem, 4.6vw, 1.42rem) !important;
+    font-weight: 520 !important;
+    color: rgba(255, 255, 255, 0.62) !important;
+    padding-left: 26px !important;
+    min-height: 50px !important;
   }
 
   .nav-cards-five .nav-card-links a:hover,
   .nav-cards-five .nav-card-links a:active,
   .nav-cards-five .nav-card-links a:focus-visible {
-    background: rgba(255, 255, 255, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
     color: #ffffff !important;
-    transform: translateX(3px) scale(1.01) !important;
+    transform: translateX(2px) !important;
+    margin: 0 -6px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+    border-radius: 10px !important;
+    border-bottom-color: transparent !important;
   }
 
-  .nav-cards-five .nav-card-links a:active {
-    background: rgba(100, 210, 255, 0.12) !important;
+  .nav-cards-five .nav-sub-link:hover,
+  .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:not(:first-child):hover,
+  .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:not(:first-child):hover,
+  .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child):hover,
+  .nav-cards-five .nav-sub-link:active,
+  .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:not(:first-child):active,
+  .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:not(:first-child):active,
+  .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child):active,
+  .nav-cards-five .nav-sub-link:focus-visible,
+  .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:not(:first-child):focus-visible,
+  .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:not(:first-child):focus-visible,
+  .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child):focus-visible {
+    padding-left: 32px !important;
   }
 
   .nav-cards-five .nav-card-arrow {
-    font-size: 0.85em !important;
-    opacity: 0.4 !important;
+    font-size: 0.95em !important;
+    opacity: 0.45 !important;
   }
 }
 
-
-
-/* v1.10.24 desktop dropdown nav: add chevrons and spacing refinement */
-@media (min-width: 861px) {
-  .nav-desktop-items {
-    gap: clamp(4px, 0.5vw, 10px);
-  }
-
-  .nav-group {
-    display: flex;
-    align-items: center;
-  }
-
-  .nav-group > a {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    padding: 9px 10px 11px 12px;
-  }
-
-  .nav-group > a::after {
-    content: "";
-    width: 0;
-    height: 0;
-    border-left: 4px solid transparent;
-    border-right: 4px solid transparent;
-    border-top: 4px solid currentColor;
-    opacity: 0.5;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-  }
-
-  .nav-group:hover > a::after,
-  .nav-group.is-open > a::after {
-    opacity: 0.9;
-    transform: translateY(1px);
-  }
-
-  .nav-dropdown {
-    min-width: 170px;
-    margin-top: 8px;
-    padding: 6px;
-  }
-
-  .nav-dropdown a {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    min-height: 38px;
-    padding: 8px 14px;
-    border-radius: 10px;
-    font-size: 0.92rem;
-    font-weight: 560;
-  }
-
-  .nav-dropdown a::after {
-    content: "↗";
-    margin-left: 10px;
-    font-size: 0.78em;
-    opacity: 0.4;
-  }
-
-  .nav-dropdown a:hover {
-    background: rgba(41, 151, 255, 0.1);
-    box-shadow: inset 0 0 0 1px rgba(41, 151, 255, 0.12);
-    transform: translateX(2px);
-  }
-}

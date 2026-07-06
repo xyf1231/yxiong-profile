@@ -1766,28 +1766,6 @@ function setupNavigation() {
       if (!isCompactNav()) openDesktopMega(nav);
     });
 
-    nav.querySelectorAll(".nav-group").forEach((group) => {
-      if (group._groupBound) return;
-      group._groupBound = true;
-      group.addEventListener("click", (event) => {
-        if (!isCompactNav()) return;
-        const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-        if (targetEl.closest(".nav-dropdown")) return;
-        const link = getGroupMainLink(group);
-        if (group.classList.contains("is-open")) {
-          if (link) {
-            closeMobileNav();
-            closeDesktopMega(nav);
-            window.location.href = link.href;
-          }
-          return;
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        openCompactNavGroup(group, nav);
-      });
-    });
-
     nav.addEventListener("click", (event) => {
       const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
       const link = targetEl.closest("a");
@@ -1858,7 +1836,6 @@ function closeDesktopMega(nav) {
   nav?.classList.remove("is-mega-open");
   header?.classList.remove("is-mega-open");
   document.body.classList.remove("nav-mega-open");
-  document.querySelectorAll(".nav-group.is-open").forEach((g) => g.classList.remove("is-open"));
 }
 
 function normalizedCurrentPage() {
