@@ -14,9 +14,9 @@
   --hero-vertical-offset: 0;
 
   /* 眉标（Eyebrow） */
-  --hero-eyebrow-display: none;
+  --hero-eyebrow-display: block;
   --hero-eyebrow-color: #2997ff;
-  --hero-eyebrow-font-size: clamp(0.6rem, 1.2vw, 1.5rem);
+  --hero-eyebrow-font-size: clamp(0.6rem, 3vw, 1.5rem);
   --hero-eyebrow-letter-spacing: 0.18em;
   --hero-eyebrow-margin-bottom: 14px;
 

@@ -4,13 +4,44 @@
  */
 
 const CSS_PATH = "css/hero-config.css";
-const CONTENT_PATH = "js/hero-content.js";
+const CONTENT_PATH = "js/home-content.js";
 const PREVIEW_URL = "index.html";
 
 let originalCss = "";
 let currentCssVars = {};
 let currentContent = { zh: {}, en: {} };
 let originalContent = { zh: {}, en: {} };
+
+const contentKeys = {
+  hero: [
+    ["homeEyebrow", "眉标", false],
+    ["homeTitle", "主标题", true],
+    ["homeSubtitle", "副标题", false],
+  ],
+  frame: [
+    ["homeFrameKicker", "小标签", false],
+    ["homeFrameTitle", "标题", false],
+  ],
+  news: [
+    ["newsKicker", "小标签", false],
+    ["news", "标题", false],
+    ["publications", "链接文字", false],
+  ],
+  bento: [
+    ["quickNavKicker", "小标签", false],
+    ["quickNav", "标题", false],
+    ["quickProfileTitle", "卡片标题", false],
+    ["quickProfileText", "卡片描述", false],
+    ["quickResultsTitle", "卡片标题", false],
+    ["quickResultsText", "卡片描述", false],
+    ["quickHonorsTitle", "卡片标题", false],
+    ["quickHonorsText", "卡片描述", false],
+    ["quickActivitiesTitle", "卡片标题", false],
+    ["quickActivitiesText", "卡片描述", false],
+    ["quickNewsTitle", "卡片标题", false],
+    ["quickNewsText", "卡片描述", false],
+  ],
+};
 let previewLang = "zh";
 let updateTimer = null;
 
@@ -174,8 +205,8 @@ function buildClamp(value, field) {
    文案内容解析与构建
    ═══════════════════════════════════════════════════════════════ */
 
-function parseHeroContent(js) {
-  const match = js.match(/window\.HERO_CONTENT\s*=\s*(\{[\s\S]*?\});/);
+function parseHomeContent(js) {
+  const match = js.match(/window\.HOME_CONTENT\s*=\s*(\{[\s\S]*?\});/);
   if (!match) return { zh: {}, en: {} };
   try {
     // 使用 new Function 解析 JS 对象字面量（允许未加引号的键、换行字符串等）
@@ -185,8 +216,8 @@ function parseHeroContent(js) {
   }
 }
 
-function buildHeroContent(content) {
-  return `/**\n * hero-content.js — 首页 Hero 文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.HERO_CONTENT = ${JSON.stringify(content, null, 2)};\n`;
+function buildHomeContent(content) {
+  return `/**\n * home-content.js — 首页各模块文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.HOME_CONTENT = ${JSON.stringify(content, null, 2)};\n`;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -392,29 +423,36 @@ function renderContentField(lang, key, label, value, multiline) {
   return row;
 }
 
+const contentGroupTitles = {
+  hero: "首屏 Hero",
+  frame: "研究亮点",
+  news: "新闻动态",
+  bento: "快速导航卡片",
+};
+
 function renderForm() {
   elForm.innerHTML = "";
 
-  // 文案内容组
-  const contentGroup = document.createElement("fieldset");
-  contentGroup.className = "editor-group";
-  const contentLegend = document.createElement("legend");
-  contentLegend.textContent = "文字内容";
-  contentGroup.appendChild(contentLegend);
+  // 各模块文案组
+  Object.entries(contentKeys).forEach(([groupKey, keys]) => {
+    const contentGroup = document.createElement("fieldset");
+    contentGroup.className = "editor-group";
+    const contentLegend = document.createElement("legend");
+    contentLegend.textContent = contentGroupTitles[groupKey];
+    contentGroup.appendChild(contentLegend);
 
-  contentGroup.appendChild(renderContentField("zh", "homeEyebrow", "眉标", currentContent.zh.homeEyebrow || "", false));
-  contentGroup.appendChild(renderContentField("zh", "homeTitle", "主标题", currentContent.zh.homeTitle || "", true));
-  contentGroup.appendChild(renderContentField("zh", "homeSubtitle", "副标题", currentContent.zh.homeSubtitle || "", false));
-  contentGroup.appendChild(renderContentField("en", "homeEyebrow", "眉标", currentContent.en.homeEyebrow || "", false));
-  contentGroup.appendChild(renderContentField("en", "homeTitle", "主标题", currentContent.en.homeTitle || "", true));
-  contentGroup.appendChild(renderContentField("en", "homeSubtitle", "副标题", currentContent.en.homeSubtitle || "", false));
+    keys.forEach(([key, label, multiline]) => {
+      contentGroup.appendChild(renderContentField("zh", key, `${label}（中）`, currentContent.zh[key] || "", multiline));
+      contentGroup.appendChild(renderContentField("en", key, `${label}（EN）`, currentContent.en[key] || "", multiline));
+    });
+
+    elForm.appendChild(contentGroup);
+  });
 
   const hint = document.createElement("p");
   hint.className = "editor-hint";
-  hint.innerHTML = "提示：主标题输入多行文字即可分行显示，预览默认中文，可点右上角「EN」切换查看英文效果。";
-  contentGroup.appendChild(hint);
-
-  elForm.appendChild(contentGroup);
+  hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
+  elForm.appendChild(hint);
 
   // CSS 变量组
   cssGroups.forEach((group) => {
@@ -485,11 +523,11 @@ function injectCssIntoPreview(css) {
 function injectContentIntoPreview() {
   if (!elPreview || !elPreview.contentWindow) return;
   const win = elPreview.contentWindow;
-  win.HERO_CONTENT = JSON.parse(JSON.stringify(currentContent));
+  win.HOME_CONTENT = JSON.parse(JSON.stringify(currentContent));
   if (typeof win.applyLanguage === "function") {
     win.applyLanguage();
   } else {
-    // 若 applyLanguage 尚未加载，等待 script.js 执行后会自动读取 HERO_CONTENT
+    // 若 applyLanguage 尚未加载，等待 script.js 执行后会自动读取 HOME_CONTENT
   }
 }
 
@@ -518,7 +556,7 @@ async function loadConfig() {
     ]);
     originalCss = cssData.content;
     currentCssVars = parseCssVariables(originalCss);
-    originalContent = parseHeroContent(contentData.content);
+    originalContent = parseHomeContent(contentData.content);
     currentContent = JSON.parse(JSON.stringify(originalContent));
     renderForm();
     updatePreview();

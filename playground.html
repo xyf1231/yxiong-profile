@@ -506,7 +506,7 @@
       <div class="control-group" id="presetWrap" style="grid-column: 1 / -1;">
         <div class="pool-header">
           <label style="margin:0;">Gradient Pool</label>
-          <span class="pool-count" id="selectedCount">30 selected</span>
+          <span class="pool-count" id="selectedCount">40 selected</span>
           <div class="pool-actions">
             <button class="small" id="selectAllBtn">Select All</button>
             <button class="small" id="clearBtn">Clear</button>
@@ -517,6 +517,7 @@
           <button class="filter-tab active" data-filter="all">All</button>
           <button class="filter-tab" data-filter="apple">Apple Tones</button>
           <button class="filter-tab" data-filter="morandi">Morandi</button>
+          <button class="filter-tab" data-filter="classic">Classic</button>
         </div>
         <div class="gradient-grid" id="gradientPool"></div>
       </div>
@@ -561,6 +562,14 @@
       <div class="control-group">
         <label>Overlap <span class="range-value" id="overlapValue">0.02</span></label>
         <input type="range" id="overlapInput" min="0" max="0.5" step="0.01" value="0.02">
+      </div>
+      <div class="control-group">
+        <label>Brightness <span class="range-value" id="brightnessValue">0%</span></label>
+        <input type="range" id="brightnessInput" min="-50" max="50" step="1" value="0">
+      </div>
+      <div class="control-group">
+        <label>Saturation <span class="range-value" id="saturationValue">0%</span></label>
+        <input type="range" id="saturationInput" min="-50" max="50" step="1" value="0">
       </div>
       <div class="control-group">
         <label>Sequence Options</label>
@@ -618,60 +627,143 @@
       const { useState, useEffect, useRef, useCallback, useImperativeHandle } = React;
       const h = React.createElement;
 
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : { r: 0, g: 0, b: 0 };
+      }
+
+      function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        if (max === min) {
+          h = s = 0;
+        } else {
+          const d = max - min;
+          s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+          switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+          }
+          h /= 6;
+        }
+        return { h, s, l };
+      }
+
+      function hslToRgb(h, s, l) {
+        let r, g, b;
+        if (s === 0) {
+          r = g = b = l;
+        } else {
+          const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+          };
+          const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          const p = 2 * l - q;
+          r = hue2rgb(p, q, h + 1 / 3);
+          g = hue2rgb(p, q, h);
+          b = hue2rgb(p, q, h - 1 / 3);
+        }
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+      }
+
+      function rgbToHex(r, g, b) {
+        return '#' + [r, g, b].map(x => {
+          const hex = Math.max(0, Math.min(255, x)).toString(16);
+          return hex.length === 1 ? '0' + hex : hex;
+        }).join('');
+      }
+
+      function applyColorAdjustment(hex, brightness, saturation) {
+        // brightness: -0.5 to 0.5
+        // saturation: -0.5 to 0.5
+        const { r, g, b } = hexToRgb(hex);
+        let { h, s, l } = rgbToHsl(r, g, b);
+        s = Math.max(0, Math.min(1, s * (1 + saturation)));
+        l = Math.max(0, Math.min(1, l + brightness));
+        return rgbToHex(...hslToRgb(h, s, l));
+      }
+
       const gradientDefs = {
-        midnight: { cat: 'apple', stops: [{ offset: '0%', color: '#08081a' }, { offset: '33%', color: '#181838' }, { offset: '66%', color: '#282858' }, { offset: '100%', color: '#383878' }] },
-        graphite: { cat: 'apple', stops: [{ offset: '0%', color: '#161618' }, { offset: '33%', color: '#262628' }, { offset: '66%', color: '#363638' }, { offset: '100%', color: '#464648' }] },
-        pacific: { cat: 'apple', stops: [{ offset: '0%', color: '#002848' }, { offset: '33%', color: '#003868' }, { offset: '66%', color: '#004888' }, { offset: '100%', color: '#0058a8' }] },
-        alpine: { cat: 'apple', stops: [{ offset: '0%', color: '#182828' }, { offset: '33%', color: '#283838' }, { offset: '66%', color: '#384848' }, { offset: '100%', color: '#485858' }] },
-        slate: { cat: 'apple', stops: [{ offset: '0%', color: '#1a2a3a' }, { offset: '33%', color: '#2a3a4a' }, { offset: '66%', color: '#3a4a5a' }, { offset: '100%', color: '#4a5a6a' }] },
-        indigo: { cat: 'apple', stops: [{ offset: '0%', color: '#1a1a3a' }, { offset: '33%', color: '#2a2a5a' }, { offset: '66%', color: '#3a3a7a' }, { offset: '100%', color: '#4a4a9a' }] },
-        silver: { cat: 'apple', stops: [{ offset: '0%', color: '#707070' }, { offset: '33%', color: '#808080' }, { offset: '66%', color: '#909090' }, { offset: '100%', color: '#a0a0a0' }] },
-        'rose-gold': { cat: 'apple', stops: [{ offset: '0%', color: '#a86870' }, { offset: '33%', color: '#b88088' }, { offset: '66%', color: '#c8a0a8' }, { offset: '100%', color: '#d8c0c8' }] },
-        sky: { cat: 'apple', stops: [{ offset: '0%', color: '#0a3a5a' }, { offset: '33%', color: '#1a4a6a' }, { offset: '66%', color: '#2a5a7a' }, { offset: '100%', color: '#3a6a8a' }] },
-        sage: { cat: 'apple', stops: [{ offset: '0%', color: '#1a3a2a' }, { offset: '33%', color: '#2a4a3a' }, { offset: '66%', color: '#3a5a4a' }, { offset: '100%', color: '#4a6a5a' }] },
-        titanium: { cat: 'apple', stops: [{ offset: '0%', color: '#5a5a5a' }, { offset: '33%', color: '#6a6a6a' }, { offset: '66%', color: '#7a7a7a' }, { offset: '100%', color: '#8a8a8a' }] },
-        ocean: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a3a' }, { offset: '33%', color: '#1a3a4a' }, { offset: '66%', color: '#2a4a5a' }, { offset: '100%', color: '#3a5a6a' }] },
-        mist: { cat: 'apple', stops: [{ offset: '0%', color: '#5a6a7a' }, { offset: '33%', color: '#6a7a8a' }, { offset: '66%', color: '#7a8a9a' }, { offset: '100%', color: '#8a9aaa' }] },
-        orchid: { cat: 'apple', stops: [{ offset: '0%', color: '#4a2a4a' }, { offset: '33%', color: '#5a3a5a' }, { offset: '66%', color: '#6a4a6a' }, { offset: '100%', color: '#7a5a7a' }] },
-        bronze: { cat: 'apple', stops: [{ offset: '0%', color: '#4a3a2a' }, { offset: '33%', color: '#5a4a3a' }, { offset: '66%', color: '#6a5a4a' }, { offset: '100%', color: '#7a6a5a' }] },
-        'dusty-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#a07070' }, { offset: '33%', color: '#b08080' }, { offset: '66%', color: '#c09090' }, { offset: '100%', color: '#d0a0a0' }] },
-        'muted-sage': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a7a5a' }, { offset: '33%', color: '#6a8a6a' }, { offset: '66%', color: '#7a9a7a' }, { offset: '100%', color: '#8aaa8a' }] },
-        'steel-blue': { cat: 'morandi', stops: [{ offset: '0%', color: '#4a5a6a' }, { offset: '33%', color: '#5a6a7a' }, { offset: '66%', color: '#6a7a8a' }, { offset: '100%', color: '#7a8a9a' }] },
-        'warm-sand': { cat: 'morandi', stops: [{ offset: '0%', color: '#8a7a5a' }, { offset: '33%', color: '#9a8a6a' }, { offset: '66%', color: '#aa9a7a' }, { offset: '100%', color: '#baaa8a' }] },
-        'soft-lilac': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a5a7a' }, { offset: '33%', color: '#7a6a8a' }, { offset: '66%', color: '#8a7a9a' }, { offset: '100%', color: '#9a8aaa' }] },
-        terracotta: { cat: 'morandi', stops: [{ offset: '0%', color: '#8a5a4a' }, { offset: '33%', color: '#9a6a5a' }, { offset: '66%', color: '#aa7a6a' }, { offset: '100%', color: '#ba8a7a' }] },
-        seafoam: { cat: 'morandi', stops: [{ offset: '0%', color: '#4a7a6a' }, { offset: '33%', color: '#5a8a7a' }, { offset: '66%', color: '#6a9a8a' }, { offset: '100%', color: '#7aaaba' }] },
-        'soft-peach': { cat: 'morandi', stops: [{ offset: '0%', color: '#9a7a6a' }, { offset: '33%', color: '#aa8a7a' }, { offset: '66%', color: '#ba9a8a' }, { offset: '100%', color: '#caabaa' }] },
-        'dusty-lavender': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a4a6a' }, { offset: '33%', color: '#6a5a7a' }, { offset: '66%', color: '#7a6a8a' }, { offset: '100%', color: '#8a7a9a' }] },
-        'olive-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a6a4a' }, { offset: '33%', color: '#7a7a5a' }, { offset: '66%', color: '#8a8a6a' }, { offset: '100%', color: '#9a9a7a' }] },
-        'muted-blush': { cat: 'morandi', stops: [{ offset: '0%', color: '#a07070' }, { offset: '33%', color: '#b08080' }, { offset: '66%', color: '#c09090' }, { offset: '100%', color: '#d0a0a0' }] },
-        'slate-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a4a5a' }, { offset: '33%', color: '#7a5a6a' }, { offset: '66%', color: '#8a6a7a' }, { offset: '100%', color: '#9a7a8a' }] },
-        'cream-stone': { cat: 'morandi', stops: [{ offset: '0%', color: '#9a8a6a' }, { offset: '33%', color: '#aa9a7a' }, { offset: '66%', color: '#baaa8a' }, { offset: '100%', color: '#cabaaa' }] },
-        'mint-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a7a6a' }, { offset: '33%', color: '#6a8a7a' }, { offset: '66%', color: '#7a9a8a' }, { offset: '100%', color: '#8aaaba' }] },
-        'mauve-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a5a6a' }, { offset: '33%', color: '#7a6a7a' }, { offset: '66%', color: '#8a7a8a' }, { offset: '100%', color: '#9a8a9a' }] }
+        midnight: { cat: 'apple', stops: [{ offset: '0%', color: '#0a0a1a' }, { offset: '20%', color: '#1a1a3a' }, { offset: '40%', color: '#2a2a5a' }, { offset: '60%', color: '#3a3a7a' }, { offset: '80%', color: '#4a4a9a' }, { offset: '100%', color: '#5a5aba' }] },
+        graphite: { cat: 'apple', stops: [{ offset: '0%', color: '#1a1a1c' }, { offset: '20%', color: '#2a2a2e' }, { offset: '40%', color: '#3a3a3e' }, { offset: '60%', color: '#4a4a4e' }, { offset: '80%', color: '#5a5a5e' }, { offset: '100%', color: '#6a6a6e' }] },
+        pacific: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a2a' }, { offset: '20%', color: '#0a3a4a' }, { offset: '40%', color: '#1a4a6a' }, { offset: '60%', color: '#2a5a8a' }, { offset: '80%', color: '#3a6aaa' }, { offset: '100%', color: '#4a7aca' }] },
+        alpine: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a1a' }, { offset: '20%', color: '#1a3a2a' }, { offset: '40%', color: '#2a4a3a' }, { offset: '60%', color: '#3a5a4a' }, { offset: '80%', color: '#4a6a5a' }, { offset: '100%', color: '#5a7a6a' }] },
+        slate: { cat: 'apple', stops: [{ offset: '0%', color: '#1a2a3a' }, { offset: '20%', color: '#2a3a4a' }, { offset: '40%', color: '#3a4a5a' }, { offset: '60%', color: '#4a5a6a' }, { offset: '80%', color: '#5a6a7a' }, { offset: '100%', color: '#6a7a8a' }] },
+        indigo: { cat: 'apple', stops: [{ offset: '0%', color: '#1a1a3a' }, { offset: '20%', color: '#2a2a5a' }, { offset: '40%', color: '#3a3a7a' }, { offset: '60%', color: '#4a4a9a' }, { offset: '80%', color: '#5a5aba' }, { offset: '100%', color: '#6a6ada' }] },
+        silver: { cat: 'apple', stops: [{ offset: '0%', color: '#3a3a3a' }, { offset: '20%', color: '#4a4a4a' }, { offset: '40%', color: '#5a5a5a' }, { offset: '60%', color: '#6a6a6a' }, { offset: '80%', color: '#7a7a7a' }, { offset: '100%', color: '#8a8a8a' }] },
+        'rose-gold': { cat: 'apple', stops: [{ offset: '0%', color: '#5a3a3a' }, { offset: '20%', color: '#6a4a4a' }, { offset: '40%', color: '#7a5a5a' }, { offset: '60%', color: '#8a6a6a' }, { offset: '80%', color: '#9a7a7a' }, { offset: '100%', color: '#aa8a8a' }] },
+        sky: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a4a' }, { offset: '20%', color: '#1a3a5a' }, { offset: '40%', color: '#2a4a6a' }, { offset: '60%', color: '#3a5a7a' }, { offset: '80%', color: '#4a6a8a' }, { offset: '100%', color: '#5a7a9a' }] },
+        sage: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a1a' }, { offset: '20%', color: '#1a3a2a' }, { offset: '40%', color: '#2a4a3a' }, { offset: '60%', color: '#3a5a4a' }, { offset: '80%', color: '#4a6a5a' }, { offset: '100%', color: '#5a7a6a' }] },
+        titanium: { cat: 'apple', stops: [{ offset: '0%', color: '#2a2a2a' }, { offset: '20%', color: '#3a3a3a' }, { offset: '40%', color: '#4a4a4a' }, { offset: '60%', color: '#5a5a5a' }, { offset: '80%', color: '#6a6a6a' }, { offset: '100%', color: '#7a7a7a' }] },
+        ocean: { cat: 'apple', stops: [{ offset: '0%', color: '#0a2a3a' }, { offset: '20%', color: '#1a3a5a' }, { offset: '40%', color: '#2a4a7a' }, { offset: '60%', color: '#3a5a9a' }, { offset: '80%', color: '#4a6aba' }, { offset: '100%', color: '#5a7aca' }] },
+        mist: { cat: 'apple', stops: [{ offset: '0%', color: '#2a3a4a' }, { offset: '20%', color: '#3a4a5a' }, { offset: '40%', color: '#4a5a6a' }, { offset: '60%', color: '#5a6a7a' }, { offset: '80%', color: '#6a7a8a' }, { offset: '100%', color: '#7a8a9a' }] },
+        orchid: { cat: 'apple', stops: [{ offset: '0%', color: '#3a2a3a' }, { offset: '20%', color: '#4a3a4a' }, { offset: '40%', color: '#5a4a5a' }, { offset: '60%', color: '#6a5a6a' }, { offset: '80%', color: '#7a6a7a' }, { offset: '100%', color: '#8a7a8a' }] },
+        bronze: { cat: 'apple', stops: [{ offset: '0%', color: '#4a3a2a' }, { offset: '20%', color: '#5a4a3a' }, { offset: '40%', color: '#6a5a4a' }, { offset: '60%', color: '#7a6a5a' }, { offset: '80%', color: '#8a7a6a' }, { offset: '100%', color: '#9a8a7a' }] },
+        'dusty-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a4a4a' }, { offset: '20%', color: '#7a5a5a' }, { offset: '40%', color: '#8a6a6a' }, { offset: '60%', color: '#9a7a7a' }, { offset: '80%', color: '#aa8a8a' }, { offset: '100%', color: '#ba9a9a' }] },
+        'muted-sage': { cat: 'morandi', stops: [{ offset: '0%', color: '#4a6a5a' }, { offset: '20%', color: '#5a7a6a' }, { offset: '40%', color: '#6a8a7a' }, { offset: '60%', color: '#7a9a8a' }, { offset: '80%', color: '#8aaa9a' }, { offset: '100%', color: '#9abaaa' }] },
+        'steel-blue': { cat: 'morandi', stops: [{ offset: '0%', color: '#4a5a6a' }, { offset: '20%', color: '#5a6a7a' }, { offset: '40%', color: '#6a7a8a' }, { offset: '60%', color: '#7a8a9a' }, { offset: '80%', color: '#8a9aaa' }, { offset: '100%', color: '#9ababa' }] },
+        'warm-sand': { cat: 'morandi', stops: [{ offset: '0%', color: '#7a6a5a' }, { offset: '20%', color: '#8a7a6a' }, { offset: '40%', color: '#9a8a7a' }, { offset: '60%', color: '#aa9a8a' }, { offset: '80%', color: '#baaa9a' }, { offset: '100%', color: '#cabab9' }] },
+        'soft-lilac': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a4a6a' }, { offset: '20%', color: '#6a5a7a' }, { offset: '40%', color: '#7a6a8a' }, { offset: '60%', color: '#8a7a9a' }, { offset: '80%', color: '#9a8aaa' }, { offset: '100%', color: '#aa9aba' }] },
+        terracotta: { cat: 'morandi', stops: [{ offset: '0%', color: '#7a5a4a' }, { offset: '20%', color: '#8a6a5a' }, { offset: '40%', color: '#9a7a6a' }, { offset: '60%', color: '#aa8a7a' }, { offset: '80%', color: '#ba9a8a' }, { offset: '100%', color: '#caab9a' }] },
+        seafoam: { cat: 'morandi', stops: [{ offset: '0%', color: '#4a6a5a' }, { offset: '20%', color: '#5a7a6a' }, { offset: '40%', color: '#6a8a7a' }, { offset: '60%', color: '#7a9a8a' }, { offset: '80%', color: '#8aaaba' }, { offset: '100%', color: '#9abaca' }] },
+        'soft-peach': { cat: 'morandi', stops: [{ offset: '0%', color: '#8a6a5a' }, { offset: '20%', color: '#9a7a6a' }, { offset: '40%', color: '#aa8a7a' }, { offset: '60%', color: '#ba9a8a' }, { offset: '80%', color: '#caaaaa' }, { offset: '100%', color: '#dababa' }] },
+        'dusty-lavender': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a4a6a' }, { offset: '20%', color: '#6a5a7a' }, { offset: '40%', color: '#7a6a8a' }, { offset: '60%', color: '#8a7a9a' }, { offset: '80%', color: '#9a8aaa' }, { offset: '100%', color: '#aa9aba' }] },
+        'olive-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a5a4a' }, { offset: '20%', color: '#6a6a5a' }, { offset: '40%', color: '#7a7a6a' }, { offset: '60%', color: '#8a8a7a' }, { offset: '80%', color: '#9a9a8a' }, { offset: '100%', color: '#aaaa9a' }] },
+        'muted-blush': { cat: 'morandi', stops: [{ offset: '0%', color: '#8a6a6a' }, { offset: '20%', color: '#9a7a7a' }, { offset: '40%', color: '#aa8a8a' }, { offset: '60%', color: '#ba9a9a' }, { offset: '80%', color: '#caaaaa' }, { offset: '100%', color: '#dababa' }] },
+        'slate-rose': { cat: 'morandi', stops: [{ offset: '0%', color: '#5a4a5a' }, { offset: '20%', color: '#6a5a6a' }, { offset: '40%', color: '#7a6a7a' }, { offset: '60%', color: '#8a7a8a' }, { offset: '80%', color: '#9a8a9a' }, { offset: '100%', color: '#aa9aaa' }] },
+        'cream-stone': { cat: 'morandi', stops: [{ offset: '0%', color: '#8a7a6a' }, { offset: '20%', color: '#9a8a7a' }, { offset: '40%', color: '#aa9a8a' }, { offset: '60%', color: '#baaa9a' }, { offset: '80%', color: '#cabaaa' }, { offset: '100%', color: '#dacaba' }] },
+        'mint-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#4a6a5a' }, { offset: '20%', color: '#5a7a6a' }, { offset: '40%', color: '#6a8a7a' }, { offset: '60%', color: '#7a9a8a' }, { offset: '80%', color: '#8aaaba' }, { offset: '100%', color: '#9ababa' }] },
+        'mauve-gray': { cat: 'morandi', stops: [{ offset: '0%', color: '#6a5a6a' }, { offset: '20%', color: '#7a6a7a' }, { offset: '40%', color: '#8a7a8a' }, { offset: '60%', color: '#9a8a9a' }, { offset: '80%', color: '#aa9aaa' }, { offset: '100%', color: '#ba9aba' }] },
+        golden: { cat: 'classic', stops: [{ offset: '0%', color: '#8B4513' }, { offset: '20%', color: '#CD853F' }, { offset: '40%', color: '#DAA520' }, { offset: '60%', color: '#FFD700' }, { offset: '80%', color: '#F0E68C' }, { offset: '100%', color: '#FFFACD' }] },
+        crimson: { cat: 'classic', stops: [{ offset: '0%', color: '#4a0000' }, { offset: '20%', color: '#800000' }, { offset: '40%', color: '#b30000' }, { offset: '60%', color: '#dc143c' }, { offset: '80%', color: '#ff4d6d' }, { offset: '100%', color: '#ff8fa3' }] },
+        navy: { cat: 'classic', stops: [{ offset: '0%', color: '#000080' }, { offset: '20%', color: '#0033cc' }, { offset: '40%', color: '#0055ff' }, { offset: '60%', color: '#3377ff' }, { offset: '80%', color: '#6699ff' }, { offset: '100%', color: '#99bbff' }] },
+        emerald: { cat: 'classic', stops: [{ offset: '0%', color: '#004d40' }, { offset: '20%', color: '#00695c' }, { offset: '40%', color: '#00897b' }, { offset: '60%', color: '#009688' }, { offset: '80%', color: '#4db6ac' }, { offset: '100%', color: '#80cbc4' }] },
+        ruby: { cat: 'classic', stops: [{ offset: '0%', color: '#3d0000' }, { offset: '20%', color: '#660000' }, { offset: '40%', color: '#990000' }, { offset: '60%', color: '#cc0000' }, { offset: '80%', color: '#ff0000' }, { offset: '100%', color: '#ff5555' }] },
+        sapphire: { cat: 'classic', stops: [{ offset: '0%', color: '#000033' }, { offset: '20%', color: '#001a66' }, { offset: '40%', color: '#003399' }, { offset: '60%', color: '#0044cc' }, { offset: '80%', color: '#3366ff' }, { offset: '100%', color: '#6688ff' }] },
+        amber: { cat: 'classic', stops: [{ offset: '0%', color: '#6b3100' }, { offset: '20%', color: '#8b4513' }, { offset: '40%', color: '#b87333' }, { offset: '60%', color: '#daa520' }, { offset: '80%', color: '#ffd700' }, { offset: '100%', color: '#ffec8b' }] },
+        violet: { cat: 'classic', stops: [{ offset: '0%', color: '#1a0033' }, { offset: '20%', color: '#330066' }, { offset: '40%', color: '#4d0099' }, { offset: '60%', color: '#6600cc' }, { offset: '80%', color: '#7f00ff' }, { offset: '100%', color: '#aa55ff' }] },
+        teal: { cat: 'classic', stops: [{ offset: '0%', color: '#003333' }, { offset: '20%', color: '#006666' }, { offset: '40%', color: '#009999' }, { offset: '60%', color: '#00cccc' }, { offset: '80%', color: '#00ffff' }, { offset: '100%', color: '#55ffff' }] },
+        coral: { cat: 'classic', stops: [{ offset: '0%', color: '#6b0000' }, { offset: '20%', color: '#993333' }, { offset: '40%', color: '#cc5555' }, { offset: '60%', color: '#ff7f50' }, { offset: '80%', color: '#ffa07a' }, { offset: '100%', color: '#ffccaa' }] }
       };
 
-      function createGradientSvgDefs(presetKey) {
+      function createGradientSvgDefs(presetKey, brightness, saturation) {
         const def = gradientDefs[presetKey];
         if (!def) return null;
+        const b = (brightness || 0) / 100;
+        const s = (saturation || 0) / 100;
         return h('linearGradient', {
           id: 'letters-gradient',
           x1: '0%', y1: '0%', x2: '100%', y2: '0%',
           gradientUnits: 'userSpaceOnUse'
         }, def.stops.map((stop, i) =>
-          h('stop', { key: i, offset: stop.offset, stopColor: stop.color })
+          h('stop', { key: i, offset: stop.offset, stopColor: applyColorAdjustment(stop.color, b, s) })
         ));
       }
 
-      function createCustomGradientSvgDefs(custom) {
+      function createCustomGradientSvgDefs(custom, brightness, saturation) {
         const { type, color1, color2, angle } = custom;
+        const b = (brightness || 0) / 100;
+        const s = (saturation || 0) / 100;
+        const c1 = applyColorAdjustment(color1, b, s);
+        const c2 = applyColorAdjustment(color2, b, s);
         if (type === 'radial') {
           return h('radialGradient', {
             id: 'letters-gradient',
             cx: '50%', cy: '50%', r: '50%', fx: '50%', fy: '50%'
           }, [
-            h('stop', { key: 0, offset: '0%', stopColor: color1 }),
-            h('stop', { key: 1, offset: '100%', stopColor: color2 })
+            h('stop', { key: 0, offset: '0%', stopColor: c1 }),
+            h('stop', { key: 1, offset: '100%', stopColor: c2 })
           ]);
         }
         return h('linearGradient', {
@@ -680,8 +772,8 @@
           gradientUnits: 'userSpaceOnUse',
           gradientTransform: `rotate(${angle}, 0.5, 0.5)`
         }, [
-          h('stop', { key: 0, offset: '0%', stopColor: color1 }),
-          h('stop', { key: 1, offset: '100%', stopColor: color2 })
+          h('stop', { key: 0, offset: '0%', stopColor: c1 }),
+          h('stop', { key: 1, offset: '100%', stopColor: c2 })
         ]);
       }
 
@@ -696,7 +788,7 @@
         const {
           words, activePresets, colorMode, solidColor, customGradient,
           variant, strokeWidth, duration, overlap, loopSequence, perWordLoop,
-          isPlaying, onPlayingChange, shuffleKey
+          isPlaying, onPlayingChange, shuffleKey, brightness, saturation
         } = props;
 
         const currentIndex = words.length ? step % words.length : 0;
@@ -766,10 +858,10 @@
         let svgDefs = null;
         let color = '#ffffff';
         if (colorMode === 'preset' && preset) {
-          svgDefs = createGradientSvgDefs(preset);
+          svgDefs = createGradientSvgDefs(preset, brightness, saturation);
           color = 'url(#letters-gradient)';
         } else if (colorMode === 'custom') {
-          svgDefs = createCustomGradientSvgDefs(customGradient);
+          svgDefs = createCustomGradientSvgDefs(customGradient, brightness, saturation);
           color = 'url(#letters-gradient)';
         } else if (colorMode === 'solid') {
           color = solidColor;
@@ -814,6 +906,8 @@
         strokeWidth: 2,
         duration: 2,
         overlap: 0.02,
+        brightness: 0,
+        saturation: 0,
         loopSequence: false,
         perWordLoop: false,
         isPlaying: false,
@@ -872,6 +966,8 @@
             strokeWidth: state.strokeWidth,
             duration: state.duration,
             overlap: state.overlap,
+            brightness: state.brightness,
+            saturation: state.saturation,
             loopSequence: state.loopSequence,
             perWordLoop: state.perWordLoop,
             isPlaying: state.isPlaying,
@@ -984,6 +1080,20 @@
         updateExport();
       });
 
+      document.getElementById('brightnessInput').addEventListener('input', (e) => {
+        state.brightness = parseInt(e.target.value);
+        document.getElementById('brightnessValue').textContent = state.brightness + '%';
+        renderPreview();
+        updateExport();
+      });
+
+      document.getElementById('saturationInput').addEventListener('input', (e) => {
+        state.saturation = parseInt(e.target.value);
+        document.getElementById('saturationValue').textContent = state.saturation + '%';
+        renderPreview();
+        updateExport();
+      });
+
       document.getElementById('loopSequenceInput').addEventListener('change', (e) => {
         state.loopSequence = e.target.checked;
         renderPreview();
@@ -1080,6 +1190,8 @@ function App() {
       strokeWidth={${state.strokeWidth}}
       duration={${state.duration}}
       overlap={${state.overlap}}
+      brightness={${state.brightness}}
+      saturation={${state.saturation}}
       loopSequence={${state.loopSequence}}
       perWordLoop={${state.perWordLoop}}
       isPlaying={isPlaying}
@@ -1102,6 +1214,8 @@ const lettersConfig = {
   strokeWidth: ${state.strokeWidth},
   duration: ${state.duration},
   overlap: ${state.overlap},
+  brightness: ${state.brightness},
+  saturation: ${state.saturation},
   loopSequence: ${state.loopSequence},
   perWordLoop: ${state.perWordLoop}
 };`;

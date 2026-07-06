@@ -1843,11 +1843,11 @@ function applyLanguage() {
   setupLanguageToggle();
   const dict = translations[currentLang];
   document.documentElement.lang = currentLang === "en" ? "en" : "zh-CN";
-  const heroContent = window.HERO_CONTENT || {};
+  const homeContent = window.HOME_CONTENT || {};
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
-    const heroText = heroContent[currentLang] && heroContent[currentLang][key];
-    const text = heroText !== undefined ? heroText : dict[key];
+    const homeText = homeContent[currentLang] && homeContent[currentLang][key];
+    const text = homeText !== undefined ? homeText : dict[key];
     if (text !== undefined) node.textContent = text;
   });
   document.querySelectorAll(".language-toggle").forEach((button) => {
