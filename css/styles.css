@@ -242,88 +242,6 @@ html[data-site-loading="pending"]::after {
   background: linear-gradient(90deg, transparent, rgba(170, 176, 190, 0.55), transparent);
 }
 
-.site-loading-title {
-  margin: 0;
-  font-size: clamp(1.2rem, 3vw, 1.9rem);
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  color: rgba(170, 176, 190, 0.82);
-}
-
-.site-loading-percent {
-  display: grid;
-  gap: 0;
-  justify-items: center;
-  width: 100%;
-}
-
-.site-loading-percent strong {
-  position: relative;
-  min-height: 1.2em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  min-width: min-content;
-  color: #fff;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: clamp(4rem, 12vw, 7rem) !important;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-shadow:
-    0 0 14px rgba(100, 210, 255, 0.22),
-    0 0 30px rgba(124, 58, 237, 0.14);
-}
-
-.site-loading-percent-value,
-.site-loading-percent-ready {
-  position: absolute;
-  inset: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  white-space: nowrap;
-  transition:
-    opacity 800ms ease,
-    transform 800ms ease;
-}
-
-.site-loading-percent-value {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.site-loading-percent-ready {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-.site-loading-percent.is-ready .site-loading-percent-value {
-  opacity: 0 !important;
-  transform: translateY(-10px) !important;
-}
-
-.site-loading-percent.is-ready .site-loading-percent-ready {
-  opacity: 1 !important;
-  transform: translateY(0) !important;
-}
-
-.site-loading-percent span {
-  color: rgba(170, 176, 190, 0.82);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-}
-
-.site-loading-percent-value,
-.site-loading-percent-ready {
-  font-size: inherit !important;
-}
-
 .site-loading-letters {
   display: none;
   width: 100%;
@@ -345,36 +263,15 @@ html[data-site-loading="pending"]::after {
   fill: none;
 }
 
-.site-loading-meta {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 10px;
-}
-
-.site-loading-speed {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 8px;
-  padding: 4px 10px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.site-loading-speed span {
-  color: rgba(170, 176, 190, 0.55);
-  font-size: 0.65rem;
-  font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-
-.site-loading-speed strong {
-  color: rgba(170, 176, 190, 0.75);
-  font-size: 0.78rem;
-  font-weight: 700;
+.site-loading-percent {
+  color: rgba(255, 255, 255, 0.92);
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 800;
   letter-spacing: 0.04em;
+  text-align: center;
+  margin-top: 20px;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 20px rgba(41, 151, 255, 0.25), 0 0 40px rgba(124, 58, 237, 0.15);
 }
 
 .site-loading-track {
@@ -385,7 +282,8 @@ html[data-site-loading="pending"]::after {
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
-  display: none;
+  display: block;
+  margin-top: 28px;
 }
 
 .site-loading-bar {

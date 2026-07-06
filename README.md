@@ -49,6 +49,38 @@
 └── vercel-archive/         # 旧 Vercel 资料和历史脚本归档
 ```
 
+## 加载页（Loading Screen）
+
+加载页不是独立的 HTML 文件，而是由 `js/global.js` 动态注入到 `<body>` 的全屏遮罩，样式锁定在 `css/styles.css`，状态标记由 `index.html` 在 `<head>` 中设置。
+
+### 相关文件
+
+| 文件 | 作用 | 关键代码 |
+|------|------|----------|
+| `index.html` | 设置加载状态标记 | 第 13 行：`document.documentElement.dataset.siteLoading = "pending"` |
+| `css/styles.css` | 加载页所有样式 | 第 64 行起：`.site-loading-overlay`、`.site-loading-card`、`.site-loading-percent`、`.site-loading-bar` 等 |
+| `js/global.js` | 动态创建 DOM、更新进度、结束加载 | 第 154 行起：创建 `.site-loading-overlay` 并插入到 `document.body` |
+
+### 加载流程
+
+1. `index.html` 在 `<head>` 中设置 `html[data-site-loading="pending"]`
+2. `css/styles.css` 根据此属性锁定页面滚动（`overflow: hidden`）并显示深色背景
+3. `js/global.js` 创建加载遮罩，包含：
+   - Lottie 动画容器（`#site-loading-lottie`）
+   - 动态问候语（`site-loading-kicker`）
+   - 标题 "加载中 / Loading"
+   - 百分比数字（`site-loading-percent-value`）
+   - 进度条（`site-loading-bar`）
+   - 速度显示（`site-loading-speed`）
+4. 监听字体、图片等资源加载，实时更新百分比和进度条宽度
+5. 加载完成后移除 `html[data-site-loading]` 属性，隐藏遮罩，恢复页面滚动
+
+### 修改加载页
+
+- **改文字/动画/逻辑**：优先改 `js/global.js`
+- **改外观/布局**：优先改 `css/styles.css`
+- **改加载时机**：检查 `index.html` 第 13 行的 `dataset.siteLoading` 设置点
+
 ## 版本号管理（推荐新方案）
 
 网站已改为**中央版本号管理**，所有 HTML 页面的缓存版本戳统一读取自 `VERSION` 文件，不再手动逐个修改。

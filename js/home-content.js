@@ -31,7 +31,7 @@ window.HOME_CONTENT = {
     "homeTitle": "Fiber\nIntegrated\nIntelligence",
     "homeSubtitle": "Integration · Heterostructure · Intelligence",
     "homeFrameKicker": "研究亮点",
-    "homeFrameTitle": "Research Highlights",
+    "homeFrameTitle": "Highlights",
     "newsKicker": "新闻动态",
     "news": "News",
     "publications": "Publications",

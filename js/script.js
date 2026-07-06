@@ -97,45 +97,24 @@ function setupSiteLoadingGate() {
   if (root.dataset.siteLoading !== "ready") root.dataset.siteLoading = "pending";
 
   let overlay = null;
-  let percentEl = null;
   let barEl = null;
+  let percentEl = null;
 
   let finished = false;
   let current = 0;
   let intervalId = null;
-  let finishTimerId = null;
+  let rafId = null;
+  let targetProgress = 0;
+  let displayProgress = 0;
   let readyTimerId = null;
-  let revealTimerId = null;
-  let lockedScrollY = 0;
-  let speedTickerId = 0;
-  let resourceScanId = 0;
 
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
-    if (percentEl) {
-      const valueEl = percentEl.querySelector(".site-loading-percent-value");
-      const readyEl = percentEl.querySelector(".site-loading-percent-ready");
-      if (valueEl && readyEl) {
-        const isReady = current >= 100;
-        if (!isReady) percentEl.classList.remove("is-ready");
-        valueEl.textContent = `${Math.round(current)}%`;
-        readyEl.textContent = "正在进入";
-      }
-    }
+    if (percentEl) percentEl.textContent = `${Math.round(current)}%`;
     if (barEl) barEl.style.width = `${current}%`;
   };
 
-  // Smooth progress with byte-based loading
-  let targetProgress = 0;
-  let displayProgress = 0;
-  let rafId = null;
-  let totalBytes = 0;
-  let loadedBytes = 0;
-  let resourceEntries = new Map();
-
   const lerp = (start, end, factor) => start + (end - start) * factor;
-
-  const easeOutCubic = (x) => 1 - Math.pow(1 - x, 3);
 
   const animateProgress = () => {
     if (finished) return;
@@ -153,51 +132,19 @@ function setupSiteLoadingGate() {
 
   const updateRealProgress = () => {
     if (finished) return;
-
     const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-    let newTotal = 0;
-    let newLoaded = 0;
-
+    let totalBytes = 0;
+    let loadedBytes = 0;
     for (const entry of entries) {
       const size = entry.transferSize || entry.decodedBodySize || 0;
       if (!size) continue;
-      newTotal += size;
-      // 资源已完全加载（duration > 0 表示已完成）
-      if (entry.duration > 0) {
-        newLoaded += size;
-      }
+      totalBytes += size;
+      if (entry.duration > 0) loadedBytes += size;
     }
-
-    totalBytes = newTotal || 1;
-    loadedBytes = newLoaded;
-
     let progress = 0;
-
-    // Phase 1: document ready state (0-15%)
-    if (document.readyState === "loading") progress = 3;
-    else if (document.readyState === "interactive") progress = 10;
-    else if (document.readyState === "complete") progress = 15;
-
-    // Phase 2: actual resource loading (15-90%) based on bytes
     if (totalBytes > 0) {
-      progress += (loadedBytes / totalBytes) * 75;
+      progress = (loadedBytes / totalBytes) * 100;
     }
-
-    // Phase 3: fonts (90-95%)
-    if (document.fonts && document.fonts.status === "loaded") {
-      progress += 5;
-    } else if (document.readyState === "complete") {
-      progress += 2;
-    }
-
-    // Phase 4: video (95-98%)
-    const video = document.querySelector("video");
-    if (!video || video.readyState >= 3) {
-      progress += 3;
-    } else if (video.readyState >= 1) {
-      progress += 1;
-    }
-
     targetProgress = Math.min(progress, 98);
   };
 
@@ -205,61 +152,25 @@ function setupSiteLoadingGate() {
     if (rafId) return;
     updateRealProgress();
     rafId = requestAnimationFrame(animateProgress);
-    // 每 50ms 更新一次目标进度
     intervalId = window.setInterval(updateRealProgress, 50);
   };
 
   const finish = () => {
     if (finished) return;
-
-    // 如果 overlay 不存在，先创建它
     if (!overlay) ensureOverlay();
-    if (!overlay) return; // 如果 still 不存在，放弃
-
+    if (!overlay) return;
     finished = true;
-
-    // 直接跳到 100%
+    if (rafId) cancelAnimationFrame(rafId);
+    if (intervalId) window.clearInterval(intervalId);
     setProgress(100);
-
-    // 立即显示 "正在进入"（不用 setTimeout）
-    if (percentEl) {
-      const readyEl = percentEl.querySelector(".site-loading-percent-ready");
-      const valueEl = percentEl.querySelector(".site-loading-percent-value");
-      if (readyEl) {
-        readyEl.style.setProperty("opacity", "1", "important");
-        readyEl.style.setProperty("transform", "translateY(0)", "important");
-      }
-      if (valueEl) {
-        valueEl.style.setProperty("opacity", "0", "important");
-        valueEl.style.setProperty("transform", "translateY(-10px)", "important");
-      }
-    }
-
-    // 触发 Letters 手写描边动画
-    const lettersContainer = document.getElementById("site-loading-letters");
-    if (lettersContainer && window.mountLettersAnimation) {
-      try {
-        lettersContainer.style.display = "block";
-        const text = lettersContainer.dataset.text || "正在进入";
-        const color = lettersContainer.dataset.color || "#ffffff";
-        const strokeWidth = parseFloat(lettersContainer.dataset.strokeWidth || "2");
-        window.mountLettersAnimation(lettersContainer, text, color, strokeWidth);
-      } catch (e) {
-        console.warn("Letters animation failed:", e);
-      }
-    }
-
-    // 1.5s 后淡出 overlay
-    window.setTimeout(() => {
-      if (overlay) overlay.style.setProperty("opacity", "0", "important");
-    }, 1500);
-
-    // 2.5s 后移除
-    window.setTimeout(() => {
-      if (overlay) overlay.remove();
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    readyTimerId = window.setTimeout(() => {
       root.dataset.siteLoading = "ready";
-      document.body.style.top = "";
-    }, 2500);
+    }, 700);
+    if (overlay) {
+      overlay.classList.add("is-hidden");
+      window.setTimeout(() => overlay.remove(), 820);
+    }
   };
 
   const ensureOverlay = () => {
@@ -271,25 +182,14 @@ function setupSiteLoadingGate() {
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
           <div class="site-loading-lottie" id="site-loading-lottie"></div>
-          <div class="site-loading-percent" aria-label="加载进度">
-            <strong>
-              <span class="site-loading-percent-value">0%</span>
-              <span class="site-loading-percent-ready">正在进入</span>
-            </strong>
-          </div>
-          <div class="site-loading-letters" id="site-loading-letters" data-text="正在进入" data-color="#ffffff" data-stroke-width="2"></div>
+          <div class="site-loading-percent" aria-label="加载进度">0%</div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
-          <div class="site-loading-meta">
-            <div class="site-loading-speed"><span>速度</span><strong>--</strong></div>
-          </div>
         </div>
       `;
       document.documentElement.appendChild(overlay);
     }
-    percentEl = overlay.querySelector(".site-loading-percent");
-    const percentNumEl = overlay.querySelector(".site-loading-percent strong");
-    if (percentNumEl) percentNumEl.style.setProperty("font-size", "clamp(4rem, 12vw, 7rem)", "important");
     barEl = overlay.querySelector(".site-loading-bar");
+    percentEl = overlay.querySelector(".site-loading-percent");
 
     // 加载并播放 Lottie 欢迎动画
     (async () => {
@@ -324,86 +224,11 @@ function setupSiteLoadingGate() {
         if (lottieEl) lottieEl.style.display = "none";
       }
     })();
-    const speedEl = overlay.querySelector(".site-loading-speed strong");
-    const renderSpeed = (value) => {
-      if (!speedEl) return;
-      speedEl.textContent = formatTransferRate(value);
-    };
-
-    const speedSamples = [];
-    const MAX_SPEED_SAMPLES = 8;
-    let lastResourceCount = 0;
-
-    const pushSpeedSample = (bytesPerSecond) => {
-      if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return;
-      speedSamples.push(bytesPerSecond);
-      if (speedSamples.length > MAX_SPEED_SAMPLES) speedSamples.shift();
-    };
-
-    const getSmoothedSpeed = () => {
-      if (speedSamples.length === 0) return 0;
-      const sum = speedSamples.reduce((a, b) => a + b, 0);
-      return sum / speedSamples.length;
-    };
-
-    const scanResources = () => {
-      const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-      for (let i = lastResourceCount; i < entries.length; i += 1) {
-        const entry = entries[i];
-        const bytes = entry.transferSize || entry.decodedBodySize || 0;
-        if (!bytes || entry.duration <= 0) continue;
-        pushSpeedSample(bytes / (entry.duration / 1000));
-      }
-      lastResourceCount = entries.length;
-      renderSpeed(getSmoothedSpeed());
-    };
-
-    const readConnectionSpeed = () => {
-      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-      if (connection?.downlink) {
-        pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
-      }
-      renderSpeed(getSmoothedSpeed());
-    };
-
-    const startSpeedTicker = () => {
-      if (resourceScanId) return;
-      // Real-time: read connection speed every 250ms
-      resourceScanId = window.setInterval(() => {
-        readConnectionSpeed();
-        scanResources();
-      }, 250);
-    };
-
-    if ("PerformanceObserver" in window) {
-      try {
-        const observer = new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) {
-            const bytes = entry.transferSize || entry.decodedBodySize || 0;
-            if (!bytes || entry.duration <= 0) continue;
-            pushSpeedSample(bytes / (entry.duration / 1000));
-          }
-          scanResources();
-        });
-        observer.observe({ type: "resource", buffered: true });
-        startSpeedTicker();
-        window.addEventListener("pagehide", () => {
-          observer.disconnect();
-          if (resourceScanId) window.clearInterval(resourceScanId);
-        }, { once: true });
-      } catch (error) {
-        // ignore observer setup issues
-      }
-    } else {
-      startSpeedTicker();
-    }
   };
 
   const waitForReady = async () => {
     try {
       ensureOverlay();
-      lockedScrollY = window.scrollY || 0;
-      document.body.style.top = `-${lockedScrollY}px`;
       setProgress(0);
       startProgress();
       const loadPromise = document.readyState === "complete"
@@ -449,6 +274,7 @@ function setupSiteLoadingGate() {
   }
 }
 setupSiteLoadingGate();
+
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
