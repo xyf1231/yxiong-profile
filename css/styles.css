@@ -7254,6 +7254,11 @@ body.nav-mega-open::after {
     font-size: 0.98rem !important;
   }
 
+  .all-publication-list time {
+    left: 20px !important;
+    right: auto !important;
+  }
+
   .feature-card h3,
   .detail-item h3,
   .profile-publication-item h3,
