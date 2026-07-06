@@ -6132,11 +6132,15 @@ body.nav-mega-open::after {
   .fiber-hero,
   .clean-hero {
     min-height: 100svh;
+    overflow: visible;
+    touch-action: pan-y;
   }
 
   .fiber-sticky,
   .clean-stage {
     min-height: 100svh;
+    overflow: visible;
+    touch-action: pan-y;
   }
 
   .story-copy.clean-copy,
@@ -10303,5 +10307,74 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
   .nav-cards-five .nav-card-arrow {
     font-size: 0.85em !important;
     opacity: 0.4 !important;
+  }
+}
+
+
+
+/* v1.10.24 desktop dropdown nav: add chevrons and spacing refinement */
+@media (min-width: 861px) {
+  .nav-desktop-items {
+    gap: clamp(4px, 0.5vw, 10px);
+  }
+
+  .nav-group {
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-group > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 9px 10px 11px 12px;
+  }
+
+  .nav-group > a::after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid currentColor;
+    opacity: 0.5;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .nav-group:hover > a::after,
+  .nav-group.is-open > a::after {
+    opacity: 0.9;
+    transform: translateY(1px);
+  }
+
+  .nav-dropdown {
+    min-width: 170px;
+    margin-top: 8px;
+    padding: 6px;
+  }
+
+  .nav-dropdown a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 38px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.92rem;
+    font-weight: 560;
+  }
+
+  .nav-dropdown a::after {
+    content: "↗";
+    margin-left: 10px;
+    font-size: 0.78em;
+    opacity: 0.4;
+  }
+
+  .nav-dropdown a:hover {
+    background: rgba(41, 151, 255, 0.1);
+    box-shadow: inset 0 0 0 1px rgba(41, 151, 255, 0.12);
+    transform: translateX(2px);
   }
 }

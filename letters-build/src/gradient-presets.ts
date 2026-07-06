@@ -11,7 +11,7 @@ export interface GradientPreset {
   stops: GradientStop[];
 }
 
-export const GRADIENT_PRESETS: Record<string, GradientPreset> = rawPresets;
+export const GRADIENT_PRESETS = rawPresets as Record<string, GradientPreset>;
 
 export type GradientCategory = 'all' | 'apple' | 'morandi' | 'classic';
 

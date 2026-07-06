@@ -30,7 +30,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>学术活动 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.23" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.24" />
   </head>
   <body>
     <!-- 全站头部：品牌 Logo、桌面导航、移动端汉堡菜单、展开式卡片导航 -->
@@ -44,9 +44,29 @@
         <div class="nav-desktop-items">
           <a href="index.html" data-nav="home">主页</a>
           <a href="profile.html" data-nav="profile">简介</a>
-          <a href="results.html" data-nav="results">成果</a>
-          <a href="honors.html" data-nav="honors">荣誉</a>
-          <a href="activities.html" data-nav="activities">其他</a>
+          <div class="nav-group">
+            <a href="results.html" data-nav="results">成果</a>
+            <div class="nav-dropdown">
+              <a href="results.html#papers">论文</a>
+              <a href="results.html#patents">专利</a>
+              <a href="results.html#projects">项目</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <a href="honors.html" data-nav="honors">荣誉</a>
+            <div class="nav-dropdown">
+              <a href="honors.html#awards">奖励</a>
+              <a href="honors.html#innovation">创新创业</a>
+            </div>
+          </div>
+          <div class="nav-group">
+            <a href="activities.html" data-nav="activities">学术活动</a>
+            <div class="nav-dropdown">
+              <a href="activities.html#talks">国内外会议</a>
+              <a href="activities.html#service">学术服务</a>
+              <a href="activities.html#reviews">审稿服务</a>
+            </div>
+          </div>
         </div>
         <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav">
           <span></span>
@@ -119,10 +139,10 @@
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.10.23</span>
+      <span class="footer-version">Version 1.10.24</span>
     </footer>
     <!-- 核心脚本：data.js 为站点内容数据库，script.js 负责渲染与交互 -->
-    <script src="js/data.js?v=v1.10.23" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.10.23" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.10.24" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.10.24" charset="utf-8"></script>
   </body>
 </html>

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { createRoot, flushSync } from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
+import { flushSync } from 'react-dom';
 import {
   Letters,
   EASE_OPTIONS,
@@ -198,7 +199,6 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
     if (raw < 1) {
       state.rafId = requestAnimationFrame(tick);
     } else {
-      console.log('tick complete', state.phase, value);
       animStateRef.current = null;
       setIsPlaying(false);
       state.onComplete?.();
@@ -236,9 +236,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   const runEraseRef = useRef<(from?: number) => void>(() => {});
 
   runDrawRef.current = (from = 0) => {
-    console.log('runDraw called', from);
     startAnimation(from, 1, durationRef.current * (1 - from), 'drawing', () => {
-      console.log('draw complete', eraseRef.current, loopRef.current);
       if (eraseRef.current) {
         runEraseRef.current(1);
       } else if (loopRef.current) {
@@ -252,9 +250,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   };
 
   runEraseRef.current = (from = 1) => {
-    console.log('runErase called', from);
     startAnimation(from, 0, durationRef.current * 0.5 * from, 'erasing', () => {
-      console.log('erase complete', loopRef.current);
       if (loopRef.current) {
         const next = pickNextPreset(activePresetRef.current);
         flushSync(() => setActivePresetKey(next));

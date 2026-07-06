@@ -1669,11 +1669,12 @@ function applyLanguage() {
   setupLanguageToggle();
   const dict = translations[currentLang];
   document.documentElement.lang = currentLang === "en" ? "en" : "zh-CN";
-  const homeContent = window.HOME_CONTENT || {};
+  // 各页面通过加载对应的 *-content.js 定义 window.PAGE_CONTENT；首页历史文件同时提供 window.HOME_CONTENT 以保持兼容
+  const pageContent = window.PAGE_CONTENT || window.HOME_CONTENT || {};
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     const key = node.dataset.i18n;
-    const homeText = homeContent[currentLang] && homeContent[currentLang][key];
-    const text = homeText !== undefined ? homeText : dict[key];
+    const pageText = pageContent[currentLang] && pageContent[currentLang][key];
+    const text = pageText !== undefined ? pageText : dict[key];
     if (text !== undefined) node.textContent = text;
   });
   document.querySelectorAll(".language-toggle").forEach((button) => {
@@ -1785,6 +1786,28 @@ function setupNavigation() {
       if (!isCompactNav()) openDesktopMega(nav);
     });
 
+    nav.querySelectorAll(".nav-group").forEach((group) => {
+      if (group._groupBound) return;
+      group._groupBound = true;
+      group.addEventListener("click", (event) => {
+        if (!isCompactNav()) return;
+        const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+        if (targetEl.closest(".nav-dropdown")) return;
+        const link = getGroupMainLink(group);
+        if (group.classList.contains("is-open")) {
+          if (link) {
+            closeMobileNav();
+            closeDesktopMega(nav);
+            window.location.href = link.href;
+          }
+          return;
+        }
+        event.preventDefault();
+        event.stopPropagation();
+        openCompactNavGroup(group, nav);
+      });
+    });
+
     nav.addEventListener("click", (event) => {
       const targetEl = event.target.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
       const link = targetEl.closest("a");
@@ -1855,6 +1878,7 @@ function closeDesktopMega(nav) {
   nav?.classList.remove("is-mega-open");
   header?.classList.remove("is-mega-open");
   document.body.classList.remove("nav-mega-open");
+  document.querySelectorAll(".nav-group.is-open").forEach((g) => g.classList.remove("is-open"));
 }
 
 function normalizedCurrentPage() {

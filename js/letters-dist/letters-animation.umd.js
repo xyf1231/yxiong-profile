@@ -15434,6 +15434,7 @@
 	}));
 	//#endregion
 	//#region node_modules/@kumailnanji/letters/dist/index.js
+	var import_react_dom = require_react_dom();
 	var import_client = require_client();
 	var import_react = /* @__PURE__ */ __toESM(require_react(), 1);
 	var import_fit_curve = /* @__PURE__ */ __toESM(require_fit_curve(), 1);
@@ -24346,7 +24347,6 @@
 			setProgress(value);
 			if (raw < 1) state.rafId = requestAnimationFrame(tick);
 			else {
-				console.log("tick complete", state.phase, value);
 				animStateRef.current = null;
 				setIsPlaying(false);
 				state.onComplete?.();
@@ -24372,24 +24372,20 @@
 		const runDrawRef = (0, import_react.useRef)(() => {});
 		const runEraseRef = (0, import_react.useRef)(() => {});
 		runDrawRef.current = (from = 0) => {
-			console.log("runDraw called", from);
 			startAnimation(from, 1, durationRef.current * (1 - from), "drawing", () => {
-				console.log("draw complete", eraseRef.current, loopRef.current);
 				if (eraseRef.current) runEraseRef.current(1);
 				else if (loopRef.current) {
 					const next = pickNextPreset(activePresetRef.current);
-					(0, import_client.flushSync)(() => setActivePresetKey(next));
+					(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
 					runDrawRef.current(0);
 				} else setPhase("idle");
 			});
 		};
 		runEraseRef.current = (from = 1) => {
-			console.log("runErase called", from);
 			startAnimation(from, 0, durationRef.current * .5 * from, "erasing", () => {
-				console.log("erase complete", loopRef.current);
 				if (loopRef.current) {
 					const next = pickNextPreset(activePresetRef.current);
-					(0, import_client.flushSync)(() => setActivePresetKey(next));
+					(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
 					runDrawRef.current(0);
 				} else setPhase("idle");
 			});
@@ -24419,7 +24415,7 @@
 		}, [tick]);
 		const handleReplay = (0, import_react.useCallback)(() => {
 			const next = pickNextPreset(activePresetRef.current);
-			(0, import_client.flushSync)(() => setActivePresetKey(next));
+			(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
 			runDrawRef.current(0);
 		}, [pickNextPreset]);
 		(0, import_react.useEffect)(() => {
@@ -24473,7 +24469,7 @@
 		};
 		const shufflePreset = (0, import_react.useCallback)(() => {
 			const next = pickNextPreset(activePresetRef.current);
-			(0, import_client.flushSync)(() => setActivePresetKey(next));
+			(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
 			if (phaseRef.current === "idle") runDrawRef.current(0);
 		}, [pickNextPreset]);
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
