@@ -29,7 +29,7 @@
 }
 
 .publication-visual {
-  overflow: hidden;
+  clip-path: inset(0 round var(--radius));
   align-self: start;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);

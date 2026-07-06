@@ -47,7 +47,7 @@ function pictureTag(webpSrc, alt, cls, priority = false) {
   const classAttr = cls ? ` class="${cls}"` : "";
   const priorityAttr = priority ? ` fetchpriority="high"` : ` fetchpriority="low" loading="lazy"`;
   const decodingAttr = ` decoding="async"`;
-  return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
+  return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}" draggable="false"${priorityAttr}${decodingAttr} />`;
 }
 
 function publicationImageMarkup(item, title, priority = false) {
@@ -275,7 +275,7 @@ function setupSiteLoadingGate() {
     document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
 
-  window.setTimeout(finish, 15000);
+  window.setTimeout(finish, 3000);
 }
 
 setupSiteLoadingGate();
@@ -849,7 +849,7 @@ function renderResearch(items) {
         <article class="feature-card">
           <div class="feature-card-image" aria-hidden="true">
             <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
-            <img src="${escapeHtml(image)}" alt="" loading="lazy">
+            <img src="${escapeHtml(image)}" alt="" loading="lazy" draggable="false">
           </div>
           <div class="feature-card-copy">
             <h3>${escapeHtml(item.title)}</h3>
@@ -1262,10 +1262,12 @@ function sanitizeRichHtml(html = "") {
     .replace(/<img([^>]*)src="([^"]+\.webp)"([^>]*)>/gi, (match, pre, src, post) => {
       const hasLoading = /loading\s*=/.test(pre + post);
       const hasDecoding = /decoding\s*=/.test(pre + post);
+      const hasDraggable = /draggable\s*=/.test(pre + post);
       const loadingAttr = hasLoading ? "" : ` loading="lazy"`;
       const decodingAttr = hasDecoding ? "" : ` decoding="async"`;
+      const draggableAttr = hasDraggable ? "" : ` draggable="false"`;
       const fetchpriorityAttr = ` fetchpriority="low"`;
-      return `<img${pre}src="${src}"${post}${loadingAttr}${decodingAttr}${fetchpriorityAttr}>`;
+      return `<img${pre}src="${src}"${post}${loadingAttr}${decodingAttr}${draggableAttr}${fetchpriorityAttr}>`;
     });
 }
 

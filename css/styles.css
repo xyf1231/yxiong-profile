@@ -42,7 +42,6 @@
 html {
   scroll-behavior: smooth;
   max-width: 100%;
-  overflow-x: hidden;
 }
 
 
@@ -53,6 +52,7 @@ html[data-lang-ready="pending"] body {
 html[data-site-loading="pending"],
 html[data-site-loading="pending"] body {
   overflow: hidden;
+  overflow: clip;
   overscroll-behavior: none;
   touch-action: none;
 }
@@ -99,6 +99,7 @@ html[data-site-loading="pending"]::after {
   place-items: center;
   padding: 24px;
   overflow: hidden;
+  overflow: clip;
   background:
     radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
     radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.16), transparent 20%),
@@ -107,7 +108,7 @@ html[data-site-loading="pending"]::after {
     linear-gradient(180deg, rgba(0, 0, 0, 0.985), rgba(2, 4, 9, 0.955));
   backdrop-filter: blur(14px) saturate(1.1);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  transition: opacity 260ms ease, transform 260ms ease;
+  transition: opacity 800ms ease, transform 800ms ease;
 }
 
 .site-loading-overlay::before,
@@ -200,10 +201,11 @@ html[data-site-loading="pending"]::after {
   align-items: center;
   justify-content: center;
   color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Noto Sans SC', sans-serif;
   font-size: clamp(4rem, 12vw, 7rem) !important;
   line-height: 1;
   font-weight: 900;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.02em;
   text-shadow:
     0 0 14px rgba(100, 210, 255, 0.22),
     0 0 30px rgba(124, 58, 237, 0.14);
@@ -217,8 +219,8 @@ html[data-site-loading="pending"]::after {
   align-items: center;
   justify-content: center;
   transition:
-    opacity 560ms ease,
-    transform 560ms ease;
+    opacity 800ms ease,
+    transform 800ms ease;
 }
 
 .site-loading-percent-value {
@@ -252,12 +254,6 @@ html[data-site-loading="pending"]::after {
 .site-loading-percent-value,
 .site-loading-percent-ready {
   font-size: inherit !important;
-}
-  color: rgba(170, 176, 190, 0.82);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
 }
 
 .site-loading-meta {
@@ -296,6 +292,7 @@ html[data-site-loading="pending"]::after {
   width: 100%;
   height: 18px;
   overflow: hidden;
+  overflow: clip;
   border: 0;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.04);
@@ -446,6 +443,7 @@ a {
 .glass-surface {
   position: relative;
   overflow: hidden;
+  overflow: clip;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
     rgba(20, 20, 30, 0.35);
@@ -893,6 +891,7 @@ main > .section-band:first-child > .section-wrap {
   display: grid;
   align-items: center;
   overflow: hidden;
+  overflow: clip;
   background:
     radial-gradient(circle at 78% 24%, rgba(19, 184, 166, 0.12), transparent 28%),
     linear-gradient(135deg, #f7f8fb 0%, #eef4ff 48%, #ffffff 100%);
@@ -931,6 +930,7 @@ main > .section-band:first-child > .section-wrap {
   top: 0;
   min-height: 100vh;
   overflow: hidden;
+  overflow: clip;
   background: #000000;
 }
 
@@ -957,6 +957,7 @@ main > .section-band:first-child > .section-wrap {
   inset: 0;
   z-index: 0;
   overflow: hidden;
+  overflow: clip;
   pointer-events: none;
   background:
     radial-gradient(circle at 72% 20%, rgba(166, 200, 255, 0.04), transparent 28%),
@@ -1060,6 +1061,7 @@ main > .section-band:first-child > .section-wrap {
   inset: -8vh -8vw;
   z-index: 1;
   overflow: hidden;
+  overflow: clip;
   transform:
     translateX(calc((var(--story-progress, 0) - 0.5) * -7vw))
     scale(calc(1.04 + var(--story-progress, 0) * 0.1));
@@ -1280,6 +1282,7 @@ main > .section-band:first-child > .section-wrap {
   display: grid;
   align-items: end;
   overflow: hidden;
+  overflow: clip;
   background:
     radial-gradient(circle at 76% 30%, rgba(41, 151, 255, 0.12), transparent 30%),
     linear-gradient(135deg, #000000 0%, #0f0f1a 52%, #000000 100%);
@@ -1453,6 +1456,7 @@ h3 {
   width: min(100%, 620px);
   margin: 0;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
   background: var(--line);
@@ -1606,6 +1610,7 @@ html[lang="en"] .profile-bio-text {
 
 .profile-photo {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   aspect-ratio: 1 / 1;
@@ -1621,6 +1626,7 @@ html[lang="en"] .profile-bio-text {
 
 .profile-photo {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   aspect-ratio: 1 / 1;
@@ -1693,6 +1699,7 @@ html[lang="en"] .subtle-name {
   position: relative;
   min-height: 260px;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(22px, 2.4vw, 32px);
   background:
@@ -1751,6 +1758,7 @@ html[lang="en"] .subtle-name {
   position: relative;
   min-height: 240px;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 18px;
   background:
@@ -1985,6 +1993,7 @@ html[lang="en"] .subtle-name {
   display: grid;
   gap: 1px;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.1);
@@ -2146,6 +2155,7 @@ html[lang="en"] .subtle-name {
 
 .publication-visual {
   overflow: hidden;
+  overflow: clip;
   align-self: start;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: var(--radius);
@@ -2200,6 +2210,7 @@ html[lang="en"] .subtle-name {
 
 .project-card {
   overflow: hidden;
+  overflow: clip;
 }
 
 .project-card h3,
@@ -2295,6 +2306,7 @@ html[lang="en"] .subtle-name {
   padding: 0;
   list-style: none;
   overflow: hidden;
+  overflow: clip;
   background: var(--line);
 }
 
@@ -2445,6 +2457,7 @@ html[lang="en"] .subtle-name {
 
 .news-figure {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
   background: #f8fbff;
@@ -2486,6 +2499,7 @@ html[lang="en"] .subtle-name {
 
 .news-rich-content figure {
   overflow: hidden;
+  overflow: clip;
   margin: 8px 0;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 16px;
@@ -2556,6 +2570,7 @@ html[lang="en"] .subtle-name {
   position: relative;
   isolation: isolate;
   overflow: hidden;
+  overflow: clip;
   --border-radius: 8px;
 }
 
@@ -2872,6 +2887,7 @@ html[lang="en"] .subtle-name {
   display: grid;
   gap: 1px;
   overflow: hidden;
+  overflow: clip;
   background: var(--line);
 }
 
@@ -3271,6 +3287,7 @@ html[lang="en"] .subtle-name {
 
   .border-glow-card {
     overflow: hidden;
+  overflow: clip;
   }
   .intro,
   .profile-combo,
@@ -3868,6 +3885,7 @@ body.nav-mega-open::after {
     display: grid;
     gap: 0;
     overflow: hidden;
+  overflow: clip;
     border: 1px solid rgba(255, 255, 255, 0.11);
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.08);
@@ -4867,6 +4885,7 @@ body.nav-mega-open::after {
 .publication-item,
 .all-publication-list .publication-item {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
 }
 
@@ -5233,6 +5252,7 @@ body.nav-mega-open::after {
   .project-visual img,
   .profile-photo {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   aspect-ratio: 1 / 1;
@@ -5666,6 +5686,7 @@ body.nav-mega-open::after {
   margin: 2em 0;
   border-radius: 24px;
   overflow: hidden;
+  overflow: clip;
   background: rgb(255 255 255 / 5%);
   box-shadow: 0 24px 70px rgb(0 0 0 / 28%);
 }
@@ -5741,6 +5762,7 @@ body.nav-mega-open::after {
 /* v1.5.48 homepage horizontal news carousel */
 .news-section {
   overflow: hidden;
+  overflow: clip;
   position: relative;
 }
 
@@ -5753,7 +5775,7 @@ body.nav-mega-open::after {
 .news-carousel-viewport {
   width: 100%;
   overflow-x: hidden;
-  overflow-y: hidden;
+  overflow-y: clip;
   touch-action: pan-y;
   scroll-padding-inline: max(24px, calc((100vw - 1420px) / 2));
   scrollbar-width: none;
@@ -5781,12 +5803,12 @@ body.nav-mega-open::after {
   min-height: clamp(520px, 58vw, 720px);
   grid-column: auto !important;
   grid-row: auto !important;
-  scroll-snap-align: center;
   border-radius: clamp(28px, 3vw, 44px) !important;
   border: 0 !important;
   box-shadow: none !important;
   opacity: 0.72;
   overflow: hidden;
+  overflow: clip;
   transition: opacity 240ms var(--ease-apple), transform 240ms var(--ease-apple);
 }
 
@@ -5883,6 +5905,7 @@ body.nav-mega-open::after {
   background: rgb(245 245 247 / 40%);
   cursor: pointer;
   overflow: hidden;
+  overflow: clip;
   transition: width 260ms var(--ease-apple), background 260ms var(--ease-apple), opacity 260ms var(--ease-apple);
 }
 
@@ -6047,6 +6070,7 @@ body.nav-mega-open::after {
   display: -webkit-box;
   margin-top: 12px;
   overflow: hidden;
+  overflow: clip;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   font-size: var(--font-body);
@@ -6133,7 +6157,7 @@ body.nav-mega-open::after {
   .news-carousel-track .news-card:first-child,
   .news-carousel-track .news-card:nth-child(2),
   .news-carousel-track .news-card:nth-child(n + 3) {
-    flex-basis: min(86vw, 460px);
+    flex-basis: min(90vw, 640px);
     min-height: 520px;
     aspect-ratio: auto;
     border-radius: 28px !important;
@@ -6424,6 +6448,7 @@ body.nav-mega-open::after {
   max-width: 310px;
   aspect-ratio: 1 / 1;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   background:
@@ -6438,6 +6463,7 @@ body.nav-mega-open::after {
 
 .profile-photo {
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   aspect-ratio: 1 / 1;
@@ -6561,6 +6587,7 @@ body.nav-mega-open::after {
 .news-carousel-track .news-card:nth-child(n + 3) {
   flex-basis: min(78vw, 1080px) !important;
   overflow: hidden;
+  overflow: clip;
 }
 
 .news-carousel-track .news-card span {
@@ -6800,7 +6827,7 @@ body.nav-mega-open::after {
 @media (max-width: 860px) {
   .profile-combo {
     display: grid;
-    width: min(100% - 40px, 560px) !important;
+    width: min(100% - 40px, 720px) !important;
     padding: 28px 22px 26px !important;
     gap: 16px !important;
     justify-items: center;
@@ -7060,6 +7087,7 @@ body.nav-mega-open::after {
     padding: 18px !important;
     border-radius: 24px !important;
     overflow: hidden;
+  overflow: clip;
   }
 
   .news-carousel-track .news-card time {
@@ -7070,6 +7098,7 @@ body.nav-mega-open::after {
   .news-carousel-track .news-card:first-child h3 {
     display: -webkit-box;
     overflow: hidden;
+  overflow: clip;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     font-size: clamp(1.65rem, 7.1vw, 2.32rem) !important;
@@ -7080,6 +7109,7 @@ body.nav-mega-open::after {
   .news-carousel-track .news-card:first-child p {
     display: -webkit-box;
     overflow: hidden;
+  overflow: clip;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     font-size: 0.94rem !important;
@@ -7213,7 +7243,16 @@ body.nav-mega-open::after {
   .all-publication-list .publication-item {
     display: block;
     padding: 20px !important;
+  }
+
+  .publication-item .publication-visual,
+  .publication-item .publication-visual img,
+  .all-publication-list .publication-item .publication-visual,
+  .all-publication-list .publication-item .publication-visual img {
     touch-action: pan-y;
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-touch-callout: none;
   }
 
   .publication-item time,
@@ -7401,6 +7440,7 @@ body.nav-mega-open::after {
 @media (max-width: 860px) {
   .profile-combo {
     display: grid !important;
+    grid-template-columns: 1fr !important;
     flex-direction: column;
     align-items: stretch;
     width: min(100% - 40px, 560px) !important;
@@ -7412,7 +7452,7 @@ body.nav-mega-open::after {
 
   .profile-photo {
     order: 1;
-    width: min(100%, 330px) !important;
+    width: 90% !important;
     max-width: 100% !important;
     margin-inline: auto !important;
     justify-self: auto !important;
@@ -7491,7 +7531,6 @@ body.nav-mega-open::after {
   .news-carousel-track .news-card:nth-child(n + 3) {
     flex: 0 0 min(78vw, 340px) !important;
     min-height: 500px !important;
-    scroll-snap-align: center;
   }
 
   .news-carousel-track .news-card span {
@@ -7673,7 +7712,7 @@ body.nav-mega-open::after {
   .publication-item,
   .all-publication-list .publication-item {
     grid-template-columns: minmax(220px, 320px) minmax(0, 1fr) !important;
-    padding-left: 112px !important;
+    padding-left: 72px !important;
   }
 
   .publication-item .publication-copy > h3,
@@ -8198,23 +8237,25 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 
 .home-dark .hero.portal-hero { margin-bottom: 0 !important; }
 .news-section { margin-top: 0 !important; }
-.news-carousel-viewport { overflow-x: auto; overflow-y: visible; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.news-carousel-viewport { overflow-x: hidden; overflow-y: visible; scrollbar-width: none; }
 .news-carousel-viewport::-webkit-scrollbar { display: none; }
-.news-carousel-track { padding-inline: max(42px, calc((100vw - min(76vw, 1120px)) / 2)) !important; scroll-padding-inline: max(42px, calc((100vw - min(76vw, 1120px)) / 2)); }
-.news-card { scroll-snap-align: center; aspect-ratio: 16 / 9 !important; }
+.news-carousel-track { padding-inline: max(42px, calc((100vw - min(76vw, 1120px)) / 2)) !important; }
+.news-card { aspect-ratio: 16 / 9 !important; }
 .news-card .news-card-body { max-width: min(48%, 520px) !important; padding: clamp(24px, 3vw, 46px) !important; }
 .news-card h3 { font-size: var(--font-h3) !important; line-height: 1.02 !important; text-wrap: balance; }
 .news-card time { font-size: var(--font-body) !important; }
 html[lang="en"] .news-card h3 { font-size: var(--font-h3) !important; line-height: 1.04 !important; }
 main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 116px) !important; padding-top: clamp(56px, 7vh, 92px) !important; min-height: auto !important; }
 .profile-combo { align-items: start !important; }
-.feature-card { overflow: hidden; }
-.feature-card-image { width: 100%; aspect-ratio: 16 / 10; border-radius: 28px; overflow: hidden; margin: 0 0 clamp(22px, 2vw, 32px); border: 1.5px solid rgba(255, 255, 255, 0.14); background: rgba(255,255,255,.04); }
+.feature-card { overflow: hidden; overflow: clip; }
+.feature-card-image { width: 100%; aspect-ratio: 16 / 10; border-radius: 28px; overflow: hidden;
+  overflow: clip; margin: 0 0 clamp(22px, 2vw, 32px); border: 1.5px solid rgba(255, 255, 255, 0.14); background: rgba(255,255,255,.04); }
 .feature-card-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .feature-card-copy { position: relative; z-index: 2; }
 .home-bento-nav { padding-top: clamp(18px, 3vw, 38px) !important; }
 .home-bento-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2vw, 26px); }
-.home-bento-card { min-height: clamp(220px, 24vw, 330px); border-radius: clamp(22px, 2.2vw, 30px); --border-radius: clamp(22px, 2.2vw, 30px); padding: clamp(24px, 3vw, 42px); color: var(--text); text-decoration: none; border: 1.5px solid rgba(255, 255, 255, 0.14); background: radial-gradient(circle at 18% 12%, rgba(255,255,255,.16), transparent 30%), linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 24px 70px rgba(0,0,0,.34); display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; transition: border-color .32s var(--ease-apple), background .32s var(--ease-apple), box-shadow .32s var(--ease-apple); position: relative; overflow: hidden; }
+.home-bento-card { min-height: clamp(220px, 24vw, 330px); border-radius: clamp(22px, 2.2vw, 30px); --border-radius: clamp(22px, 2.2vw, 30px); padding: clamp(24px, 3vw, 42px); color: var(--text); text-decoration: none; border: 1.5px solid rgba(255, 255, 255, 0.14); background: radial-gradient(circle at 18% 12%, rgba(255,255,255,.16), transparent 30%), linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 24px 70px rgba(0,0,0,.34); display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; transition: border-color .32s var(--ease-apple), background .32s var(--ease-apple), box-shadow .32s var(--ease-apple); position: relative; overflow: hidden;
+  overflow: clip; }
 .home-bento-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(41,151,255,0.12), transparent 60%); opacity: 0; transition: opacity .4s var(--ease-apple); pointer-events: none; }
 .home-bento-card:hover, .home-bento-card:focus-visible { border-color: rgba(99,210,255,.45); background: radial-gradient(circle at 18% 12%, rgba(99,210,255,.18), transparent 32%), linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.035)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 28px 80px rgba(0,0,0,.4); }
 .home-bento-card:hover::before, .home-bento-card:focus-visible::before { opacity: 1; }
@@ -8242,7 +8283,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
   .news-card h3, html[lang="en"] .news-card h3 { font-size: clamp(1.7rem, 7vw, 2.35rem) !important; line-height: 1.08 !important; }
   main > .profile-combo.section-wrap:first-child { margin-top: 78px !important; padding-top: 28px !important; }
   .profile-link-row { margin-left: 0; }
-  .profile-combo .profile-photo { order: 1; width: min(72vw, 340px) !important; margin-inline: auto; }
+  .profile-combo .profile-photo { order: 1; width: 90% !important; max-width: 320px !important; margin-inline: auto; }
   .profile-combo .profile-identity { order: 2; text-align: center; }
   .profile-combo .profile-bio-text { order: 3; }
   .feature-card { padding-top: clamp(26px, 7vw, 42px) !important; }
@@ -8399,6 +8440,7 @@ main > .profile-combo.section-wrap:first-child .profile-photo {
   justify-self: start;
   align-self: start;
   overflow: hidden;
+  overflow: clip;
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: clamp(24px, 2.4vw, 32px);
   background:
@@ -9622,6 +9664,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   width: 100%;
   margin-inline: auto;
   overflow: hidden;
+  overflow: clip;
   padding: 0;
   border-radius: clamp(28px, 3.2vw, 44px);
   border: none;
@@ -9750,7 +9793,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   pointer-events: none;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 860px) {
   .home-frame-section {
     margin-top: 0;
     padding-top: 0 !important;
@@ -9771,6 +9814,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
     padding: 0;
     border-radius: 28px;
     overflow: hidden;
+  overflow: clip;
     border: none;
     aspect-ratio: 1244 / 1660;
   }

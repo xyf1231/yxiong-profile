@@ -47,7 +47,7 @@ function pictureTag(webpSrc, alt, cls, priority = false) {
   const classAttr = cls ? ` class="${cls}"` : "";
   const priorityAttr = priority ? ` fetchpriority="high"` : ` fetchpriority="low" loading="lazy"`;
   const decodingAttr = ` decoding="async"`;
-  return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}"${priorityAttr}${decodingAttr} />`;
+  return `<img${classAttr} src="${escapeHtml(withAssetCacheBuster(webpSrc))}" alt="${escapeHtml(alt || "")}" draggable="false"${priorityAttr}${decodingAttr} />`;
 }
 
 function publicationImageMarkup(item, title, priority = false) {
@@ -100,6 +100,7 @@ function setupSiteLoadingGate() {
   let lockedScrollY = 0;
   let speedTickerId = 0;
   let resourceScanId = 0;
+
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
     if (percentEl) {
@@ -114,42 +115,87 @@ function setupSiteLoadingGate() {
     }
     if (barEl) barEl.style.width = `${current}%`;
   };
+
+  // Real progress based on actual DOM loading state
+  const updateRealProgress = () => {
+    if (finished) return;
+
+    let progress = 0;
+    const images = [...document.images].filter(img => img.src && !img.src.startsWith("data:"));
+    const totalImages = images.length || 1;
+    const loadedImages = images.filter(img => img.complete).length;
+
+    // Phase 1: document ready state (0-25%)
+    if (document.readyState === "loading") progress = 5;
+    else if (document.readyState === "interactive") progress = 18;
+    else if (document.readyState === "complete") progress = 25;
+
+    // Phase 2: images (25-75%)
+    progress += (loadedImages / totalImages) * 50;
+
+    // Phase 3: fonts (75-90%)
+    if (document.fonts && document.fonts.status === "loaded") {
+      progress += 15;
+    } else if (document.readyState === "complete") {
+      progress += 8;
+    }
+
+    // Phase 4: video/other media (90-98%)
+    const video = document.querySelector("video");
+    if (!video || video.readyState >= 3) {
+      progress += 8;
+    } else if (video.readyState >= 1) {
+      progress += 3;
+    }
+
+    setProgress(Math.min(progress, 98));
+  };
+
   const startProgress = () => {
     if (intervalId) return;
-    intervalId = window.setInterval(() => {
-      if (current < 100) setProgress(current + Math.max(0.5, (100 - current) * 0.05));
-    }, 140);
+    intervalId = window.setInterval(updateRealProgress, 100);
   };
-  const settleProgressThenFinish = () => {
+
+  const settleProgressThenFinish = (onDone) => {
     if (current >= 99.5) {
       setProgress(100);
+      if (onDone) onDone();
       return;
     }
-    const step = Math.max(0.8, (100 - current) * 0.28);
+    const step = Math.max(0.6, (100 - current) * 0.18);
     setProgress(current + step);
-    finishTimerId = window.setTimeout(settleProgressThenFinish, 42);
+    finishTimerId = window.setTimeout(() => settleProgressThenFinish(onDone), 60);
   };
+
   const finish = () => {
     if (finished) return;
     finished = true;
     if (intervalId) window.clearInterval(intervalId);
     if (finishTimerId) window.clearTimeout(finishTimerId);
     if (speedTickerId) window.clearInterval(speedTickerId);
-    setProgress(100);
-    if (revealTimerId) window.clearTimeout(revealTimerId);
-    revealTimerId = window.setTimeout(() => {
-      if (percentEl) percentEl.classList.add("is-ready");
-    }, 180);
-    if (readyTimerId) window.clearTimeout(readyTimerId);
-    readyTimerId = window.setTimeout(() => {
-      root.dataset.siteLoading = "ready";
-    }, 700);
-    if (overlay) {
-      overlay.classList.add("is-hidden");
-      window.setTimeout(() => overlay.remove(), 820);
-    }
-    document.body.style.top = "";
-    window.scrollTo(0, lockedScrollY);
+    if (resourceScanId) window.clearInterval(resourceScanId);
+
+    settleProgressThenFinish(() => {
+      // Show "即将展现" with fade-in
+      if (revealTimerId) window.clearTimeout(revealTimerId);
+      revealTimerId = window.setTimeout(() => {
+        if (percentEl) percentEl.classList.add("is-ready");
+      }, 120);
+
+      // Wait for "即将展现" animation, then fade out overlay
+      window.setTimeout(() => {
+        if (readyTimerId) window.clearTimeout(readyTimerId);
+        readyTimerId = window.setTimeout(() => {
+          root.dataset.siteLoading = "ready";
+        }, 600);
+        if (overlay) {
+          overlay.classList.add("is-hidden");
+          window.setTimeout(() => overlay.remove(), 1200);
+        }
+        document.body.style.top = "";
+        window.scrollTo(0, lockedScrollY);
+      }, 900);
+    });
   };
 
   const ensureOverlay = () => {
@@ -178,26 +224,31 @@ function setupSiteLoadingGate() {
       document.documentElement.appendChild(overlay);
     }
     percentEl = overlay.querySelector(".site-loading-percent strong");
-    if (percentEl) percentEl.style.setProperty('font-size', 'clamp(4rem, 12vw, 7rem)', 'important');
+    if (percentEl) percentEl.style.setProperty("font-size", "clamp(4rem, 12vw, 7rem)", "important");
     barEl = overlay.querySelector(".site-loading-bar");
+
     const speedEl = overlay.querySelector(".site-loading-speed strong");
     const renderSpeed = (value) => {
       if (!speedEl) return;
       speedEl.textContent = formatTransferRate(value);
     };
+
     const speedSamples = [];
     const MAX_SPEED_SAMPLES = 8;
     let lastResourceCount = 0;
+
     const pushSpeedSample = (bytesPerSecond) => {
       if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return;
       speedSamples.push(bytesPerSecond);
       if (speedSamples.length > MAX_SPEED_SAMPLES) speedSamples.shift();
     };
+
     const getSmoothedSpeed = () => {
       if (speedSamples.length === 0) return 0;
       const sum = speedSamples.reduce((a, b) => a + b, 0);
       return sum / speedSamples.length;
     };
+
     const scanResources = () => {
       const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
       for (let i = lastResourceCount; i < entries.length; i += 1) {
@@ -209,17 +260,24 @@ function setupSiteLoadingGate() {
       lastResourceCount = entries.length;
       renderSpeed(getSmoothedSpeed());
     };
+
+    const readConnectionSpeed = () => {
+      const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+      if (connection?.downlink) {
+        pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
+      }
+      renderSpeed(getSmoothedSpeed());
+    };
+
     const startSpeedTicker = () => {
       if (resourceScanId) return;
-      resourceScanId = window.setInterval(scanResources, 250);
+      // Real-time: read connection speed every 250ms
+      resourceScanId = window.setInterval(() => {
+        readConnectionSpeed();
+        scanResources();
+      }, 250);
     };
-    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (connection?.downlink) pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
-    if (connection?.addEventListener) {
-      connection.addEventListener("change", () => {
-        if (connection.downlink) pushSpeedSample(connection.downlink * 1024 * 1024 / 8);
-      });
-    }
+
     if ("PerformanceObserver" in window) {
       try {
         const observer = new PerformanceObserver((list) => {
@@ -239,6 +297,8 @@ function setupSiteLoadingGate() {
       } catch (error) {
         // ignore observer setup issues
       }
+    } else {
+      startSpeedTicker();
     }
   };
 
@@ -247,16 +307,15 @@ function setupSiteLoadingGate() {
       ensureOverlay();
       lockedScrollY = window.scrollY || 0;
       document.body.style.top = `-${lockedScrollY}px`;
+      setProgress(0);
       startProgress();
       const loadPromise = document.readyState === "complete"
         ? Promise.resolve()
         : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
-      setProgress(18);
       await Promise.all([
         document.fonts?.ready || Promise.resolve(),
         loadPromise,
       ]);
-      setProgress(48);
       const mediaTasks = [...document.images]
         .filter((img) => !img.complete)
         .map((img) => new Promise((resolve) => {
@@ -272,9 +331,7 @@ function setupSiteLoadingGate() {
             videoEl.addEventListener("error", resolve, { once: true });
           })]
         : [];
-      setProgress(68);
       await Promise.allSettled([...mediaTasks, ...videoTasks]);
-      setProgress(90);
     } finally {
       window.setTimeout(finish, 120);
     }
@@ -288,9 +345,8 @@ function setupSiteLoadingGate() {
     document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
 
-  window.setTimeout(finish, 15000);
+  window.setTimeout(finish, 1000);
 }
-
 setupSiteLoadingGate();
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
@@ -862,7 +918,7 @@ function renderResearch(items) {
         <article class="feature-card">
           <div class="feature-card-image" aria-hidden="true">
             <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
-            <img src="${escapeHtml(image)}" alt="" loading="lazy">
+            <img src="${escapeHtml(image)}" alt="" loading="lazy" draggable="false">
           </div>
           <div class="feature-card-copy">
             <h3>${escapeHtml(item.title)}</h3>
@@ -1275,10 +1331,12 @@ function sanitizeRichHtml(html = "") {
     .replace(/<img([^>]*)src="([^"]+\.webp)"([^>]*)>/gi, (match, pre, src, post) => {
       const hasLoading = /loading\s*=/.test(pre + post);
       const hasDecoding = /decoding\s*=/.test(pre + post);
+      const hasDraggable = /draggable\s*=/.test(pre + post);
       const loadingAttr = hasLoading ? "" : ` loading="lazy"`;
       const decodingAttr = hasDecoding ? "" : ` decoding="async"`;
+      const draggableAttr = hasDraggable ? "" : ` draggable="false"`;
       const fetchpriorityAttr = ` fetchpriority="low"`;
-      return `<img${pre}src="${src}"${post}${loadingAttr}${decodingAttr}${fetchpriorityAttr}>`;
+      return `<img${pre}src="${src}"${post}${loadingAttr}${decodingAttr}${draggableAttr}${fetchpriorityAttr}>`;
     });
 }
 
