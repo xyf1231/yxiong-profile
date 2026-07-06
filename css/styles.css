@@ -7254,7 +7254,8 @@ body.nav-mega-open::after {
   .all-publication-list .publication-item {
     display: block;
     padding: 20px !important;
-    overflow: visible;
+    overflow: visible !important;
+    touch-action: pan-y !important;
   }
 
   .publication-item[data-paper-preview],
@@ -7281,7 +7282,12 @@ body.nav-mega-open::after {
   .all-publication-list .publication-visual {
     width: 100%;
     margin: 0 0 22px !important;
-    overflow: visible;
+    overflow: visible !important;
+  }
+
+  .publication-item .publication-visual img,
+  .all-publication-list .publication-visual img {
+    will-change: auto !important;
   }
 
   .publication-item .publication-copy,

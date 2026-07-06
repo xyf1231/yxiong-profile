@@ -85,8 +85,8 @@ function clampField(name, label, min, max, step, preferred, clampMin, clampMax, 
   };
 }
 
-function rangeField(name, label, min, max, step, unit) {
-  return { name, label, type: "range", min, max, step, unit };
+function rangeField(name, label, min, max, step, unit, mobileName) {
+  return { name, label, type: "range", min, max, step, unit, mobileName: mobileName || null };
 }
 
 function selectField(name, label, options) {
@@ -113,16 +113,17 @@ const cssGroups = [
     textField("--hero-title-margin", "外边距"),
   ]),
   group("副标题", [
-    clampField("--hero-subtitle-font-size", "字号 (vw)", 0.5, 4, 0.1, "vw", "0.7rem", "2rem"),
+    clampField("--hero-subtitle-font-size", "字号 (vw)", 0.5, 4, 0.1, "vw", "0.7rem", "2rem", "--hero-subtitle-font-size-mobile"),
     colorField("--hero-subtitle-color", "颜色"),
-    rangeField("--hero-subtitle-margin-top", "上边距", 0, 40, 1, "px"),
+    rangeField("--hero-subtitle-margin-top", "上边距", 0, 40, 1, "px", "--hero-subtitle-margin-top-mobile"),
     selectField("--hero-subtitle-font-family", "字体", fontOptions),
   ]),
   group("眉标", [
     selectField("--hero-eyebrow-display", "显示", displayOptions),
     colorField("--hero-eyebrow-color", "颜色"),
-    clampField("--hero-eyebrow-font-size", "字号 (vw)", 0.5, 3, 0.1, "vw", "0.6rem", "1.5rem"),
-    rangeField("--hero-eyebrow-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
+    clampField("--hero-eyebrow-font-size", "字号 (vw)", 0.5, 3, 0.1, "vw", "0.6rem", "1.5rem", "--hero-eyebrow-font-size-mobile"),
+    rangeField("--hero-eyebrow-margin-bottom", "下边距", 0, 40, 1, "px", "--hero-eyebrow-margin-bottom-mobile"),
+    rangeField("--hero-eyebrow-letter-spacing", "字间距", 0, 0.5, 0.01, "em", "--hero-eyebrow-letter-spacing-mobile"),
   ]),
   group("容器与效果", [
     selectField("--hero-text-align", "水平对齐", alignOptions),

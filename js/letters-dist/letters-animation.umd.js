@@ -24197,10 +24197,10 @@
 	/**
 	* 生成 React SVG linearGradient 元素
 	*/
-	function createGradientElement(presetKey, brightness, saturation, info) {
+	function createGradientElement(presetKey, brightness, saturation, info, id = "letters-gradient") {
 		const stops = getAdjustedStops(presetKey, brightness, saturation);
 		return import_react.createElement("linearGradient", {
-			id: "letters-gradient",
+			id,
 			x1: "0",
 			y1: "0",
 			x2: info.totalWidth,
@@ -24333,6 +24333,7 @@
 			runErase: () => {}
 		});
 		runnersRef.current.runDraw = (from = 0) => {
+			console.log("runDraw called", from, phaseRef.current, loopRef.current, eraseRef.current);
 			stopAnimation();
 			setPhase("drawing");
 			setIsPlaying(true);
@@ -24341,12 +24342,13 @@
 				ease: easeRef.current,
 				onUpdate: (v) => setProgress(v),
 				onComplete: () => {
+					console.log("draw onComplete", eraseRef.current, loopRef.current);
 					setIsPlaying(false);
 					if (eraseRef.current) runnersRef.current.runErase(1);
 					else if (loopRef.current) {
 						const next = pickNextPreset(activePresetRef.current);
 						(0, import_client.flushSync)(() => setActivePresetKey(next));
-						runnersRef.current.runDraw(0);
+						window.setTimeout(() => runnersRef.current.runDraw(0), 0);
 					} else setPhase("idle");
 				}
 			});
@@ -24360,11 +24362,12 @@
 				ease: easeRef.current,
 				onUpdate: (v) => setProgress(v),
 				onComplete: () => {
+					console.log("erase onComplete", loopRef.current);
 					setIsPlaying(false);
 					if (loopRef.current) {
 						const next = pickNextPreset(activePresetRef.current);
 						(0, import_client.flushSync)(() => setActivePresetKey(next));
-						runnersRef.current.runDraw(0);
+						window.setTimeout(() => runnersRef.current.runDraw(0), 0);
 					} else setPhase("idle");
 				}
 			});
@@ -24405,6 +24408,22 @@
 			duration,
 			ease
 		}), [duration, ease]);
+		const gradientId = `letters-gradient-${activePresetKey}`;
+		const lettersKey = (0, import_react.useMemo)(() => JSON.stringify({
+			text,
+			variant,
+			overlap,
+			strokeWidth,
+			duration,
+			ease
+		}), [
+			text,
+			variant,
+			overlap,
+			strokeWidth,
+			duration,
+			ease
+		]);
 		const safeText = text.slice(0, 60) || "Hello";
 		const filteredPresets = (0, import_react.useMemo)(() => {
 			const keys = getPresetKeys();
@@ -24474,14 +24493,14 @@
 							animation,
 							overlap,
 							strokeWidth,
-							color: "url(#letters-gradient)",
+							color: `url(#${gradientId})`,
 							className: "letters-animation-svg",
 							style: {
 								width: "100%",
 								height: "100%"
 							},
-							svgDefs: (info) => createGradientElement(activePresetKey, brightness, saturation, info)
-						})
+							svgDefs: (info) => createGradientElement(activePresetKey, brightness, saturation, info, gradientId)
+						}, lettersKey)
 					})]
 				}),
 				/* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {

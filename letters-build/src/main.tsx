@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createRoot, flushSync } from 'react-dom/client';
-import { animate } from 'framer-motion';
 import {
   Letters,
   EASE_OPTIONS,
@@ -182,7 +181,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
         } else if (loopRef.current) {
           const next = pickNextPreset(activePresetRef.current);
           flushSync(() => setActivePresetKey(next));
-          runnersRef.current.runDraw(0);
+          window.setTimeout(() => runnersRef.current.runDraw(0), 0);
         } else {
           setPhase('idle');
         }
@@ -203,7 +202,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
         if (loopRef.current) {
           const next = pickNextPreset(activePresetRef.current);
           flushSync(() => setActivePresetKey(next));
-          runnersRef.current.runDraw(0);
+          window.setTimeout(() => runnersRef.current.runDraw(0), 0);
         } else {
           setPhase('idle');
         }
@@ -255,6 +254,22 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   const animation: AnimationConfig = useMemo(
     () => ({ type: 'tween', duration, ease }),
     [duration, ease]
+  );
+
+  const gradientId = `letters-gradient-${activePresetKey}`;
+
+  // 关键配置变化时重新挂载 Letters，让动画按新参数启动
+  const lettersKey = useMemo(
+    () =>
+      JSON.stringify({
+        text,
+        variant,
+        overlap,
+        strokeWidth,
+        duration,
+        ease,
+      }),
+    [text, variant, overlap, strokeWidth, duration, ease]
   );
 
   const safeText = text.slice(0, 60) || 'Hello';
@@ -341,16 +356,19 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
           }}
         >
           <Letters
+            key={lettersKey}
             text={safeText}
             variant={variant}
             progress={progress}
             animation={animation}
             overlap={overlap}
             strokeWidth={strokeWidth}
-            color="url(#letters-gradient)"
+            color={`url(#${gradientId})`}
             className="letters-animation-svg"
             style={{ width: '100%', height: '100%' }}
-            svgDefs={(info) => createGradientElement(activePresetKey, brightness, saturation, info)}
+            svgDefs={(info) =>
+              createGradientElement(activePresetKey, brightness, saturation, info, gradientId)
+            }
           />
         </div>
       </div>

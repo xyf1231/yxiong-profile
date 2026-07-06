@@ -150,13 +150,14 @@ export function createGradientElement(
   presetKey: string,
   brightness: number,
   saturation: number,
-  info: { totalWidth: number; minY: number; maxY: number }
+  info: { totalWidth: number; minY: number; maxY: number },
+  id = 'letters-gradient'
 ): React.ReactElement {
   const stops = getAdjustedStops(presetKey, brightness, saturation);
   return React.createElement(
     'linearGradient',
     {
-      id: 'letters-gradient',
+      id,
       x1: '0',
       y1: '0',
       x2: info.totalWidth,

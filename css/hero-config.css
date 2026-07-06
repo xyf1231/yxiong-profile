@@ -54,6 +54,11 @@
   /* 手机端（<= 768px） */
   --hero-title-font-size-zh-mobile: clamp(2.8rem, 10vw, 4rem);
   --hero-title-font-size-en-mobile: clamp(2.8rem, 10vw, 4rem);
+  --hero-eyebrow-font-size-mobile: clamp(0.65rem, 3.2vw, 1rem);
+  --hero-eyebrow-letter-spacing-mobile: 0.12em;
+  --hero-eyebrow-margin-bottom-mobile: 10px;
+  --hero-subtitle-font-size-mobile: clamp(0.75rem, 3.5vw, 1.1rem);
+  --hero-subtitle-margin-top-mobile: 10px;
   --home-frame-heading-size-mobile: clamp(2.8rem, 10vw, 4rem);
   --news-heading-size-mobile: clamp(2.7rem, 12vw, 4.2rem);
   --home-bento-heading-size-mobile: clamp(2.8rem, 10vw, 4rem);
@@ -185,6 +190,21 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   html[lang="en"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
   html[lang="en"] .clean-copy h1 {
     font-size: var(--hero-title-font-size-en-mobile) !important;
+  }
+
+  /* Hero 眉标 */
+  body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy .eyebrow,
+  .eyebrow {
+    font-size: var(--hero-eyebrow-font-size-mobile) !important;
+    letter-spacing: var(--hero-eyebrow-letter-spacing-mobile) !important;
+    margin-bottom: var(--hero-eyebrow-margin-bottom-mobile) !important;
+  }
+
+  /* Hero 副标题 */
+  body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
+  .clean-copy p:not(.eyebrow) {
+    font-size: var(--hero-subtitle-font-size-mobile) !important;
+    margin-top: var(--hero-subtitle-margin-top-mobile) !important;
   }
 
   /* 其他模块标题 */
