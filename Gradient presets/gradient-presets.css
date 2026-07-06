@@ -1,0 +1,118 @@
+// gradient-presets.css
+// 50 种渐变预设的 CSS 类名
+// 用法: <div class="gradient-midnight">...</div>
+// 或: background: var(--gradient-midnight);
+
+:root {
+  /* Apple 系列 */
+  --gradient-midnight: linear-gradient(90deg, #0a0a1a 0%, #1a1a3a 20%, #2a2a5a 40%, #3a3a7a 60%, #4a4a9a 80%, #5a5aba 100%);
+  --gradient-graphite: linear-gradient(90deg, #1a1a1c 0%, #2a2a2e 20%, #3a3a3e 40%, #4a4a4e 60%, #5a5a5e 80%, #6a6a6e 100%);
+  --gradient-pacific: linear-gradient(90deg, #0a2a2a 0%, #0a3a4a 20%, #1a4a6a 40%, #2a5a8a 60%, #3a6aaa 80%, #4a7aca 100%);
+  --gradient-alpine: linear-gradient(90deg, #0a2a1a 0%, #1a3a2a 20%, #2a4a3a 40%, #3a5a4a 60%, #4a6a5a 80%, #5a7a6a 100%);
+  --gradient-slate: linear-gradient(90deg, #1a2a3a 0%, #2a3a4a 20%, #3a4a5a 40%, #4a5a6a 60%, #5a6a7a 80%, #6a7a8a 100%);
+  --gradient-indigo: linear-gradient(90deg, #1a1a3a 0%, #2a2a5a 20%, #3a3a7a 40%, #4a4a9a 60%, #5a5aba 80%, #6a6ada 100%);
+  --gradient-silver: linear-gradient(90deg, #3a3a3a 0%, #4a4a4a 20%, #5a5a5a 40%, #6a6a6a 60%, #7a7a7a 80%, #8a8a8a 100%);
+  --gradient-rose-gold: linear-gradient(90deg, #5a3a3a 0%, #6a4a4a 20%, #7a5a5a 40%, #8a6a6a 60%, #9a7a7a 80%, #aa8a8a 100%);
+  --gradient-sky: linear-gradient(90deg, #0a2a4a 0%, #1a3a5a 20%, #2a4a6a 40%, #3a5a7a 60%, #4a6a8a 80%, #5a7a9a 100%);
+  --gradient-sage: linear-gradient(90deg, #0a2a1a 0%, #1a3a2a 20%, #2a4a3a 40%, #3a5a4a 60%, #4a6a5a 80%, #5a7a6a 100%);
+  --gradient-titanium: linear-gradient(90deg, #2a2a2a 0%, #3a3a3a 20%, #4a4a4a 40%, #5a5a5a 60%, #6a6a6a 80%, #7a7a7a 100%);
+  --gradient-ocean: linear-gradient(90deg, #0a2a3a 0%, #1a3a5a 20%, #2a4a7a 40%, #3a5a9a 60%, #4a6aba 80%, #5a7aca 100%);
+  --gradient-mist: linear-gradient(90deg, #2a3a4a 0%, #3a4a5a 20%, #4a5a6a 40%, #5a6a7a 60%, #6a7a8a 80%, #7a8a9a 100%);
+  --gradient-orchid: linear-gradient(90deg, #3a2a3a 0%, #4a3a4a 20%, #5a4a5a 40%, #6a5a6a 60%, #7a6a7a 80%, #8a7a8a 100%);
+  --gradient-bronze: linear-gradient(90deg, #4a3a2a 0%, #5a4a3a 20%, #6a5a4a 40%, #7a6a5a 60%, #8a7a6a 80%, #9a8a7a 100%);
+
+  /* Morandi 系列 */
+  --gradient-dusty-rose: linear-gradient(90deg, #6a4a4a 0%, #7a5a5a 20%, #8a6a6a 40%, #9a7a7a 60%, #aa8a8a 80%, #ba9a9a 100%);
+  --gradient-muted-sage: linear-gradient(90deg, #4a6a5a 0%, #5a7a6a 20%, #6a8a7a 40%, #7a9a8a 60%, #8aaa9a 80%, #9abaaa 100%);
+  --gradient-steel-blue: linear-gradient(90deg, #4a5a6a 0%, #5a6a7a 20%, #6a7a8a 40%, #7a8a9a 60%, #8a9aaa 80%, #9ababa 100%);
+  --gradient-warm-sand: linear-gradient(90deg, #7a6a5a 0%, #8a7a6a 20%, #9a8a7a 40%, #aa9a8a 60%, #baaa9a 80%, #cabab9 100%);
+  --gradient-soft-lilac: linear-gradient(90deg, #5a4a6a 0%, #6a5a7a 20%, #7a6a8a 40%, #8a7a9a 60%, #9a8aaa 80%, #aa9aba 100%);
+  --gradient-terracotta: linear-gradient(90deg, #7a5a4a 0%, #8a6a5a 20%, #9a7a6a 40%, #aa8a7a 60%, #ba9a8a 80%, #caab9a 100%);
+  --gradient-seafoam: linear-gradient(90deg, #4a6a5a 0%, #5a7a6a 20%, #6a8a7a 40%, #7a9a8a 60%, #8aaaba 80%, #9abaca 100%);
+  --gradient-soft-peach: linear-gradient(90deg, #8a6a5a 0%, #9a7a6a 20%, #aa8a7a 40%, #ba9a8a 60%, #caaaaa 80%, #dababa 100%);
+  --gradient-dusty-lavender: linear-gradient(90deg, #5a4a6a 0%, #6a5a7a 20%, #7a6a8a 40%, #8a7a9a 60%, #9a8aaa 80%, #aa9aba 100%);
+  --gradient-olive-gray: linear-gradient(90deg, #5a5a4a 0%, #6a6a5a 20%, #7a7a6a 40%, #8a8a7a 60%, #9a9a8a 80%, #aaaa9a 100%);
+  --gradient-muted-blush: linear-gradient(90deg, #8a6a6a 0%, #9a7a7a 20%, #aa8a8a 40%, #ba9a9a 60%, #caaaaa 80%, #dababa 100%);
+  --gradient-slate-rose: linear-gradient(90deg, #5a4a5a 0%, #6a5a6a 20%, #7a6a7a 40%, #8a7a8a 60%, #9a8a9a 80%, #aa9aaa 100%);
+  --gradient-cream-stone: linear-gradient(90deg, #8a7a6a 0%, #9a8a7a 20%, #aa9a8a 40%, #baaa9a 60%, #cabaaa 80%, #dacaba 100%);
+  --gradient-mint-gray: linear-gradient(90deg, #4a6a5a 0%, #5a7a6a 20%, #6a8a7a 40%, #7a9a8a 60%, #8aaaba 80%, #9ababa 100%);
+  --gradient-mauve-gray: linear-gradient(90deg, #6a5a6a 0%, #7a6a7a 20%, #8a7a8a 40%, #9a8a9a 60%, #aa9aaa 80%, #ba9aba 100%);
+
+  /* Classic 系列 */
+  --gradient-golden: linear-gradient(90deg, #8B4513 0%, #CD853F 20%, #DAA520 40%, #FFD700 60%, #F0E68C 80%, #FFFACD 100%);
+  --gradient-crimson: linear-gradient(90deg, #4a0000 0%, #800000 20%, #b30000 40%, #dc143c 60%, #ff4d6d 80%, #ff8fa3 100%);
+  --gradient-navy: linear-gradient(90deg, #000080 0%, #0033cc 20%, #0055ff 40%, #3377ff 60%, #6699ff 80%, #99bbff 100%);
+  --gradient-emerald: linear-gradient(90deg, #004d40 0%, #00695c 20%, #00897b 40%, #009688 60%, #4db6ac 80%, #80cbc4 100%);
+  --gradient-ruby: linear-gradient(90deg, #3d0000 0%, #660000 20%, #990000 40%, #cc0000 60%, #ff0000 80%, #ff5555 100%);
+  --gradient-sapphire: linear-gradient(90deg, #000033 0%, #001a66 20%, #003399 40%, #0044cc 60%, #3366ff 80%, #6688ff 100%);
+  --gradient-amber: linear-gradient(90deg, #6b3100 0%, #8b4513 20%, #b87333 40%, #daa520 60%, #ffd700 80%, #ffec8b 100%);
+  --gradient-violet: linear-gradient(90deg, #1a0033 0%, #330066 20%, #4d0099 40%, #6600cc 60%, #7f00ff 80%, #aa55ff 100%);
+  --gradient-teal: linear-gradient(90deg, #003333 0%, #006666 20%, #009999 40%, #00cccc 60%, #00ffff 80%, #55ffff 100%);
+  --gradient-coral: linear-gradient(90deg, #6b0000 0%, #993333 20%, #cc5555 40%, #ff7f50 60%, #ffa07a 80%, #ffccaa 100%);
+  --gradient-rainbow: linear-gradient(90deg, #ff0000 0%, #ff7f00 20%, #ffff00 40%, #00ff00 60%, #0000ff 80%, #8b00ff 100%);
+  --gradient-sunrise: linear-gradient(90deg, #2d0036 0%, #800080 20%, #ff1493 40%, #ff8c00 60%, #ffd700 80%, #ffffe0 100%);
+  --gradient-rasta: linear-gradient(90deg, #006400 0%, #228b22 20%, #ffd700 40%, #ff8c00 60%, #dc143c 80%, #8b0000 100%);
+  --gradient-plasma: linear-gradient(90deg, #0d0887 0%, #7e03a8 20%, #cc4778 40%, #f89540 60%, #f0f921 80%, #ffffff 100%);
+  --gradient-aurora: linear-gradient(90deg, #004d00 0%, #00b300 20%, #00ffff 40%, #0080ff 60%, #8000ff 80%, #ff00ff 100%);
+  --gradient-heat: linear-gradient(90deg, #000000 0%, #330000 20%, #ff0000 40%, #ff6600 60%, #ffff00 80%, #ffffff 100%);
+  --gradient-ice-fire: linear-gradient(90deg, #00008b 0%, #00ced1 20%, #00ff00 40%, #ffff00 60%, #ff4500 80%, #ff0000 100%);
+  --gradient-sunset: linear-gradient(90deg, #000033 0%, #4b0082 20%, #ff1493 40%, #ff4500 60%, #dc143c 80%, #4a0000 100%);
+  --gradient-oceanic: linear-gradient(90deg, #000000 0%, #000080 20%, #008b8b 40%, #00fa9a 60%, #7fff00 80%, #ffffff 100%);
+  --gradient-neon: linear-gradient(90deg, #000000 0%, #9400d3 20%, #ff00ff 40%, #00ffff 60%, #39ff14 80%, #ffff00 100%);
+}
+
+/* Apple 系列 */
+.gradient-midnight { background: var(--gradient-midnight); }
+.gradient-graphite { background: var(--gradient-graphite); }
+.gradient-pacific { background: var(--gradient-pacific); }
+.gradient-alpine { background: var(--gradient-alpine); }
+.gradient-slate { background: var(--gradient-slate); }
+.gradient-indigo { background: var(--gradient-indigo); }
+.gradient-silver { background: var(--gradient-silver); }
+.gradient-rose-gold { background: var(--gradient-rose-gold); }
+.gradient-sky { background: var(--gradient-sky); }
+.gradient-sage { background: var(--gradient-sage); }
+.gradient-titanium { background: var(--gradient-titanium); }
+.gradient-ocean { background: var(--gradient-ocean); }
+.gradient-mist { background: var(--gradient-mist); }
+.gradient-orchid { background: var(--gradient-orchid); }
+.gradient-bronze { background: var(--gradient-bronze); }
+
+/* Morandi 系列 */
+.gradient-dusty-rose { background: var(--gradient-dusty-rose); }
+.gradient-muted-sage { background: var(--gradient-muted-sage); }
+.gradient-steel-blue { background: var(--gradient-steel-blue); }
+.gradient-warm-sand { background: var(--gradient-warm-sand); }
+.gradient-soft-lilac { background: var(--gradient-soft-lilac); }
+.gradient-terracotta { background: var(--gradient-terracotta); }
+.gradient-seafoam { background: var(--gradient-seafoam); }
+.gradient-soft-peach { background: var(--gradient-soft-peach); }
+.gradient-dusty-lavender { background: var(--gradient-dusty-lavender); }
+.gradient-olive-gray { background: var(--gradient-olive-gray); }
+.gradient-muted-blush { background: var(--gradient-muted-blush); }
+.gradient-slate-rose { background: var(--gradient-slate-rose); }
+.gradient-cream-stone { background: var(--gradient-cream-stone); }
+.gradient-mint-gray { background: var(--gradient-mint-gray); }
+.gradient-mauve-gray { background: var(--gradient-mauve-gray); }
+
+/* Classic 系列 */
+.gradient-golden { background: var(--gradient-golden); }
+.gradient-crimson { background: var(--gradient-crimson); }
+.gradient-navy { background: var(--gradient-navy); }
+.gradient-emerald { background: var(--gradient-emerald); }
+.gradient-ruby { background: var(--gradient-ruby); }
+.gradient-sapphire { background: var(--gradient-sapphire); }
+.gradient-amber { background: var(--gradient-amber); }
+.gradient-violet { background: var(--gradient-violet); }
+.gradient-teal { background: var(--gradient-teal); }
+.gradient-coral { background: var(--gradient-coral); }
+.gradient-rainbow { background: var(--gradient-rainbow); }
+.gradient-sunrise { background: var(--gradient-sunrise); }
+.gradient-rasta { background: var(--gradient-rasta); }
+.gradient-plasma { background: var(--gradient-plasma); }
+.gradient-aurora { background: var(--gradient-aurora); }
+.gradient-heat { background: var(--gradient-heat); }
+.gradient-ice-fire { background: var(--gradient-ice-fire); }
+.gradient-sunset { background: var(--gradient-sunset); }
+.gradient-oceanic { background: var(--gradient-oceanic); }
+.gradient-neon { background: var(--gradient-neon); }

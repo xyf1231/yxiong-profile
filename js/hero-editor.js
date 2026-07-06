@@ -11,6 +11,7 @@ let originalCss = "";
 let currentCssVars = {};
 let currentContent = { zh: {}, en: {} };
 let originalContent = { zh: {}, en: {} };
+let editorMode = "desktop"; // "desktop" | "mobile"
 
 const contentKeys = {
   hero: [
@@ -69,7 +70,7 @@ function group(title, fields) {
   return { title, fields };
 }
 
-function clampField(name, label, min, max, step, preferred, clampMin, clampMax) {
+function clampField(name, label, min, max, step, preferred, clampMin, clampMax, mobileName) {
   return {
     name,
     label,
@@ -80,6 +81,7 @@ function clampField(name, label, min, max, step, preferred, clampMin, clampMax) 
     preferredUnit: preferred,
     clampMin: clampMin || `${min}rem`,
     clampMax: clampMax || `${max}rem`,
+    mobileName: mobileName || null,
   };
 }
 
@@ -101,8 +103,8 @@ function colorField(name, label) {
 
 const cssGroups = [
   group("主标题", [
-    clampField("--hero-title-font-size-zh", "中文标题字号 (vw)", 2, 14, 0.1, "vw", "3rem", "7rem"),
-    clampField("--hero-title-font-size-en", "英文标题字号 (vw)", 2, 14, 0.1, "vw", "2.8rem", "6.5rem"),
+    clampField("--hero-title-font-size-zh", "中文标题字号 (vw)", 2, 14, 0.1, "vw", "3rem", "7rem", "--hero-title-font-size-zh-mobile"),
+    clampField("--hero-title-font-size-en", "英文标题字号 (vw)", 2, 14, 0.1, "vw", "2.8rem", "6.5rem", "--hero-title-font-size-en-mobile"),
     rangeField("--hero-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
     rangeField("--hero-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
     rangeField("--hero-title-gap", "分行间距", 0, 0.3, 0.001, "em"),
@@ -126,6 +128,16 @@ const cssGroups = [
     selectField("--hero-text-align", "水平对齐", alignOptions),
     rangeField("--hero-vertical-offset", "垂直偏移", -200, 200, 1, "px"),
     textField("--hero-text-shadow", "文字阴影"),
+  ]),
+  group("其他模块标题", [
+    clampField("--home-frame-heading-size", "研究亮点标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--home-frame-heading-size-mobile"),
+    clampField("--news-heading-size", "新闻标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--news-heading-size-mobile"),
+    clampField("--home-bento-heading-size", "快速导航标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--home-bento-heading-size-mobile"),
+    clampField("--section-kicker-font-size", "小标签字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem"),
+  ]),
+  group("快速导航卡片", [
+    clampField("--home-bento-card-title-font-size", "卡片标题 (vw)", 1, 5, 0.1, "vw", "2rem", "4.25rem", "--home-bento-card-title-font-size-mobile"),
+    clampField("--home-bento-card-text-font-size", "卡片描述 (vw)", 0.5, 2, 0.05, "vw", "0.8rem", "1.1rem", "--home-bento-card-text-font-size-mobile"),
   ]),
 ];
 
@@ -231,7 +243,8 @@ function createLabel(text, htmlFor) {
   return label;
 }
 
-function createRangeControl(field, value) {
+function createRangeControl(field, value, activeName) {
+  const name = activeName || field.name;
   const wrapper = document.createElement("div");
   wrapper.className = "range-control";
 
@@ -241,7 +254,7 @@ function createRangeControl(field, value) {
   slider.max = field.max;
   slider.step = field.step;
   slider.value = value;
-  slider.dataset.var = field.name;
+  slider.dataset.var = name;
   slider.dataset.control = "range";
   slider.className = "slider";
 
@@ -251,7 +264,7 @@ function createRangeControl(field, value) {
   number.max = field.max;
   number.step = field.step;
   number.value = value;
-  number.dataset.var = field.name;
+  number.dataset.var = name;
   number.dataset.control = "number";
   number.className = "number-input";
 
@@ -261,11 +274,11 @@ function createRangeControl(field, value) {
 
   slider.addEventListener("input", () => {
     number.value = slider.value;
-    handleCssInput(field.name, slider.value, field);
+    handleCssInput(name, slider.value, field);
   });
   number.addEventListener("input", () => {
     slider.value = number.value;
-    handleCssInput(field.name, number.value, field);
+    handleCssInput(name, number.value, field);
   });
 
   wrapper.appendChild(slider);
@@ -274,7 +287,8 @@ function createRangeControl(field, value) {
   return wrapper;
 }
 
-function createClampControl(field, value) {
+function createClampControl(field, value, activeName) {
+  const name = activeName || field.name;
   const parsed = parseClamp(value);
   const numericValue = parsed ? parsed.value : parseFloat(value) || (field.min + field.max) / 2;
 
@@ -290,7 +304,7 @@ function createClampControl(field, value) {
   slider.max = field.max;
   slider.step = field.step;
   slider.value = numericValue;
-  slider.dataset.var = field.name;
+  slider.dataset.var = name;
   slider.className = "slider";
 
   const number = document.createElement("input");
@@ -299,16 +313,16 @@ function createClampControl(field, value) {
   number.max = field.max;
   number.step = field.step;
   number.value = numericValue;
-  number.dataset.var = field.name;
+  number.dataset.var = name;
   number.className = "number-input";
 
   slider.addEventListener("input", () => {
     number.value = slider.value;
-    handleCssInput(field.name, buildClamp(slider.value, field), field);
+    handleCssInput(name, buildClamp(slider.value, field), field);
   });
   number.addEventListener("input", () => {
     slider.value = number.value;
-    handleCssInput(field.name, buildClamp(number.value, field), field);
+    handleCssInput(name, buildClamp(number.value, field), field);
   });
 
   rangeWrapper.appendChild(slider);
@@ -317,10 +331,10 @@ function createClampControl(field, value) {
   const raw = document.createElement("input");
   raw.type = "text";
   raw.value = value;
-  raw.dataset.var = field.name;
+  raw.dataset.var = name;
   raw.dataset.control = "raw";
   raw.className = "raw-input";
-  raw.addEventListener("input", () => handleCssInput(field.name, raw.value, field));
+  raw.addEventListener("input", () => handleCssInput(name, raw.value, field));
 
   const hint = document.createElement("span");
   hint.className = "clamp-hint";
@@ -336,9 +350,10 @@ function createClampControl(field, value) {
   return wrapper;
 }
 
-function createSelectControl(field, value) {
+function createSelectControl(field, value, activeName) {
+  const name = activeName || field.name;
   const select = document.createElement("select");
-  select.dataset.var = field.name;
+  select.dataset.var = name;
   field.options.forEach((opt) => {
     const option = document.createElement("option");
     option.value = opt.value;
@@ -346,27 +361,29 @@ function createSelectControl(field, value) {
     if (opt.value === value) option.selected = true;
     select.appendChild(option);
   });
-  select.addEventListener("change", () => handleCssInput(field.name, select.value, field));
+  select.addEventListener("change", () => handleCssInput(name, select.value, field));
   return select;
 }
 
-function createTextControl(field, value) {
+function createTextControl(field, value, activeName) {
+  const name = activeName || field.name;
   const input = document.createElement("input");
   input.type = "text";
   input.value = value;
-  input.dataset.var = field.name;
-  input.addEventListener("input", () => handleCssInput(field.name, input.value, field));
+  input.dataset.var = name;
+  input.addEventListener("input", () => handleCssInput(name, input.value, field));
   return input;
 }
 
-function createColorControl(field, value) {
+function createColorControl(field, value, activeName) {
+  const name = activeName || field.name;
   const wrapper = document.createElement("div");
   wrapper.className = "color-control";
 
   const input = document.createElement("input");
   input.type = "text";
   input.value = value;
-  input.dataset.var = field.name;
+  input.dataset.var = name;
   input.className = "color-text";
   input.addEventListener("input", () => {
     preview.style.background = input.value;
@@ -383,18 +400,19 @@ function createColorControl(field, value) {
   return wrapper;
 }
 
-function createCssFieldRow(field, value) {
+function createCssFieldRow(field, value, activeName) {
+  const name = activeName || field.name;
   const row = document.createElement("div");
   row.className = "field-row";
-  const id = `field-${field.name.replace(/^--/, "")}`;
+  const id = `field-${name.replace(/^--/, "")}`;
   row.appendChild(createLabel(field.label, id));
 
   let control;
-  if (field.type === "range") control = createRangeControl(field, parseFloat(value) || 0);
-  else if (field.type === "clamp") control = createClampControl(field, value);
-  else if (field.type === "select") control = createSelectControl(field, value);
-  else if (field.type === "color") control = createColorControl(field, value);
-  else control = createTextControl(field, value);
+  if (field.type === "range") control = createRangeControl(field, parseFloat(value) || 0, name);
+  else if (field.type === "clamp") control = createClampControl(field, value, name);
+  else if (field.type === "select") control = createSelectControl(field, value, name);
+  else if (field.type === "color") control = createColorControl(field, value, name);
+  else control = createTextControl(field, value, name);
 
   control.id = id;
   row.appendChild(control);
@@ -454,17 +472,42 @@ function renderForm() {
   hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
   elForm.appendChild(hint);
 
+  // 桌面/手机端切换
+  const modeToggle = document.createElement("div");
+  modeToggle.className = "mode-toggle";
+  const modeLabel = document.createElement("span");
+  modeLabel.textContent = "样式适配：";
+  modeToggle.appendChild(modeLabel);
+  ["desktop", "mobile"].forEach((mode) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = `mode-btn ${editorMode === mode ? "active" : ""}`;
+    btn.textContent = mode === "desktop" ? "桌面端" : "手机端";
+    btn.addEventListener("click", () => {
+      editorMode = mode;
+      renderForm();
+      updatePreviewModeClass();
+      updatePreview();
+    });
+    modeToggle.appendChild(btn);
+  });
+  elForm.appendChild(modeToggle);
+
   // CSS 变量组
   cssGroups.forEach((group) => {
+    const fields = editorMode === "mobile" ? group.fields.filter((f) => f.mobileName) : group.fields;
+    if (fields.length === 0) return;
+
     const section = document.createElement("fieldset");
     section.className = "editor-group";
     const legend = document.createElement("legend");
     legend.textContent = group.title;
     section.appendChild(legend);
 
-    group.fields.forEach((field) => {
-      const value = currentCssVars[field.name] ?? "";
-      section.appendChild(createCssFieldRow(field, value));
+    fields.forEach((field) => {
+      const activeName = editorMode === "mobile" && field.mobileName ? field.mobileName : field.name;
+      const value = currentCssVars[activeName] ?? "";
+      section.appendChild(createCssFieldRow(field, value, activeName));
     });
 
     elForm.appendChild(section);
@@ -500,6 +543,11 @@ function syncRelatedControls(name, value, field) {
 function schedulePreviewUpdate() {
   window.clearTimeout(updateTimer);
   updateTimer = window.setTimeout(updatePreview, 80);
+}
+
+function updatePreviewModeClass() {
+  if (!elPreview) return;
+  elPreview.classList.toggle("mobile-preview", editorMode === "mobile");
 }
 
 function updatePreview() {
@@ -611,7 +659,12 @@ function init() {
   langButtons.forEach((btn) => {
     btn.addEventListener("click", () => switchPreviewLang(btn.dataset.previewLang));
   });
-  if (elPreview) elPreview.onload = () => updatePreview();
+  if (elPreview) {
+    elPreview.onload = () => {
+      updatePreviewModeClass();
+      updatePreview();
+    };
+  }
   loadConfig();
 }
 

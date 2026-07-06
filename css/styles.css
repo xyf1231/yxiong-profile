@@ -2264,6 +2264,8 @@ html[lang="en"] .subtle-name {
   border-radius: var(--radius);
   background: rgba(255, 255, 255, 0.08);
   aspect-ratio: 16 / 10;
+  -webkit-mask-image: -webkit-radial-gradient(white, black);
+  mask-image: radial-gradient(white, black);
 }
 
 .publication-visual img {
@@ -5360,7 +5362,6 @@ body.nav-mega-open::after {
   }
 
   .news-card-image img,
-  .publication-visual img,
   .project-visual img,
   .profile-photo {
   overflow: hidden;
@@ -7364,9 +7365,7 @@ body.nav-mega-open::after {
   }
 
   .publication-item .publication-visual,
-  .publication-item .publication-visual img,
-  .all-publication-list .publication-item .publication-visual,
-  .all-publication-list .publication-item .publication-visual img {
+  .all-publication-list .publication-item .publication-visual {
     -webkit-user-drag: none;
     user-select: none;
     -webkit-touch-callout: none;

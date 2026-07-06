@@ -16,7 +16,7 @@
   /* 眉标（Eyebrow） */
   --hero-eyebrow-display: block;
   --hero-eyebrow-color: #2997ff;
-  --hero-eyebrow-font-size: clamp(0.6rem, 2.8vw, 1.5rem);
+  --hero-eyebrow-font-size: clamp(0.6rem, 2vw, 1.5rem);
   --hero-eyebrow-letter-spacing: 0.18em;
   --hero-eyebrow-margin-bottom: 14px;
 
@@ -40,6 +40,25 @@
   --hero-subtitle-margin-top: 12px;
   --hero-subtitle-font-size: clamp(0.7rem, 3.7vw, 2rem);
   --hero-subtitle-font-family: inherit;
+
+  /* 其他模块标题 */
+  --home-frame-heading-size: clamp(3rem, 5vw, 5.7rem);
+  --news-heading-size: clamp(3rem, 5vw, 5.7rem);
+  --home-bento-heading-size: clamp(3rem, 5vw, 5.7rem);
+  --section-kicker-font-size: clamp(0.8rem, 2vw, 1.2rem);
+
+  /* 快速导航卡片 */
+  --home-bento-card-title-font-size: clamp(2rem, 4vw, 4.25rem);
+  --home-bento-card-text-font-size: clamp(0.8rem, 1vw, 1.1rem);
+
+  /* 手机端（<= 768px） */
+  --hero-title-font-size-zh-mobile: clamp(2.8rem, 10vw, 4rem);
+  --hero-title-font-size-en-mobile: clamp(2.8rem, 10vw, 4rem);
+  --home-frame-heading-size-mobile: clamp(2.8rem, 10vw, 4rem);
+  --news-heading-size-mobile: clamp(2.7rem, 12vw, 4.2rem);
+  --home-bento-heading-size-mobile: clamp(2.8rem, 10vw, 4rem);
+  --home-bento-card-title-font-size-mobile: 1.6rem;
+  --home-bento-card-text-font-size-mobile: 0.9rem;
 }
 
 /* Hero 区域最小高度 */
@@ -125,4 +144,68 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   font-size: var(--hero-subtitle-font-size) !important;
   font-family: var(--hero-subtitle-font-family) !important;
   text-align: var(--hero-text-align) !important;
+}
+
+/* 其他模块标题字号 */
+.home-frame-heading h2 {
+  font-size: var(--home-frame-heading-size) !important;
+}
+
+.news-section .section-heading h2 {
+  font-size: var(--news-heading-size) !important;
+}
+
+.home-bento-nav .section-heading h2 {
+  font-size: var(--home-bento-heading-size) !important;
+}
+
+.home-frame-heading .section-kicker,
+.news-section .section-kicker,
+.home-bento-nav .section-kicker {
+  font-size: var(--section-kicker-font-size) !important;
+}
+
+/* 快速导航卡片字号 */
+.home-bento-card strong {
+  font-size: var(--home-bento-card-title-font-size) !important;
+}
+
+.home-bento-card p {
+  font-size: var(--home-bento-card-text-font-size) !important;
+}
+
+/* 手机端（<= 768px）覆盖 */
+@media (max-width: 768px) {
+  /* Hero 主标题 */
+  html[lang="zh-CN"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
+  html[lang="zh-CN"] .clean-copy h1 {
+    font-size: var(--hero-title-font-size-zh-mobile) !important;
+  }
+
+  html[lang="en"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
+  html[lang="en"] .clean-copy h1 {
+    font-size: var(--hero-title-font-size-en-mobile) !important;
+  }
+
+  /* 其他模块标题 */
+  .home-frame-heading h2 {
+    font-size: var(--home-frame-heading-size-mobile) !important;
+  }
+
+  .news-section .section-heading h2 {
+    font-size: var(--news-heading-size-mobile) !important;
+  }
+
+  .home-bento-nav .section-heading h2 {
+    font-size: var(--home-bento-heading-size-mobile) !important;
+  }
+
+  /* 快速导航卡片 */
+  .home-bento-card strong {
+    font-size: var(--home-bento-card-title-font-size-mobile) !important;
+  }
+
+  .home-bento-card p {
+    font-size: var(--home-bento-card-text-font-size-mobile) !important;
+  }
 }

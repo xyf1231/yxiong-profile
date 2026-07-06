@@ -2594,52 +2594,13 @@ document.addEventListener("click", (event) => {
   showPdfLoading(link);
 });
 
-// 论文卡片触摸滑动检测，避免将滑动误识别为点击
-let paperTouchStartX = 0;
-let paperTouchStartY = 0;
-let paperTouchMoved = false;
-
-// 触摸开始时记录起点并复位状态
-document.addEventListener("touchstart", (event) => {
-  if (event.touches.length === 1) {
-    paperTouchStartX = event.touches[0].clientX;
-    paperTouchStartY = event.touches[0].clientY;
-    paperTouchMoved = false;
-  }
-}, { passive: true });
-
-// 触摸移动时检测位移，阈值 6px 兼顾灵敏度与误触过滤
-document.addEventListener("touchmove", (event) => {
-  if (event.touches.length === 1) {
-    const dx = event.touches[0].clientX - paperTouchStartX;
-    const dy = event.touches[0].clientY - paperTouchStartY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    // 以垂直分量为主：只要纵向滑动超过 4px，也视为滑动
-    if (distance > 6 || Math.abs(dy) > 4) {
-      paperTouchMoved = true;
-    }
-  }
-}, { passive: true });
-
-// 触摸结束时复位，防止状态残留影响下一次点击
-document.addEventListener("touchend", () => {
-  window.setTimeout(() => {
-    paperTouchMoved = false;
-  }, 80);
-}, { passive: true });
-
+/* Paper preview click handler removed to ensure full-page scrolling on mobile */
 document.addEventListener("click", (event) => {
   const card = event.target.closest("[data-paper-preview]");
   if (!card) return;
   if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
-  // 如果用户滑动了，不触发点击
-  if (paperTouchMoved) {
-    paperTouchMoved = false;
-    return;
-  }
   event.preventDefault();
   event.stopImmediatePropagation();
-  // 统一使用 window.open：iframe 弹窗对跨域PDF在手机端会触发下载
   window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
 });
 

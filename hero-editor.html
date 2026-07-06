@@ -5,7 +5,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>首页编辑器 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.18" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.20" />
     <style>
       :root {
         --editor-bg: #05050a;
@@ -169,6 +169,12 @@
         border: 1px solid var(--editor-border);
         border-radius: 14px;
         background: #000;
+        transition: width 0.25s ease;
+      }
+      #preview-frame.mobile-preview {
+        width: 390px;
+        max-width: 100%;
+        margin: 0 auto;
       }
 
       .editor-group {
@@ -356,6 +362,40 @@
         }
         .field-row label { padding-top: 0; }
         .range-control .slider { min-width: 0; }
+      }
+
+      .mode-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        padding: 10px 12px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--editor-border);
+        border-radius: 12px;
+      }
+      .mode-toggle span {
+        font-size: 0.8rem;
+        color: var(--editor-muted);
+        font-weight: 600;
+      }
+      .mode-btn {
+        appearance: none;
+        border: 1px solid var(--editor-border);
+        border-radius: 8px;
+        background: transparent;
+        color: var(--editor-muted);
+        padding: 6px 12px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.16s ease;
+      }
+      .mode-btn:hover { background: rgba(255,255,255,0.06); }
+      .mode-btn.active {
+        background: var(--editor-accent);
+        border-color: var(--editor-accent);
+        color: #fff;
       }
     </style>
   </head>

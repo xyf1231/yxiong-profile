@@ -801,18 +801,24 @@
       }
 
       const SequentialLetters = React.forwardRef((props, ref) => {
-        const [step, setStep] = useState(0);
-        const [preset, setPreset] = useState(null);
-        const lettersRef = useRef(null);
-        const timerRef = useRef(null);
-        const stepRef = useRef(step);
-        stepRef.current = step;
-
         const {
           words, activePresets, colorMode, solidColor, customGradient,
           variant, strokeWidth, duration, ease, overlap, loopSequence, perWordLoop, writeErase,
           isPlaying, onPlayingChange, shuffleKey, brightness, saturation
         } = props;
+
+        const [step, setStep] = useState(0);
+        const [preset, setPreset] = useState(() => {
+          if (colorMode === 'solid') return null;
+          if (colorMode === 'custom') return 'custom';
+          if (activePresets.length === 0) return null;
+          return activePresets[Math.floor(Math.random() * activePresets.length)];
+        });
+        const lettersRef = useRef(null);
+        const timerRef = useRef(null);
+        const stepRef = useRef(step);
+        const prevStepRef = useRef(step);
+        stepRef.current = step;
 
         const currentIndex = words.length ? step % words.length : 0;
         const currentWord = words[currentIndex] || '';
@@ -825,16 +831,24 @@
         }, [colorMode, activePresets]);
 
         useEffect(() => {
+          window.__effectLog = window.__effectLog || [];
+          window.__effectLog.push({ isPlaying, step, writeErase, duration, time: Date.now() });
           if (!isPlaying || words.length === 0) {
             clearTimeout(timerRef.current);
             return;
           }
-          const newPreset = pickPreset();
-          setPreset(newPreset);
+          if (step !== prevStepRef.current) {
+            prevStepRef.current = step;
+            const newPreset = pickPreset();
+            setPreset(newPreset);
+          }
+          const animTime = duration * 1000 * (writeErase ? 2 : 1);
+          window.__animTime = animTime;
+          window.__step = step;
+          window.__writeErase = writeErase;
           const playTimer = setTimeout(() => {
             if (lettersRef.current?.play) lettersRef.current.play();
           }, 50);
-          const animTime = duration * 1000 * (writeErase ? 2 : 1);
           const timer = setTimeout(() => {
             if (perWordLoop && lettersRef.current?.replay) {
               lettersRef.current.replay();
@@ -902,7 +916,7 @@
           ),
           h('div', { style: { width: '100%', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' } },
             h(Letters, {
-              key: `${currentWord}-${preset}-${step}`,
+              key: `${currentWord}-${preset}-${step}-${writeErase ? 1 : 0}`,
               ref: (r) => { lettersRef.current = r; },
               text: currentWord,
               variant: variant,
@@ -1242,6 +1256,7 @@ function App() {
       saturation={${state.saturation}}
       loopSequence={${state.loopSequence}}
       perWordLoop={${state.perWordLoop}}
+      writeErase={${state.writeErase}}
       isPlaying={isPlaying}
       onPlayingChange={setIsPlaying}
     />
@@ -1266,7 +1281,8 @@ const lettersConfig = {
   brightness: ${state.brightness},
   saturation: ${state.saturation},
   loopSequence: ${state.loopSequence},
-  perWordLoop: ${state.perWordLoop}
+  perWordLoop: ${state.perWordLoop},
+  writeErase: ${state.writeErase}
 };`;
       }
 
