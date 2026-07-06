@@ -1365,10 +1365,9 @@ function pdfDownloadLink(url) {
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
-  const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
   const downloadText = uiLabel("下载", "Download");
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}" download data-pdf-download data-icon="↓"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -2414,11 +2413,38 @@ document.addEventListener("click", (event) => {
   showPdfLoading(link);
 });
 
+function showPdfPreview(url) {
+  let modal = document.querySelector("#pdf-preview-modal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "pdf-preview-modal";
+    modal.innerHTML = \`<div class="pdf-preview-backdrop">
+      <div class="pdf-preview-container">
+        <button class="pdf-preview-close" aria-label="Close">\u2715</button>
+        <iframe class="pdf-preview-iframe" src=""></iframe>
+      </div>
+    </div>\`;
+    document.body.appendChild(modal);
+    modal.querySelector(".pdf-preview-close").addEventListener("click", () => {
+      modal.classList.remove("is-visible");
+      modal.querySelector("iframe").src = "";
+    });
+    modal.querySelector(".pdf-preview-backdrop").addEventListener("click", (e) => {
+      if (e.target === e.currentTarget) {
+        modal.classList.remove("is-visible");
+        modal.querySelector("iframe").src = "";
+      }
+    });
+  }
+  modal.querySelector("iframe").src = url;
+  modal.classList.add("is-visible");
+}
+
 document.addEventListener("click", (event) => {
   const card = event.target.closest("[data-paper-preview]");
   if (!card) return;
   if (event.target.closest("[data-pdf-download]") || event.target.closest("time")) return;
-  window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
+  showPdfPreview(card.dataset.paperPreview);
 });
 
 

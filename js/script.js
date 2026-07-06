@@ -165,12 +165,6 @@ function setupSiteLoadingGate() {
 
     finished = true;
 
-    // 添加可见的调试标签
-    const debug = document.createElement("div");
-    debug.style.cssText = "position:fixed;bottom:10px;right:10px;z-index:99999;background:rgba(255,0,0,0.9);color:white;padding:15px;font-size:16px;font-family:sans-serif;border-radius:8px;pointer-events:none;";
-    debug.textContent = `finish() called! current=${Math.round(current)}`;
-    document.body.appendChild(debug);
-
     // 直接跳到 100%
     setProgress(100);
 

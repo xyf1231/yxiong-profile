@@ -198,9 +198,10 @@ html[data-site-loading="pending"]::after {
 .site-loading-percent strong {
   position: relative;
   min-height: 1.2em;
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
+  width: 100%;
   color: #fff;
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Noto Sans SC', sans-serif;
   font-size: clamp(4rem, 12vw, 7rem) !important;

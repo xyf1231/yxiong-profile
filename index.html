@@ -30,8 +30,8 @@
       content="熊毅丰的个人学术网站，展示研究方向、论文成果、项目经历、专利会议与联系方式。"
     />
     <title>熊毅丰 | Yifeng Xiong</title>
-    <link rel="preload" href="css/styles.css?v=v1.10.5" as="style" />
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.5" />
+    <link rel="preload" href="css/styles.css?v=v1.10.6" as="style" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.6" />
     <style>
       .site-loading-percent strong {
         font-size: clamp(4rem, 12vw, 7rem) !important;
@@ -165,26 +165,10 @@
       <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>
       <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>
       <span class="footer-address">通信地址：南京大学仙林校区现代工学院A302</span>
-      <span class="footer-version">Version 1.10.5</span>
+      <span class="footer-version">Version 1.10.6</span>
     </footer>
 
-    <script src="js/data.js?v=v1.10.5" charset="utf-8"></script>
-    <script src="js/script.js?v=v1.10.5" charset="utf-8" defer></script>
-    <button id="test-finish" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:rgba(0,255,0,0.9);color:black;padding:10px;font-size:14px;font-family:sans-serif;border-radius:4px;cursor:pointer;">测试 finish()</button>
-    <script>
-      document.getElementById('test-finish').addEventListener('click', function() {
-        // 直接测试 CSS 动画
-        var overlay = document.querySelector('.site-loading-overlay');
-        var percent = document.querySelector('.site-loading-percent');
-        if (overlay && percent) {
-          percent.classList.add('is-ready');
-          setTimeout(function() {
-            overlay.classList.add('is-hidden');
-          }, 1800);
-        } else {
-          alert('overlay or percent not found');
-        }
-      });
-    </script>
+    <script src="js/data.js?v=v1.10.6" charset="utf-8"></script>
+    <script src="js/script.js?v=v1.10.6" charset="utf-8" defer></script>
   </body>
 </html>
