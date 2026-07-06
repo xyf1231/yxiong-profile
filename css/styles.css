@@ -10220,3 +10220,88 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     padding: 0;
   }
 }
+
+
+
+/* v1.10.23 mobile nav touch-friendly layout */
+@media (max-width: 860px) {
+  .nav-links {
+    padding: clamp(24px, 5vh, 44px) max(20px, env(safe-area-inset-right)) max(34px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left)) !important;
+  }
+
+  .nav-cards.nav-cards-five {
+    width: min(100%, 420px) !important;
+    gap: clamp(12px, 2.4vh, 20px) !important;
+  }
+
+  .nav-cards-five .nav-card {
+    padding: 0 !important;
+    border-radius: 18px !important;
+    background: rgba(255, 255, 255, 0.045) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .nav-cards-five .nav-card-links {
+    display: flex !important;
+    flex-direction: column !important;
+    flex-wrap: nowrap !important;
+    gap: 0 !important;
+    padding: 6px !important;
+  }
+
+  .nav-cards-five .nav-card-links a {
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    min-height: 50px !important;
+    padding: 11px 14px !important;
+    border-radius: 12px !important;
+    background: transparent !important;
+    box-sizing: border-box !important;
+    line-height: 1.3 !important;
+  }
+
+  .nav-cards-five .nav-card-links a::before {
+    display: none !important;
+  }
+
+  .nav-cards-five .nav-major-link,
+  .nav-cards-five .nav-card:first-child .nav-card-links a,
+  .nav-cards-five .nav-card:nth-child(2) .nav-card-links a,
+  .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:first-child,
+  .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:first-child,
+  .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:first-child {
+    font-size: clamp(1.35rem, 5.6vw, 1.85rem) !important;
+    font-weight: 720 !important;
+    color: rgba(255, 255, 255, 0.96) !important;
+  }
+
+  .nav-cards-five .nav-sub-link,
+  .nav-cards-five .nav-card:nth-child(3) .nav-card-links a:not(:first-child),
+  .nav-cards-five .nav-card:nth-child(4) .nav-card-links a:not(:first-child),
+  .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child) {
+    font-size: clamp(0.98rem, 4vw, 1.18rem) !important;
+    font-weight: 560 !important;
+    color: rgba(255, 255, 255, 0.68) !important;
+    padding-left: 14px !important;
+  }
+
+  .nav-cards-five .nav-card-links a:hover,
+  .nav-cards-five .nav-card-links a:active,
+  .nav-cards-five .nav-card-links a:focus-visible {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+    transform: translateX(3px) scale(1.01) !important;
+  }
+
+  .nav-cards-five .nav-card-links a:active {
+    background: rgba(100, 210, 255, 0.12) !important;
+  }
+
+  .nav-cards-five .nav-card-arrow {
+    font-size: 0.85em !important;
+    opacity: 0.4 !important;
+  }
+}

@@ -24293,7 +24293,6 @@
 		const [progress, setProgress] = (0, import_react.useState)(1);
 		const [phase, setPhase] = (0, import_react.useState)("idle");
 		const [isPlaying, setIsPlaying] = (0, import_react.useState)(false);
-		const controlsRef = (0, import_react.useRef)(null);
 		const durationRef = (0, import_react.useRef)(duration);
 		const easeRef = (0, import_react.useRef)(ease);
 		const loopRef = (0, import_react.useRef)(loop);
@@ -24312,13 +24311,6 @@
 			phaseRef.current = phase;
 			isPlayingRef.current = isPlaying;
 		});
-		const stopAnimation = (0, import_react.useCallback)(() => {
-			if (controlsRef.current) {
-				controlsRef.current.stop();
-				controlsRef.current = null;
-			}
-			setIsPlaying(false);
-		}, []);
 		const pickNextPreset = (0, import_react.useCallback)((current) => {
 			const pool = Array.from(selectedPresets);
 			if (pool.length === 0) return current || activePresetRef.current;
@@ -24328,79 +24320,112 @@
 			while (next === current && guard++ < 10) next = pickRandom(pool);
 			return next;
 		}, [selectedPresets]);
-		const runnersRef = (0, import_react.useRef)({
-			runDraw: () => {},
-			runErase: () => {}
-		});
-		runnersRef.current.runDraw = (from = 0) => {
-			console.log("runDraw called", from, phaseRef.current, loopRef.current, eraseRef.current);
+		const animStateRef = (0, import_react.useRef)(null);
+		const applyEase = (0, import_react.useCallback)((t) => {
+			switch (easeRef.current) {
+				case "easeIn": return t * t;
+				case "easeOut": return t * (2 - t);
+				case "easeInOut": return t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+				default: return t;
+			}
+		}, []);
+		const stopAnimation = (0, import_react.useCallback)(() => {
+			if (animStateRef.current) {
+				cancelAnimationFrame(animStateRef.current.rafId);
+				animStateRef.current = null;
+			}
+			setIsPlaying(false);
+		}, []);
+		const tick = (0, import_react.useCallback)(() => {
+			const state = animStateRef.current;
+			if (!state) return;
+			const elapsed = performance.now() - state.startTime;
+			const raw = Math.min(elapsed / (state.duration * 1e3), 1);
+			const eased = applyEase(raw);
+			const value = state.from + (state.to - state.from) * eased;
+			setProgress(value);
+			if (raw < 1) state.rafId = requestAnimationFrame(tick);
+			else {
+				console.log("tick complete", state.phase, value);
+				animStateRef.current = null;
+				setIsPlaying(false);
+				state.onComplete?.();
+			}
+		}, [applyEase]);
+		const startAnimation = (0, import_react.useCallback)((from, to, duration, phase, onComplete) => {
 			stopAnimation();
-			setPhase("drawing");
+			setPhase(phase);
 			setIsPlaying(true);
-			controlsRef.current = animate(from, 1, {
-				duration: durationRef.current * (1 - from),
-				ease: easeRef.current,
-				onUpdate: (v) => setProgress(v),
-				onComplete: () => {
-					console.log("draw onComplete", eraseRef.current, loopRef.current);
-					setIsPlaying(false);
-					if (eraseRef.current) runnersRef.current.runErase(1);
-					else if (loopRef.current) {
-						const next = pickNextPreset(activePresetRef.current);
-						(0, import_client.flushSync)(() => setActivePresetKey(next));
-						window.setTimeout(() => runnersRef.current.runDraw(0), 0);
-					} else setPhase("idle");
-				}
+			const state = {
+				rafId: 0,
+				startTime: performance.now(),
+				pausedElapsed: 0,
+				from,
+				to,
+				duration,
+				phase,
+				onComplete
+			};
+			animStateRef.current = state;
+			state.rafId = requestAnimationFrame(tick);
+		}, [stopAnimation, tick]);
+		const runDrawRef = (0, import_react.useRef)(() => {});
+		const runEraseRef = (0, import_react.useRef)(() => {});
+		runDrawRef.current = (from = 0) => {
+			console.log("runDraw called", from);
+			startAnimation(from, 1, durationRef.current * (1 - from), "drawing", () => {
+				console.log("draw complete", eraseRef.current, loopRef.current);
+				if (eraseRef.current) runEraseRef.current(1);
+				else if (loopRef.current) {
+					const next = pickNextPreset(activePresetRef.current);
+					(0, import_client.flushSync)(() => setActivePresetKey(next));
+					runDrawRef.current(0);
+				} else setPhase("idle");
 			});
 		};
-		runnersRef.current.runErase = (from = 1) => {
-			stopAnimation();
-			setPhase("erasing");
-			setIsPlaying(true);
-			controlsRef.current = animate(from, 0, {
-				duration: durationRef.current * .5 * from,
-				ease: easeRef.current,
-				onUpdate: (v) => setProgress(v),
-				onComplete: () => {
-					console.log("erase onComplete", loopRef.current);
-					setIsPlaying(false);
-					if (loopRef.current) {
-						const next = pickNextPreset(activePresetRef.current);
-						(0, import_client.flushSync)(() => setActivePresetKey(next));
-						window.setTimeout(() => runnersRef.current.runDraw(0), 0);
-					} else setPhase("idle");
-				}
+		runEraseRef.current = (from = 1) => {
+			console.log("runErase called", from);
+			startAnimation(from, 0, durationRef.current * .5 * from, "erasing", () => {
+				console.log("erase complete", loopRef.current);
+				if (loopRef.current) {
+					const next = pickNextPreset(activePresetRef.current);
+					(0, import_client.flushSync)(() => setActivePresetKey(next));
+					runDrawRef.current(0);
+				} else setPhase("idle");
 			});
 		};
-		const { runDraw, runErase } = runnersRef.current;
 		const togglePlay = (0, import_react.useCallback)(() => {
 			if (isPlayingRef.current) {
-				controlsRef.current?.pause();
+				const state = animStateRef.current;
+				if (state) {
+					cancelAnimationFrame(state.rafId);
+					state.pausedElapsed = performance.now() - state.startTime;
+				}
 				setIsPlaying(false);
 			} else {
 				const p = progressRef.current;
-				const currentPhase = phaseRef.current;
-				if (currentPhase === "idle") if (p >= .99) if (eraseRef.current) runnersRef.current.runErase(1);
-				else runnersRef.current.runDraw(0);
-				else runnersRef.current.runDraw(p);
-				else if (currentPhase === "drawing") {
-					controlsRef.current?.play();
-					setIsPlaying(true);
-				} else if (currentPhase === "erasing") {
-					controlsRef.current?.play();
-					setIsPlaying(true);
+				if (phaseRef.current === "idle") if (p >= .99) if (eraseRef.current) runEraseRef.current(1);
+				else runDrawRef.current(0);
+				else runDrawRef.current(p);
+				else {
+					const state = animStateRef.current;
+					if (state) {
+						state.startTime = performance.now() - state.pausedElapsed;
+						state.rafId = requestAnimationFrame(tick);
+						setIsPlaying(true);
+					}
 				}
 			}
-		}, []);
+		}, [tick]);
 		const handleReplay = (0, import_react.useCallback)(() => {
 			const next = pickNextPreset(activePresetRef.current);
 			(0, import_client.flushSync)(() => setActivePresetKey(next));
-			runnersRef.current.runDraw(0);
+			runDrawRef.current(0);
 		}, [pickNextPreset]);
 		(0, import_react.useEffect)(() => {
-			runnersRef.current.runDraw(0);
+			runDrawRef.current(0);
 			return () => {
-				controlsRef.current?.stop();
+				if (animStateRef.current) cancelAnimationFrame(animStateRef.current.rafId);
 			};
 		}, []);
 		const animation = (0, import_react.useMemo)(() => ({
@@ -24449,7 +24474,7 @@
 		const shufflePreset = (0, import_react.useCallback)(() => {
 			const next = pickNextPreset(activePresetRef.current);
 			(0, import_client.flushSync)(() => setActivePresetKey(next));
-			if (phaseRef.current === "idle") runnersRef.current.runDraw(0);
+			if (phaseRef.current === "idle") runDrawRef.current(0);
 		}, [pickNextPreset]);
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 			style: {
