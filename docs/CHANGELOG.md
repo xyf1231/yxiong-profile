@@ -1,5 +1,54 @@
 # 更新日志
 
+## v1.10.53 - 2026-07-07
+- 类型：修复
+- 变更：修复 profile 页移动端「研究内容」三卡片间距不跟随全局列表间距变化的问题。`css/styles.css` 中 `.section-wrap#research .feature-grid { gap: clamp(...) !important; }` 与 `css/profile-config.css` 原选择器特异性相同且都使用 `!important`，导致原配置未能稳定覆盖。将 profile-config.css 中的选择器提升为 `.profile-page .section-wrap#research .feature-grid`（特异性更高），确保 `--profile-list-gap` / `--profile-list-gap-mobile` 生效。
+- 检查：`python3 scripts/check_braces.py css/profile-config.css` 与 `node scripts/check-site.mjs` 通过（v1.10.53）
+- 部署：未部署
+
+## v1.10.52 - 2026-07-07
+- 类型：调整
+- 变更：明确 profile 页「研究内容」三个卡片（`.feature-grid` / `#research-list`）也纳入全局列表间距控制。已在 `css/profile-config.css` 的列表间距选择器中显式添加 `#research-list.feature-grid`，与 `.timeline`、`.detail-list`、`#profile-publication-list` 统一使用 `--profile-list-gap` / `--profile-list-gap-mobile`（两者均继承 `--global-list-gap` / `--global-list-gap-mobile`）。
+- 检查：`python3 scripts/check_braces.py css/profile-config.css` 与 `node scripts/check-site.mjs` 通过（v1.10.52）
+- 部署：未部署
+
+## v1.10.51 - 2026-07-07
+- 类型：修复
+- 变更：修复多页列表间距调节无效的问题。`css/styles.css` 在 `@media (max-width: 860px)` 等断点下使用 `gap: 24px !important` / `gap: 18px !important` 强制覆盖了 results / honors / activities 页的 `.detail-list`、`.all-publication-list` 等列表间距，而这几页的 `*-config.css` 原先未加 `!important`，导致 editor 中的列表间距变量失效。已统一为 `gap: var(--*-list-gap) !important;` 和 `gap: var(--*-list-gap-mobile) !important;`。
+- 检查：`python3 scripts/check_braces.py css/profile-config.css css/results-config.css css/honors-config.css css/activities-config.css` 与 `node scripts/check-site.mjs` 通过（v1.10.51）
+- 部署：未部署
+
+## v1.10.50 - 2026-07-07
+- 类型：修复
+- 变更：修复首页 Hero 副标题「上边距」调节无效的问题。`css/styles.css` 中存在多条与 `css/home-config.css` 同特异性的 `margin-top: 0 !important` 规则，因后加载的配置文件未能稳定覆盖导致调节失效。将 `css/home-config.css` 中副标题选择器增加 `html` 前缀提升特异性，确保 `--hero-subtitle-margin-top` / `--hero-subtitle-margin-top-mobile` 生效。
+- 检查：`python3 scripts/check_braces.py css/home-config.css` 与 `node scripts/check-site.mjs` 通过（v1.10.50）
+- 部署：未部署
+
+## v1.10.49 - 2026-07-07
+- 类型：功能
+- 变更：新增「全局 Section」编辑器页面，可统一调节 profile / results / honors / activities 四页以及首页的 Section 小标签、标题、标题与内容间距、Section 内边距、首 Section 上内边距和列表项间距。
+- 变更：新增 `css/global-section-config.css`，所有主页面 HTML 在加载各自 `*-config.css` 前先加载该全局配置；各页 `*-config.css` 中的通用 Section 变量改为继承全局变量。
+- 变更：`js/hero-editor.js` 的 editor 增加 `global` 页面，并移除各内容页重复的 Section 小标签 / 标题 / 通用间距控件，仅保留各页特有的设置（如 profile 名片、各页首 Section 与后续间距等）。
+- 检查：`node --check js/hero-editor.js`、`python3 scripts/check_braces.py` 与 `node scripts/check-site.mjs` 均通过（v1.10.49）
+- 部署：未部署
+
+## v1.10.48 - 2026-07-07
+- 类型：重构
+- 变更：统一 profile / results / honors / activities 四页的 Section 间距控制变量。每页现在使用一致的 5 个核心变量：`{page}-section-padding`、`{page}-first-section-padding-top`、`{page}-first-section-gap`、`{page}-section-heading-gap`、`{page}-list-gap`，并在 editor 的「容器与间距」组中统一展示。
+- 变更：profile 页将原本分散的 `--profile-feature-grid-gap` / `--profile-timeline-gap` / `--profile-publication-gap` / `--profile-detail-gap` 合并为单个 `--profile-list-gap`；同时移除未实际生效的 `--profile-timeline-section-gap` 控制项，避免 editor 中参数混乱。
+- 变更：results 页回退 Section 上下内边距的拆分（`padding-top` / `padding-bottom`），恢复为单一 `--results-section-padding`，与其他页保持一致。
+- 变更：honors / activities 页新增 `--honors-section-heading-gap` / `--activities-section-heading-gap` 变量与移动端覆盖，并补齐 `.section-heading` 的 `margin-bottom` 规则。
+- 检查：`python3 scripts/check_braces.py` 与 `node --check js/hero-editor.js` 均通过；`node scripts/check-site.mjs` 通过（v1.10.48）
+- 部署：未部署
+
+## v1.10.42 - 2026-07-07
+- 类型：功能
+- 变更：将 Letters 手写加载动画应用到全部前台页面（`activities.html`、`honors.html`、`profile.html`、`results.html`）。为这些页面补充 `process` shim 与 `letters-animation.umd.js`，并将 `script.js` 改为 `defer` 以确保 UMD 先加载、后执行加载门逻辑。
+- 类型：功能
+- 变更：同步更新 `js/global.js` 的加载层，同样把 Lottie 欢迎动画替换为手写单词列表动画，避免其他引用 `global.js` 的入口仍使用旧动画。
+- 检查：`node --check js/script.js` 与 `node --check js/global.js` 均通过
+- 部署：未部署
+
 ## v1.10.40 - 2026-07-07
 - 类型：功能
 - 变更：将 Letters 手写单词列表动画应用到主页加载页（`index.html` / `js/script.js`）。加载层原有的 Lottie `Welcome.json` 动画被替换为手写文字动画：单词列表 `["hello", "welcome", "coming", "loading"]` 每次刷新随机打乱顺序，每个单词从 `["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"]` 中随机挑选渐变颜色（strokeWidth=2, brightness=15, saturation=12）。

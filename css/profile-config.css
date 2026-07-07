@@ -1,32 +1,33 @@
 /**
  * profile-config.css — 个人简介页排版变量
  * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ * 通用 Section 样式由 css/global-section-config.css 统一控制。
  */
 
 :root {
   /* 页面容器 */
   --profile-container-max-width: var(--max);
-  --profile-section-padding: 50px;
-  --profile-first-section-padding-top: 120px;
+  --profile-section-padding: var(--global-section-padding);
+  --profile-first-section-padding-top: var(--global-first-section-padding-top);
 
-  /* 首 Section 标题与内容间距 */
-  --profile-first-section-gap: 0px;
+  /* 首 Section 与后续 Section 间距 */
+  --profile-first-section-gap: 50px;
 
-  /* Section kicker */
-  --profile-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
-  --profile-kicker-letter-spacing: 0.14em;
-  --profile-kicker-color: var(--accent);
-  --profile-kicker-margin-bottom: 14px;
+  /* Section 小标签（继承全局） */
+  --profile-kicker-font-size: var(--global-section-kicker-font-size);
+  --profile-kicker-letter-spacing: var(--global-section-kicker-letter-spacing);
+  --profile-kicker-color: var(--global-section-kicker-color);
+  --profile-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
-  /* Section title（个人简介、研究内容、代表论文等共用） */
-  --profile-title-font-size: clamp(1.5rem, 5vw, 6rem);
-  --profile-title-line-height: 1.12;
-  --profile-title-letter-spacing: -0.02em;
-  --profile-title-color: rgba(255, 255, 255, 0.96);
+  /* Section title（个人简介、研究内容、代表论文等共用，继承全局） */
+  --profile-title-font-size: var(--global-section-title-font-size);
+  --profile-title-line-height: var(--global-section-title-line-height);
+  --profile-title-letter-spacing: var(--global-section-title-letter-spacing);
+  --profile-title-color: var(--global-section-title-color);
 
   /* 个人名片卡片 */
-  --profile-card-padding: clamp(24px, 3vw, 40px);
-  --profile-card-gap: clamp(24px, 3.6vw, 48px);
+  --profile-card-padding: 50px;
+  --profile-card-gap: 50px;
   --profile-card-min-height: 0px;
   --profile-card-border-radius: clamp(22px, 2.4vw, 32px);
   --profile-card-bg:
@@ -35,27 +36,37 @@
   --profile-card-border: 1.5px solid rgba(255, 255, 255, 0.14);
 
   /* 照片与姓名 */
-  --profile-photo-size: min(200px, 28vw);
+  --profile-photo-size: 250px;
   --profile-photo-radius: clamp(16px, 2vw, 24px);
-  --profile-name-size: clamp(1.5rem, 2.5vw, 2.2rem);
-  --profile-en-name-size: clamp(0.85rem, 1.2vw, 1.1rem);
+  --profile-name-size: 3rem;
+  --profile-en-name-size: 1.5rem;
 
   /* 简介正文 */
   --profile-bio-font-size: 1.5rem;
   --profile-bio-line-height: 1.6;
 
+  /* Section 标题与内容间距（继承全局） */
+  --profile-section-heading-gap: var(--global-section-heading-gap);
+
+  /* 条目/卡片间距（继承全局） */
+  --profile-list-gap: var(--global-list-gap);
+
   /* 手机端 */
-  --profile-first-section-gap-mobile: 0px;
-  --profile-kicker-font-size-mobile: clamp(0.5rem, 3vw, 2rem);
-  --profile-title-font-size-mobile: clamp(1.5rem, 10vw, 6rem);
-  --profile-section-padding-mobile: 60px;
-  --profile-first-section-padding-top-mobile: 94px;
-  --profile-card-padding-mobile: 24px;
-  --profile-card-gap-mobile: 20px;
+  --profile-first-section-gap-mobile: 40px;
+  --profile-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
+  --profile-title-font-size-mobile: var(--global-section-title-font-size-mobile);
+  --profile-section-padding-mobile: var(--global-section-padding-mobile);
+  --profile-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
+  --profile-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
+  --profile-list-gap-mobile: var(--global-list-gap-mobile);
+  --profile-card-padding-mobile: 20px;
+  --profile-card-gap-mobile: 12px;
   --profile-card-min-height-mobile: 0px;
-  --profile-photo-size-mobile: 140px;
-  --profile-name-size-mobile: 1.5rem;
-  --profile-en-name-size-mobile: 0.85rem;
+  --profile-photo-size-mobile: 250px;
+  --profile-name-size-mobile: 2rem;
+  --profile-en-name-size-mobile: 1.5rem;
+  --profile-bio-font-size-mobile: 1rem;
+  --profile-bio-line-height-mobile: 1.5;
 }
 
 /* 容器 */
@@ -69,7 +80,7 @@
   padding-top: var(--profile-first-section-padding-top) !important;
 }
 
-/* 首 Section 标题与内容间距 */
+/* 首 Section 与后续 Section 间距 */
 .profile-page #intro {
   padding-bottom: var(--profile-first-section-gap) !important;
 }
@@ -171,6 +182,29 @@
   line-height: var(--profile-bio-line-height) !important;
 }
 
+/* Section 标题与内容间距（首屏标题单独用 --profile-first-section-gap） */
+.profile-page .section-heading {
+  margin-bottom: var(--profile-section-heading-gap) !important;
+}
+
+.profile-page #intro .section-heading {
+  margin-bottom: 0 !important;
+}
+
+.profile-page .timeline-section {
+  gap: var(--profile-section-heading-gap) !important;
+}
+
+/* 条目/卡片间距（研究内容卡片、时间轴、代表论文、学术任职均视为列表） */
+.profile-page .feature-grid,
+.profile-page .section-wrap#research .feature-grid,
+.profile-page #research-list.feature-grid,
+.profile-page .timeline,
+.profile-page .detail-list,
+.profile-page #profile-publication-list {
+  gap: var(--profile-list-gap) !important;
+}
+
 @media (max-width: 768px) {
   .profile-page .section-wrap {
     padding: var(--profile-section-padding-mobile) 0 !important;
@@ -222,5 +256,31 @@
 
   .profile-page .profile-en-name {
     font-size: var(--profile-en-name-size-mobile) !important;
+  }
+
+  .profile-page .profile-bio-text {
+    font-size: var(--profile-bio-font-size-mobile) !important;
+    line-height: var(--profile-bio-line-height-mobile) !important;
+  }
+
+  .profile-page .section-heading {
+    margin-bottom: var(--profile-section-heading-gap-mobile) !important;
+  }
+
+  .profile-page #intro .section-heading {
+    margin-bottom: 0 !important;
+  }
+
+  .profile-page .timeline-section {
+    gap: var(--profile-section-heading-gap-mobile) !important;
+  }
+
+  .profile-page .feature-grid,
+  .profile-page .section-wrap#research .feature-grid,
+  .profile-page #research-list.feature-grid,
+  .profile-page .timeline,
+  .profile-page .detail-list,
+  .profile-page #profile-publication-list {
+    gap: var(--profile-list-gap-mobile) !important;
   }
 }

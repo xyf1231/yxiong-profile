@@ -1,38 +1,46 @@
 /**
  * results-config.css — 成果页排版变量
  * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ * 通用 Section 样式由 css/global-section-config.css 统一控制。
  */
 
 :root {
   /* 页面容器 */
   --results-container-max-width: var(--max);
-  --results-section-padding: 100px;
-  --results-first-section-padding-top: 120px;
+  --results-section-padding: var(--global-section-padding);
+  --results-first-section-padding-top: var(--global-first-section-padding-top);
 
-  /* 首 Section 标题与内容间距 */
+  /* Section 标题与内容间距（继承全局） */
+  --results-section-heading-gap: var(--global-section-heading-gap);
+
+  /* 首 Section 与后续 Section 间距 */
   --results-first-section-gap: 0px;
 
-  /* Section kicker */
-  --results-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
-  --results-kicker-letter-spacing: 0.14em;
-  --results-kicker-color: var(--accent);
-  --results-kicker-margin-bottom: 14px;
+  /* Section 小标签（继承全局） */
+  --results-kicker-font-size: var(--global-section-kicker-font-size);
+  --results-kicker-letter-spacing: var(--global-section-kicker-letter-spacing);
+  --results-kicker-color: var(--global-section-kicker-color);
+  --results-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
-  /* Section title */
-  --results-title-font-size: clamp(1.5rem, 5vw, 6rem);
-  --results-title-line-height: 1.12;
-  --results-title-letter-spacing: -0.02em;
-  --results-title-color: rgba(255, 255, 255, 0.96);
+  /* Section title（继承全局） */
+  --results-title-font-size: var(--global-section-title-font-size);
+  --results-title-line-height: var(--global-section-title-line-height);
+  --results-title-letter-spacing: var(--global-section-title-letter-spacing);
+  --results-title-color: var(--global-section-title-color);
 
-  /* 列表项间距 */
-  --results-list-gap: 20px;
+  /* 列表项间距（继承全局） */
+  --results-list-gap: var(--global-list-gap);
 
   /* 手机端 */
-  --results-first-section-gap-mobile: 0px;
-  --results-kicker-font-size-mobile: var(--font-kicker);
-  --results-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
-  --results-section-padding-mobile: clamp(56px, 8vw, 96px);
-  --results-first-section-padding-top-mobile: clamp(96px, 10vw, 128px);
+  --results-first-section-gap-mobile: 20px;
+  --results-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
+  --results-kicker-letter-spacing-mobile: var(--global-section-kicker-letter-spacing-mobile);
+  --results-kicker-margin-bottom-mobile: var(--global-section-kicker-margin-bottom-mobile);
+  --results-title-font-size-mobile: var(--global-section-title-font-size-mobile);
+  --results-section-padding-mobile: var(--global-section-padding-mobile);
+  --results-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
+  --results-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
+  --results-list-gap-mobile: var(--global-list-gap-mobile);
 }
 
 /* 容器 */
@@ -46,7 +54,7 @@
   padding-top: var(--results-first-section-padding-top) !important;
 }
 
-/* 首 Section 标题与内容间距 */
+/* 首 Section 与后续 Section 间距 */
 .results-page #all-publications {
   padding-bottom: var(--results-first-section-gap) !important;
 }
@@ -60,6 +68,10 @@
 }
 
 /* Section title */
+.results-page .section-heading {
+  margin-bottom: var(--results-section-heading-gap) !important;
+}
+
 .results-page .section-heading h2 {
   font-size: var(--results-title-font-size) !important;
   line-height: var(--results-title-line-height) !important;
@@ -70,7 +82,7 @@
 /* 列表间距 */
 .results-page .all-publication-list,
 .results-page .detail-list {
-  gap: var(--results-list-gap);
+  gap: var(--results-list-gap) !important;
 }
 
 @media (max-width: 768px) {
@@ -89,9 +101,20 @@
 
   .results-page .section-kicker {
     font-size: var(--results-kicker-font-size-mobile) !important;
+    letter-spacing: var(--results-kicker-letter-spacing-mobile) !important;
+    margin-bottom: var(--results-kicker-margin-bottom-mobile) !important;
+  }
+
+  .results-page .section-heading {
+    margin-bottom: var(--results-section-heading-gap-mobile) !important;
   }
 
   .results-page .section-heading h2 {
     font-size: var(--results-title-font-size-mobile) !important;
+  }
+
+  .results-page .all-publication-list,
+  .results-page .detail-list {
+    gap: var(--results-list-gap-mobile) !important;
   }
 }

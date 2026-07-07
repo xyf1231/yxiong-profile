@@ -97,6 +97,7 @@ function setupSiteLoadingGate() {
   let readyTimerId = null;
   let revealTimerId = null;
   let lockedScrollY = 0;
+  let lettersTimer = null;
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
     if (barEl) barEl.style.width = `${current}%`;
@@ -122,6 +123,7 @@ function setupSiteLoadingGate() {
     if (intervalId) window.clearInterval(intervalId);
     if (finishTimerId) window.clearTimeout(finishTimerId);
     if (revealTimerId) window.clearTimeout(revealTimerId);
+    if (lettersTimer) window.clearInterval(lettersTimer);
     setProgress(100);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
@@ -143,7 +145,7 @@ function setupSiteLoadingGate() {
       overlay.className = "site-loading-overlay";
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
-          <div class="site-loading-lottie" id="site-loading-lottie"></div>
+          <div class="site-loading-letters" id="site-loading-letters" style="width: min(80vw, 360px); height: 110px; margin: -8px 0 4px;"></div>
           <div class="site-loading-kicker">${getLoadingGreeting()}</div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
         </div>
@@ -152,38 +154,47 @@ function setupSiteLoadingGate() {
     }
     barEl = overlay.querySelector(".site-loading-bar");
 
-    // 加载并播放 Lottie 欢迎动画
-    (async () => {
-      try {
-        const lottieEl = document.getElementById("site-loading-lottie");
-        if (!lottieEl || window.lottieLoadAttempted) return;
-        window.lottieLoadAttempted = true;
-        if (!window.lottie) {
-          const script = document.createElement("script");
-          script.src = "https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js";
-          await new Promise((resolve, reject) => {
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-        }
-        const anim = window.lottie.loadAnimation({
-          container: lottieEl,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-          path: "resources/Welcome.json",
-        });
-        anim.addEventListener("data_ready", () => {
-          lottieEl.dataset.loaded = "true";
-        });
-        anim.addEventListener("error", () => {
-          lottieEl.style.display = "none";
-        });
-      } catch (error) {
-        const lottieEl = document.getElementById("site-loading-lottie");
-        if (lottieEl) lottieEl.style.display = "none";
+    // 加载并播放 Letters 手写文字动画
+    (function () {
+      const lettersEl = document.getElementById("site-loading-letters");
+      if (!lettersEl) return;
+      if (typeof window.mountLettersAnimation !== "function") {
+        lettersEl.textContent = "Welcome";
+        return;
       }
+
+      const words = ["hello", "welcome", "coming", "loading"];
+      const presets = ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
+      let index = 0;
+
+      function shuffle(arr) {
+        const copy = arr.slice();
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      const shuffledWords = shuffle(words);
+      const interval = 3000;
+
+      function playNext() {
+        if (index >= shuffledWords.length) index = 0;
+        const word = shuffledWords[index++];
+        const preset = presets[Math.floor(Math.random() * presets.length)];
+        window.mountLettersAnimation(
+          lettersEl,
+          word,
+          preset,
+          2,
+          15,
+          12
+        );
+      }
+
+      playNext();
+      lettersTimer = window.setInterval(playNext, interval);
     })();
   };
 

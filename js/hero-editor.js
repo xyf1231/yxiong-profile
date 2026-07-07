@@ -10,6 +10,7 @@ const pages = [
   { id: "honors", label: "荣誉", file: "honors.html", cssPath: "css/honors-config.css", contentPath: "js/honors-content.js", contentVar: "PAGE_CONTENT" },
   { id: "activities", label: "学术活动", file: "activities.html", cssPath: "css/activities-config.css", contentPath: "js/activities-content.js", contentVar: "PAGE_CONTENT" },
   { id: "loading", label: "加载页", file: "index.html", cssPath: "css/loading-config.css", contentPath: "js/loading-content.js", contentVar: "LOADING_CONTENT" },
+  { id: "global", label: "全局 Section", file: "profile.html", cssPath: "css/global-section-config.css", contentPath: null, contentVar: null },
 ];
 
 let currentPageId = "home";
@@ -147,7 +148,6 @@ const pageSchemas = {
         clampField("--home-frame-heading-size", "研究亮点标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--home-frame-heading-size-mobile"),
         clampField("--news-heading-size", "新闻标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--news-heading-size-mobile"),
         clampField("--home-bento-heading-size", "快速导航标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--home-bento-heading-size-mobile"),
-        clampField("--section-kicker-font-size", "小标签字号 (vw)", 0.3, 4, 0.05, "vw", "0.6rem", "2rem"),
       ]),
       group("快速导航卡片", [
         clampField("--home-bento-card-title-font-size", "卡片标题 (vw)", 1, 8, 0.1, "vw", "1.5rem", "6rem", "--home-bento-card-title-font-size-mobile"),
@@ -191,18 +191,6 @@ const pageSchemas = {
       ],
     },
     cssGroups: [
-      group("Section 小标签", [
-        clampField("--profile-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--profile-kicker-font-size-mobile"),
-        rangeField("--profile-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
-        colorField("--profile-kicker-color", "颜色"),
-        rangeField("--profile-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
-      ]),
-      group("Section 标题", [
-        clampField("--profile-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--profile-title-font-size-mobile"),
-        rangeField("--profile-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
-        rangeField("--profile-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
-        colorField("--profile-title-color", "颜色"),
-      ]),
       group("个人名片", [
         rangeField("--profile-card-padding", "卡片内边距", 12, 80, 1, "px", "--profile-card-padding-mobile"),
         rangeField("--profile-card-gap", "照片与简介间距", 12, 120, 1, "px", "--profile-card-gap-mobile"),
@@ -212,11 +200,11 @@ const pageSchemas = {
         rangeField("--profile-en-name-size", "英文名字号", 0.7, 2, 0.05, "rem", "--profile-en-name-size-mobile"),
       ]),
       group("容器与间距", [
-        rangeField("--profile-section-padding", "Section 上下间距", 10, 300, 1, "px", "--profile-section-padding-mobile"),
-        rangeField("--profile-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--profile-first-section-padding-top-mobile"),
-        rangeField("--profile-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--profile-first-section-gap-mobile"),
-        rangeField("--profile-bio-font-size", "简介正文字号", 0.7, 3, 0.05, "rem"),
-        rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, ""),
+        rangeField("--profile-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--profile-first-section-gap-mobile"),
+      ]),
+      group("名片文字", [
+        rangeField("--profile-bio-font-size", "简介正文字号", 0.7, 3, 0.05, "rem", "--profile-bio-font-size-mobile"),
+        rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, "", "--profile-bio-line-height-mobile"),
       ]),
     ],
   },
@@ -241,23 +229,8 @@ const pageSchemas = {
       ],
     },
     cssGroups: [
-      group("Section 小标签", [
-        clampField("--results-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--results-kicker-font-size-mobile"),
-        rangeField("--results-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
-        colorField("--results-kicker-color", "颜色"),
-        rangeField("--results-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
-      ]),
-      group("Section 标题", [
-        clampField("--results-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--results-title-font-size-mobile"),
-        rangeField("--results-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
-        rangeField("--results-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
-        colorField("--results-title-color", "颜色"),
-      ]),
       group("容器与间距", [
-        rangeField("--results-section-padding", "Section 上下间距", 10, 300, 1, "px", "--results-section-padding-mobile"),
-        rangeField("--results-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--results-first-section-padding-top-mobile"),
-        rangeField("--results-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--results-first-section-gap-mobile"),
-        rangeField("--results-list-gap", "列表项间距", 4, 80, 1, "px"),
+        rangeField("--results-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--results-first-section-gap-mobile"),
       ]),
     ],
   },
@@ -277,23 +250,8 @@ const pageSchemas = {
       ],
     },
     cssGroups: [
-      group("Section 小标签", [
-        clampField("--honors-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--honors-kicker-font-size-mobile"),
-        rangeField("--honors-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
-        colorField("--honors-kicker-color", "颜色"),
-        rangeField("--honors-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
-      ]),
-      group("Section 标题", [
-        clampField("--honors-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--honors-title-font-size-mobile"),
-        rangeField("--honors-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
-        rangeField("--honors-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
-        colorField("--honors-title-color", "颜色"),
-      ]),
       group("容器与间距", [
-        rangeField("--honors-section-padding", "Section 上下间距", 10, 300, 1, "px", "--honors-section-padding-mobile"),
-        rangeField("--honors-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--honors-first-section-padding-top-mobile"),
-        rangeField("--honors-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
-        rangeField("--honors-list-gap", "列表项间距", 4, 80, 1, "px"),
+        rangeField("--honors-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
       ]),
     ],
   },
@@ -317,24 +275,29 @@ const pageSchemas = {
         ["reviews", "标题", false],
       ],
     },
+    cssGroups: [],
+  },
+  global: {
+    contentGroupTitles: {},
+    contentKeys: {},
     cssGroups: [
       group("Section 小标签", [
-        clampField("--activities-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--activities-kicker-font-size-mobile"),
-        rangeField("--activities-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
-        colorField("--activities-kicker-color", "颜色"),
-        rangeField("--activities-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
+        clampField("--global-section-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--global-section-kicker-font-size-mobile"),
+        rangeField("--global-section-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em", "--global-section-kicker-letter-spacing-mobile"),
+        colorField("--global-section-kicker-color", "颜色"),
+        rangeField("--global-section-kicker-margin-bottom", "下边距", 0, 40, 1, "px", "--global-section-kicker-margin-bottom-mobile"),
       ]),
       group("Section 标题", [
-        clampField("--activities-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--activities-title-font-size-mobile"),
-        rangeField("--activities-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
-        rangeField("--activities-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
-        colorField("--activities-title-color", "颜色"),
+        clampField("--global-section-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--global-section-title-font-size-mobile"),
+        rangeField("--global-section-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
+        rangeField("--global-section-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
+        colorField("--global-section-title-color", "颜色"),
       ]),
       group("容器与间距", [
-        rangeField("--activities-section-padding", "Section 上下间距", 10, 300, 1, "px", "--activities-section-padding-mobile"),
-        rangeField("--activities-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--activities-first-section-padding-top-mobile"),
-        rangeField("--activities-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--activities-first-section-gap-mobile"),
-        rangeField("--activities-list-gap", "列表项间距", 4, 80, 1, "px"),
+        rangeField("--global-section-padding", "Section 上下间距", 10, 300, 1, "px", "--global-section-padding-mobile"),
+        rangeField("--global-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--global-first-section-padding-top-mobile"),
+        rangeField("--global-section-heading-gap", "标题与内容间距", 0, 120, 1, "px", "--global-section-heading-gap-mobile"),
+        rangeField("--global-list-gap", "列表项间距", 4, 80, 1, "px", "--global-list-gap-mobile"),
       ]),
     ],
   },
@@ -826,9 +789,13 @@ function renderForm() {
 
   const hint = document.createElement("p");
   hint.className = "editor-hint";
-  hint.innerHTML = currentPageId === "loading"
-    ? "提示：加载页配置为全站共用；右侧预览会冻结加载遮罩以便调整样式与动画。"
-    : "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
+  if (currentPageId === "loading") {
+    hint.innerHTML = "提示：加载页配置为全站共用；右侧预览会冻结加载遮罩以便调整样式与动画。";
+  } else if (currentPageId === "global") {
+    hint.innerHTML = "提示：全局 Section 样式会同步影响 profile / results / honors / activities 四页以及首页 Section 小标签；右侧预览使用个人简介页。";
+  } else {
+    hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
+  }
   elForm.appendChild(hint);
 
   // 桌面/手机端切换
@@ -931,6 +898,8 @@ function injectContentIntoPreview() {
   if (!elPreview || !elPreview.contentWindow) return;
   const win = elPreview.contentWindow;
   const page = getCurrentPage();
+  // 全局 Section 仅调整样式，不覆盖页面文案
+  if (page.id === "global") return;
   // 首页同时注入 HOME_CONTENT 与 PAGE_CONTENT 以保持兼容；其他页面注入 PAGE_CONTENT
   if (page.id === "home") {
     win.HOME_CONTENT = JSON.parse(JSON.stringify(currentContent));
@@ -969,13 +938,14 @@ async function loadConfig() {
   setStatus("正在加载配置...");
   const page = getCurrentPage();
   try {
-    const [cssData, contentData] = await Promise.all([
-      api(`/api/read-file?path=${encodeURIComponent(page.cssPath)}`),
-      api(`/api/read-file?path=${encodeURIComponent(page.contentPath)}`),
-    ]);
+    const requests = [api(`/api/read-file?path=${encodeURIComponent(page.cssPath)}`)];
+    if (page.contentPath) {
+      requests.push(api(`/api/read-file?path=${encodeURIComponent(page.contentPath)}`));
+    }
+    const [cssData, contentData] = await Promise.all(requests);
     originalCss = cssData.content;
     currentCssVars = parseCssVariables(originalCss);
-    originalContent = parsePageContent(contentData.content);
+    originalContent = page.contentPath ? parsePageContent(contentData.content) : { zh: {}, en: {} };
     currentContent = JSON.parse(JSON.stringify(originalContent));
     renderForm();
     updatePreview();
@@ -990,20 +960,25 @@ async function saveConfig() {
   setStatus("正在保存...");
   const page = getCurrentPage();
   const css = buildCss(currentCssVars);
-  const contentJs = buildPageContent(page, currentContent);
+  const contentJs = page.contentPath ? buildPageContent(page, currentContent) : null;
   try {
-    await Promise.all([
+    const requests = [
       api("/api/save-file", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ path: page.cssPath, content: css }),
       }),
-      api("/api/save-file", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: page.contentPath, content: contentJs }),
-      }),
-    ]);
+    ];
+    if (page.contentPath) {
+      requests.push(
+        api("/api/save-file", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ path: page.contentPath, content: contentJs }),
+        })
+      );
+    }
+    await Promise.all(requests);
     originalCss = css;
     originalContent = JSON.parse(JSON.stringify(currentContent));
     setStatus(`${page.label} 已保存`, "success");

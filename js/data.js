@@ -1,10 +1,4 @@
-﻿/**
- * data.js — 站点内容数据库（核心数据源）
- * 被前台 script.js / global.js 与后台 admin.js 共同引用。
- * 维护内容：个人资料、研究内容、新闻、论文、项目、成果、经历、联系方式、多语言文案等。
- * 修改后需在 admin.html 中点击“保存到本地”写回文件，或手动更新此文件。
- */
-window.DEFAULT_SITE_DATA = {
+﻿window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "assetSource": "vercel",
   "profile": {
@@ -17,7 +11,7 @@ window.DEFAULT_SITE_DATA = {
     "email": "yfxiong@nju.edu.cn",
     "phone": "+86 17826029295",
     "photo": "resources/images/profile.webp",
-    "bio": "       南京大学现代工程与应用科学学院准聘助理教授、博士生导师。主要从事光纤集成新型光电子器件研究。近五年以（共同）第一作者在 Nature Electronics、Science Advances、Advanced Materials、Advanced Photonics、Laser & Photonics Reviews等期刊发表论文10篇，最高引用超200次，篇均引用超50次。1篇入选 Advanced Materials 封面论文及ESI高被引论文，1篇获 Science Advances 官网亮点报道。申请国家发明专利8项（授权5项）。多次在APC、OFS、OGC等国内外会议作邀请报告。\n       主持国家自然科学基金青年项目、江苏省自然科学青年基金、广东省面上项目、融合创新项目等，参与国家重点研发计划、国家自然科学基金重点项目及江苏省基础研究重点项目。获中国光学工程学会科学技术二等奖（2024，5/10）、江苏省通信学会科学技术二等奖（2025，5/10）、中国光学工程学会光纤传感优秀青年人才（2024）、中国光学学会王大珩光学学生奖（2022）。担任中国光学学会纤维光学与集成光学专业委员会青年委员，以及Advanced Materials、Laser & Photonics Reviews、ACS Photonics等光学类、材料类和电子类期刊的活跃审稿人。",
+    "bio": "南京大学现代工程与应用科学学院准聘助理教授/博导，主要从事集成新型智能光电子器件研究，聚焦多工艺融合的异质材料集成技术，在精密光谱测量、多维光场分析、智能光电探测与成像等应用领域开展了系统且创新的研究工作。以第一作者在 Nat. Electron.、Sci. Adv.、Adv. Photonics、Adv. Mater.、Laser Photonics Rev.等期刊发表论文10余篇，入选封面论文2篇及ESI高被引论文1篇。主持国自然青年基金、江苏省青年基金等，参与国家重点研发计划、国自然重点项目及江苏省重点项目。获中国光学工程学会科学技术二等奖（5/10）、中国光学工程学会光纤传感优秀青年人才、中国光学学会王大珩光学学生奖。",
     "focus": "光纤集成 · 异质材料 · 智能感知"
   },
   "metrics": [

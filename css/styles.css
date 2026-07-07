@@ -3515,6 +3515,10 @@ html[lang="en"] .subtle-name {
     flex-direction: column;
   }
 
+  .site-footer {
+    gap: 8px;
+  }
+
   .form-grid,
   .managed-item {
     grid-template-columns: 1fr;

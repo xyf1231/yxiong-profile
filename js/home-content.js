@@ -16,16 +16,16 @@ window.HOME_CONTENT = {
     "publications": "论文",
     "quickNavKicker": "Explore",
     "quickNav": "快速导航",
-    "quickProfileTitle": "个人简介",
-    "quickProfileText": "个人简介、研究内容与代表论文",
+    "quickProfileTitle": "简介",
+    "quickProfileText": "个人简介、研究内容、代表论文",
     "quickResultsTitle": "成果",
-    "quickResultsText": "论文、专利与项目",
+    "quickResultsText": "论文、专利、项目",
     "quickHonorsTitle": "荣誉",
-    "quickHonorsText": "奖励与创新创业",
-    "quickActivitiesTitle": "学术活动",
-    "quickActivitiesText": "会议报告、学术服务与审稿",
+    "quickHonorsText": "奖励、创新创业",
+    "quickActivitiesTitle": "活动",
+    "quickActivitiesText": "报告、服务、审稿",
     "quickNewsTitle": "新闻",
-    "quickNewsText": "最新动态与论文故事"
+    "quickNewsText": "最新动态"
   },
   "en": {
     "homeEyebrow": "光纤集成器件",
@@ -40,15 +40,15 @@ window.HOME_CONTENT = {
     "quickNavKicker": "快速导航",
     "quickNav": "Explore",
     "quickProfileTitle": "Profile",
-    "quickProfileText": "Biography, research, and selected publications",
+    "quickProfileText": "Biography, research, selected publications",
     "quickResultsTitle": "Results",
-    "quickResultsText": "Publications, patents, and projects",
+    "quickResultsText": "Publications, patents, projects",
     "quickHonorsTitle": "Honors",
     "quickHonorsText": "Awards and innovation",
     "quickActivitiesTitle": "Activities",
-    "quickActivitiesText": "Talks, service, and reviewing",
+    "quickActivitiesText": "Reports, services, reviewing",
     "quickNewsTitle": "News",
-    "quickNewsText": "Updates and research stories"
+    "quickNewsText": "Updates and research"
   }
 };
 window.PAGE_CONTENT = window.HOME_CONTENT;

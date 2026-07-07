@@ -1,38 +1,46 @@
 /**
  * activities-config.css — 学术活动页排版变量
  * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ * 通用 Section 样式由 css/global-section-config.css 统一控制。
  */
 
 :root {
   /* 页面容器 */
   --activities-container-max-width: var(--max);
-  --activities-section-padding: 100px;
-  --activities-first-section-padding-top: 120px;
+  --activities-section-padding: var(--global-section-padding);
+  --activities-first-section-padding-top: var(--global-first-section-padding-top);
 
-  /* 首 Section 标题与内容间距 */
+  /* 首 Section 与后续 Section 间距 */
   --activities-first-section-gap: 0px;
 
-  /* Section kicker */
-  --activities-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
-  --activities-kicker-letter-spacing: 0.14em;
-  --activities-kicker-color: var(--accent);
-  --activities-kicker-margin-bottom: 14px;
+  /* Section 小标签（继承全局） */
+  --activities-kicker-font-size: var(--global-section-kicker-font-size);
+  --activities-kicker-letter-spacing: var(--global-section-kicker-letter-spacing);
+  --activities-kicker-color: var(--global-section-kicker-color);
+  --activities-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
-  /* Section title */
-  --activities-title-font-size: clamp(1.5rem, 5vw, 6rem);
-  --activities-title-line-height: 1.12;
-  --activities-title-letter-spacing: -0.02em;
-  --activities-title-color: rgba(255, 255, 255, 0.96);
+  /* Section 标题与内容间距（继承全局） */
+  --activities-section-heading-gap: var(--global-section-heading-gap);
 
-  /* 列表项间距 */
-  --activities-list-gap: 20px;
+  /* Section title（继承全局） */
+  --activities-title-font-size: var(--global-section-title-font-size);
+  --activities-title-line-height: var(--global-section-title-line-height);
+  --activities-title-letter-spacing: var(--global-section-title-letter-spacing);
+  --activities-title-color: var(--global-section-title-color);
+
+  /* 列表项间距（继承全局） */
+  --activities-list-gap: var(--global-list-gap);
 
   /* 手机端 */
   --activities-first-section-gap-mobile: 0px;
-  --activities-kicker-font-size-mobile: var(--font-kicker);
-  --activities-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
-  --activities-section-padding-mobile: clamp(56px, 8vw, 96px);
-  --activities-first-section-padding-top-mobile: clamp(96px, 10vw, 128px);
+  --activities-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
+  --activities-kicker-letter-spacing-mobile: var(--global-section-kicker-letter-spacing-mobile);
+  --activities-kicker-margin-bottom-mobile: var(--global-section-kicker-margin-bottom-mobile);
+  --activities-title-font-size-mobile: var(--global-section-title-font-size-mobile);
+  --activities-section-padding-mobile: var(--global-section-padding-mobile);
+  --activities-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
+  --activities-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
+  --activities-list-gap-mobile: var(--global-list-gap-mobile);
 }
 
 /* 容器 */
@@ -46,7 +54,7 @@
   padding-top: var(--activities-first-section-padding-top) !important;
 }
 
-/* 首 Section 标题与内容间距 */
+/* 首 Section 与后续 Section 间距 */
 .activities-page #talks {
   padding-bottom: var(--activities-first-section-gap) !important;
 }
@@ -60,6 +68,10 @@
 }
 
 /* Section title */
+.activities-page .section-heading {
+  margin-bottom: var(--activities-section-heading-gap) !important;
+}
+
 .activities-page .section-heading h2 {
   font-size: var(--activities-title-font-size) !important;
   line-height: var(--activities-title-line-height) !important;
@@ -69,7 +81,7 @@
 
 /* 列表间距 */
 .activities-page .detail-list {
-  gap: var(--activities-list-gap);
+  gap: var(--activities-list-gap) !important;
 }
 
 @media (max-width: 768px) {
@@ -88,9 +100,19 @@
 
   .activities-page .section-kicker {
     font-size: var(--activities-kicker-font-size-mobile) !important;
+    letter-spacing: var(--activities-kicker-letter-spacing-mobile) !important;
+    margin-bottom: var(--activities-kicker-margin-bottom-mobile) !important;
+  }
+
+  .activities-page .section-heading {
+    margin-bottom: var(--activities-section-heading-gap-mobile) !important;
   }
 
   .activities-page .section-heading h2 {
     font-size: var(--activities-title-font-size-mobile) !important;
+  }
+
+  .activities-page .detail-list {
+    gap: var(--activities-list-gap-mobile) !important;
   }
 }

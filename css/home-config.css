@@ -45,7 +45,12 @@
   --home-frame-heading-size: clamp(2rem, 6vw, 8rem);
   --news-heading-size: clamp(2rem, 6vw, 8rem);
   --home-bento-heading-size: clamp(2rem, 6vw, 8rem);
-  --section-kicker-font-size: clamp(0.6rem, 1.5vw, 2rem);
+
+  /* Section 小标签（继承全局） */
+  --section-kicker-font-size: var(--global-section-kicker-font-size);
+  --section-kicker-letter-spacing: var(--global-section-kicker-letter-spacing);
+  --section-kicker-color: var(--global-section-kicker-color);
+  --section-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
   /* 快速导航卡片 */
   --home-bento-card-title-font-size: clamp(2rem, 3vw, 4.25rem);
@@ -54,7 +59,7 @@
   /* 手机端（<= 768px） */
   --hero-title-font-size-zh-mobile: clamp(3rem, 14vw, 7rem);
   --hero-title-font-size-en-mobile: clamp(2.8rem, 14vw, 6.5rem);
-  --hero-eyebrow-font-size-mobile: clamp(0.6rem, 3.2vw, 1.5rem);
+  --hero-eyebrow-font-size-mobile: clamp(0.6rem, 3.2vw, 2.5rem);
   --hero-eyebrow-letter-spacing-mobile: 0.12em;
   --hero-eyebrow-margin-bottom-mobile: 10px;
   --hero-subtitle-font-size-mobile: clamp(0.7rem, 4vw, 2rem);
@@ -64,6 +69,9 @@
   --home-bento-heading-size-mobile: clamp(3rem, 6vw, 5.7rem);
   --home-bento-card-title-font-size-mobile: clamp(2rem, 1vw, 4.25rem);
   --home-bento-card-text-font-size-mobile: clamp(0.8rem, 0.8vw, 1.1rem);
+  --section-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
+  --section-kicker-letter-spacing-mobile: var(--global-section-kicker-letter-spacing-mobile);
+  --section-kicker-margin-bottom-mobile: var(--global-section-kicker-margin-bottom-mobile);
 }
 
 /* Hero 区域最小高度 */
@@ -142,8 +150,8 @@ html[lang="en"] .clean-copy h1 {
 }
 
 /* 副标题 */
-body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
-.clean-copy p:not(.eyebrow) {
+html body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
+html .clean-copy p:not(.eyebrow) {
   color: var(--hero-subtitle-color) !important;
   margin-top: var(--hero-subtitle-margin-top) !important;
   font-size: var(--hero-subtitle-font-size) !important;
@@ -164,10 +172,14 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   font-size: var(--home-bento-heading-size) !important;
 }
 
+/* Section 小标签 */
 .home-frame-heading .section-kicker,
 .news-section .section-kicker,
 .home-bento-nav .section-kicker {
   font-size: var(--section-kicker-font-size) !important;
+  letter-spacing: var(--section-kicker-letter-spacing) !important;
+  color: var(--section-kicker-color) !important;
+  margin-bottom: var(--section-kicker-margin-bottom) !important;
 }
 
 /* 快速导航卡片字号 */
@@ -201,8 +213,8 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   }
 
   /* Hero 副标题 */
-  body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
-  .clean-copy p:not(.eyebrow) {
+  html body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebrow),
+  html .clean-copy p:not(.eyebrow) {
     font-size: var(--hero-subtitle-font-size-mobile) !important;
     margin-top: var(--hero-subtitle-margin-top-mobile) !important;
   }
@@ -218,6 +230,15 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 
   .home-bento-nav .section-heading h2 {
     font-size: var(--home-bento-heading-size-mobile) !important;
+  }
+
+  /* Section 小标签 */
+  .home-frame-heading .section-kicker,
+  .news-section .section-kicker,
+  .home-bento-nav .section-kicker {
+    font-size: var(--section-kicker-font-size-mobile) !important;
+    letter-spacing: var(--section-kicker-letter-spacing-mobile) !important;
+    margin-bottom: var(--section-kicker-margin-bottom-mobile) !important;
   }
 
   /* 快速导航卡片 */

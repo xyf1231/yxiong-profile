@@ -1,0 +1,39 @@
+/**
+ * global-section-config.css — 全站 Section 通用排版变量
+ * 通过 hero-editor.html 读取/编辑，覆盖 profile / results / honors / activities 等
+ * 内容页的 Section 小标签、标题、间距。
+ */
+
+:root {
+  /* Section 小标签 */
+  --global-section-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
+  --global-section-kicker-letter-spacing: 0.14em;
+  --global-section-kicker-color: var(--accent);
+  --global-section-kicker-margin-bottom: 14px;
+
+  /* Section 标题 */
+  --global-section-title-font-size: clamp(1.5rem, 5vw, 6rem);
+  --global-section-title-line-height: 1.12;
+  --global-section-title-letter-spacing: -0.02em;
+  --global-section-title-color: rgba(255, 255, 255, 0.96);
+
+  /* Section 标题与内容间距 */
+  --global-section-heading-gap: 40px;
+
+  /* Section 容器间距 */
+  --global-section-padding: 100px;
+  --global-first-section-padding-top: 150px;
+
+  /* 列表项 / 卡片间距 */
+  --global-list-gap: 20px;
+
+  /* 手机端 */
+  --global-section-kicker-font-size-mobile: clamp(0.5rem, 4vw, 2rem);
+  --global-section-kicker-letter-spacing-mobile: 0.12em;
+  --global-section-kicker-margin-bottom-mobile: 10px;
+  --global-section-title-font-size-mobile: clamp(1.5rem, 10vw, 6rem);
+  --global-section-heading-gap-mobile: 10px;
+  --global-section-padding-mobile: 50px;
+  --global-first-section-padding-top-mobile: 100px;
+  --global-list-gap-mobile: 4px;
+}
