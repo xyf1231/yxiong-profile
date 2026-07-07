@@ -32,6 +32,8 @@
   --nav-link-font-weight: 700;
   --nav-link-gap: 40px;
   --nav-link-padding: 9px 12px 11px;
+  --nav-major-font-size: clamp(1.72rem, 2.25vw, 2.35rem);
+  --nav-sub-font-size: clamp(1rem, 1.12vw, 1.16rem);
 
   /* 头像圆圈 */
   --nav-brand-size: 35px;
@@ -53,6 +55,8 @@
 
   --nav-link-font-size-mobile: 0.82rem;
   --nav-link-gap-mobile: 6px;
+  --nav-major-font-size-mobile: clamp(1.3rem, 7vw, 2.1rem);
+  --nav-sub-font-size-mobile: clamp(0.9rem, 4.5vw, 1.3rem);
   --lang-toggle-font-size-mobile: 0.82rem;
 }
 
@@ -61,14 +65,20 @@
   height: var(--nav-height) !important;
 }
 
-/* ── 导航栏链接字体（顶部 + 展开菜单卡片，高特异性统一覆盖） ── */
-.site-header .nav-links a,
-body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a {
-  font-size: var(--nav-link-font-size) !important;
-}
+/* ── 导航栏链接字体 ── */
+/* 顶部导航链接 */
 .site-header .nav-links a {
   font-weight: var(--nav-link-font-weight) !important;
   padding: var(--nav-link-padding) !important;
+  font-size: var(--nav-link-font-size) !important;
+}
+/* 展开菜单 — 一级链接（高特异性覆盖） */
+body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-major-link {
+  font-size: var(--nav-major-font-size) !important;
+}
+/* 展开菜单 — 二级链接 */
+body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub-link {
+  font-size: var(--nav-sub-font-size) !important;
 }
 .nav-desktop-items {
   gap: var(--nav-link-gap) !important;
@@ -96,8 +106,11 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a {
     min-height: var(--nav-height) !important;
   }
   .site-header .nav-links a,
-  body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a {
-    font-size: var(--nav-link-font-size-mobile) !important;
+  body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-major-link {
+    font-size: var(--nav-major-font-size-mobile) !important;
+  }
+  body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub-link {
+    font-size: var(--nav-sub-font-size-mobile) !important;
   }
   .nav-desktop-items {
     gap: var(--nav-link-gap-mobile) !important;

@@ -2294,6 +2294,8 @@ function setupRevealAnimations() {
     return node;
   });
 
+  fixProfileRevealOrder();
+
   const revealInView = () => {
     rafId = 0;
     const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
@@ -2626,7 +2628,6 @@ async function initSite() {
   renderSite();
   setupHomeFrameSequence();
   setupRevealAnimations();
-  fixProfileRevealOrder();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }

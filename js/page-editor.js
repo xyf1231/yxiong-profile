@@ -69,8 +69,8 @@ function selectField(name, label, options) {
   return { name, label, type: "select", options };
 }
 
-function textField(name, label) {
-  return { name, label, type: "text" };
+function textField(name, label, mobileName) {
+  return { name, label, type: "text", mobileName: mobileName || null };
 }
 
 function colorField(name, label) {
@@ -362,10 +362,12 @@ const pageSchemas = {
       ]),
       group("导航栏", [
         rangeField("--nav-height", "导航栏高度", 40, 120, 1, "px"),
-        rangeField("--nav-link-font-size", "菜单链接字号", 0.5, 1.8, 0.02, "rem", "--nav-link-font-size-mobile"),
+        rangeField("--nav-link-font-size", "顶部链接字号", 0.5, 1.8, 0.02, "rem", "--nav-link-font-size-mobile"),
         rangeField("--nav-link-font-weight", "字重", 400, 900, 100, ""),
         rangeField("--nav-link-gap", "链接间距", 2, 40, 1, "px", "--nav-link-gap-mobile"),
         textField("--nav-link-padding", "链接内边距（简写）"),
+        textField("--nav-major-font-size", "展开菜单一级字号", "--nav-major-font-size-mobile"),
+        textField("--nav-sub-font-size", "展开菜单二级字号", "--nav-sub-font-size-mobile"),
       ]),
       group("头像圆圈", [
         rangeField("--nav-brand-size", "圆圈大小", 20, 60, 1, "px"),
