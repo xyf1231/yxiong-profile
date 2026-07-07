@@ -89,6 +89,7 @@ function setupSiteLoadingGate() {
 
   let overlay = null;
   let barEl = null;
+  let percentEl = null;
   let resourcesEl = null;
   let hintEl = null;
   let hintTimer = null;
@@ -110,120 +111,46 @@ function setupSiteLoadingGate() {
   let finished = false;
   let current = 0;
   let intervalId = null;
-  let finishTimerId = null;
+  let rafId = null;
+  let targetProgress = 0;
+  let displayProgress = 0;
+  let maxTargetSeen = 0;
+  let animStartTime = 0;
   let readyTimerId = null;
-  let revealTimerId = null;
-  let lockedScrollY = 0;
   let lettersTimer = null;
+
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
+    if (percentEl) percentEl.textContent = `${Math.round(current)}%`;
     if (barEl) barEl.style.width = `${current}%`;
   };
-  const startProgress = () => {
-    if (intervalId) return;
-    intervalId = window.setInterval(() => {
-      if (current < 100) setProgress(current + Math.max(0.5, (100 - current) * 0.05));
-    }, 140);
-  };
-  const settleProgressThenFinish = () => {
-    if (current >= 99.5) {
-      setProgress(100);
+
+  const lerp = (start, end, factor) => start + (end - start) * factor;
+
+  const animateProgress = () => {
+    const diff = targetProgress - displayProgress;
+    const absDiff = Math.abs(diff);
+    if (finished) {
+      if (displayProgress < 100) {
+        const factor = Math.min(0.15 + Math.max(0, (displayProgress - 85) / 15) * 0.35, 0.5);
+        displayProgress = lerp(displayProgress, targetProgress, factor);
+        setProgress(displayProgress);
+        rafId = requestAnimationFrame(animateProgress);
+      }
       return;
     }
-    const step = Math.max(0.8, (100 - current) * 0.28);
-    setProgress(current + step);
-    finishTimerId = window.setTimeout(settleProgressThenFinish, 42);
-  };
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-    if (intervalId) window.clearInterval(intervalId);
-    if (finishTimerId) window.clearTimeout(finishTimerId);
-    if (revealTimerId) window.clearTimeout(revealTimerId);
-    if (lettersTimer) window.clearInterval(lettersTimer);
-    if (hintTimer) window.clearInterval(hintTimer);
-    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
-    if (resourceInterval) window.clearInterval(resourceInterval);
-    setProgress(100);
-    if (readyTimerId) window.clearTimeout(readyTimerId);
-    readyTimerId = window.setTimeout(() => {
-      root.dataset.siteLoading = "ready";
-      const hash = window.location.hash;
-      if (hash) {
-        const el = document.querySelector(hash);
-        if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
-      }
-    }, 700);
-    if (overlay) {
-      overlay.classList.add("is-hidden");
-      window.setTimeout(() => overlay.remove(), 820);
+    if (absDiff < 0.2) {
+      displayProgress = targetProgress;
+    } else {
+      const dist = absDiff / 100;
+      const nearEnd = Math.max(0, (displayProgress - 70) / 30);
+      const factor = Math.min(0.07 + dist * dist * 0.40 + nearEnd * 0.06, 0.45);
+      displayProgress = lerp(displayProgress, targetProgress, factor);
     }
-    document.body.style.top = "";
-    window.scrollTo(0, lockedScrollY);
-  };
-
-  const ensureOverlay = () => {
-    if (overlay) return;
-    overlay = document.querySelector(".site-loading-overlay");
-    if (!overlay) {
-      overlay = document.createElement("div");
-      overlay.className = "site-loading-overlay";
-      overlay.innerHTML = `
-        <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
-          <div class="site-loading-letters" id="site-loading-letters" style="width: min(80vw, 360px); height: 110px; margin: -8px 0 4px;"></div>
-          <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
-          <div class="site-loading-resources" aria-label="加载资源数"></div>
-          <div class="site-loading-hint" aria-live="off"></div>
-        </div>
-      `;
-      (document.body || document.documentElement).appendChild(overlay);
+    setProgress(displayProgress);
+    if (displayProgress < 100) {
+      rafId = requestAnimationFrame(animateProgress);
     }
-    barEl = overlay.querySelector(".site-loading-bar");
-    resourcesEl = overlay.querySelector(".site-loading-resources");
-    hintEl = overlay.querySelector(".site-loading-hint");
-
-    // 加载并播放 Letters 手写文字动画
-    (function () {
-      const lettersEl = document.getElementById("site-loading-letters");
-      if (!lettersEl) return;
-      if (typeof window.mountLettersAnimation !== "function") {
-        lettersEl.textContent = "Welcome";
-        return;
-      }
-
-      const words = ["hello", "welcome", "coming", "loading"];
-      const presets = ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
-      let index = 0;
-
-      function shuffle(arr) {
-        const copy = arr.slice();
-        for (let i = copy.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [copy[i], copy[j]] = [copy[j], copy[i]];
-        }
-        return copy;
-      }
-
-      const shuffledWords = shuffle(words);
-      const interval = 3000;
-
-      function playNext() {
-        if (index >= shuffledWords.length) index = 0;
-        const word = shuffledWords[index++];
-        const preset = presets[Math.floor(Math.random() * presets.length)];
-        window.mountLettersAnimation(
-          lettersEl,
-          word,
-          preset,
-          2,
-          15,
-          12
-        );
-      }
-
-      playNext();
-      lettersTimer = window.setInterval(playNext, interval);
-    })();
   };
 
   const formatBytes = (bytes) => {
@@ -232,8 +159,8 @@ function setupSiteLoadingGate() {
     return `${(bytes / 1048576).toFixed(2)}MB`;
   };
 
-  const updateResourceCount = () => {
-    if (finished || !resourcesEl) return;
+  const updateRealProgress = () => {
+    if (finished) return;
     const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
     let totalBytes = 0;
     let loadedBytes = 0;
@@ -241,9 +168,20 @@ function setupSiteLoadingGate() {
       const size = entry.transferSize || entry.decodedBodySize || 0;
       if (!size) continue;
       totalBytes += size;
-      if (entry.duration > 0) loadedBytes += size;
+      if (entry.responseEnd > 0 || entry.transferSize === 0) loadedBytes += size;
     }
-    resourcesEl.textContent = `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}`;
+    const rawReal = totalBytes > 0 ? (loadedBytes / totalBytes) * 100 : 0;
+    const elapsed = (performance.now() - animStartTime) / 1000;
+    const t = Math.min(elapsed / 15, 1);
+    const timeBaseline = 82 * t * (2 - t);
+    const phaseIn = Math.min(elapsed / 4, 1);
+    const scaledReal = rawReal * phaseIn;
+    const blended = Math.max(timeBaseline, Math.min(scaledReal, 100));
+    if (blended > maxTargetSeen) maxTargetSeen = blended;
+    targetProgress = maxTargetSeen;
+    if (resourcesEl) {
+      resourcesEl.textContent = totalBytes > 0 ? `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}` : "";
+    }
   };
 
   const rotateHint = () => {
@@ -271,25 +209,119 @@ function setupSiteLoadingGate() {
     hintTimer = window.setInterval(rotateHint, 3000);
   };
 
+  const startProgress = () => {
+    if (rafId) return;
+    animStartTime = performance.now();
+    startHintRotation();
+    updateRealProgress();
+    rafId = requestAnimationFrame(animateProgress);
+    intervalId = window.setInterval(updateRealProgress, 100);
+  };
+
+  const finish = () => {
+    if (finished) return;
+    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
+    if (!overlay) ensureOverlay();
+    if (!overlay) return;
+    finished = true;
+    if (intervalId) window.clearInterval(intervalId);
+    if (resourceInterval) window.clearInterval(resourceInterval);
+    if (lettersTimer) window.clearInterval(lettersTimer);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    targetProgress = 100;
+    const reveal = () => {
+      if (displayProgress >= 99.8) {
+        setProgress(100);
+        root.dataset.siteLoading = "ready";
+        const hash = window.location.hash;
+        if (hash) {
+          const el = document.querySelector(hash);
+          if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+        }
+        if (overlay) {
+          overlay.classList.add("is-hidden");
+          window.setTimeout(() => overlay.remove(), 600);
+        }
+      } else {
+        requestAnimationFrame(reveal);
+      }
+    };
+    requestAnimationFrame(reveal);
+  };
+
+  const ensureOverlay = () => {
+    if (overlay) return;
+    overlay = document.querySelector(".site-loading-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.className = "site-loading-overlay";
+      overlay.innerHTML = `
+        <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
+          <div class="site-loading-letters" id="site-loading-letters"></div>
+          <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+          <div class="site-loading-percent" aria-label="加载进度">0%</div>
+          <div class="site-loading-resources" aria-label="加载资源数"></div>
+          <div class="site-loading-hint" aria-live="off"></div>
+        </div>
+      `;
+      (document.body || document.documentElement).appendChild(overlay);
+    }
+    barEl = overlay.querySelector(".site-loading-bar");
+    percentEl = overlay.querySelector(".site-loading-percent");
+    resourcesEl = overlay.querySelector(".site-loading-resources");
+    hintEl = overlay.querySelector(".site-loading-hint");
+
+    // 加载并播放 Letters 手写文字动画
+    const lettersEl = document.getElementById("site-loading-letters");
+    if (lettersEl && typeof window.mountLettersAnimation === "function") {
+      const cfg = window.LOADING_CONTENT || {};
+      const shared = cfg.shared || {};
+      function split(str) {
+        return String(str || "").split(/[,，]/).map(s => s.trim().toLowerCase()).filter(Boolean);
+      }
+      const words = split(shared.words).length ? split(shared.words) : ["hello", "welcome", "coming", "loading"];
+      const presets = split(shared.presets).length ? split(shared.presets) : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
+      const duration = Math.max(0.1, parseFloat(shared.duration) || 2);
+      const erase = String(shared.erase).trim().toLowerCase() !== "false";
+      const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
+      const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
+      const strokeWidth = parseFloat(shared.strokeWidth) || 2;
+      const brightness = parseFloat(shared.brightness) || 15;
+      const saturation = parseFloat(shared.saturation) || 12;
+      let index = 0;
+      function shuffle(arr) { const copy = arr.slice(); for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+      const shuffledWords = shuffle(words);
+      function playNext() {
+        if (index >= shuffledWords.length) index = 0;
+        const word = shuffledWords[index++];
+        const preset = presets[Math.floor(Math.random() * presets.length)];
+        window.mountLettersAnimation(lettersEl, word, preset, strokeWidth, brightness, saturation, duration, erase);
+      }
+      playNext();
+      lettersTimer = window.setInterval(playNext, interval);
+    }
+  };
+
   const waitForReady = async () => {
+    window.setTimeout(() => {
+      if (!finished) finish();
+    }, 20000);
     try {
       ensureOverlay();
-      lockedScrollY = window.scrollY || 0;
-      document.body.style.top = `-${lockedScrollY}px`;
+      setProgress(0);
       startProgress();
-      startHintRotation();
-      if (resourceInterval) window.clearInterval(resourceInterval);
-      resourceInterval = window.setInterval(updateResourceCount, 200);
-      updateResourceCount();
       const loadPromise = document.readyState === "complete"
         ? Promise.resolve()
         : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
-      setProgress(18);
-      await Promise.all([
-        document.fonts?.ready || Promise.resolve(),
-        loadPromise,
+      await Promise.race([
+        Promise.all([
+          document.fonts?.ready || Promise.resolve(),
+          loadPromise,
+        ]),
+        new Promise((resolve) => window.setTimeout(resolve, 15000)),
       ]);
-      setProgress(48);
       const mediaTasks = [...document.images]
         .filter((img) => !img.complete)
         .map((img) => new Promise((resolve) => {
@@ -305,11 +337,12 @@ function setupSiteLoadingGate() {
             videoEl.addEventListener("error", resolve, { once: true });
           })]
         : [];
-      setProgress(68);
-      await Promise.allSettled([...mediaTasks, ...videoTasks]);
-      setProgress(90);
+      await Promise.race([
+        Promise.allSettled([...mediaTasks, ...videoTasks]),
+        new Promise((resolve) => window.setTimeout(resolve, 10000)),
+      ]);
     } finally {
-      window.setTimeout(finish, 120);
+      finish();
     }
   };
 
@@ -320,8 +353,6 @@ function setupSiteLoadingGate() {
   } else {
     document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
-
-  window.setTimeout(finish, 15000);
 }
 
 setupSiteLoadingGate();
@@ -1520,7 +1551,7 @@ function renderAllPublications(items) {
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";
-  const visibleItems = compact && !expanded ? sorted.slice(0, 12) : sorted;
+  const visibleItems = compact && !expanded ? sorted.slice(0, 5) : sorted;
   const listHtml = visibleItems
     .map((item, index) => {
       const title = item.title;

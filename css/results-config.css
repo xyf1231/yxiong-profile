@@ -57,10 +57,6 @@
   --results-publication-index-offset-top: -23px;
   --results-publication-index-offset-left: -16px;
 
-  /* 序号圆圈大小与文字 */
-  --results-index-size: clamp(52px, 3.7vw, 68px);
-  --results-index-font-size: var(--font-body);
-
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
   --results-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -82,16 +78,12 @@
 
   /* 详情卡片（专利/项目）文字字号（手机端） */
   --results-detail-title-font-size-mobile: 1rem;
-  --results-detail-text-font-size-mobile: 0.9rem;
+  --results-detail-text-font-size-mobile: 0.8rem;
   --results-detail-type-font-size-mobile: 0.9rem;
 
   /* 论文卡片序号偏移（手机端） */
   --results-publication-index-offset-top-mobile: 0px;
   --results-publication-index-offset-left-mobile: 0px;
-
-  /* 序号圆圈大小与文字（手机端） */
-  --results-index-size-mobile: 54px;
-  --results-index-font-size-mobile: 1.08rem;
 
   /* 论文卡片文字与间距（手机端） */
   --results-publication-title-font-size-mobile: 1.2rem;
@@ -150,16 +142,6 @@
 .results-page .all-publication-list .publication-item time {
   margin-top: var(--results-publication-index-offset-top) !important;
   margin-left: var(--results-publication-index-offset-left) !important;
-}
-
-/* 序号圆圈大小与文字 */
-.results-page .all-publication-list time,
-.results-page .detail-item time,
-.results-page .item-index {
-  width: var(--results-index-size) !important;
-  height: var(--results-index-size) !important;
-  min-width: var(--results-index-size) !important;
-  font-size: var(--results-index-font-size) !important;
 }
 
 /* 论文卡片文字与间距 */
@@ -301,16 +283,6 @@
   .results-page .all-publication-list .publication-item time {
     margin-top: var(--results-publication-index-offset-top-mobile) !important;
     margin-left: var(--results-publication-index-offset-left-mobile) !important;
-  }
-
-  /* 序号圆圈大小与文字（手机端） */
-  .results-page .all-publication-list time,
-  .results-page .detail-item time,
-  .results-page .item-index {
-    width: var(--results-index-size-mobile) !important;
-    height: var(--results-index-size-mobile) !important;
-    min-width: var(--results-index-size-mobile) !important;
-    font-size: var(--results-index-font-size-mobile) !important;
   }
 
   .results-page .all-publication-list .pdf-actions {

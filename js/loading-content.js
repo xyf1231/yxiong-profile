@@ -11,7 +11,7 @@ window.LOADING_CONTENT = {
     "greeting": "Welcome"
   },
   "shared": {
-    "words": "hello, welcome, coming, loading",
+    "words": "hello, welcome, creating, loading,",
     "presets": "sunrise, rasta, plasma, tropical, cyber, fire, lemonade, ocean-bright, sunset-bright, rainbow",
     "interval": "2000",
     "duration": "2",
@@ -19,6 +19,6 @@ window.LOADING_CONTENT = {
     "strokeWidth": "2.5",
     "brightness": "10",
     "saturation": "20",
-    "greeting": "欢迎访问"
+    "greeting": ""
   }
 };

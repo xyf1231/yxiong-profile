@@ -22,8 +22,9 @@
 
   /* 手写文字动画容器 */
   --loading-letters-width: min(80vw, 500px);
-  --loading-letters-height: 150px;
+  --loading-letters-height: 200px;
   --loading-letters-margin: -50px 0 5px;
+  --loading-letters-scale: 1;
 
   /* 百分比数字 */
   --loading-percent-color: rgba(255, 255, 255, 0.92);
@@ -64,4 +65,10 @@
     --loading-resources-font-size: var(--loading-resources-font-size-mobile);
     --loading-hint-font-size: var(--loading-hint-font-size-mobile);
   }
+}
+
+/* 手写字母 SVG 缩放 */
+.site-loading-letters .letters-animation-svg {
+  transform: scale(var(--loading-letters-scale)) !important;
+  transform-origin: center center !important;
 }

@@ -69,8 +69,8 @@ function selectField(name, label, options) {
   return { name, label, type: "select", options };
 }
 
-function textField(name, label, mobileName) {
-  return { name, label, type: "text", mobileName: mobileName || null };
+function textField(name, label) {
+  return { name, label, type: "text" };
 }
 
 function colorField(name, label) {
@@ -205,8 +205,7 @@ const pageSchemas = {
         rangeField("--profile-research-title-font-size", "标题字号", 0.7, 3, 0.05, "rem", "--profile-research-title-font-size-mobile"),
         rangeField("--profile-research-text-font-size", "正文字号", 0.5, 2, 0.05, "rem", "--profile-research-text-font-size-mobile"),
         rangeField("--profile-research-gap", "卡片间距", 4, 80, 1, "px", "--profile-research-gap-mobile"),
-        rangeField("--profile-research-card-padding", "卡片左右内边距", 8, 60, 1, "px", "--profile-research-card-padding-mobile"),
-        rangeField("--profile-research-card-padding-top", "卡片上内边距", 8, 60, 1, "px", "--profile-research-card-padding-top-mobile"),
+        rangeField("--profile-research-card-padding", "卡片左右上内边距", 8, 60, 1, "px", "--profile-research-card-padding-mobile"),
         rangeField("--profile-research-card-padding-bottom", "卡片下内边距", 8, 60, 1, "px", "--profile-research-card-padding-bottom-mobile"),
         rangeField("--profile-research-card-min-height", "卡片最小高度", 180, 400, 5, "px", "--profile-research-card-min-height-mobile"),
         clampField("--profile-research-image-gap", "图片与文字间距 (vw)", 0.5, 6, 0.1, "vw", "0.5rem", "4rem", "--profile-research-image-gap-mobile"),
@@ -229,10 +228,6 @@ const pageSchemas = {
         rangeField("--profile-publication-meta-gap", "期刊与元数据间距", 0, 60, 1, "px"),
         rangeField("--profile-publication-pdf-gap", "PDF 距上方内容间距", 0, 100, 1, "px", "--profile-publication-pdf-gap-mobile"),
         rangeField("--profile-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
-      ]),
-      group("序号圆圈", [
-        rangeField("--profile-index-size", "圆圈大小", 30, 120, 1, "px", "--profile-index-size-mobile"),
-        rangeField("--profile-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--profile-index-font-size-mobile"),
       ]),
     ],
   },
@@ -280,10 +275,6 @@ const pageSchemas = {
         rangeField("--results-detail-text-font-size", "正文字号", 0.4, 2, 0.01, "rem", "--results-detail-text-font-size-mobile"),
         rangeField("--results-detail-type-font-size", "类型标签字号", 0.3, 1.5, 0.01, "rem", "--results-detail-type-font-size-mobile"),
       ]),
-      group("序号圆圈", [
-        rangeField("--results-index-size", "圆圈大小", 30, 120, 1, "px", "--results-index-size-mobile"),
-        rangeField("--results-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--results-index-font-size-mobile"),
-      ]),
     ],
   },
   honors: {
@@ -304,10 +295,6 @@ const pageSchemas = {
     cssGroups: [
       group("容器与间距", [
         rangeField("--honors-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
-      ]),
-      group("序号圆圈", [
-        rangeField("--honors-index-size", "圆圈大小", 30, 120, 1, "px", "--honors-index-size-mobile"),
-        rangeField("--honors-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--honors-index-font-size-mobile"),
       ]),
     ],
   },
@@ -331,12 +318,7 @@ const pageSchemas = {
         ["reviews", "标题", false],
       ],
     },
-    cssGroups: [
-      group("序号圆圈", [
-        rangeField("--activities-index-size", "圆圈大小", 30, 120, 1, "px", "--activities-index-size-mobile"),
-        rangeField("--activities-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--activities-index-font-size-mobile"),
-      ]),
-    ],
+    cssGroups: [],
   },
   global: {
     contentGroupTitles: {},
@@ -359,23 +341,6 @@ const pageSchemas = {
         rangeField("--global-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--global-first-section-padding-top-mobile"),
         rangeField("--global-section-heading-gap", "标题与内容间距", 0, 120, 1, "px", "--global-section-heading-gap-mobile"),
         rangeField("--global-list-gap", "列表项间距", 4, 80, 1, "px", "--global-list-gap-mobile"),
-      ]),
-      group("导航栏", [
-        rangeField("--nav-height", "导航栏高度", 40, 120, 1, "px"),
-        rangeField("--nav-link-font-size", "顶部链接字号", 0.5, 1.8, 0.02, "rem", "--nav-link-font-size-mobile"),
-        rangeField("--nav-link-font-weight", "字重", 400, 900, 100, ""),
-        rangeField("--nav-link-gap", "链接间距", 2, 40, 1, "px", "--nav-link-gap-mobile"),
-        textField("--nav-link-padding", "链接内边距（简写）"),
-        textField("--nav-major-font-size", "展开菜单一级字号", "--nav-major-font-size-mobile"),
-        textField("--nav-sub-font-size", "展开菜单二级字号", "--nav-sub-font-size-mobile"),
-      ]),
-      group("头像圆圈", [
-        rangeField("--nav-brand-size", "圆圈大小", 20, 60, 1, "px"),
-        rangeField("--nav-brand-font-size", "圆圈内文字大小", 0.4, 1.5, 0.02, "rem"),
-      ]),
-      group("语言切换", [
-        rangeField("--lang-toggle-font-size", "字号", 0.5, 1.8, 0.02, "rem", "--lang-toggle-font-size-mobile"),
-        textField("--lang-toggle-padding", "内边距（简写）"),
       ]),
     ],
   },
@@ -411,8 +376,9 @@ const pageSchemas = {
         textField("--loading-card-padding", "内边距"),
       ]),
       group("手写文字", [
-        textField("--loading-letters-width", "容器宽度"),
-        rangeField("--loading-letters-height", "容器高度", 40, 240, 1, "px", "--loading-letters-height-mobile"),
+        textField("--loading-letters-width", "字母区域宽度"),
+        rangeField("--loading-letters-height", "字母区域高度", 40, 240, 1, "px", "--loading-letters-height-mobile"),
+        rangeField("--loading-letters-scale", "字母缩放", 0.5, 3, 0.05, ""),
         textField("--loading-letters-margin", "外边距"),
       ]),
       group("百分比数字", [
@@ -440,7 +406,6 @@ const btnReset = document.getElementById("btn-reset");
 const btnReload = document.getElementById("btn-reload-preview");
 const langButtons = document.querySelectorAll("[data-preview-lang]");
 const pageSelect = document.getElementById("page-select");
-const headerModeBtns = document.querySelectorAll("#header-mode-toggles .mode-btn");
 
 function getCurrentPage() {
   return pages.find((p) => p.id === currentPageId) || pages[0];
@@ -890,7 +855,6 @@ function renderForm() {
     btn.textContent = mode === "desktop" ? "桌面端" : "手机端";
     btn.addEventListener("click", () => {
       editorMode = mode;
-      headerModeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
       renderForm();
       updatePreviewModeClass();
       updatePreview();
@@ -1122,17 +1086,6 @@ function init() {
   if (btnReload) btnReload.addEventListener("click", reloadPreview);
   langButtons.forEach((btn) => {
     btn.addEventListener("click", () => switchPreviewLang(btn.dataset.previewLang));
-  });
-  headerModeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const mode = btn.dataset.mode;
-      if (editorMode === mode) return;
-      editorMode = mode;
-      headerModeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
-      renderForm();
-      updatePreviewModeClass();
-      updatePreview();
-    });
   });
   if (elPreview) {
     elPreview.onload = () => {

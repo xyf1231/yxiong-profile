@@ -30,10 +30,11 @@
   --nav-height: 60px;
   --nav-link-font-size: 1rem;
   --nav-link-font-weight: 700;
-  --nav-link-gap: 40px;
+  --nav-link-gap: 30px;
   --nav-link-padding: 9px 12px 11px;
-  --nav-major-font-size: clamp(1.72rem, 2.25vw, 2.35rem);
-  --nav-sub-font-size: clamp(1rem, 1.12vw, 1.16rem);
+  --nav-card-gap: 5px;
+  --nav-major-font-size: clamp(0.8rem, 2vw, 4rem);
+  --nav-sub-font-size: clamp(0.5rem, 1.25vw, 2.5rem);
 
   /* 头像圆圈 */
   --nav-brand-size: 35px;
@@ -54,9 +55,10 @@
   --global-list-gap-mobile: 4px;
 
   --nav-link-font-size-mobile: 0.82rem;
-  --nav-link-gap-mobile: 6px;
-  --nav-major-font-size-mobile: clamp(1.3rem, 7vw, 2.1rem);
-  --nav-sub-font-size-mobile: clamp(0.9rem, 4.5vw, 1.3rem);
+  --nav-link-gap-mobile: 4px;
+  --nav-major-font-size-mobile: clamp(0.8rem, 8vw, 4rem);
+  --nav-sub-font-size-mobile: clamp(0.5rem, 6vw, 2.5rem);
+  --nav-card-gap-mobile: 0px;
   --lang-toggle-font-size-mobile: 0.82rem;
 }
 
@@ -79,6 +81,12 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-maj
 /* 展开菜单 — 二级链接 */
 body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub-link {
   font-size: var(--nav-sub-font-size) !important;
+}
+/* 展开菜单 — 行间距（桌面端） */
+@media (min-width: 769px) {
+  .site-header .nav-links .nav-cards-five .nav-card-links {
+    gap: var(--nav-card-gap) !important;
+  }
 }
 .nav-desktop-items {
   gap: var(--nav-link-gap) !important;
@@ -114,6 +122,10 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub
   }
   .nav-desktop-items {
     gap: var(--nav-link-gap-mobile) !important;
+  }
+  /* 手机端展开菜单行间距 */
+  .site-header .nav-links .nav-cards-five .nav-card-links {
+    gap: var(--nav-card-gap-mobile) !important;
   }
   .language-toggle {
     font-size: var(--lang-toggle-font-size-mobile) !important;
