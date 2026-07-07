@@ -5,7 +5,7 @@
  */
 window.LOADING_CONTENT = {
   "zh": {
-    "greeting": "Welcome"
+    "greeting": "欢迎访问"
   },
   "en": {
     "greeting": "Welcome"
@@ -18,6 +18,7 @@ window.LOADING_CONTENT = {
     "erase": "true",
     "strokeWidth": "2.5",
     "brightness": "10",
-    "saturation": "20"
+    "saturation": "20",
+    "greeting": "欢迎访问"
   }
 };

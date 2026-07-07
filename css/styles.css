@@ -5250,22 +5250,28 @@ body.nav-mega-open::after {
 }
 
 .all-publications-more {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  justify-self: center;
-  width: min(100%, 360px);
-  min-height: 48px;
-  margin: 4px auto 0;
-  border: 1px solid rgba(102, 220, 255, 0.24);
+  display: block;
+  width: 100%;
+  min-height: 54px;
+  margin: 12px auto 0;
+  padding: 14px 28px;
+  border: 1.5px solid rgba(102, 220, 255, 0.3);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(245, 250, 255, 0.92);
+  background: rgba(102, 220, 255, 0.08);
+  color: rgba(245, 250, 255, 0.95);
   font: inherit;
   font-weight: 800;
+  font-size: 1rem;
+  text-align: center;
   cursor: pointer;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
+  position: relative;
+  z-index: 1;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 .all-publications-more:hover {
@@ -5307,13 +5313,13 @@ body.nav-mega-open::after {
   .all-publication-list .publication-item:hover,
   .detail-item:hover,
   .profile-publication-item:hover {
-    background: transparent !important;
+    background: rgba(255, 255, 255, 0.055) !important;
     border-color: rgba(255, 255, 255, 0.14) !important;
   }
 
   .all-publications-more:hover {
-    border-color: rgba(102, 220, 255, 0.24) !important;
-    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: rgba(102, 220, 255, 0.42) !important;
+    background: rgba(102, 220, 255, 0.12) !important;
   }
 
   .news-card-image img,

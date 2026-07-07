@@ -168,10 +168,12 @@ function setupSiteLoadingGate() {
     if (!overlay) {
       overlay = document.createElement("div");
       overlay.className = "site-loading-overlay";
+      const loadCfg = window.LOADING_CONTENT?.shared || {};
+      const greetingText = loadCfg.greeting || getLoadingGreeting();
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
           <div class="site-loading-letters" id="site-loading-letters" style="width: min(80vw, 360px); height: 110px; margin: -8px 0 4px;"></div>
-          <div class="site-loading-kicker">${getLoadingGreeting()}</div>
+          <div class="site-loading-kicker">${escapeHtml(greetingText)}</div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
           <div class="site-loading-resources" aria-label="加载资源数"></div>
           <div class="site-loading-hint" aria-live="off"></div>
@@ -227,18 +229,24 @@ function setupSiteLoadingGate() {
     })();
   };
 
+  const formatBytes = (bytes) => {
+    if (bytes < 1024) return `${bytes}B`;
+    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)}KB`;
+    return `${(bytes / 1048576).toFixed(2)}MB`;
+  };
+
   const updateResourceCount = () => {
     if (finished || !resourcesEl) return;
     const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-    let totalCount = 0;
-    let loadedCount = 0;
+    let totalBytes = 0;
+    let loadedBytes = 0;
     for (const entry of entries) {
       const size = entry.transferSize || entry.decodedBodySize || 0;
       if (!size) continue;
-      totalCount++;
-      if (entry.duration > 0) loadedCount++;
+      totalBytes += size;
+      if (entry.duration > 0) loadedBytes += size;
     }
-    resourcesEl.textContent = `${loadedCount} / ${totalCount}`;
+    resourcesEl.textContent = `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}`;
   };
 
   const rotateHint = () => {
@@ -1542,11 +1550,10 @@ function renderAllPublications(items) {
     ? `<button class="all-publications-more" type="button">${currentLang === "en" ? "Show all publications" : "展开全部论文"}</button>`
     : "";
   target.innerHTML = `${listHtml}${moreHtml}`;
-  if (!target._delegated) {
-    target._delegated = true;
-    target.addEventListener("click", (e) => {
-      const btn = e.target.closest(".all-publications-more");
-      if (!btn) return;
+  const moreBtn = target.querySelector(".all-publications-more");
+  if (moreBtn) {
+    moreBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       target.dataset.expanded = "true";
       renderAllPublications(items);
     });
@@ -2532,12 +2539,35 @@ function showPdfPreview(url) {
 }
 
 
+/* Mobile: intercept touchstart before :hover applies to nearby cards */
+document.addEventListener("touchstart", (event) => {
+  const moreBtn = event.target.closest(".all-publications-more");
+  if (moreBtn) {
+    event.preventDefault();
+    const target = document.querySelector("#all-publication-list");
+    if (target && target.dataset.expanded !== "true") {
+      target.dataset.expanded = "true";
+      const items = window._allPublicationItems;
+      if (items) renderAllPublications(items);
+    }
+    return;
+  }
+  const viewBtn = event.target.closest("[data-i18n='viewAllPapers']");
+  if (viewBtn) {
+    event.preventDefault();
+    window.location.href = viewBtn.getAttribute("href");
+  }
+}, { passive: false });
+
+
 initSite();
 window.addEventListener("hashchange", setupNavigation);
 resizeCanvas();
 updateStoryProgress();
 updateHeader();
 drawNetwork();
+
+
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
