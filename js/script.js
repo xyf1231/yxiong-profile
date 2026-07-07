@@ -1571,10 +1571,15 @@ function renderAllPublications(items) {
     ? `<button class="all-publications-more" type="button">${currentLang === "en" ? "Show all publications" : "展开全部论文"}</button>`
     : "";
   target.innerHTML = `${listHtml}${moreHtml}`;
-  target.querySelector(".all-publications-more")?.addEventListener("click", () => {
-    target.dataset.expanded = "true";
-    renderAllPublications(items);
+  if (!target._delegated) {
+    target._delegated = true;
+    target.addEventListener("click", (e) => {
+      const btn = e.target.closest(".all-publications-more");
+      if (!btn) return;
+      target.dataset.expanded = "true";
+      renderAllPublications(items);
     });
+  }
 }
 
 function publicationTime(item) {
@@ -1643,7 +1648,7 @@ function renderDetailLists(items) {
           <article class="detail-item">
             <time>${String(index + 1).padStart(2, "0")}</time>
             <div>
-              <p class="detail-type">${escapeHtml([localizeText(item.type), localizeText(item.year)].filter(Boolean).join(" · "))}</p>
+              <p class="detail-type" style="color:#2997FF">${escapeHtml(localizeText(item.year))}</p>
               <h3>${escapeHtml(localizeText(item.title))}</h3>
               ${item.applicant ? `<p class="detail-applicant">${escapeHtml(applicantLabel(item))}：${highlightAuthor(localizeText(item.applicant))}</p>` : ""}
               <p>${escapeHtml(localizeText(item.detail))}</p>

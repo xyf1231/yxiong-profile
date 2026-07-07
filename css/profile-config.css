@@ -1,6 +1,6 @@
 /**
  * profile-config.css — 个人简介页排版变量
- * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ * 通过 page-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
  * 通用 Section 样式由 css/global-section-config.css 统一控制。
  */
 
@@ -52,14 +52,31 @@
   --profile-list-gap: var(--global-list-gap);
 
   /* 研究内容卡片间距（桌面端继承全局列表间距） */
-  --profile-research-gap: var(--global-list-gap);
+  --profile-research-gap: 4px;
+
+  /* 研究内容卡片文字 */
+  --profile-research-title-font-size: 1.8rem;
+  --profile-research-text-font-size: 1.5rem;
+
+  /* 研究内容卡片尺寸与内边距 */
+  --profile-research-card-padding: 24px;
+  --profile-research-card-min-height: 290px;
+  --profile-research-image-gap: clamp(22px, 2vw, 32px);
+
+  /* 学习工作经历卡片 */
+  --profile-experience-title-font-size: 1.5rem;
+  --profile-experience-text-font-size: 1.2rem;
+  --profile-experience-time-font-size: 1.2rem;
+  --profile-experience-gap: 20px;
 
   /* 代表论文卡片文字与间距 */
-  --profile-publication-title-font-size: 1.24rem;
-  --profile-publication-subtitle-font-size: 0.95rem;
-  --profile-publication-authors-font-size: 0.95rem;
-  --profile-publication-meta-font-size: 0.85rem;
-  --profile-publication-meta-gap: 8px;
+  --profile-publication-title-font-size: 1.5rem;
+  --profile-publication-subtitle-font-size: 1rem;
+  --profile-publication-authors-font-size: 1rem;
+  --profile-publication-meta-font-size: 1rem;
+  --profile-publication-meta-gap: 0px;
+  --profile-publication-pdf-offset-bottom: 0px;
+  --profile-publication-pdf-offset-right: 0px;
 
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
@@ -69,7 +86,7 @@
   --profile-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
   --profile-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
   --profile-list-gap-mobile: var(--global-list-gap-mobile);
-  --profile-research-gap-mobile: 12px;
+  --profile-research-gap-mobile: 4px;
   --profile-card-padding-mobile: 20px;
   --profile-card-gap-mobile: 12px;
   --profile-card-min-height-mobile: 0px;
@@ -84,7 +101,23 @@
   --profile-publication-subtitle-font-size-mobile: 0.8rem;
   --profile-publication-authors-font-size-mobile: 0.8rem;
   --profile-publication-meta-font-size-mobile: 1rem;
-  --profile-publication-meta-pdf-gap-mobile: 0px;
+  --profile-publication-pdf-offset-bottom-mobile: 0px;
+  --profile-publication-pdf-offset-right-mobile: 0px;
+
+  /* 研究内容卡片文字（手机端） */
+  --profile-research-title-font-size-mobile: 1.5rem;
+  --profile-research-text-font-size-mobile: 0.9rem;
+
+  /* 研究内容卡片尺寸与内边距（手机端） */
+  --profile-research-card-padding-mobile: 20px;
+  --profile-research-card-min-height-mobile: 250px;
+  --profile-research-image-gap-mobile: clamp(16px, 3vw, 22px);
+
+  /* 学习工作经历卡片（手机端） */
+  --profile-experience-title-font-size-mobile: 1.2rem;
+  --profile-experience-text-font-size-mobile: 0.9rem;
+  --profile-experience-time-font-size-mobile: 0.9rem;
+  --profile-experience-gap-mobile: 4px;
 }
 
 /* 容器 */
@@ -221,10 +254,32 @@
 }
 
 /* 研究内容卡片间距 */
-.profile-page .feature-grid,
-.profile-page .section-wrap#research .feature-grid,
 .profile-page #research-list.feature-grid {
   gap: var(--profile-research-gap) !important;
+}
+
+/* 研究内容卡片文字 */
+.profile-page #research-list .feature-card-copy h3 {
+  font-size: var(--profile-research-title-font-size) !important;
+}
+.profile-page #research-list .feature-card-copy p {
+  font-size: var(--profile-research-text-font-size) !important;
+}
+
+/* 学习工作经历卡片间距 */
+.profile-page #experience-list {
+  gap: var(--profile-experience-gap) !important;
+}
+
+/* 学习工作经历卡片文字 */
+.profile-page #experience-list li h3 {
+  font-size: var(--profile-experience-title-font-size) !important;
+}
+.profile-page #experience-list li p {
+  font-size: var(--profile-experience-text-font-size) !important;
+}
+.profile-page #experience-list li time {
+  font-size: var(--profile-experience-time-font-size) !important;
 }
 
 /* 代表论文区「全部论文」按钮 */
@@ -255,6 +310,20 @@
 .profile-page #profile-publication-list .publication-meta {
   font-size: var(--profile-publication-meta-font-size) !important;
   margin-bottom: var(--profile-publication-meta-gap) !important;
+}
+
+.profile-page #profile-publication-list .pdf-actions {
+  margin-bottom: var(--profile-publication-pdf-offset-bottom) !important;
+  margin-right: var(--profile-publication-pdf-offset-right) !important;
+}
+
+/* 研究内容卡片尺寸与内边距 */
+.profile-page #research-list .feature-card {
+  padding: var(--profile-research-card-padding) !important;
+  min-height: var(--profile-research-card-min-height) !important;
+}
+.profile-page #research-list .feature-card-image {
+  margin-bottom: var(--profile-research-image-gap) !important;
 }
 
 @media (max-width: 768px) {
@@ -334,10 +403,41 @@
   }
 
   /* 研究内容卡片间距（手机端） */
-  .profile-page .feature-grid,
-  .profile-page .section-wrap#research .feature-grid,
   .profile-page #research-list.feature-grid {
     gap: var(--profile-research-gap-mobile) !important;
+  }
+
+  /* 研究内容卡片文字（手机端） */
+  .profile-page #research-list .feature-card-copy h3 {
+    font-size: var(--profile-research-title-font-size-mobile) !important;
+  }
+  .profile-page #research-list .feature-card-copy p {
+    font-size: var(--profile-research-text-font-size-mobile) !important;
+  }
+
+  /* 研究内容卡片尺寸与内边距（手机端） */
+  .profile-page #research-list .feature-card {
+    padding: var(--profile-research-card-padding-mobile) !important;
+    min-height: var(--profile-research-card-min-height-mobile) !important;
+  }
+  .profile-page #research-list .feature-card-image {
+    margin-bottom: var(--profile-research-image-gap-mobile) !important;
+  }
+
+  /* 学习工作经历卡片间距（手机端） */
+  .profile-page #experience-list {
+    gap: var(--profile-experience-gap-mobile) !important;
+  }
+
+  /* 学习工作经历卡片文字（手机端） */
+  .profile-page #experience-list li h3 {
+    font-size: var(--profile-experience-title-font-size-mobile) !important;
+  }
+  .profile-page #experience-list li p {
+    font-size: var(--profile-experience-text-font-size-mobile) !important;
+  }
+  .profile-page #experience-list li time {
+    font-size: var(--profile-experience-time-font-size-mobile) !important;
   }
 
   /* 代表论文卡片文字与间距（手机端） */
@@ -359,6 +459,7 @@
   }
 
   .profile-page #profile-publication-list .pdf-actions {
-    margin-top: var(--profile-publication-meta-pdf-gap-mobile) !important;
+    margin-bottom: var(--profile-publication-pdf-offset-bottom-mobile) !important;
+    margin-right: var(--profile-publication-pdf-offset-right-mobile) !important;
   }
 }

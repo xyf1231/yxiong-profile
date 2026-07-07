@@ -1,5 +1,5 @@
 /**
- * hero-editor.js — 全站页面排版可视化编辑器
+ * page-editor.js — 全站页面排版可视化编辑器
  * 读取/保存各页面的 css/{page}-config.css 与 js/{page}-content.js，实时预览对应页面效果。
  */
 
@@ -202,18 +202,27 @@ const pageSchemas = {
         rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, "", "--profile-bio-line-height-mobile"),
       ]),
       group("研究内容卡片", [
-        (() => {
-          const f = rangeField("--profile-research-gap-mobile", "卡片间距（手机端）", 4, 80, 1, "px");
-          f.mobileOnly = true;
-          return f;
-        })(),
+        rangeField("--profile-research-title-font-size", "标题字号", 0.7, 3, 0.05, "rem", "--profile-research-title-font-size-mobile"),
+        rangeField("--profile-research-text-font-size", "正文字号", 0.5, 2, 0.05, "rem", "--profile-research-text-font-size-mobile"),
+        rangeField("--profile-research-gap", "卡片间距", 4, 80, 1, "px", "--profile-research-gap-mobile"),
+        rangeField("--profile-research-card-padding", "卡片内边距", 8, 60, 1, "px", "--profile-research-card-padding-mobile"),
+        rangeField("--profile-research-card-min-height", "卡片最小高度", 180, 400, 5, "px", "--profile-research-card-min-height-mobile"),
+        clampField("--profile-research-image-gap", "图片与文字间距 (vw)", 0.5, 6, 0.1, "vw", "0.5rem", "4rem", "--profile-research-image-gap-mobile"),
+      ]),
+      group("学习工作经历", [
+        rangeField("--profile-experience-title-font-size", "标题字号", 0.7, 3, 0.05, "rem", "--profile-experience-title-font-size-mobile"),
+        rangeField("--profile-experience-text-font-size", "正文字号", 0.5, 2, 0.05, "rem", "--profile-experience-text-font-size-mobile"),
+        rangeField("--profile-experience-time-font-size", "时间字号", 0.5, 2, 0.05, "rem", "--profile-experience-time-font-size-mobile"),
+        rangeField("--profile-experience-gap", "卡片间距", 4, 80, 1, "px", "--profile-experience-gap-mobile"),
       ]),
       group("代表论文卡片", [
         rangeField("--profile-publication-title-font-size", "英文标题字号", 0.7, 2.5, 0.01, "rem", "--profile-publication-title-font-size-mobile"),
         rangeField("--profile-publication-subtitle-font-size", "中文标题字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-subtitle-font-size-mobile"),
         rangeField("--profile-publication-authors-font-size", "作者名字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-authors-font-size-mobile"),
         rangeField("--profile-publication-meta-font-size", "期刊年份字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-meta-font-size-mobile"),
-        rangeField("--profile-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px", "--profile-publication-meta-pdf-gap-mobile"),
+        rangeField("--profile-publication-meta-gap", "期刊与元数据间距", 0, 60, 1, "px"),
+        rangeField("--profile-publication-pdf-offset-bottom", "PDF 距下边缘", 0, 60, 1, "px"),
+        rangeField("--profile-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
       ]),
     ],
   },
@@ -248,7 +257,9 @@ const pageSchemas = {
         rangeField("--results-publication-subtitle-font-size", "中文标题字号", 0.6, 1.5, 0.01, "rem", "--results-publication-subtitle-font-size-mobile"),
         rangeField("--results-publication-authors-font-size", "作者名字号", 0.6, 1.5, 0.01, "rem", "--results-publication-authors-font-size-mobile"),
         rangeField("--results-publication-meta-font-size", "期刊年份字号", 0.6, 1.5, 0.01, "rem", "--results-publication-meta-font-size-mobile"),
-        rangeField("--results-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px", "--results-publication-meta-pdf-gap-mobile"),
+        rangeField("--results-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px"),
+        rangeField("--results-publication-pdf-offset-bottom", "PDF 距下边缘", 0, 60, 1, "px"),
+        rangeField("--results-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
       ]),
     ],
   },
@@ -486,12 +497,12 @@ function buildPageContent(page, content) {
   const varName = page.contentVar;
   const body = JSON.stringify(content, null, 2);
   if (page.id === "home") {
-    return `/**\n * home-content.js — 首页各模块文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.HOME_CONTENT = ${body};\nwindow.PAGE_CONTENT = window.HOME_CONTENT;\n`;
+    return `/**\n * home-content.js — 首页各模块文案配置\n * 通过 page-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.HOME_CONTENT = ${body};\nwindow.PAGE_CONTENT = window.HOME_CONTENT;\n`;
   }
   if (page.id === "loading") {
-    return `/**\n * loading-content.js — 站点加载遮罩文案与动画配置\n * 通过 hero-editor.html 读取/编辑。\n * 所有页面共用同一套加载页配置。\n */\nwindow.${varName} = ${body};\n`;
+    return `/**\n * loading-content.js — 站点加载遮罩文案与动画配置\n * 通过 page-editor.html 读取/编辑。\n * 所有页面共用同一套加载页配置。\n */\nwindow.${varName} = ${body};\n`;
   }
-  return `/**\n * ${page.id}-content.js — ${pageLabel}页文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.${varName} = ${body};\n`;
+  return `/**\n * ${page.id}-content.js — ${pageLabel}页文案配置\n * 通过 page-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.${varName} = ${body};\n`;
 }
 
 /* ═══════════════════════════════════════════════════════════════

@@ -2061,7 +2061,7 @@ html[lang="en"] .subtle-name {
 
 .detail-type {
   margin: 0 0 8px;
-  color: rgba(88, 213, 255, 0.82);
+  color: #2997FF;
   font-size: var(--font-kicker);
   font-weight: 850;
   letter-spacing: 0.12em;

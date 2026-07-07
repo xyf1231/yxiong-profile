@@ -1,6 +1,6 @@
 /**
  * loading-content.js — 站点加载遮罩文案与动画配置
- * 通过 hero-editor.html 读取/编辑。
+ * 通过 page-editor.html 读取/编辑。
  * 所有页面共用同一套加载页配置。
  */
 window.LOADING_CONTENT = {

@@ -1,6 +1,6 @@
 /**
  * results-config.css — 成果页排版变量
- * 通过 hero-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
+ * 通过 page-editor.html 读取/编辑，覆盖 css/styles.css 的默认样式。
  * 通用 Section 样式由 css/global-section-config.css 统一控制。
  */
 
@@ -41,6 +41,8 @@
   --results-publication-authors-font-size: 1rem;
   --results-publication-meta-font-size: 1rem;
   --results-publication-meta-gap: 10px;
+  --results-publication-pdf-offset-bottom: 0px;
+  --results-publication-pdf-offset-right: 0px;
 
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
@@ -62,7 +64,8 @@
   --results-publication-subtitle-font-size-mobile: 0.8rem;
   --results-publication-authors-font-size-mobile: 0.8rem;
   --results-publication-meta-font-size-mobile: 1rem;
-  --results-publication-meta-pdf-gap-mobile: 0px;
+  --results-publication-pdf-offset-bottom-mobile: 0px;
+  --results-publication-pdf-offset-right-mobile: 0px;
 }
 
 /* 容器 */
@@ -123,6 +126,11 @@
 .results-page .all-publication-list .publication-meta {
   font-size: var(--results-publication-meta-font-size) !important;
   margin-bottom: var(--results-publication-meta-gap) !important;
+}
+
+.results-page .all-publication-list .pdf-actions {
+  margin-bottom: var(--results-publication-pdf-offset-bottom) !important;
+  margin-right: var(--results-publication-pdf-offset-right) !important;
 }
 
 /* 列表间距 */
@@ -187,6 +195,7 @@
   }
 
   .results-page .all-publication-list .pdf-actions {
-    margin-top: var(--results-publication-meta-pdf-gap-mobile) !important;
+    margin-bottom: var(--results-publication-pdf-offset-bottom-mobile) !important;
+    margin-right: var(--results-publication-pdf-offset-right-mobile) !important;
   }
 }

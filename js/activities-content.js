@@ -1,6 +1,6 @@
 /**
  * activities-content.js — 学术活动页文案配置
- * 通过 hero-editor.html 读取/编辑。
+ * 通过 page-editor.html 读取/编辑。
  * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。
  */
 window.PAGE_CONTENT = {
