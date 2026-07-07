@@ -6,25 +6,29 @@
 :root {
   /* 页面容器 */
   --results-container-max-width: var(--max);
-  --results-section-padding: clamp(72px, 10vw, 126px);
-  --results-first-section-padding-top: clamp(112px, 12vw, 156px);
+  --results-section-padding: 100px;
+  --results-first-section-padding-top: 120px;
+
+  /* 首 Section 标题与内容间距 */
+  --results-first-section-gap: 0px;
 
   /* Section kicker */
-  --results-kicker-font-size: var(--font-kicker);
+  --results-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
   --results-kicker-letter-spacing: 0.14em;
   --results-kicker-color: var(--accent);
   --results-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --results-title-font-size: clamp(2.2rem, 7vw, 4rem);
+  --results-title-font-size: clamp(1.5rem, 5vw, 6rem);
   --results-title-line-height: 1.12;
   --results-title-letter-spacing: -0.02em;
   --results-title-color: rgba(255, 255, 255, 0.96);
 
   /* 列表项间距 */
-  --results-list-gap: clamp(16px, 2vw, 24px);
+  --results-list-gap: 20px;
 
   /* 手机端 */
+  --results-first-section-gap-mobile: 0px;
   --results-kicker-font-size-mobile: var(--font-kicker);
   --results-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
   --results-section-padding-mobile: clamp(56px, 8vw, 96px);
@@ -40,6 +44,11 @@
 .results-page main > .section-wrap:first-child,
 .results-page main > .section-band:first-child > .section-wrap {
   padding-top: var(--results-first-section-padding-top) !important;
+}
+
+/* 首 Section 标题与内容间距 */
+.results-page #all-publications {
+  padding-bottom: var(--results-first-section-gap) !important;
 }
 
 /* Kicker */
@@ -72,6 +81,10 @@
   .results-page main > .section-wrap:first-child,
   .results-page main > .section-band:first-child > .section-wrap {
     padding-top: var(--results-first-section-padding-top-mobile) !important;
+  }
+
+  .results-page #all-publications {
+    padding-bottom: var(--results-first-section-gap-mobile) !important;
   }
 
   .results-page .section-kicker {

@@ -12,8 +12,26 @@ if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'm
 function resetHomeScrollIfNeeded() {
   if (isHomePage && !window.location.hash && window.scrollY < 10) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
-window.addEventListener('pageshow', resetHomeScrollIfNeeded);
-window.addEventListener('load', resetHomeScrollIfNeeded);
+
+function restorePdfScrollPosition() {
+  try {
+    const saved = sessionStorage.getItem("pdfReturnScroll");
+    if (saved === null) return;
+    const y = parseFloat(saved);
+    sessionStorage.removeItem("pdfReturnScroll");
+    if (Number.isFinite(y) && y > 0) {
+      window.requestAnimationFrame(() => window.scrollTo({ top: y, left: 0, behavior: "auto" }));
+    }
+  } catch {}
+}
+window.addEventListener('pageshow', () => {
+  restorePdfScrollPosition();
+  resetHomeScrollIfNeeded();
+});
+window.addEventListener('load', () => {
+  restorePdfScrollPosition();
+  resetHomeScrollIfNeeded();
+});
 const NAV_INDICATOR_KEY = "academicSiteNavIndicator";
 const ASSET_CACHE_BUSTER = (() => {
   try {
@@ -107,6 +125,7 @@ function setupSiteLoadingGate() {
   let targetProgress = 0;
   let displayProgress = 0;
   let readyTimerId = null;
+  let lettersTimer = null;
 
   const setProgress = (next) => {
     current = Math.max(0, Math.min(100, next));
@@ -157,11 +176,13 @@ function setupSiteLoadingGate() {
 
   const finish = () => {
     if (finished) return;
+    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
     if (!overlay) ensureOverlay();
     if (!overlay) return;
     finished = true;
     if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
+    if (lettersTimer) window.clearInterval(lettersTimer);
     setProgress(100);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
@@ -181,9 +202,9 @@ function setupSiteLoadingGate() {
       overlay.className = "site-loading-overlay";
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
-          <div class="site-loading-lottie" id="site-loading-lottie"></div>
-          <div class="site-loading-percent" aria-label="加载进度">0%</div>
+          <div class="site-loading-letters" id="site-loading-letters"></div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+          <div class="site-loading-percent" aria-label="加载进度">0%</div>
         </div>
       `;
       document.documentElement.appendChild(overlay);
@@ -191,39 +212,84 @@ function setupSiteLoadingGate() {
     barEl = overlay.querySelector(".site-loading-bar");
     percentEl = overlay.querySelector(".site-loading-percent");
 
-    // 加载并播放 Lottie 欢迎动画
-    (async () => {
-      try {
-        const lottieEl = document.getElementById("site-loading-lottie");
-        if (!lottieEl || window.lottieLoadAttempted) return;
-        window.lottieLoadAttempted = true;
-        if (!window.lottie) {
-          const script = document.createElement("script");
-          script.src = "https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js";
-          await new Promise((resolve, reject) => {
-            script.onload = resolve;
-            script.onerror = reject;
-            document.head.appendChild(script);
-          });
-        }
-        const anim = window.lottie.loadAnimation({
-          container: lottieEl,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-          path: "resources/Welcome.json",
-        });
-        anim.addEventListener("data_ready", () => {
-          lottieEl.dataset.loaded = "true";
-        });
-        anim.addEventListener("error", () => {
-          lottieEl.style.display = "none";
-        });
-      } catch (error) {
-        const lottieEl = document.getElementById("site-loading-lottie");
-        if (lottieEl) lottieEl.style.display = "none";
+    // 加载并播放 Letters 手写文字动画
+    startLettersAnimation();
+  };
+
+  const startLettersAnimation = () => {
+    const lettersEl = document.getElementById("site-loading-letters");
+    if (!lettersEl) return;
+    if (lettersTimer) window.clearInterval(lettersTimer);
+
+    const cfg = window.LOADING_CONTENT || {};
+    const shared = cfg.shared || {};
+
+    function split(str) {
+      return String(str || "")
+        .split(/[,，]/)
+        .map((s) => s.trim().toLowerCase())
+        .filter(Boolean);
+    }
+
+    const words = split(shared.words).length ? split(shared.words) : ["hello", "welcome", "coming", "loading"];
+    const presets = split(shared.presets).length
+      ? split(shared.presets)
+      : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
+    const duration = Math.max(0.1, parseFloat(shared.duration) || 2);
+    const erase = String(shared.erase).trim().toLowerCase() !== "false";
+    // 切换间隔至少覆盖一次绘制（+ 擦除）所需时间
+    const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
+    const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
+    const strokeWidth = parseFloat(shared.strokeWidth) || 2;
+    const brightness = parseFloat(shared.brightness) || 15;
+    const saturation = parseFloat(shared.saturation) || 12;
+
+    let index = 0;
+
+    function shuffle(arr) {
+      const copy = arr.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
       }
-    })();
+      return copy;
+    }
+
+    const shuffledWords = shuffle(words);
+
+    function playNext() {
+      if (index >= shuffledWords.length) index = 0;
+      const word = shuffledWords[index++];
+      const preset = presets[Math.floor(Math.random() * presets.length)];
+      if (typeof window.mountLettersAnimation === "function") {
+        window.mountLettersAnimation(lettersEl, word, preset, strokeWidth, brightness, saturation, duration, erase);
+      } else {
+        lettersEl.textContent = word;
+      }
+    }
+
+    playNext();
+    lettersTimer = window.setInterval(playNext, interval);
+  };
+
+  /**
+   * 供页面编辑器强制预览加载遮罩使用：重置加载门并重新创建遮罩。
+   */
+  window.showLoadingPreview = () => {
+    window.__EDITOR_KEEP_LOADING_OVERLAY = true;
+    finished = false;
+    if (lettersTimer) window.clearInterval(lettersTimer);
+    if (rafId) cancelAnimationFrame(rafId);
+    if (intervalId) window.clearInterval(intervalId);
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    const root = document.documentElement;
+    root.dataset.siteLoading = "pending";
+    if (overlay) overlay.remove();
+    overlay = null;
+    barEl = null;
+    percentEl = null;
+    ensureOverlay();
+    setProgress(35);
   };
 
   const waitForReady = async () => {
@@ -1344,6 +1410,7 @@ function renderNewsDetail(items = []) {
     pdf.setAttribute("target", "_blank");
     pdf.setAttribute("rel", "noopener");
     pdf.setAttribute("data-pdf-download", "");
+    pdf.setAttribute("data-icon", "↗");
   }
 }
 
@@ -1368,14 +1435,14 @@ function pdfDownloadLink(url) {
   if (!url) {
     const noResourceText = uiLabel("暂无资源", "No resource");
     return `<div class="pdf-actions">
-      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceText)}</span></span>
+      <span class="pdf-download-link no-resource" data-icon="—"><span>${escapeHtml(noResourceText)}</span></span>
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) && !/^https?:\/\//i.test(url) ? " download" : "";
   const downloadText = uiLabel("查看PDF", "View PDF");
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↗" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 
@@ -2434,6 +2501,9 @@ async function initSite() {
 document.addEventListener("click", (event) => {
   const link = event.target.closest("[data-pdf-download]");
   if (!link) return;
+  try {
+    sessionStorage.setItem("pdfReturnScroll", String(window.scrollY));
+  } catch {}
   showPdfLoading(link);
 });
 

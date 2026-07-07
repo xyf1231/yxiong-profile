@@ -1302,6 +1302,7 @@ function renderNewsDetail(items = []) {
     pdf.setAttribute("target", "_blank");
     pdf.setAttribute("rel", "noopener");
     pdf.setAttribute("data-pdf-download", "");
+    pdf.setAttribute("data-icon", "↗");
   }
 }
 
@@ -1326,14 +1327,14 @@ function pdfDownloadLink(url) {
   if (!url) {
     const noResourceText = uiLabel("暂无资源", "No resource");
     return `<div class="pdf-actions">
-      <span class="pdf-download-link no-resource" data-icon="↓"><span>${escapeHtml(noResourceText)}</span></span>
+      <span class="pdf-download-link no-resource" data-icon="—"><span>${escapeHtml(noResourceText)}</span></span>
     </div>`;
   }
   const safeUrl = escapeHtml(assetUrl(url));
   const downloadAttr = isPdfUrl(url) ? ` download` : ``;
   const downloadText = uiLabel("下载", "Download");
   return `<div class="pdf-actions">
-    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↓" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
+    <a class="pdf-download-link" href="${safeUrl}"${downloadAttr} data-pdf-download data-icon="↗" target="_blank" rel="noopener"><span>${escapeHtml(downloadText)}</span><i aria-hidden="true"></i></a>
   </div>`;
 }
 

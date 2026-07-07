@@ -1,0 +1,61 @@
+/**
+ * loading-config.css — 站点加载遮罩样式配置
+ * 通过 hero-editor.html 读取/编辑。
+ * 所有页面共用同一套加载页样式。
+ */
+
+:root {
+  /* 遮罩层背景与模糊 */
+  --loading-overlay-bg:
+    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
+    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.16), transparent 20%),
+    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.18), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.12), transparent 32%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.985), rgba(2, 4, 9, 0.955));
+  --loading-overlay-backdrop-blur: 14px;
+  --loading-overlay-backdrop-saturate: 1.1;
+
+  /* 内容卡片 */
+  --loading-card-width: min(92vw, 420px);
+  --loading-card-gap: 20px;
+  --loading-card-padding: 14px 0 8px;
+
+  /* 手写文字动画容器 */
+  --loading-letters-width: min(80vw, 500px);
+  --loading-letters-height: 150px;
+  --loading-letters-margin: -50px 0 5px;
+
+  /* 百分比数字 */
+  --loading-percent-color: rgba(255, 255, 255, 0.92);
+  --loading-percent-font-size: clamp(1.5rem, 5vw, 8rem);
+  --loading-percent-margin-top: 30px;
+  --loading-percent-text-shadow: 0 0 20px rgba(41, 151, 255, 0.25), 0 0 40px rgba(124, 58, 237, 0.15);
+
+  /* 进度条轨道 */
+  --loading-track-height: 20px;
+  --loading-track-bg: rgba(255, 255, 255, 0.04);
+  --loading-track-margin-top: 10px;
+
+  /* 进度条填充 */
+  --loading-bar-bg: linear-gradient(90deg, #2997FF, #64D2FF 34%, #7c3aed 68%, #f97316);
+  --loading-bar-shadow: 0 0 24px rgba(41, 151, 255, 0.28), 0 0 26px rgba(124, 58, 237, 0.16);
+
+  /* 小标签（备用，供 lottie/kicker 场景使用） */
+  --loading-kicker-color: rgba(170, 176, 190, 0.88);
+  --loading-kicker-font-size: 0.7rem;
+
+  /* 移动端覆盖变量 */
+  --loading-percent-font-size-mobile: clamp(1.5rem, 10vw, 8rem);
+  --loading-letters-height-mobile: 150px;
+  --loading-track-height-mobile: 12px;
+  --loading-card-gap-mobile: 0px;
+}
+
+@media (max-width: 700px) {
+  :root {
+    --loading-percent-font-size: var(--loading-percent-font-size-mobile);
+    --loading-letters-height: var(--loading-letters-height-mobile);
+    --loading-track-height: var(--loading-track-height-mobile);
+    --loading-card-gap: var(--loading-card-gap-mobile);
+  }
+}

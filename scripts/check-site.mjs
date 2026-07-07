@@ -31,6 +31,8 @@ const requiredFiles = [
   "js/results-content.js",
   "js/honors-content.js",
   "js/activities-content.js",
+  "css/loading-config.css",
+  "js/loading-content.js",
 ];
 
 // 收集检查错误与警告
@@ -82,6 +84,15 @@ for (const filePath of htmlFiles) {
     }
     if (!content.includes(`js/${jsName}.js`)) {
       errors.push(`${file}: missing js/${jsName}.js`);
+    }
+  }
+  // 所有通过 <script> 实际加载 script.js 的页面都应加载全局加载遮罩配置
+  if (/<script[^>]*src="[^"]*js\/script\.js/.test(content)) {
+    if (!content.includes("css/loading-config.css")) {
+      errors.push(`${file}: missing css/loading-config.css`);
+    }
+    if (!content.includes("js/loading-content.js")) {
+      errors.push(`${file}: missing js/loading-content.js`);
     }
   }
 }

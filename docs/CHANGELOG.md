@@ -1,5 +1,43 @@
 # 更新日志
 
+## v1.10.40 - 2026-07-07
+- 类型：功能
+- 变更：将 Letters 手写单词列表动画应用到主页加载页（`index.html` / `js/script.js`）。加载层原有的 Lottie `Welcome.json` 动画被替换为手写文字动画：单词列表 `["hello", "welcome", "coming", "loading"]` 每次刷新随机打乱顺序，每个单词从 `["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"]` 中随机挑选渐变颜色（strokeWidth=2, brightness=15, saturation=12）。
+- 类型：调整
+- 变更：在 `js/script.js` 的 `finish()` 中清理 Letters 动画的 `setInterval`，避免加载层移除后继续挂载动画导致内存泄漏。
+- 类型：调整
+- 变更：为 `index.html` 中的 `letters-animation.umd.js` 加上 `?v=v1.10.40` 缓存戳，并补充 `process` shim，避免 UMD 在浏览器报 `process is not defined`。
+- 类型：修复
+- 变更：修复 `css/styles.css` 中 `.site-loading-letters { display: none; }` 以及 `.site-loading-letters .letters-animation-svg path { stroke: #ffffff; }` 导致加载页手写动画不显示的问题。改为 `display: flex` 并移除会覆盖渐变颜色的 `stroke` 规则。
+- 检查：`node --check js/script.js` 通过
+- 部署：未部署
+
+## v1.10.39 - 2026-07-07
+- 类型：功能
+- 变更：为 `letter.html` Playground 增加“单词列表”功能。用户可在参数面板输入一组单词（用逗号/换行分隔），每次进入页面时自动将单词顺序随机打乱，并逐个播放；每个单词会从“已选预设”（未选择则使用“收藏”，否则使用当前预设）中随机挑选一个渐变颜色。
+- 类型：功能
+- 变更：底部代码框同步生成可随机循环播放单词列表的完整代码片段，包含单词数组、候选 preset 数组、洗牌逻辑与 `setInterval` 循环，刷新页面后每次都会重新打乱单词顺序并随机配色。
+- 类型：调整
+- 变更：将原来的“文字内容”单行输入替换为“单词列表”多行文本框；Playground 初始挂载配置改用 `wordList`。
+- 检查：npx vite build 成功
+- 部署：未部署
+
+## v1.10.38 - 2026-07-07
+- 类型：功能
+- 变更：将页面底部代码框改为“每次刷新随机选色”。代码框现在会生成一个 `presets` 数组（优先来自 Playground 中“已选”预设；若未选择则使用“收藏”；否则使用当前激活预设），并通过 `presets[Math.floor(Math.random() * presets.length)]` 在每次页面刷新时随机选取一个颜色 preset。
+- 类型：优化
+- 变更：`generateUsageCode()` 自动读取当前页面 UMD 脚本 `?v=` 版本戳，确保生成的代码版本号与页面一致。
+- 检查：npx vite build 成功
+- 部署：未部署
+
+## v1.10.34 - 2026-07-07
+- 类型：功能
+- 变更：将 Playground 中当前选中的渐变预设同步到页面底部「在主页加载页面使用」代码框。代码框会实时显示 `data-gradient-preset` 以及对应的 `brightness`、`saturation`、`strokeWidth` 参数。
+- 类型：功能
+- 变更：扩展 `mountLettersAnimation` 与 `LettersApp`，支持通过 preset key（如 `neon`、`rainbow`）直接加载渐变，兼容旧的纯色 `color` 调用方式。
+- 检查：npx vite build 成功
+- 部署：未部署
+
 ## v1.10.33 - 2026-07-07
 - 类型：功能
 - 变更：为 `letter.html` Playground 增加渐变预设收藏功能。每张渐变卡片左上角新增心形收藏按钮，点击可切换收藏状态；收藏数据持久化到 `localStorage`（key：`letters-gradient-favorites`），刷新后仍然保留。

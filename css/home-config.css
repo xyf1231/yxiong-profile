@@ -18,15 +18,15 @@
   --hero-eyebrow-color: #2997ff;
   --hero-eyebrow-font-size: clamp(0.6rem, 1.5vw, 2.5rem);
   --hero-eyebrow-letter-spacing: 0.18em;
-  --hero-eyebrow-margin-bottom: 14px;
+  --hero-eyebrow-margin-bottom: 15px;
 
   /* 主标题 */
-  --hero-title-font-size-zh: clamp(3rem, 12vw, 7rem);
-  --hero-title-font-size-en: clamp(2.8rem, 12vw, 6.5rem);
+  --hero-title-font-size-zh: clamp(3rem, 8vw, 10rem);
+  --hero-title-font-size-en: clamp(2.8rem, 8vw, 10rem);
   --hero-title-line-height: 1.12;
   --hero-title-letter-spacing: 0em;
   --hero-title-font-weight: 700;
-  --hero-title-margin: clamp(18px, 2vw, 30px) auto clamp(22px, 2.4vw, 34px);
+  --hero-title-margin: clamp(18px, 2vw, 30px) auto clamp(22px, 2.1vw, 40px);
   --hero-title-padding-bottom: 0.12em;
   --hero-title-gap: 0.08em;
   --hero-title-font-family: inherit;
@@ -37,9 +37,9 @@
 
   /* 副标题 */
   --hero-subtitle-color: rgba(255, 255, 255, 0.6);
-  --hero-subtitle-margin-top: 12px;
-  --hero-subtitle-font-size: clamp(0.7rem, 2vw, 2rem);
-  --hero-subtitle-font-family: inherit;
+  --hero-subtitle-margin-top: 15px;
+  --hero-subtitle-font-size: clamp(0.7rem, 1.5vw, 2rem);
+  --hero-subtitle-font-family: "SF Mono", Menlo, Monaco, monospace;
 
   /* 其他模块标题 */
   --home-frame-heading-size: clamp(2rem, 6vw, 8rem);

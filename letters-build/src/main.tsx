@@ -20,6 +20,7 @@ import {
 
 export interface PlaygroundConfig {
   text?: string;
+  wordList?: string;
   strokeWidth?: number;
   overlap?: number;
   duration?: number;
@@ -34,6 +35,7 @@ export interface PlaygroundConfig {
 
 const DEFAULT_CONFIG: Required<PlaygroundConfig> = {
   text: 'Hello',
+  wordList: 'Hello,Welcome,Loading,Coming',
   strokeWidth: 2,
   overlap: 0.02,
   duration: 2,
@@ -100,6 +102,91 @@ function formatNumber(n: number, digits = 2) {
   return n.toFixed(digits).replace(/\.00$/, '');
 }
 
+function shuffleArray<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
+
+function parseWordList(raw: string): string[] {
+  const words = raw
+    .split(/[\n,，;；]+/)
+    .map((w) => w.trim())
+    .filter(Boolean)
+    .slice(0, 20);
+  return words.length > 0 ? words : ['Hello'];
+}
+
+function generateUsageCode(
+  words: string[],
+  presets: string[],
+  brightness: number,
+  saturation: number,
+  strokeWidth: number,
+  duration: number,
+  erase: boolean,
+  loop: boolean,
+  version: string
+): string {
+  const wordList = words.length > 0 ? words : ['Hello'];
+  const wordArray = wordList
+    .map((w) => `"${w.replace(/"/g, '\\"')}"`)
+    .join(', ');
+  const presetList = presets.length > 0 ? presets : ['#ffffff'];
+  const presetArray = presetList
+    .map((p) => (p.startsWith('#') ? `"${p}"` : `"${p.replace(/"/g, '\\"')}"`))
+    .join(', ');
+  const interval = Math.round((erase ? duration * 1.5 : duration) * 1000);
+  return `<!-- 加载动画容器 -->
+<div id="site-loading-letters"
+     data-stroke-width="${strokeWidth}"></div>
+
+<!-- Letters UMD 产物 -->
+<script src="js/letters-dist/letters-animation.umd.js?v=${version}"></script>
+<script>
+  (function () {
+    const el = document.getElementById("site-loading-letters");
+    if (!el || typeof window.mountLettersAnimation !== "function") return;
+
+    // 单词列表（已随机打乱）与候选渐变预设
+    const words = [${wordArray}];
+    const presets = [${presetArray}];
+    const duration = ${duration};
+    const erase = ${erase};
+    let index = 0;
+    let timer = null;
+
+    function playNext() {
+      if (index >= words.length) {
+        if (!${loop}) {
+          clearInterval(timer);
+          return;
+        }
+        index = 0;
+      }
+      const word = words[index++];
+      const preset = presets[Math.floor(Math.random() * presets.length)];
+      window.mountLettersAnimation(
+        el,
+        word,
+        preset,
+        ${strokeWidth},
+        ${brightness},
+        ${saturation},
+        duration,
+        erase
+      );
+    }
+
+    playNext();
+    timer = setInterval(playNext, ${interval});
+  })();
+</script>`;
+}
+
 function pickRandom<T>(arr: T[]): T | undefined {
   if (arr.length === 0) return undefined;
   return arr[Math.floor(Math.random() * arr.length)];
@@ -108,7 +195,15 @@ function pickRandom<T>(arr: T[]): T | undefined {
 function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   const initial = { ...DEFAULT_CONFIG, ...initialConfig };
 
-  const [text, setText] = useState(initial.text);
+  const initialWords = useMemo(
+    () => shuffleArray(parseWordList(initial.wordList)),
+    []
+  );
+  const shuffledWordsRef = useRef<string[]>(initialWords);
+
+  const [wordList, setWordList] = useState(initial.wordList);
+  const [currentWordIndex, setCurrentWordIndex] = useState(0);
+  const [text, setText] = useState(initialWords[0] || 'Hello');
   const [strokeWidth, setStrokeWidth] = useState(initial.strokeWidth);
   const [overlap, setOverlap] = useState(initial.overlap);
   const [duration, setDuration] = useState(initial.duration);
@@ -168,6 +263,8 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   const progressRef = useRef(progress);
   const phaseRef = useRef(phase);
   const isPlayingRef = useRef(isPlaying);
+  const wordListRef = useRef(wordList);
+  const currentWordIndexRef = useRef(currentWordIndex);
 
   useEffect(() => {
     durationRef.current = duration;
@@ -178,7 +275,50 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
     progressRef.current = progress;
     phaseRef.current = phase;
     isPlayingRef.current = isPlaying;
+    wordListRef.current = wordList;
+    currentWordIndexRef.current = currentWordIndex;
   });
+
+  // 同步当前单词列表与候选预设到页面底部代码框
+  useEffect(() => {
+    const codeEl = document.getElementById('letters-usage-code');
+    if (!codeEl) return;
+    const words = shuffledWordsRef.current;
+    const pool =
+      selectedPresets.size > 0
+        ? Array.from(selectedPresets)
+        : favorites.size > 0
+        ? Array.from(favorites)
+        : [activePresetKey];
+    const scriptEl = document.querySelector<HTMLScriptElement>(
+      'script[src*="letters-animation.umd.js"]'
+    );
+    const versionMatch = scriptEl?.src.match(/\?v=([^&]+)/);
+    const version = versionMatch?.[1] || 'v1.10.39';
+    codeEl.textContent = generateUsageCode(
+      words,
+      pool,
+      brightness,
+      saturation,
+      strokeWidth,
+      duration,
+      eraseMode,
+      loop,
+      version
+    );
+  }, [
+    wordList,
+    text,
+    activePresetKey,
+    brightness,
+    saturation,
+    strokeWidth,
+    duration,
+    eraseMode,
+    loop,
+    selectedPresets,
+    favorites,
+  ]);
 
   const pickNextPreset = useCallback(
     (current?: string) => {
@@ -194,6 +334,49 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
     },
     [selectedPresets]
   );
+
+  const pickNextPresetRef = useRef(pickNextPreset);
+  useEffect(() => {
+    pickNextPresetRef.current = pickNextPreset;
+  }, [pickNextPreset]);
+
+  const advanceWord = useCallback(() => {
+    const words = shuffledWordsRef.current;
+    let nextIndex = currentWordIndexRef.current + 1;
+    let nextWords = words;
+    if (nextIndex >= words.length) {
+      if (!loopRef.current) {
+        setPhase('idle');
+        return;
+      }
+      nextWords = shuffleArray(parseWordList(wordListRef.current));
+      shuffledWordsRef.current = nextWords;
+      nextIndex = 0;
+    }
+    setCurrentWordIndex(nextIndex);
+    const nextWord = nextWords[nextIndex];
+    const nextPreset = pickNextPresetRef.current(activePresetRef.current);
+    flushSync(() => {
+      setText(nextWord);
+      setActivePresetKey(nextPreset);
+    });
+    runDrawRef.current(0);
+  }, []);
+
+  // 单词列表变化时重新洗牌并从头播放
+  useEffect(() => {
+    const words = shuffleArray(parseWordList(wordList));
+    shuffledWordsRef.current = words;
+    setCurrentWordIndex(0);
+    const preset = pickNextPresetRef.current(activePresetRef.current);
+    flushSync(() => {
+      setText(words[0]);
+      setActivePresetKey(preset);
+    });
+    stopAnimation();
+    runDrawRef.current(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wordList]);
 
   // 自定义 requestAnimationFrame 动画，完全控制 DRAW / ERASE 阶段
   type AnimationState = {
@@ -283,25 +466,15 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
     startAnimation(from, 1, durationRef.current * (1 - from), 'drawing', () => {
       if (eraseRef.current) {
         runEraseRef.current(1);
-      } else if (loopRef.current) {
-        const next = pickNextPreset(activePresetRef.current);
-        flushSync(() => setActivePresetKey(next));
-        runDrawRef.current(0);
       } else {
-        setPhase('idle');
+        advanceWord();
       }
     });
   };
 
   runEraseRef.current = (from = 1) => {
     startAnimation(from, 0, durationRef.current * 0.5 * from, 'erasing', () => {
-      if (loopRef.current) {
-        const next = pickNextPreset(activePresetRef.current);
-        flushSync(() => setActivePresetKey(next));
-        runDrawRef.current(0);
-      } else {
-        setPhase('idle');
-      }
+      advanceWord();
     });
   };
 
@@ -335,10 +508,16 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   }, [tick]);
 
   const handleReplay = useCallback(() => {
-    const next = pickNextPreset(activePresetRef.current);
-    flushSync(() => setActivePresetKey(next));
+    const words = shuffleArray(parseWordList(wordListRef.current));
+    shuffledWordsRef.current = words;
+    setCurrentWordIndex(0);
+    const preset = pickNextPresetRef.current(activePresetRef.current);
+    flushSync(() => {
+      setText(words[0]);
+      setActivePresetKey(preset);
+    });
     runDrawRef.current(0);
-  }, [pickNextPreset]);
+  }, []);
 
   // 首次自动播放
   useEffect(() => {
@@ -650,14 +829,18 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
           borderRadius: '18px',
         }}
       >
-        <Control label="文字内容">
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            maxLength={60}
-            placeholder="输入要生成的文字"
-            style={inputStyle}
+        <Control label="单词列表">
+          <textarea
+            value={wordList}
+            onChange={(e) => setWordList(e.target.value)}
+            placeholder="输入单词，用逗号或换行分隔，例如：Hello, Welcome, Loading, Coming"
+            rows={3}
+            style={{
+              ...inputStyle,
+              resize: 'vertical',
+              minHeight: '72px',
+              fontFamily: 'inherit',
+            }}
           />
         </Control>
 
@@ -1066,50 +1249,156 @@ function LettersApp({
   text,
   color = '#ffffff',
   strokeWidth = 2,
+  gradientPreset,
+  brightness = 0,
+  saturation = 0,
+  duration = 2,
+  erase = true,
 }: {
   text: string;
   color?: string;
   strokeWidth?: number;
+  gradientPreset?: string;
+  brightness?: number;
+  saturation?: number;
+  duration?: number;
+  erase?: boolean;
 }) {
+  const gradientId = gradientPreset
+    ? `letters-gradient-${gradientPreset}`
+    : undefined;
+
+  const [progress, setProgress] = useState(0);
+  const [phase, setPhase] = useState<'drawing' | 'erasing' | 'done'>('drawing');
+  const durationRef = useRef(duration);
+  const eraseRef = useRef(erase);
+
+  useEffect(() => {
+    durationRef.current = duration;
+    eraseRef.current = erase;
+  }, [duration, erase]);
+
+  const animation: AnimationConfig = useMemo(
+    () => ({ type: 'tween', duration: 1, ease: 'easeInOut' }),
+    []
+  );
+
+  // 绘制 + 擦除循环（单次）
+  useEffect(() => {
+    let rafId = 0;
+    let startTime = performance.now();
+    let currentPhase: 'drawing' | 'erasing' = 'drawing';
+
+    const easeInOut = (t: number) =>
+      t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+    const tick = () => {
+      const elapsed = performance.now() - startTime;
+      const dur =
+        currentPhase === 'drawing'
+          ? durationRef.current * 1000
+          : durationRef.current * 500;
+      const raw = Math.min(elapsed / dur, 1);
+      const eased = easeInOut(raw);
+      const value = currentPhase === 'drawing' ? eased : 1 - eased;
+      setProgress(value);
+
+      if (raw < 1) {
+        rafId = requestAnimationFrame(tick);
+      } else if (currentPhase === 'drawing' && eraseRef.current) {
+        currentPhase = 'erasing';
+        startTime = performance.now();
+        setPhase('erasing');
+        rafId = requestAnimationFrame(tick);
+      } else {
+        setPhase('done');
+      }
+    };
+
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
+  }, [text]);
+
   return (
     <Letters
       text={text}
-      autoPlay
+      progress={progress}
+      animation={animation}
       strokeWidth={strokeWidth}
-      color={color}
+      color={gradientPreset && gradientId ? `url(#${gradientId})` : color}
       className="letters-animation-svg"
       style={{ width: '100%', height: '100%' }}
+      svgDefs={
+        gradientPreset && gradientId
+          ? (info) =>
+              createGradientElement(
+                gradientPreset,
+                brightness,
+                saturation,
+                info,
+                gradientId
+              )
+          : undefined
+      }
     />
   );
+}
+
+function mountOrRemount(
+  container: HTMLElement,
+  renderFn: (root: ReturnType<typeof createRoot>) => void
+): ReturnType<typeof createRoot> {
+  const key = '__letters_root';
+  const existing = (container as any)[key] as ReturnType<typeof createRoot> | undefined;
+  if (existing) existing.unmount();
+  const root = createRoot(container);
+  (container as any)[key] = root;
+  renderFn(root);
+  return root;
 }
 
 // 全局挂载函数，供原生 JS 调用（兼容旧版入口）
 (window as any).mountLettersAnimation = function (
   container: HTMLElement,
   text: string,
-  color?: string,
-  strokeWidth?: number
+  colorOrPreset?: string,
+  strokeWidth?: number,
+  brightness?: number,
+  saturation?: number,
+  duration?: number,
+  erase?: boolean
 ) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <LettersApp text={text} color={color} strokeWidth={strokeWidth} />
-    </React.StrictMode>
+  const isPreset =
+    colorOrPreset && GRADIENT_PRESETS[colorOrPreset] !== undefined;
+  return mountOrRemount(container, (root) =>
+    root.render(
+      <React.StrictMode>
+        <LettersApp
+          text={text}
+          color={isPreset ? undefined : colorOrPreset}
+          gradientPreset={isPreset ? colorOrPreset : undefined}
+          brightness={brightness}
+          saturation={saturation}
+          strokeWidth={strokeWidth}
+          duration={duration}
+          erase={erase}
+        />
+      </React.StrictMode>
+    )
   );
-  return root;
 };
 
 (window as any).mountLettersPlayground = function (
   container: HTMLElement,
   initialConfig?: PlaygroundConfig
 ) {
-  const root = createRoot(container);
-  root.render(
-    <React.StrictMode>
-      <Playground initialConfig={initialConfig} />
-    </React.StrictMode>
+  return mountOrRemount(container, (root) =>
+    root.render(
+      <React.StrictMode>
+        <Playground initialConfig={initialConfig} />
+      </React.StrictMode>
+    )
   );
-  return root;
 };
 
 // 如果存在 letters-animation-container，自动挂载简单版

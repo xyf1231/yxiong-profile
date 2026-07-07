@@ -6,25 +6,29 @@
 :root {
   /* 页面容器 */
   --honors-container-max-width: var(--max);
-  --honors-section-padding: clamp(72px, 10vw, 126px);
-  --honors-first-section-padding-top: clamp(112px, 12vw, 156px);
+  --honors-section-padding: 100px;
+  --honors-first-section-padding-top: 120px;
+
+  /* 首 Section 标题与内容间距 */
+  --honors-first-section-gap: 0px;
 
   /* Section kicker */
-  --honors-kicker-font-size: var(--font-kicker);
+  --honors-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
   --honors-kicker-letter-spacing: 0.14em;
   --honors-kicker-color: var(--accent);
   --honors-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --honors-title-font-size: clamp(2.2rem, 7vw, 4rem);
+  --honors-title-font-size: clamp(1.5rem, 5vw, 6rem);
   --honors-title-line-height: 1.12;
   --honors-title-letter-spacing: -0.02em;
   --honors-title-color: rgba(255, 255, 255, 0.96);
 
   /* 列表项间距 */
-  --honors-list-gap: clamp(16px, 2vw, 24px);
+  --honors-list-gap: 20px;
 
   /* 手机端 */
+  --honors-first-section-gap-mobile: 0px;
   --honors-kicker-font-size-mobile: var(--font-kicker);
   --honors-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
   --honors-section-padding-mobile: clamp(56px, 8vw, 96px);
@@ -40,6 +44,11 @@
 .honors-page main > .section-wrap:first-child,
 .honors-page main > .section-band:first-child > .section-wrap {
   padding-top: var(--honors-first-section-padding-top) !important;
+}
+
+/* 首 Section 标题与内容间距 */
+.honors-page #awards {
+  padding-bottom: var(--honors-first-section-gap) !important;
 }
 
 /* Kicker */
@@ -71,6 +80,10 @@
   .honors-page main > .section-wrap:first-child,
   .honors-page main > .section-band:first-child > .section-wrap {
     padding-top: var(--honors-first-section-padding-top-mobile) !important;
+  }
+
+  .honors-page #awards {
+    padding-bottom: var(--honors-first-section-gap-mobile) !important;
   }
 
   .honors-page .section-kicker {

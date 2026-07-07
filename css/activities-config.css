@@ -6,25 +6,29 @@
 :root {
   /* 页面容器 */
   --activities-container-max-width: var(--max);
-  --activities-section-padding: clamp(72px, 10vw, 126px);
-  --activities-first-section-padding-top: clamp(112px, 12vw, 156px);
+  --activities-section-padding: 100px;
+  --activities-first-section-padding-top: 120px;
+
+  /* 首 Section 标题与内容间距 */
+  --activities-first-section-gap: 0px;
 
   /* Section kicker */
-  --activities-kicker-font-size: var(--font-kicker);
+  --activities-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
   --activities-kicker-letter-spacing: 0.14em;
   --activities-kicker-color: var(--accent);
   --activities-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --activities-title-font-size: clamp(2.2rem, 7vw, 4rem);
+  --activities-title-font-size: clamp(1.5rem, 5vw, 6rem);
   --activities-title-line-height: 1.12;
   --activities-title-letter-spacing: -0.02em;
   --activities-title-color: rgba(255, 255, 255, 0.96);
 
   /* 列表项间距 */
-  --activities-list-gap: clamp(16px, 2vw, 24px);
+  --activities-list-gap: 20px;
 
   /* 手机端 */
+  --activities-first-section-gap-mobile: 0px;
   --activities-kicker-font-size-mobile: var(--font-kicker);
   --activities-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
   --activities-section-padding-mobile: clamp(56px, 8vw, 96px);
@@ -40,6 +44,11 @@
 .activities-page main > .section-wrap:first-child,
 .activities-page main > .section-band:first-child > .section-wrap {
   padding-top: var(--activities-first-section-padding-top) !important;
+}
+
+/* 首 Section 标题与内容间距 */
+.activities-page #talks {
+  padding-bottom: var(--activities-first-section-gap) !important;
 }
 
 /* Kicker */
@@ -71,6 +80,10 @@
   .activities-page main > .section-wrap:first-child,
   .activities-page main > .section-band:first-child > .section-wrap {
     padding-top: var(--activities-first-section-padding-top-mobile) !important;
+  }
+
+  .activities-page #talks {
+    padding-bottom: var(--activities-first-section-gap-mobile) !important;
   }
 
   .activities-page .section-kicker {

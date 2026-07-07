@@ -24468,6 +24468,7 @@
 	//#region src/main.tsx
 	var DEFAULT_CONFIG = {
 		text: "Hello",
+		wordList: "Hello,Welcome,Loading,Coming",
 		strokeWidth: 2,
 		overlap: .02,
 		duration: 2,
@@ -24541,6 +24542,65 @@
 	function formatNumber(n, digits = 2) {
 		return n.toFixed(digits).replace(/\.00$/, "");
 	}
+	function shuffleArray(arr) {
+		const copy = [...arr];
+		for (let i = copy.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[copy[i], copy[j]] = [copy[j], copy[i]];
+		}
+		return copy;
+	}
+	function parseWordList(raw) {
+		const words = raw.split(/[\n,，;；]+/).map((w) => w.trim()).filter(Boolean).slice(0, 20);
+		return words.length > 0 ? words : ["Hello"];
+	}
+	function generateUsageCode(words, presets, brightness, saturation, strokeWidth, duration, erase, loop, version) {
+		return `<!-- 加载动画容器 -->
+<div id="site-loading-letters"
+     data-stroke-width="${strokeWidth}"></div>
+
+<!-- Letters UMD 产物 -->
+<script src="js/letters-dist/letters-animation.umd.js?v=${version}"><\/script>
+<script>
+  (function () {
+    const el = document.getElementById("site-loading-letters");
+    if (!el || typeof window.mountLettersAnimation !== "function") return;
+
+    // 单词列表（已随机打乱）与候选渐变预设
+    const words = [${(words.length > 0 ? words : ["Hello"]).map((w) => `"${w.replace(/"/g, "\\\"")}"`).join(", ")}];
+    const presets = [${(presets.length > 0 ? presets : ["#ffffff"]).map((p) => p.startsWith("#") ? `"${p}"` : `"${p.replace(/"/g, "\\\"")}"`).join(", ")}];
+    const duration = ${duration};
+    const erase = ${erase};
+    let index = 0;
+    let timer = null;
+
+    function playNext() {
+      if (index >= words.length) {
+        if (!${loop}) {
+          clearInterval(timer);
+          return;
+        }
+        index = 0;
+      }
+      const word = words[index++];
+      const preset = presets[Math.floor(Math.random() * presets.length)];
+      window.mountLettersAnimation(
+        el,
+        word,
+        preset,
+        ${strokeWidth},
+        ${brightness},
+        ${saturation},
+        duration,
+        erase
+      );
+    }
+
+    playNext();
+    timer = setInterval(playNext, ${Math.round((erase ? duration * 1.5 : duration) * 1e3)});
+  })();
+<\/script>`;
+	}
 	function pickRandom(arr) {
 		if (arr.length === 0) return void 0;
 		return arr[Math.floor(Math.random() * arr.length)];
@@ -24550,7 +24610,11 @@
 			...DEFAULT_CONFIG,
 			...initialConfig
 		};
-		const [text, setText] = (0, import_react.useState)(initial.text);
+		const initialWords = (0, import_react.useMemo)(() => shuffleArray(parseWordList(initial.wordList)), []);
+		const shuffledWordsRef = (0, import_react.useRef)(initialWords);
+		const [wordList, setWordList] = (0, import_react.useState)(initial.wordList);
+		const [currentWordIndex, setCurrentWordIndex] = (0, import_react.useState)(0);
+		const [text, setText] = (0, import_react.useState)(initialWords[0] || "Hello");
 		const [strokeWidth, setStrokeWidth] = (0, import_react.useState)(initial.strokeWidth);
 		const [overlap, setOverlap] = (0, import_react.useState)(initial.overlap);
 		const [duration, setDuration] = (0, import_react.useState)(initial.duration);
@@ -24589,6 +24653,8 @@
 		const progressRef = (0, import_react.useRef)(progress);
 		const phaseRef = (0, import_react.useRef)(phase);
 		const isPlayingRef = (0, import_react.useRef)(isPlaying);
+		const wordListRef = (0, import_react.useRef)(wordList);
+		const currentWordIndexRef = (0, import_react.useRef)(currentWordIndex);
 		(0, import_react.useEffect)(() => {
 			durationRef.current = duration;
 			easeRef.current = ease;
@@ -24598,7 +24664,29 @@
 			progressRef.current = progress;
 			phaseRef.current = phase;
 			isPlayingRef.current = isPlaying;
+			wordListRef.current = wordList;
+			currentWordIndexRef.current = currentWordIndex;
 		});
+		(0, import_react.useEffect)(() => {
+			const codeEl = document.getElementById("letters-usage-code");
+			if (!codeEl) return;
+			const words = shuffledWordsRef.current;
+			const pool = selectedPresets.size > 0 ? Array.from(selectedPresets) : favorites.size > 0 ? Array.from(favorites) : [activePresetKey];
+			const version = (document.querySelector("script[src*=\"letters-animation.umd.js\"]")?.src.match(/\?v=([^&]+)/))?.[1] || "v1.10.39";
+			codeEl.textContent = generateUsageCode(words, pool, brightness, saturation, strokeWidth, duration, eraseMode, loop, version);
+		}, [
+			wordList,
+			text,
+			activePresetKey,
+			brightness,
+			saturation,
+			strokeWidth,
+			duration,
+			eraseMode,
+			loop,
+			selectedPresets,
+			favorites
+		]);
 		const pickNextPreset = (0, import_react.useCallback)((current) => {
 			const pool = Array.from(selectedPresets);
 			if (pool.length === 0) return current || activePresetRef.current;
@@ -24608,6 +24696,44 @@
 			while (next === current && guard++ < 10) next = pickRandom(pool);
 			return next;
 		}, [selectedPresets]);
+		const pickNextPresetRef = (0, import_react.useRef)(pickNextPreset);
+		(0, import_react.useEffect)(() => {
+			pickNextPresetRef.current = pickNextPreset;
+		}, [pickNextPreset]);
+		const advanceWord = (0, import_react.useCallback)(() => {
+			const words = shuffledWordsRef.current;
+			let nextIndex = currentWordIndexRef.current + 1;
+			let nextWords = words;
+			if (nextIndex >= words.length) {
+				if (!loopRef.current) {
+					setPhase("idle");
+					return;
+				}
+				nextWords = shuffleArray(parseWordList(wordListRef.current));
+				shuffledWordsRef.current = nextWords;
+				nextIndex = 0;
+			}
+			setCurrentWordIndex(nextIndex);
+			const nextWord = nextWords[nextIndex];
+			const nextPreset = pickNextPresetRef.current(activePresetRef.current);
+			(0, import_react_dom.flushSync)(() => {
+				setText(nextWord);
+				setActivePresetKey(nextPreset);
+			});
+			runDrawRef.current(0);
+		}, []);
+		(0, import_react.useEffect)(() => {
+			const words = shuffleArray(parseWordList(wordList));
+			shuffledWordsRef.current = words;
+			setCurrentWordIndex(0);
+			const preset = pickNextPresetRef.current(activePresetRef.current);
+			(0, import_react_dom.flushSync)(() => {
+				setText(words[0]);
+				setActivePresetKey(preset);
+			});
+			stopAnimation();
+			runDrawRef.current(0);
+		}, [wordList]);
 		const animStateRef = (0, import_react.useRef)(null);
 		const applyEase = (0, import_react.useCallback)((t) => {
 			switch (easeRef.current) {
@@ -24661,20 +24787,12 @@
 		runDrawRef.current = (from = 0) => {
 			startAnimation(from, 1, durationRef.current * (1 - from), "drawing", () => {
 				if (eraseRef.current) runEraseRef.current(1);
-				else if (loopRef.current) {
-					const next = pickNextPreset(activePresetRef.current);
-					(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
-					runDrawRef.current(0);
-				} else setPhase("idle");
+				else advanceWord();
 			});
 		};
 		runEraseRef.current = (from = 1) => {
 			startAnimation(from, 0, durationRef.current * .5 * from, "erasing", () => {
-				if (loopRef.current) {
-					const next = pickNextPreset(activePresetRef.current);
-					(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
-					runDrawRef.current(0);
-				} else setPhase("idle");
+				advanceWord();
 			});
 		};
 		const togglePlay = (0, import_react.useCallback)(() => {
@@ -24701,10 +24819,16 @@
 			}
 		}, [tick]);
 		const handleReplay = (0, import_react.useCallback)(() => {
-			const next = pickNextPreset(activePresetRef.current);
-			(0, import_react_dom.flushSync)(() => setActivePresetKey(next));
+			const words = shuffleArray(parseWordList(wordListRef.current));
+			shuffledWordsRef.current = words;
+			setCurrentWordIndex(0);
+			const preset = pickNextPresetRef.current(activePresetRef.current);
+			(0, import_react_dom.flushSync)(() => {
+				setText(words[0]);
+				setActivePresetKey(preset);
+			});
 			runDrawRef.current(0);
-		}, [pickNextPreset]);
+		}, []);
 		(0, import_react.useEffect)(() => {
 			runDrawRef.current(0);
 			return () => {
@@ -24974,14 +25098,18 @@
 					},
 					children: [
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Control, {
-							label: "文字内容",
-							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("input", {
-								type: "text",
-								value: text,
-								onChange: (e) => setText(e.target.value),
-								maxLength: 60,
-								placeholder: "输入要生成的文字",
-								style: inputStyle
+							label: "单词列表",
+							children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("textarea", {
+								value: wordList,
+								onChange: (e) => setWordList(e.target.value),
+								placeholder: "输入单词，用逗号或换行分隔，例如：Hello, Welcome, Loading, Coming",
+								rows: 3,
+								style: {
+									...inputStyle,
+									resize: "vertical",
+									minHeight: "72px",
+									fontFamily: "inherit"
+								}
 							})
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)(RangeControl, {
@@ -25354,32 +25482,82 @@
 			})
 		});
 	}
-	function LettersApp({ text, color = "#ffffff", strokeWidth = 2 }) {
+	function LettersApp({ text, color = "#ffffff", strokeWidth = 2, gradientPreset, brightness = 0, saturation = 0, duration = 2, erase = true }) {
+		const gradientId = gradientPreset ? `letters-gradient-${gradientPreset}` : void 0;
+		const [progress, setProgress] = (0, import_react.useState)(0);
+		const [phase, setPhase] = (0, import_react.useState)("drawing");
+		const durationRef = (0, import_react.useRef)(duration);
+		const eraseRef = (0, import_react.useRef)(erase);
+		(0, import_react.useEffect)(() => {
+			durationRef.current = duration;
+			eraseRef.current = erase;
+		}, [duration, erase]);
+		const animation = (0, import_react.useMemo)(() => ({
+			type: "tween",
+			duration: 1,
+			ease: "easeInOut"
+		}), []);
+		(0, import_react.useEffect)(() => {
+			let rafId = 0;
+			let startTime = performance.now();
+			let currentPhase = "drawing";
+			const easeInOut = (t) => t < .5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+			const tick = () => {
+				const elapsed = performance.now() - startTime;
+				const dur = currentPhase === "drawing" ? durationRef.current * 1e3 : durationRef.current * 500;
+				const raw = Math.min(elapsed / dur, 1);
+				const eased = easeInOut(raw);
+				const value = currentPhase === "drawing" ? eased : 1 - eased;
+				setProgress(value);
+				if (raw < 1) rafId = requestAnimationFrame(tick);
+				else if (currentPhase === "drawing" && eraseRef.current) {
+					currentPhase = "erasing";
+					startTime = performance.now();
+					setPhase("erasing");
+					rafId = requestAnimationFrame(tick);
+				} else setPhase("done");
+			};
+			rafId = requestAnimationFrame(tick);
+			return () => cancelAnimationFrame(rafId);
+		}, [text]);
 		return /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Letters, {
 			text,
-			autoPlay: true,
+			progress,
+			animation,
 			strokeWidth,
-			color,
+			color: gradientPreset && gradientId ? `url(#${gradientId})` : color,
 			className: "letters-animation-svg",
 			style: {
 				width: "100%",
 				height: "100%"
-			}
+			},
+			svgDefs: gradientPreset && gradientId ? (info) => createGradientElement(gradientPreset, brightness, saturation, info, gradientId) : void 0
 		});
 	}
-	window.mountLettersAnimation = function(container, text, color, strokeWidth) {
+	function mountOrRemount(container, renderFn) {
+		const key = "__letters_root";
+		const existing = container[key];
+		if (existing) existing.unmount();
 		const root = (0, import_client.createRoot)(container);
-		root.render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LettersApp, {
-			text,
-			color,
-			strokeWidth
-		}) }));
+		container[key] = root;
+		renderFn(root);
 		return root;
+	}
+	window.mountLettersAnimation = function(container, text, colorOrPreset, strokeWidth, brightness, saturation, duration, erase) {
+		const isPreset = colorOrPreset && GRADIENT_PRESETS[colorOrPreset] !== void 0;
+		return mountOrRemount(container, (root) => root.render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(LettersApp, {
+			text,
+			color: isPreset ? void 0 : colorOrPreset,
+			gradientPreset: isPreset ? colorOrPreset : void 0,
+			brightness,
+			saturation,
+			strokeWidth,
+			duration,
+			erase
+		}) })));
 	};
 	window.mountLettersPlayground = function(container, initialConfig) {
-		const root = (0, import_client.createRoot)(container);
-		root.render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Playground, { initialConfig }) }));
-		return root;
+		return mountOrRemount(container, (root) => root.render(/* @__PURE__ */ (0, import_jsx_runtime.jsx)(import_react.StrictMode, { children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)(Playground, { initialConfig }) })));
 	};
 	var autoContainer = document.getElementById("letters-animation-container");
 	if (autoContainer) {

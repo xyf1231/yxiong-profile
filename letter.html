@@ -9,8 +9,8 @@
       content="使用 @kumailnanji/letters 生成手写风格文字动画。"
     />
     <title>Letters 手写文字 | 熊毅丰</title>
-    <link rel="preload" href="css/styles.css?v=v1.10.34" as="style" />
-    <link rel="stylesheet" href="css/styles.css?v=v1.10.34" />
+    <link rel="preload" href="css/styles.css?v=v1.10.41" as="style" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.10.41" />
     <style>
       .letters-page {
         min-height: 100vh;
@@ -218,23 +218,43 @@
           <button class="letters-copy-btn" type="button" id="letters-copy-code" aria-label="复制代码">复制</button>
           <pre><code id="letters-usage-code">&lt;!-- 加载动画容器 --&gt;
 &lt;div id="site-loading-letters"
-     data-text="正在进入"
-     data-color="#ffffff"
      data-stroke-width="2"&gt;&lt;/div&gt;
 
 &lt;!-- Letters UMD 产物 --&gt;
-&lt;script src="js/letters-dist/letters-animation.umd.js?v=v1.10.34"&gt;&lt;/script&gt;
+&lt;script src="js/letters-dist/letters-animation.umd.js?v=v1.10.41"&gt;&lt;/script&gt;
 &lt;script&gt;
   (function () {
     const el = document.getElementById("site-loading-letters");
-    if (el &amp;&amp; typeof window.mountLettersAnimation === "function") {
+    if (!el || typeof window.mountLettersAnimation !== "function") return;
+
+    // 单词列表（已随机打乱）与候选渐变预设
+    const words = ["Hello", "Welcome", "Loading", "Coming"];
+    const presets = ["neon", "rainbow", "bubblegum"];
+    const duration = 2;
+    const erase = true;
+    let index = 0;
+    let timer = null;
+
+    function playNext() {
+      if (index &gt;= words.length) {
+        index = 0;
+      }
+      const word = words[index++];
+      const preset = presets[Math.floor(Math.random() * presets.length)];
       window.mountLettersAnimation(
         el,
-        el.dataset.text || "正在进入",
-        el.dataset.color || "#ffffff",
-        parseFloat(el.dataset.strokeWidth || "2")
+        word,
+        preset,
+        parseFloat(el.dataset.strokeWidth || "2"),
+        0,
+        0,
+        duration,
+        erase
       );
     }
+
+    playNext();
+    timer = setInterval(playNext, (erase ? duration * 1.5 : duration) * 1000);
   })();
 &lt;/script&gt;</code></pre>
         </div>
@@ -255,7 +275,7 @@
         window.process.env.NODE_ENV = "production";
       }
     </script>
-    <script src="js/letters-dist/letters-animation.umd.js?v=v1.10.34"></script>
+    <script src="js/letters-dist/letters-animation.umd.js?v=v1.10.41"></script>
     <script>
       (function () {
         const container = document.getElementById("letters-playground");
@@ -267,7 +287,7 @@
         }
 
         window.mountLettersPlayground(container, {
-          text: "Hello",
+          wordList: "Hello, Welcome, Loading, Coming",
           strokeWidth: 2,
           duration: 2,
           ease: "easeInOut",

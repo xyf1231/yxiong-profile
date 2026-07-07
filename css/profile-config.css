@@ -6,14 +6,11 @@
 :root {
   /* 页面容器 */
   --profile-container-max-width: var(--max);
-  --profile-section-padding: clamp(72px, 10vw, 126px);
-  --profile-first-section-padding-top: clamp(112px, 12vw, 156px);
+  --profile-section-padding: 50px;
+  --profile-first-section-padding-top: 120px;
 
-  /* 页面顶部大标题 */
-  --profile-intro-title-size: clamp(1.5rem, 6vw, 8rem);
-  --profile-intro-title-line-height: 1.12;
-  --profile-intro-title-letter-spacing: -0.02em;
-  --profile-intro-title-color: rgba(255, 255, 255, 0.96);
+  /* 首 Section 标题与内容间距 */
+  --profile-first-section-gap: 0px;
 
   /* Section kicker */
   --profile-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
@@ -21,22 +18,44 @@
   --profile-kicker-color: var(--accent);
   --profile-kicker-margin-bottom: 14px;
 
-  /* Section title */
-  --profile-title-font-size: clamp(1.5rem, 6vw, 6rem);
+  /* Section title（个人简介、研究内容、代表论文等共用） */
+  --profile-title-font-size: clamp(1.5rem, 5vw, 6rem);
   --profile-title-line-height: 1.12;
   --profile-title-letter-spacing: -0.02em;
   --profile-title-color: rgba(255, 255, 255, 0.96);
 
+  /* 个人名片卡片 */
+  --profile-card-padding: clamp(24px, 3vw, 40px);
+  --profile-card-gap: clamp(24px, 3.6vw, 48px);
+  --profile-card-min-height: 0px;
+  --profile-card-border-radius: clamp(22px, 2.4vw, 32px);
+  --profile-card-bg:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.025)),
+    rgba(20, 20, 30, 0.35);
+  --profile-card-border: 1.5px solid rgba(255, 255, 255, 0.14);
+
+  /* 照片与姓名 */
+  --profile-photo-size: min(200px, 28vw);
+  --profile-photo-radius: clamp(16px, 2vw, 24px);
+  --profile-name-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  --profile-en-name-size: clamp(0.85rem, 1.2vw, 1.1rem);
+
   /* 简介正文 */
-  --profile-bio-font-size: var(--font-body);
-  --profile-bio-line-height: 1.8;
+  --profile-bio-font-size: 1.5rem;
+  --profile-bio-line-height: 1.6;
 
   /* 手机端 */
-  --profile-intro-title-size-mobile: clamp(2.8rem, 10vw, 4rem);
-  --profile-kicker-font-size-mobile: var(--font-kicker);
-  --profile-title-font-size-mobile: clamp(2.2rem, 7vw, 3rem);
-  --profile-section-padding-mobile: clamp(56px, 8vw, 96px);
-  --profile-first-section-padding-top-mobile: clamp(96px, 10vw, 128px);
+  --profile-first-section-gap-mobile: 0px;
+  --profile-kicker-font-size-mobile: clamp(0.5rem, 3vw, 2rem);
+  --profile-title-font-size-mobile: clamp(1.5rem, 10vw, 6rem);
+  --profile-section-padding-mobile: 60px;
+  --profile-first-section-padding-top-mobile: 94px;
+  --profile-card-padding-mobile: 24px;
+  --profile-card-gap-mobile: 20px;
+  --profile-card-min-height-mobile: 0px;
+  --profile-photo-size-mobile: 140px;
+  --profile-name-size-mobile: 1.5rem;
+  --profile-en-name-size-mobile: 0.85rem;
 }
 
 /* 容器 */
@@ -50,17 +69,22 @@
   padding-top: var(--profile-first-section-padding-top) !important;
 }
 
-/* 个人名片区首 Section 上间距被 styles.css 高特异性规则覆盖，需单独提升 */
-.profile-page main > .profile-combo.section-wrap:first-child {
-  padding-top: var(--profile-first-section-padding-top) !important;
+/* 首 Section 标题与内容间距 */
+.profile-page #intro {
+  padding-bottom: var(--profile-first-section-gap) !important;
 }
 
-/* 页面顶部大标题 */
-.profile-page .profile-intro-heading-inner .profile-intro-title {
-  font-size: var(--profile-intro-title-size) !important;
-  line-height: var(--profile-intro-title-line-height) !important;
-  letter-spacing: var(--profile-intro-title-letter-spacing) !important;
-  color: var(--profile-intro-title-color) !important;
+/* “个人简介”与所有 Section 标题统一使用 --profile-title-* 变量 */
+.profile-page #intro-title,
+.profile-page .section-heading h2,
+.profile-page #profile-research-title,
+.profile-page #profile-experience-title,
+.profile-page #profile-selected-title,
+.profile-page #profile-appointments-title {
+  font-size: var(--profile-title-font-size) !important;
+  line-height: var(--profile-title-line-height) !important;
+  letter-spacing: var(--profile-title-letter-spacing) !important;
+  color: var(--profile-title-color) !important;
 }
 
 /* Kicker */
@@ -71,16 +95,74 @@
   margin-bottom: var(--profile-kicker-margin-bottom) !important;
 }
 
-/* Section title */
-.profile-page .section-heading h2,
-.profile-page #profile-research-title,
-.profile-page #profile-experience-title,
-.profile-page #profile-selected-title,
-.profile-page #profile-appointments-title {
-  font-size: var(--profile-title-font-size) !important;
-  line-height: var(--profile-title-line-height) !important;
-  letter-spacing: var(--profile-title-letter-spacing) !important;
-  color: var(--profile-title-color) !important;
+/* ═══════════════════════════════════════════════════════════════
+   个人名片卡片：紧凑横向布局（照片左、简介右，高度随内容）
+   ═══════════════════════════════════════════════════════════════ */
+.profile-page .profile-combo {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  width: min(100% - 40px, var(--profile-container-max-width)) !important;
+  min-height: var(--profile-card-min-height) !important;
+  margin-top: 0 !important;
+  padding: var(--profile-card-padding) !important;
+  gap: var(--profile-card-gap) !important;
+  border-radius: var(--profile-card-border-radius) !important;
+  border: var(--profile-card-border) !important;
+  background: var(--profile-card-bg) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04),
+    0 16px 40px rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(20px) saturate(1.5) brightness(1.05) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.05) !important;
+}
+
+.profile-page .profile-card-left {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: auto !important;
+  flex-shrink: 0 !important;
+  gap: 10px !important;
+  min-width: 0 !important;
+}
+
+.profile-page .profile-card-right {
+  display: block !important;
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+}
+
+.profile-page .profile-photo {
+  width: var(--profile-photo-size) !important;
+  height: var(--profile-photo-size) !important;
+  max-width: none !important;
+  aspect-ratio: 1 / 1 !important;
+  border-radius: var(--profile-photo-radius) !important;
+}
+
+.profile-page .profile-identity {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.profile-page .profile-identity h1 {
+  margin: 0 !important;
+  font-size: var(--profile-name-size) !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+}
+
+.profile-page .profile-en-name {
+  margin: 0 !important;
+  font-size: var(--profile-en-name-size) !important;
+  line-height: 1.4 !important;
+  text-align: center !important;
 }
 
 /* 简介正文 */
@@ -95,24 +177,50 @@
   }
 
   .profile-page main > .section-wrap:first-child,
-  .profile-page main > .section-band:first-child > .section-wrap,
-  .profile-page main > .profile-combo.section-wrap:first-child {
+  .profile-page main > .section-band:first-child > .section-wrap {
     padding-top: var(--profile-first-section-padding-top-mobile) !important;
   }
 
-  .profile-page .profile-intro-title {
-    font-size: var(--profile-intro-title-size-mobile) !important;
+  .profile-page #intro {
+    padding-bottom: var(--profile-first-section-gap-mobile) !important;
   }
 
-  .profile-page .section-kicker {
-    font-size: var(--profile-kicker-font-size-mobile) !important;
-  }
-
+  .profile-page #intro-title,
   .profile-page .section-heading h2,
   .profile-page #profile-research-title,
   .profile-page #profile-experience-title,
   .profile-page #profile-selected-title,
   .profile-page #profile-appointments-title {
     font-size: var(--profile-title-font-size-mobile) !important;
+  }
+
+  .profile-page .section-kicker {
+    font-size: var(--profile-kicker-font-size-mobile) !important;
+  }
+
+  .profile-page .profile-combo {
+    flex-direction: column !important;
+    min-height: var(--profile-card-min-height-mobile) !important;
+    padding: var(--profile-card-padding-mobile) !important;
+    gap: var(--profile-card-gap-mobile) !important;
+  }
+
+  .profile-page .profile-card-left,
+  .profile-page .profile-card-right {
+    width: 100% !important;
+    flex: none !important;
+  }
+
+  .profile-page .profile-photo {
+    width: var(--profile-photo-size-mobile) !important;
+    height: var(--profile-photo-size-mobile) !important;
+  }
+
+  .profile-page .profile-identity h1 {
+    font-size: var(--profile-name-size-mobile) !important;
+  }
+
+  .profile-page .profile-en-name {
+    font-size: var(--profile-en-name-size-mobile) !important;
   }
 }

@@ -9,6 +9,7 @@ const pages = [
   { id: "results", label: "成果", file: "results.html", cssPath: "css/results-config.css", contentPath: "js/results-content.js", contentVar: "PAGE_CONTENT" },
   { id: "honors", label: "荣誉", file: "honors.html", cssPath: "css/honors-config.css", contentPath: "js/honors-content.js", contentVar: "PAGE_CONTENT" },
   { id: "activities", label: "学术活动", file: "activities.html", cssPath: "css/activities-config.css", contentPath: "js/activities-content.js", contentVar: "PAGE_CONTENT" },
+  { id: "loading", label: "加载页", file: "index.html", cssPath: "css/loading-config.css", contentPath: "js/loading-content.js", contentVar: "LOADING_CONTENT" },
 ];
 
 let currentPageId = "home";
@@ -190,12 +191,6 @@ const pageSchemas = {
       ],
     },
     cssGroups: [
-      group("页面大标题", [
-        clampField("--profile-intro-title-size", "字号 (vw)", 1.5, 12, 0.1, "vw", "1.5rem", "8rem", "--profile-intro-title-size-mobile"),
-        rangeField("--profile-intro-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
-        rangeField("--profile-intro-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
-        colorField("--profile-intro-title-color", "颜色"),
-      ]),
       group("Section 小标签", [
         clampField("--profile-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--profile-kicker-font-size-mobile"),
         rangeField("--profile-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
@@ -208,9 +203,18 @@ const pageSchemas = {
         rangeField("--profile-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--profile-title-color", "颜色"),
       ]),
+      group("个人名片", [
+        rangeField("--profile-card-padding", "卡片内边距", 12, 80, 1, "px", "--profile-card-padding-mobile"),
+        rangeField("--profile-card-gap", "照片与简介间距", 12, 120, 1, "px", "--profile-card-gap-mobile"),
+        rangeField("--profile-card-min-height", "卡片最小高度", 0, 600, 1, "px", "--profile-card-min-height-mobile"),
+        rangeField("--profile-photo-size", "照片尺寸", 80, 320, 1, "px", "--profile-photo-size-mobile"),
+        rangeField("--profile-name-size", "姓名字号", 1, 3, 0.05, "rem", "--profile-name-size-mobile"),
+        rangeField("--profile-en-name-size", "英文名字号", 0.7, 2, 0.05, "rem", "--profile-en-name-size-mobile"),
+      ]),
       group("容器与间距", [
         rangeField("--profile-section-padding", "Section 上下间距", 10, 300, 1, "px", "--profile-section-padding-mobile"),
         rangeField("--profile-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--profile-first-section-padding-top-mobile"),
+        rangeField("--profile-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--profile-first-section-gap-mobile"),
         rangeField("--profile-bio-font-size", "简介正文字号", 0.7, 3, 0.05, "rem"),
         rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, ""),
       ]),
@@ -252,6 +256,7 @@ const pageSchemas = {
       group("容器与间距", [
         rangeField("--results-section-padding", "Section 上下间距", 10, 300, 1, "px", "--results-section-padding-mobile"),
         rangeField("--results-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--results-first-section-padding-top-mobile"),
+        rangeField("--results-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--results-first-section-gap-mobile"),
         rangeField("--results-list-gap", "列表项间距", 4, 80, 1, "px"),
       ]),
     ],
@@ -287,6 +292,7 @@ const pageSchemas = {
       group("容器与间距", [
         rangeField("--honors-section-padding", "Section 上下间距", 10, 300, 1, "px", "--honors-section-padding-mobile"),
         rangeField("--honors-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--honors-first-section-padding-top-mobile"),
+        rangeField("--honors-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
         rangeField("--honors-list-gap", "列表项间距", 4, 80, 1, "px"),
       ]),
     ],
@@ -327,7 +333,59 @@ const pageSchemas = {
       group("容器与间距", [
         rangeField("--activities-section-padding", "Section 上下间距", 10, 300, 1, "px", "--activities-section-padding-mobile"),
         rangeField("--activities-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--activities-first-section-padding-top-mobile"),
+        rangeField("--activities-first-section-gap", "标题与卡片间距", 0, 300, 1, "px", "--activities-first-section-gap-mobile"),
         rangeField("--activities-list-gap", "列表项间距", 4, 80, 1, "px"),
+      ]),
+    ],
+  },
+  loading: {
+    contentGroupTitles: {
+      greeting: "加载文案",
+      animation: "手写文字动画",
+    },
+    contentKeys: {
+      greeting: [
+        ["greeting", "欢迎语", false, true],
+      ],
+      animation: [
+        ["words", "单词列表（逗号分隔）", false, true],
+        ["presets", "配色预设（逗号分隔）", false, true],
+        ["interval", "切换间隔（毫秒）", false, true],
+        ["duration", "单次绘制时长（秒）", false, true],
+        ["erase", "启用擦除效果", false, true, "boolean"],
+        ["strokeWidth", "描边宽度", false, true],
+        ["brightness", "亮度", false, true],
+        ["saturation", "饱和度", false, true],
+      ],
+    },
+    cssGroups: [
+      group("遮罩层", [
+        textField("--loading-overlay-bg", "背景渐变"),
+        rangeField("--loading-overlay-backdrop-blur", "背景模糊", 0, 40, 1, "px"),
+        rangeField("--loading-overlay-backdrop-saturate", "饱和度", 0.5, 3, 0.05, ""),
+      ]),
+      group("内容卡片", [
+        textField("--loading-card-width", "卡片宽度"),
+        rangeField("--loading-card-gap", "内容间距", 0, 60, 1, "px", "--loading-card-gap-mobile"),
+        textField("--loading-card-padding", "内边距"),
+      ]),
+      group("手写文字", [
+        textField("--loading-letters-width", "容器宽度"),
+        rangeField("--loading-letters-height", "容器高度", 40, 240, 1, "px", "--loading-letters-height-mobile"),
+        textField("--loading-letters-margin", "外边距"),
+      ]),
+      group("百分比数字", [
+        colorField("--loading-percent-color", "颜色"),
+        clampField("--loading-percent-font-size", "字号 (vw)", 1, 10, 0.1, "vw", "1.5rem", "8rem", "--loading-percent-font-size-mobile"),
+        rangeField("--loading-percent-margin-top", "上边距", 0, 80, 1, "px"),
+        textField("--loading-percent-text-shadow", "文字阴影"),
+      ]),
+      group("进度条", [
+        rangeField("--loading-track-height", "轨道高度", 4, 40, 1, "px", "--loading-track-height-mobile"),
+        textField("--loading-track-bg", "轨道背景"),
+        rangeField("--loading-track-margin-top", "轨道上边距", 0, 80, 1, "px"),
+        textField("--loading-bar-bg", "填充渐变"),
+        textField("--loading-bar-shadow", "填充阴影"),
       ]),
     ],
   },
@@ -426,10 +484,13 @@ function buildClamp(value, field) {
    ═══════════════════════════════════════════════════════════════ */
 
 function parsePageContent(js) {
-  // 优先解析 window.PAGE_CONTENT；首页历史文件可能只定义 window.HOME_CONTENT
+  // 优先解析 window.PAGE_CONTENT；首页历史文件可能只定义 window.HOME_CONTENT；加载页定义 window.LOADING_CONTENT
   let match = js.match(/window\.PAGE_CONTENT\s*=\s*(\{[\s\S]*?\});/);
   if (!match) {
     match = js.match(/window\.HOME_CONTENT\s*=\s*(\{[\s\S]*?\});/);
+  }
+  if (!match) {
+    match = js.match(/window\.LOADING_CONTENT\s*=\s*(\{[\s\S]*?\});/);
   }
   if (!match) return { zh: {}, en: {} };
   try {
@@ -445,6 +506,9 @@ function buildPageContent(page, content) {
   const body = JSON.stringify(content, null, 2);
   if (page.id === "home") {
     return `/**\n * home-content.js — 首页各模块文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.HOME_CONTENT = ${body};\nwindow.PAGE_CONTENT = window.HOME_CONTENT;\n`;
+  }
+  if (page.id === "loading") {
+    return `/**\n * loading-content.js — 站点加载遮罩文案与动画配置\n * 通过 hero-editor.html 读取/编辑。\n * 所有页面共用同一套加载页配置。\n */\nwindow.${varName} = ${body};\n`;
   }
   return `/**\n * ${page.id}-content.js — ${pageLabel}页文案配置\n * 通过 hero-editor.html 读取/编辑。\n * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。\n */\nwindow.${varName} = ${body};\n`;
 }
@@ -669,21 +733,65 @@ function createCssFieldRow(field, value, activeName) {
   return row;
 }
 
-function renderContentField(lang, key, label, value, multiline) {
+function renderContentField(lang, key, label, value, multiline, shared, fieldType) {
   const row = document.createElement("div");
   row.className = "field-row";
-  const id = `content-${lang}-${key}`;
-  row.appendChild(createLabel(`${label}（${lang === "zh" ? "中" : "EN"}）`, id));
+  const id = shared ? `content-shared-${key}` : `content-${lang}-${key}`;
+  row.appendChild(createLabel(shared ? label : `${label}（${lang === "zh" ? "中" : "EN"}）`, id));
 
-  const input = document.createElement(multiline ? "textarea" : "input");
+  let input;
+  if (fieldType === "boolean") {
+    const wrapper = document.createElement("label");
+    wrapper.className = "boolean-control";
+    input = document.createElement("input");
+    input.type = "checkbox";
+    input.checked = String(value).trim().toLowerCase() === "true";
+    const span = document.createElement("span");
+    span.textContent = input.checked ? "开启" : "关闭";
+    input.addEventListener("change", () => {
+      span.textContent = input.checked ? "开启" : "关闭";
+    });
+    wrapper.appendChild(input);
+    wrapper.appendChild(span);
+    row.appendChild(wrapper);
+    input.id = id;
+    if (shared) {
+      input.dataset.contentShared = "true";
+    } else {
+      input.dataset.contentLang = lang;
+    }
+    input.dataset.contentKey = key;
+    input.dataset.contentType = "boolean";
+    input.addEventListener("change", () => {
+      if (shared) {
+        currentContent.shared = currentContent.shared || {};
+        currentContent.shared[key] = input.checked ? "true" : "false";
+      } else {
+        currentContent[lang][key] = input.checked ? "true" : "false";
+      }
+      schedulePreviewUpdate();
+    });
+    return row;
+  }
+
+  input = document.createElement(multiline ? "textarea" : "input");
   if (!multiline) input.type = "text";
   input.id = id;
-  input.dataset.contentLang = lang;
+  if (shared) {
+    input.dataset.contentShared = "true";
+  } else {
+    input.dataset.contentLang = lang;
+  }
   input.dataset.contentKey = key;
   input.value = value;
   input.className = multiline ? "content-textarea" : "content-input";
   input.addEventListener("input", () => {
-    currentContent[lang][key] = input.value;
+    if (shared) {
+      currentContent.shared = currentContent.shared || {};
+      currentContent.shared[key] = input.value;
+    } else {
+      currentContent[lang][key] = input.value;
+    }
     schedulePreviewUpdate();
   });
 
@@ -703,9 +811,14 @@ function renderForm() {
     contentLegend.textContent = schema.contentGroupTitles[groupKey] || groupKey;
     contentGroup.appendChild(contentLegend);
 
-    keys.forEach(([key, label, multiline]) => {
-      contentGroup.appendChild(renderContentField("zh", key, `${label}（中）`, currentContent.zh[key] || "", multiline));
-      contentGroup.appendChild(renderContentField("en", key, `${label}（EN）`, currentContent.en[key] || "", multiline));
+    keys.forEach(([key, label, multiline, shared, fieldType]) => {
+      if (shared) {
+        const sharedValue = (currentContent.shared && currentContent.shared[key]) || "";
+        contentGroup.appendChild(renderContentField("shared", key, label, sharedValue, multiline, true, fieldType));
+      } else {
+        contentGroup.appendChild(renderContentField("zh", key, label, currentContent.zh[key] || "", multiline, false, fieldType));
+        contentGroup.appendChild(renderContentField("en", key, label, currentContent.en[key] || "", multiline, false, fieldType));
+      }
     });
 
     elForm.appendChild(contentGroup);
@@ -713,7 +826,9 @@ function renderForm() {
 
   const hint = document.createElement("p");
   hint.className = "editor-hint";
-  hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
+  hint.innerHTML = currentPageId === "loading"
+    ? "提示：加载页配置为全站共用；右侧预览会冻结加载遮罩以便调整样式与动画。"
+    : "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
   elForm.appendChild(hint);
 
   // 桌面/手机端切换
@@ -820,6 +935,12 @@ function injectContentIntoPreview() {
   if (page.id === "home") {
     win.HOME_CONTENT = JSON.parse(JSON.stringify(currentContent));
     win.PAGE_CONTENT = win.HOME_CONTENT;
+  } else if (page.id === "loading") {
+    win.LOADING_CONTENT = JSON.parse(JSON.stringify(currentContent));
+    if (typeof win.showLoadingPreview === "function") {
+      win.showLoadingPreview();
+    }
+    return;
   } else {
     win.PAGE_CONTENT = JSON.parse(JSON.stringify(currentContent));
   }
