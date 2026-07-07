@@ -63,6 +63,7 @@ html[data-lang-ready="pending"] body {
 
 html[data-site-loading="pending"],
 html[data-site-loading="pending"] body {
+  background: #000;
   overscroll-behavior: none;
   touch-action: none;
   overflow: hidden;
@@ -88,7 +89,12 @@ html[data-site-loading="ready"] body {
 
 html[data-site-loading="pending"]::before {
   position: fixed;
-  inset: -200px;
+  top: calc(-1 * var(--loading-mask-extra, 300px));
+  left: calc(-1 * var(--loading-mask-extra, 300px));
+  width: calc(100vw + var(--loading-mask-extra, 300px) * 2);
+  width: calc(100dvw + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100vh + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100dvh + var(--loading-mask-extra, 300px) * 2);
   z-index: 9999;
   background:
     radial-gradient(circle at center, rgba(41, 151, 255, 0.14), transparent 58%),
@@ -100,7 +106,12 @@ html[data-site-loading="pending"]::before {
 
 html[data-site-loading="pending"]::after {
   position: fixed;
-  inset: -200px;
+  top: calc(-1 * var(--loading-mask-extra, 300px));
+  left: calc(-1 * var(--loading-mask-extra, 300px));
+  width: calc(100vw + var(--loading-mask-extra, 300px) * 2);
+  width: calc(100dvw + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100vh + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100dvh + var(--loading-mask-extra, 300px) * 2);
   z-index: 10000;
   content: "";
   pointer-events: none;
@@ -111,7 +122,12 @@ html[data-site-loading="pending"]::after {
    -------------------------------------------------------------------------- */
 .site-loading-overlay {
   position: fixed;
-  inset: -200px;
+  top: calc(-1 * var(--loading-mask-extra, 300px));
+  left: calc(-1 * var(--loading-mask-extra, 300px));
+  width: calc(100vw + var(--loading-mask-extra, 300px) * 2);
+  width: calc(100dvw + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100vh + var(--loading-mask-extra, 300px) * 2);
+  height: calc(100dvh + var(--loading-mask-extra, 300px) * 2);
   z-index: 10000;
   isolation: isolate;
   display: grid;
@@ -295,7 +311,7 @@ html[data-site-loading="pending"]::after {
 }
 
 .site-loading-resources {
-  font-size: 0.75rem;
+  font-size: var(--loading-resources-font-size);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: rgba(170, 176, 190, 0.5);
@@ -304,7 +320,7 @@ html[data-site-loading="pending"]::after {
 }
 
 .site-loading-hint {
-  font-size: 0.7rem;
+  font-size: var(--loading-hint-font-size);
   font-weight: 400;
   letter-spacing: 0.04em;
   color: rgba(170, 176, 190, 0.55);

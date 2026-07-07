@@ -5,6 +5,9 @@
  */
 
 :root {
+  /* 遮罩在视口之外额外扩展的像素（越大覆盖面越广） */
+  --loading-mask-extra: 300px;
+
   /* 遮罩层背景与模糊 */
   --loading-overlay-bg:
     radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
@@ -40,15 +43,17 @@
   --loading-bar-bg: linear-gradient(90deg, #2997FF, #64D2FF 34%, #7c3aed 68%, #f97316);
   --loading-bar-shadow: 0 0 24px rgba(41, 151, 255, 0.28), 0 0 26px rgba(124, 58, 237, 0.16);
 
-  /* 小标签（备用，供 lottie/kicker 场景使用） */
-  --loading-kicker-color: rgba(170, 176, 190, 0.88);
-  --loading-kicker-font-size: 0.7rem;
+  /* 资源计数 */
+  --loading-resources-font-size: 0.85rem;
+  --loading-hint-font-size: 0.8rem;
 
   /* 移动端覆盖变量 */
   --loading-percent-font-size-mobile: clamp(1.5rem, 10vw, 8rem);
   --loading-letters-height-mobile: 150px;
   --loading-track-height-mobile: 12px;
   --loading-card-gap-mobile: 0px;
+  --loading-resources-font-size-mobile: 0.75rem;
+  --loading-hint-font-size-mobile: 0.7rem;
 }
 
 @media (max-width: 700px) {
@@ -57,5 +62,7 @@
     --loading-letters-height: var(--loading-letters-height-mobile);
     --loading-track-height: var(--loading-track-height-mobile);
     --loading-card-gap: var(--loading-card-gap-mobile);
+    --loading-resources-font-size: var(--loading-resources-font-size-mobile);
+    --loading-hint-font-size: var(--loading-hint-font-size-mobile);
   }
 }

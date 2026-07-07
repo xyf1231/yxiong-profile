@@ -256,14 +256,11 @@ function setupSiteLoadingGate() {
     if (!overlay) {
       overlay = document.createElement("div");
       overlay.className = "site-loading-overlay";
-      const loadCfg = window.LOADING_CONTENT?.shared || {};
-      const greetingText = loadCfg.greeting || getLoadingGreeting();
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
           <div class="site-loading-letters" id="site-loading-letters"></div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
           <div class="site-loading-percent" aria-label="加载进度">0%</div>
-          <div class="site-loading-kicker">${escapeHtml(greetingText)}</div>
           <div class="site-loading-resources" aria-label="加载资源数"></div>
           <div class="site-loading-hint" aria-live="off"></div>
         </div>
@@ -2499,19 +2496,23 @@ function setupHomeFrameSequence() {
   media.dataset.homeFrameBound = "1";
 
   // PC 端使用比例更适配的专用视频
-  if (!isCompactNav()) {
+  const isDesktop = !isCompactNav();
+  if (isDesktop) {
     const source = video.querySelector("source");
     if (source && source.src.includes("frame-lq.mp4")) {
       source.src = "resources/videos/frame-pc-lq.mp4";
     }
   }
 
-  let hasLoaded = false;
+  let loaded = false;
 
   function loadVideo() {
-    if (hasLoaded) return;
-    hasLoaded = true;
-    video.load();
+    if (loaded) return;
+    loaded = true;
+    if (isDesktop) {
+      video.load();
+      video.play().catch(() => {});
+    }
   }
 
   function playVideo() {

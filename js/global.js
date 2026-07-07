@@ -168,12 +168,9 @@ function setupSiteLoadingGate() {
     if (!overlay) {
       overlay = document.createElement("div");
       overlay.className = "site-loading-overlay";
-      const loadCfg = window.LOADING_CONTENT?.shared || {};
-      const greetingText = loadCfg.greeting || getLoadingGreeting();
       overlay.innerHTML = `
         <div class="site-loading-card" role="status" aria-live="polite" aria-label="页面加载中">
           <div class="site-loading-letters" id="site-loading-letters" style="width: min(80vw, 360px); height: 110px; margin: -8px 0 4px;"></div>
-          <div class="site-loading-kicker">${escapeHtml(greetingText)}</div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
           <div class="site-loading-resources" aria-label="加载资源数"></div>
           <div class="site-loading-hint" aria-live="off"></div>
@@ -2430,12 +2427,12 @@ function setupHomeFrameSequence() {
   if (media.dataset.homeFrameBound === "1") return;
   media.dataset.homeFrameBound = "1";
 
-  let hasLoaded = false;
+  let loaded = false;
 
   function loadVideo() {
-    if (hasLoaded) return;
-    hasLoaded = true;
-    video.load();
+    if (loaded) return;
+    loaded = true;
+    video.play().catch(() => {});
   }
 
   function playVideo() {
