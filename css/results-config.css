@@ -31,6 +31,10 @@
   /* 列表项间距（继承全局） */
   --results-list-gap: var(--global-list-gap);
 
+  /* 论文卡片上下边距 */
+  --results-publication-padding-top: 26px;
+  --results-publication-padding-bottom: 38px;
+
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
   --results-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -41,6 +45,10 @@
   --results-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
   --results-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
   --results-list-gap-mobile: var(--global-list-gap-mobile);
+
+  /* 论文卡片上下边距（手机端） */
+  --results-publication-padding-top-mobile: 20px;
+  --results-publication-padding-bottom-mobile: 24px;
 }
 
 /* 容器 */
@@ -55,7 +63,7 @@
 }
 
 /* 首 Section 与后续 Section 间距 */
-.results-page #all-publications {
+.results-page #papers {
   padding-bottom: var(--results-first-section-gap) !important;
 }
 
@@ -79,6 +87,12 @@
   color: var(--results-title-color) !important;
 }
 
+/* 论文卡片上下边距 */
+.results-page .all-publication-list .publication-item {
+  padding-top: var(--results-publication-padding-top) !important;
+  padding-bottom: var(--results-publication-padding-bottom) !important;
+}
+
 /* 列表间距 */
 .results-page .all-publication-list,
 .results-page .detail-list {
@@ -95,7 +109,7 @@
     padding-top: var(--results-first-section-padding-top-mobile) !important;
   }
 
-  .results-page #all-publications {
+  .results-page #papers {
     padding-bottom: var(--results-first-section-gap-mobile) !important;
   }
 
@@ -116,5 +130,10 @@
   .results-page .all-publication-list,
   .results-page .detail-list {
     gap: var(--results-list-gap-mobile) !important;
+  }
+
+  .results-page .all-publication-list .publication-item {
+    padding-top: var(--results-publication-padding-top-mobile) !important;
+    padding-bottom: var(--results-publication-padding-bottom-mobile) !important;
   }
 }

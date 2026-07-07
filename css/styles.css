@@ -87,7 +87,13 @@ html[data-site-loading="ready"] body {
 
 html[data-site-loading="pending"]::before {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  height: 100lvh;
   z-index: 9999;
   background:
     radial-gradient(circle at center, rgba(41, 151, 255, 0.14), transparent 58%),
@@ -99,7 +105,13 @@ html[data-site-loading="pending"]::before {
 
 html[data-site-loading="pending"]::after {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  height: 100lvh;
   z-index: 10000;
   content: "";
   pointer-events: none;
@@ -110,7 +122,13 @@ html[data-site-loading="pending"]::after {
    -------------------------------------------------------------------------- */
 .site-loading-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  width: 100dvw;
+  height: 100vh;
+  height: 100dvh;
+  height: 100lvh;
   z-index: 10000;
   isolation: isolate;
   display: grid;
@@ -415,6 +433,7 @@ a {
 .nav-brand {
   margin-right: auto;
   flex-shrink: 0;
+  font-weight: 700;
 }
 
 .nav-links {
@@ -702,6 +721,7 @@ a {
   z-index: 2;
   border-radius: 999px;
   padding: 9px 12px 11px;
+  font-weight: 700;
   transition: color var(--duration-fast) var(--ease-material), background var(--duration-fast) var(--ease-material), box-shadow var(--duration-fast) var(--ease-material), transform var(--duration-fast) var(--ease-apple);
 }
 
@@ -3270,7 +3290,8 @@ html[lang="en"] .subtle-name {
     background: rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.75);
     font-size: 0.85rem;
-    font-weight: 500;
+    font-weight: 900;
+    font-family: var(--hero-title-font-family, inherit);
     text-decoration: none;
     transition: all 0.2s ease;
     -webkit-tap-highlight-color: transparent;
@@ -3511,12 +3532,21 @@ html[lang="en"] .subtle-name {
 
   .section-heading.inline,
   .site-footer {
-    align-items: flex-start;
     flex-direction: column;
   }
 
+  .section-heading.inline {
+    align-items: flex-start;
+  }
+
   .site-footer {
+    align-items: flex-start;
+    text-align: left;
     gap: 8px;
+  }
+
+  .footer-address {
+    text-align: left;
   }
 
   .form-grid,
@@ -3920,7 +3950,8 @@ body.nav-mega-open::after {
     background: transparent;
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.18rem;
-    font-weight: 760;
+    font-weight: 900;
+    font-family: var(--hero-title-font-family, inherit);
     line-height: 1.15;
     letter-spacing: 0;
   }
@@ -4406,7 +4437,8 @@ body.nav-mega-open::after {
   .nav-card-links-activity .nav-major-link {
     color: #ffffff;
     font-size: clamp(2.1rem, 9vw, 3.35rem) !important;
-    font-weight: 820 !important;
+    font-weight: 900 !important;
+    font-family: var(--hero-title-font-family, inherit) !important;
     line-height: 1.04 !important;
     letter-spacing: -0.05em !important;
   }
@@ -4414,7 +4446,8 @@ body.nav-mega-open::after {
   .nav-card-links-activity .nav-sub-link {
     color: rgba(245, 245, 247, 0.55);
     font-size: clamp(1.36rem, 6.2vw, 2.05rem) !important;
-    font-weight: 750 !important;
+    font-weight: 900 !important;
+    font-family: var(--hero-title-font-family, inherit) !important;
     line-height: 1.14 !important;
     letter-spacing: -0.035em !important;
     padding-left: 0.08em !important;
@@ -4538,7 +4571,8 @@ body.nav-mega-open::after {
   .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:first-child {
     color: #ffffff !important;
     font-size: clamp(2rem, 8.4vw, 3.1rem) !important;
-    font-weight: 820 !important;
+    font-weight: 900 !important;
+    font-family: var(--hero-title-font-family, inherit) !important;
     line-height: 1.04 !important;
     letter-spacing: -0.052em !important;
   }
@@ -4549,7 +4583,8 @@ body.nav-mega-open::after {
   .nav-cards-five .nav-card:nth-child(5) .nav-card-links a:not(:first-child) {
     color: rgba(245, 245, 247, 0.56) !important;
     font-size: clamp(1.25rem, 5.8vw, 1.92rem) !important;
-    font-weight: 750 !important;
+    font-weight: 900 !important;
+    font-family: var(--hero-title-font-family, inherit) !important;
     line-height: 1.12 !important;
     letter-spacing: -0.038em !important;
   }

@@ -1,5 +1,46 @@
 # 更新日志
 
+## v1.11.6 - 2026-07-07
+- 类型：调整
+- 变更：删除简介页（profile.html）代表论文标题右侧的「详情请见 全部成果」文字链接。
+- 变更：在代表论文列表下方新增「全部论文」按钮，链接到成果页全部论文模块（`results.html#papers`）。按钮使用 `.button.secondary` 样式并居中显示。
+- 变更：将 `results.html` 全部论文区的 `id` 从 `all-publications` 改为 `papers`，并同步更新 `css/results-config.css` 中的选择器，使现有所有 `results.html#papers` 链接（导航、首页、简介页等）都能正确跳转到全部论文模块。
+- 变更：`js/script.js` 与 `js/global.js` 的多语言字典新增 `viewAllPapers` 键（中文「全部论文」/ 英文 "All Papers"）。
+- 变更：清理 `js/profile-content.js` 与 `js/hero-editor.js` 中不再使用的 `detailsSee` / `allResults` 文案配置及编辑器控件组，避免 editor 中保留无效入口。
+- 检查：`node --check js/script.js`、`node --check js/global.js`、`node --check js/hero-editor.js`、`node --check js/profile-content.js`、`python3 scripts/check_braces.py css/profile-config.css css/results-config.css` 与 `node scripts/check-site.mjs` 通过（v1.11.6）
+- 部署：未部署
+
+## v1.11.5 - 2026-07-07
+- 类型：样式
+- 变更：根据需求，手机端（`@media (max-width: 860px)`）页面底部信息栏目统一改为左对齐。将 `css/styles.css` 中 `.site-footer` 的 `align-items: center` 改回 `align-items: flex-start`，`text-align: center` 改回 `text-align: left`；`.footer-address` 也改回 `text-align: left`。
+- 检查：`python3 scripts/check_braces.py css/styles.css` 与 `node scripts/check-site.mjs` 通过（v1.11.5）
+- 部署：未部署
+
+## v1.11.4 - 2026-07-07
+- 类型：修复
+- 变更：修复首页 Hero 英文标题 `homeTitle` 出现串行/分行不正常的问题。`js/script.js` 与 `js/global.js` 的 `applyLanguage` 在渲染 `homeTitle` 时，若文本包含换行符，则将其拆分为多个 `<span class="home-title-line">`，避免 `flex` 布局与 `white-space` 规则导致三行文字连成一行或分行异常。中文标题同样会生成 `.home-title-line` 结构，保持中英文渲染一致。
+- 检查：`node --check js/script.js`、`node --check js/global.js` 与 `node scripts/check-site.mjs` 通过（v1.11.4）
+- 部署：未部署
+
+## v1.11.3 - 2026-07-07
+- 类型：修复
+- 变更：修复手机端英文版页面底部地址（`.footer-address`）左对齐的问题。`css/styles.css` 中 `@media (max-width: 860px)` 下 `.site-footer` 使用 `align-items: flex-start`，导致地址在英文长文本换行时显得偏左。改为 `align-items: center` 并将 `.footer-address` 设为 `text-align: center`，使页脚在移动端整体居中显示。
+- 检查：`python3 scripts/check_braces.py css/styles.css` 与 `node scripts/check-site.mjs` 通过（v1.11.3）
+- 部署：未部署
+
+## v1.11.2 - 2026-07-07
+- 类型：修复
+- 变更：禁用点击 PDF 后出现的 "正在加载 PDF... / PDF 文件较大，正在打开下载链接。" toast 提示。`js/script.js` 与 `js/global.js` 中的 `showPdfLoading()` 不再创建或显示提示浮层，仅保留链接的 `is-loading` 状态 4.2 秒后自动清除。
+- 检查：`node --check js/script.js` 与 `node --check js/global.js` 均通过
+- 部署：未部署
+
+## v1.11.1 - 2026-07-07
+- 类型：功能
+- 变更：在 editor「个人简介」页面新增「研究内容卡片 → 卡片间距（手机端）」独立控制项。新增 CSS 变量 `--profile-research-gap-mobile`，仅作用于手机端 `.section-wrap#research .feature-grid`，桌面端仍继承 `--global-list-gap`。
+- 变更：`js/hero-editor.js` 的 `renderForm` 增加 `mobileOnly` 字段支持，使仅手机端生效的控件在桌面模式下自动隐藏。
+- 检查：`node --check js/hero-editor.js`、`python3 scripts/check_braces.py css/profile-config.css js/hero-editor.js` 与 `node scripts/check-site.mjs` 通过（v1.11.1）
+- 部署：未部署
+
 ## v1.10.53 - 2026-07-07
 - 类型：修复
 - 变更：修复 profile 页移动端「研究内容」三卡片间距不跟随全局列表间距变化的问题。`css/styles.css` 中 `.section-wrap#research .feature-grid { gap: clamp(...) !important; }` 与 `css/profile-config.css` 原选择器特异性相同且都使用 `!important`，导致原配置未能稳定覆盖。将 profile-config.css 中的选择器提升为 `.profile-page .section-wrap#research .feature-grid`（特异性更高），确保 `--profile-list-gap` / `--profile-list-gap-mobile` 生效。

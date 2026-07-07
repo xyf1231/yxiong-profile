@@ -207,7 +207,7 @@ function setupSiteLoadingGate() {
           <div class="site-loading-percent" aria-label="加载进度">0%</div>
         </div>
       `;
-      document.documentElement.appendChild(overlay);
+      (document.body || document.documentElement).appendChild(overlay);
     }
     barEl = overlay.querySelector(".site-loading-bar");
     percentEl = overlay.querySelector(".site-loading-percent");
@@ -440,6 +440,7 @@ const translations = {
     detailsSee: "详情请见",
     allResults: "全部成果",
     allPublications: "全部论文",
+    viewAllPapers: "全部论文",
     publicationList: "论文列表",
     managePublications: "管理论文",
     publicationHero: "展示代表性成果，并提供完整论文列表入口。",
@@ -521,6 +522,7 @@ const translations = {
     detailsSee: "For details, see",
     allResults: "All Results",
     allPublications: "All Publications",
+    viewAllPapers: "All Papers",
     publicationList: "Publication List",
     managePublications: "Manage Publications",
     publicationHero: "Selected representative work with access to the complete publication list.",
@@ -1460,14 +1462,10 @@ function ensurePdfLoadingToast() {
 }
 
 function showPdfLoading(link) {
-  const toast = ensurePdfLoadingToast();
-  toast.querySelector("strong").textContent = localizeText("正在加载 PDF...");
-  toast.querySelector("p").textContent = localizeText("PDF 文件较大，正在打开下载链接。");
-  toast.classList.add("is-visible");
+  // PDF 加载提示已禁用：点击后直接打开/下载，不再显示 toast
   link?.classList.add("is-loading");
   window.clearTimeout(showPdfLoading.timer);
   showPdfLoading.timer = window.setTimeout(() => {
-    toast.classList.remove("is-visible");
     link?.classList.remove("is-loading");
   }, 4200);
 }
@@ -1746,7 +1744,16 @@ function applyLanguage() {
     const key = node.dataset.i18n;
     const pageText = pageContent[currentLang] && pageContent[currentLang][key];
     const text = pageText !== undefined ? pageText : dict[key];
-    if (text !== undefined) node.textContent = text;
+    if (text === undefined) return;
+    if (key === "homeTitle" && typeof text === "string" && text.includes("\n")) {
+      // 将主页 Hero 标题按换行拆分为 .home-title-line，避免 flex + white-space 下出现串行
+      node.innerHTML = text
+        .split("\n")
+        .map((line) => `<span class="home-title-line">${escapeHtml(line)}</span>`)
+        .join("");
+    } else {
+      node.textContent = text;
+    }
   });
   document.querySelectorAll(".language-toggle").forEach((button) => {
     button.textContent = dict.langButton;

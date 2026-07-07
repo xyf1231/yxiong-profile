@@ -14,9 +14,7 @@ window.PAGE_CONTENT = {
     "selectedWorkKicker": "Selected Work",
     "selectedWorkTitle": "代表论文",
     "appointmentsKicker": "Appointments",
-    "appointmentsTitle": "学术任职",
-    "detailsSee": "详情请见",
-    "allResults": "全部成果"
+    "appointmentsTitle": "学术任职"
   },
   "en": {
     "introKicker": "个人简介",
@@ -28,8 +26,6 @@ window.PAGE_CONTENT = {
     "selectedWorkKicker": "代表论文",
     "selectedWorkTitle": "Selected Publications",
     "appointmentsKicker": "学术任职",
-    "appointmentsTitle": "Academic Participation",
-    "detailsSee": "For details, see",
-    "allResults": "All Results"
+    "appointmentsTitle": "Academic Participation"
   }
 };

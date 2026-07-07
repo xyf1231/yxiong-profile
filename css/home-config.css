@@ -38,8 +38,8 @@
   /* 副标题 */
   --hero-subtitle-color: rgba(255, 255, 255, 0.6);
   --hero-subtitle-margin-top: 15px;
-  --hero-subtitle-font-size: clamp(0.7rem, 1.5vw, 2rem);
-  --hero-subtitle-font-family: "SF Mono", Menlo, Monaco, monospace;
+  --hero-subtitle-font-size: clamp(0.7rem, 2vw, 2rem);
+  --hero-subtitle-font-family: inherit;
 
   /* 其他模块标题 */
   --home-frame-heading-size: clamp(2rem, 6vw, 8rem);

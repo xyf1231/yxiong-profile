@@ -162,7 +162,6 @@ const pageSchemas = {
       experience: "学习工作经历",
       selectedWork: "代表论文",
       appointments: "学术任职",
-      links: "链接文字",
     },
     contentKeys: {
       intro: [
@@ -185,10 +184,6 @@ const pageSchemas = {
         ["appointmentsKicker", "小标签", false],
         ["appointmentsTitle", "标题", false],
       ],
-      links: [
-        ["detailsSee", "前缀文字", false],
-        ["allResults", "链接文字", false],
-      ],
     },
     cssGroups: [
       group("个人名片", [
@@ -205,6 +200,13 @@ const pageSchemas = {
       group("名片文字", [
         rangeField("--profile-bio-font-size", "简介正文字号", 0.7, 3, 0.05, "rem", "--profile-bio-font-size-mobile"),
         rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, "", "--profile-bio-line-height-mobile"),
+      ]),
+      group("研究内容卡片", [
+        (() => {
+          const f = rangeField("--profile-research-gap-mobile", "卡片间距（手机端）", 4, 80, 1, "px");
+          f.mobileOnly = true;
+          return f;
+        })(),
       ]),
     ],
   },
@@ -231,6 +233,10 @@ const pageSchemas = {
     cssGroups: [
       group("容器与间距", [
         rangeField("--results-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--results-first-section-gap-mobile"),
+      ]),
+      group("论文卡片", [
+        rangeField("--results-publication-padding-top", "上边距", 0, 120, 1, "px", "--results-publication-padding-top-mobile"),
+        rangeField("--results-publication-padding-bottom", "下边距", 0, 120, 1, "px", "--results-publication-padding-bottom-mobile"),
       ]),
     ],
   },
@@ -821,7 +827,9 @@ function renderForm() {
 
   // CSS 变量组
   schema.cssGroups.forEach((group) => {
-    const fields = editorMode === "mobile" ? group.fields.filter((f) => f.mobileName) : group.fields;
+    const fields = editorMode === "mobile"
+      ? group.fields.filter((f) => f.mobileName && !f.desktopOnly)
+      : group.fields.filter((f) => !f.mobileOnly);
     if (fields.length === 0) return;
 
     const section = document.createElement("fieldset");
