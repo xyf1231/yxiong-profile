@@ -125,9 +125,13 @@
 }
 
 /* ---------- home-bento-card — restore flex layout ---------- */
-.home-bento-card.border-glow-card {
+.home-bento-card.border-glow-card,
+.feature-card.border-glow-card {
   display: flex !important;
   flex-direction: column !important;
+}
+
+.home-bento-card.border-glow-card {
   justify-content: flex-end !important;
   gap: 12px !important;
 }

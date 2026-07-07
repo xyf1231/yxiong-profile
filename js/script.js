@@ -1611,7 +1611,7 @@ function renderAllPublications(items) {
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";
-  const visibleItems = compact && !expanded ? sorted.slice(0, 5) : sorted;
+  const visibleItems = compact && !expanded ? sorted.slice(0, 12) : sorted;
   const listHtml = visibleItems
     .map((item, index) => {
       const title = item.title;
@@ -2249,11 +2249,7 @@ function setupBorderGlow() {
     card.appendChild(inner);
   });
 
-  var glowCards = Array.from(cards).filter(function(card) {
-    return !card.classList.contains("news-card") && !card.classList.contains("news-article-card") && !card.classList.contains("news-info-card");
-  });
-
-  initBorderGlow(glowCards, {
+  initBorderGlow(Array.from(cards), {
     edgeSensitivity: 30,
     glowColor: "40 80 80",
     glowRadius: 40,

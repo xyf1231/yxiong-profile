@@ -1551,7 +1551,7 @@ function renderAllPublications(items) {
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";
-  const visibleItems = compact && !expanded ? sorted.slice(0, 5) : sorted;
+  const visibleItems = compact && !expanded ? sorted.slice(0, 12) : sorted;
   const listHtml = visibleItems
     .map((item, index) => {
       const title = item.title;
