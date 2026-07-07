@@ -165,15 +165,15 @@ function setupSiteLoadingGate() {
     let totalBytes = 0;
     let loadedBytes = 0;
     for (const entry of entries) {
-      const size = entry.transferSize || entry.decodedBodySize || 0;
+      const size = entry.transferSize || entry.encodedBodySize || entry.decodedBodySize || 0;
       if (!size) continue;
       totalBytes += size;
-      if (entry.responseEnd > 0 || entry.transferSize === 0) loadedBytes += size;
+      if (entry.responseEnd > 0) loadedBytes += size;
     }
     const rawReal = totalBytes > 0 ? (loadedBytes / totalBytes) * 100 : 0;
     const elapsed = (performance.now() - animStartTime) / 1000;
     const t = Math.min(elapsed / 15, 1);
-    const timeBaseline = 82 * t * (2 - t);
+    const timeBaseline = 95 * (1 - Math.pow(1 - t, 5));
     const phaseIn = Math.min(elapsed / 4, 1);
     const scaledReal = rawReal * phaseIn;
     const blended = Math.max(timeBaseline, Math.min(scaledReal, 100));
