@@ -64,12 +64,13 @@ html[data-lang-ready="pending"] body {
 html[data-site-loading="pending"],
 html[data-site-loading="pending"] body {
   overscroll-behavior: none;
-  touch-action: pan-y;
+  touch-action: none;
+  overflow: hidden;
+  -webkit-overflow-scrolling: auto;
 }
 
 html[data-site-loading="pending"]::before,
 html[data-site-loading="pending"]::after {
-  /* 遮罩层只负责视觉遮挡，不拦截触摸/滚动事件，让用户在加载时即可上下滑动 */
   pointer-events: none;
 }
 
@@ -87,7 +88,7 @@ html[data-site-loading="ready"] body {
 
 html[data-site-loading="pending"]::before {
   position: fixed;
-  inset: -80px;
+  inset: -200px;
   z-index: 9999;
   background:
     radial-gradient(circle at center, rgba(41, 151, 255, 0.14), transparent 58%),
@@ -99,7 +100,7 @@ html[data-site-loading="pending"]::before {
 
 html[data-site-loading="pending"]::after {
   position: fixed;
-  inset: -80px;
+  inset: -200px;
   z-index: 10000;
   content: "";
   pointer-events: none;
@@ -110,7 +111,7 @@ html[data-site-loading="pending"]::after {
    -------------------------------------------------------------------------- */
 .site-loading-overlay {
   position: fixed;
-  inset: -80px;
+  inset: -200px;
   z-index: 10000;
   isolation: isolate;
   display: grid;

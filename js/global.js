@@ -1552,7 +1552,7 @@ function renderAllPublications(items) {
   target.innerHTML = `${listHtml}${moreHtml}`;
   const moreBtn = target.querySelector(".all-publications-more");
   if (moreBtn) {
-    moreBtn.addEventListener("click", (e) => {
+    moreBtn.addEventListener("pointerdown", (e) => {
       e.preventDefault();
       target.dataset.expanded = "true";
       renderAllPublications(items);
