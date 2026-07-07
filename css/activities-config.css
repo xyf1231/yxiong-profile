@@ -31,6 +31,10 @@
   /* 列表项间距（继承全局） */
   --activities-list-gap: var(--global-list-gap);
 
+  /* 序号圆圈大小与文字 */
+  --activities-index-size: 60px;
+  --activities-index-font-size: 1.3rem;
+
   /* 手机端 */
   --activities-first-section-gap-mobile: 0px;
   --activities-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -41,6 +45,10 @@
   --activities-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
   --activities-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
   --activities-list-gap-mobile: var(--global-list-gap-mobile);
+
+  /* 序号圆圈大小与文字（手机端） */
+  --activities-index-size-mobile: 54px;
+  --activities-index-font-size-mobile: 1.08rem;
 }
 
 /* 容器 */
@@ -84,6 +92,15 @@
   gap: var(--activities-list-gap) !important;
 }
 
+/* 序号圆圈大小与文字 */
+.activities-page .detail-item time,
+.activities-page .item-index {
+  width: var(--activities-index-size) !important;
+  height: var(--activities-index-size) !important;
+  min-width: var(--activities-index-size) !important;
+  font-size: var(--activities-index-font-size) !important;
+}
+
 @media (max-width: 768px) {
   .activities-page .section-wrap {
     padding: var(--activities-section-padding-mobile) 0 !important;
@@ -114,5 +131,14 @@
 
   .activities-page .detail-list {
     gap: var(--activities-list-gap-mobile) !important;
+  }
+
+  /* 序号圆圈大小与文字（手机端） */
+  .activities-page .detail-item time,
+  .activities-page .item-index {
+    width: var(--activities-index-size-mobile) !important;
+    height: var(--activities-index-size-mobile) !important;
+    min-width: var(--activities-index-size-mobile) !important;
+    font-size: var(--activities-index-font-size-mobile) !important;
   }
 }

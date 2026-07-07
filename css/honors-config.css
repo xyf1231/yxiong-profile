@@ -31,6 +31,10 @@
   /* 列表项间距（继承全局） */
   --honors-list-gap: var(--global-list-gap);
 
+  /* 序号圆圈大小与文字 */
+  --honors-index-size: 60px;
+  --honors-index-font-size: 1.3rem;
+
   /* 手机端 */
   --honors-first-section-gap-mobile: 0px;
   --honors-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -41,6 +45,10 @@
   --honors-first-section-padding-top-mobile: var(--global-first-section-padding-top-mobile);
   --honors-section-heading-gap-mobile: var(--global-section-heading-gap-mobile);
   --honors-list-gap-mobile: var(--global-list-gap-mobile);
+
+  /* 序号圆圈大小与文字（手机端） */
+  --honors-index-size-mobile: 50px;
+  --honors-index-font-size-mobile: 1.1rem;
 }
 
 /* 容器 */
@@ -84,6 +92,15 @@
   gap: var(--honors-list-gap) !important;
 }
 
+/* 序号圆圈大小与文字 */
+.honors-page .detail-item time,
+.honors-page .item-index {
+  width: var(--honors-index-size) !important;
+  height: var(--honors-index-size) !important;
+  min-width: var(--honors-index-size) !important;
+  font-size: var(--honors-index-font-size) !important;
+}
+
 @media (max-width: 768px) {
   .honors-page .section-wrap {
     padding: var(--honors-section-padding-mobile) 0 !important;
@@ -114,5 +131,14 @@
 
   .honors-page .detail-list {
     gap: var(--honors-list-gap-mobile) !important;
+  }
+
+  /* 序号圆圈大小与文字（手机端） */
+  .honors-page .detail-item time,
+  .honors-page .item-index {
+    width: var(--honors-index-size-mobile) !important;
+    height: var(--honors-index-size-mobile) !important;
+    min-width: var(--honors-index-size-mobile) !important;
+    font-size: var(--honors-index-font-size-mobile) !important;
   }
 }

@@ -1,0 +1,44 @@
+/* results.css — 成果页专有样式覆盖 */
+/* Results page-specific overrides */
+/* 论文/成果区背景 */
+.publications {
+  background: #0a0a14;
+  color: #fff;
+}
+
+/* 代表论文列表圆角 */
+.publication-list {
+  border-radius: var(--radius);
+}
+
+/* 全部论文、详情列表、简介页论文：网格布局 */
+.all-publication-list,
+.detail-list,
+.profile-publication-list {
+  display: grid;
+  gap: 14px;
+}
+
+/* 单条论文卡片：三列布局（年份/图片/信息） */
+.publication-item {
+  grid-template-columns: 72px minmax(160px, 0.42fr) 1fr;
+  gap: 24px;
+  padding: 26px;
+}
+
+.all-publication-list time,
+.detail-item time,
+.profile-publication-item > span {
+  color: var(--accent);
+  font-weight: 850;
+}
+
+/* 论文配图：圆角裁剪与边框 */
+.publication-visual {
+  clip-path: inset(0 round var(--radius));
+  align-self: start;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.08);
+  aspect-ratio: 16 / 10;
+}

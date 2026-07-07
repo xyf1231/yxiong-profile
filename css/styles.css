@@ -75,8 +75,12 @@ html[data-site-loading="pending"] body {
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
+  width: 100dvw;
   height: 100%;
+  height: 100dvh;
   min-height: -webkit-fill-available;
   overscroll-behavior: none;
   touch-action: none;
@@ -84,7 +88,6 @@ html[data-site-loading="pending"] body {
   -webkit-overflow-scrolling: auto;
 }
 
-html[data-site-loading="pending"]::before,
 html[data-site-loading="pending"]::after {
   pointer-events: none;
 }
@@ -112,11 +115,15 @@ html[data-site-loading="ready"] body {
 }
 
 html[data-site-loading="pending"]::before {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
+  width: 100dvw;
   height: 100%;
+  height: 100dvh;
   z-index: 9999;
   background:
     radial-gradient(circle at center, rgba(41, 151, 255, 0.18), transparent 58%),
@@ -125,11 +132,15 @@ html[data-site-loading="pending"]::before {
 }
 
 html[data-site-loading="pending"]::after {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
+  width: 100dvw;
   height: 100%;
+  height: 100dvh;
   z-index: 10000;
   content: "";
   pointer-events: none;
@@ -139,11 +150,15 @@ html[data-site-loading="pending"]::after {
    站点加载遮罩：Lottie 欢迎动画、百分比、进度条、速度显示
    -------------------------------------------------------------------------- */
 .site-loading-overlay {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
   width: 100%;
+  width: 100dvw;
   height: 100%;
+  height: 100dvh;
   z-index: 10000;
   isolation: isolate;
   display: grid;
@@ -7402,6 +7417,7 @@ body.nav-mega-open::after {
   .publication-item .publication-copy,
   .all-publication-list .publication-copy {
     display: block;
+    min-height: auto;
   }
 
   .publication-item .pdf-actions .pdf-download-link,

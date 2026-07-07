@@ -1,0 +1,11 @@
+.DS_Store
+*.log
+nohup.out
+backup.sh
+supabase-schema.sql
+supabase-data.sql
+supabase-migrate.py
+node_modules/
+.vercel/
+.env
+.env.local

@@ -54,8 +54,12 @@
   --results-publication-pdf-offset-right: 0px;
 
   /* 论文卡片序号偏移 */
-  --results-publication-index-offset-top: -23px;
+  --results-publication-index-offset-top: -19px;
   --results-publication-index-offset-left: -16px;
+
+  /* 序号圆圈大小与文字 */
+  --results-index-size: 60px;
+  --results-index-font-size: 1.3rem;
 
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
@@ -83,7 +87,11 @@
 
   /* 论文卡片序号偏移（手机端） */
   --results-publication-index-offset-top-mobile: 0px;
-  --results-publication-index-offset-left-mobile: 0px;
+  --results-publication-index-offset-left-mobile: 5px;
+
+  /* 序号圆圈大小与文字（手机端） */
+  --results-index-size-mobile: 50px;
+  --results-index-font-size-mobile: 1.1rem;
 
   /* 论文卡片文字与间距（手机端） */
   --results-publication-title-font-size-mobile: 1.2rem;
@@ -142,6 +150,16 @@
 .results-page .all-publication-list .publication-item time {
   margin-top: var(--results-publication-index-offset-top) !important;
   margin-left: var(--results-publication-index-offset-left) !important;
+}
+
+/* 序号圆圈大小与文字 */
+.results-page .all-publication-list time,
+.results-page .detail-item time,
+.results-page .item-index {
+  width: var(--results-index-size) !important;
+  height: var(--results-index-size) !important;
+  min-width: var(--results-index-size) !important;
+  font-size: var(--results-index-font-size) !important;
 }
 
 /* 论文卡片文字与间距 */
@@ -283,6 +301,16 @@
   .results-page .all-publication-list .publication-item time {
     margin-top: var(--results-publication-index-offset-top-mobile) !important;
     margin-left: var(--results-publication-index-offset-left-mobile) !important;
+  }
+
+  /* 序号圆圈大小与文字（手机端） */
+  .results-page .all-publication-list time,
+  .results-page .detail-item time,
+  .results-page .item-index {
+    width: var(--results-index-size-mobile) !important;
+    height: var(--results-index-size-mobile) !important;
+    min-width: var(--results-index-size-mobile) !important;
+    font-size: var(--results-index-font-size-mobile) !important;
   }
 
   .results-page .all-publication-list .pdf-actions {

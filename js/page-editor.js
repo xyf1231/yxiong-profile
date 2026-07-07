@@ -230,6 +230,10 @@ const pageSchemas = {
         rangeField("--profile-publication-pdf-gap", "PDF 距上方内容间距", 0, 100, 1, "px", "--profile-publication-pdf-gap-mobile"),
         rangeField("--profile-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
       ]),
+      group("序号圆圈", [
+        rangeField("--profile-index-size", "圆圈大小", 30, 120, 1, "px", "--profile-index-size-mobile"),
+        rangeField("--profile-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--profile-index-font-size-mobile"),
+      ]),
     ],
   },
   results: {
@@ -276,6 +280,10 @@ const pageSchemas = {
         rangeField("--results-detail-text-font-size", "正文字号", 0.4, 2, 0.01, "rem", "--results-detail-text-font-size-mobile"),
         rangeField("--results-detail-type-font-size", "类型标签字号", 0.3, 1.5, 0.01, "rem", "--results-detail-type-font-size-mobile"),
       ]),
+      group("序号圆圈", [
+        rangeField("--results-index-size", "圆圈大小", 30, 120, 1, "px", "--results-index-size-mobile"),
+        rangeField("--results-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--results-index-font-size-mobile"),
+      ]),
     ],
   },
   honors: {
@@ -296,6 +304,10 @@ const pageSchemas = {
     cssGroups: [
       group("容器与间距", [
         rangeField("--honors-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
+      ]),
+      group("序号圆圈", [
+        rangeField("--honors-index-size", "圆圈大小", 30, 120, 1, "px", "--honors-index-size-mobile"),
+        rangeField("--honors-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--honors-index-font-size-mobile"),
       ]),
     ],
   },
@@ -319,7 +331,12 @@ const pageSchemas = {
         ["reviews", "标题", false],
       ],
     },
-    cssGroups: [],
+    cssGroups: [
+      group("序号圆圈", [
+        rangeField("--activities-index-size", "圆圈大小", 30, 120, 1, "px", "--activities-index-size-mobile"),
+        rangeField("--activities-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--activities-index-font-size-mobile"),
+      ]),
+    ],
   },
   global: {
     contentGroupTitles: {},
@@ -920,6 +937,10 @@ function schedulePreviewUpdate() {
 function updatePreviewModeClass() {
   if (!elPreview) return;
   elPreview.classList.toggle("mobile-preview", editorMode === "mobile");
+  const phoneFrame = document.getElementById("phone-frame");
+  if (phoneFrame) {
+    phoneFrame.classList.toggle("active", editorMode === "mobile");
+  }
 }
 
 function updatePreview() {
