@@ -140,6 +140,7 @@ function setupSiteLoadingGate() {
   let rafId = null;
   let targetProgress = 0;
   let displayProgress = 0;
+  let maxTargetSeen = 0;
   let readyTimerId = null;
   let lettersTimer = null;
 
@@ -152,12 +153,24 @@ function setupSiteLoadingGate() {
   const lerp = (start, end, factor) => start + (end - start) * factor;
 
   const animateProgress = () => {
-    if (finished) return;
     const diff = targetProgress - displayProgress;
-    if (Math.abs(diff) < 0.1) {
+    const absDiff = Math.abs(diff);
+    if (finished) {
+      if (displayProgress < 100) {
+        const factor = Math.min(0.15 + Math.max(0, (displayProgress - 85) / 15) * 0.35, 0.5);
+        displayProgress = lerp(displayProgress, targetProgress, factor);
+        setProgress(displayProgress);
+        rafId = requestAnimationFrame(animateProgress);
+      }
+      return;
+    }
+    if (absDiff < 0.2) {
       displayProgress = targetProgress;
     } else {
-      displayProgress = lerp(displayProgress, targetProgress, 0.08);
+      const dist = absDiff / 100;
+      const nearEnd = Math.max(0, (displayProgress - 70) / 30);
+      const factor = Math.min(0.07 + dist * dist * 0.40 + nearEnd * 0.06, 0.45);
+      displayProgress = lerp(displayProgress, targetProgress, factor);
     }
     setProgress(displayProgress);
     if (displayProgress < 100) {
@@ -173,27 +186,30 @@ function setupSiteLoadingGate() {
 
   const updateRealProgress = () => {
     if (finished) return;
-    const images = [...document.images];
-    const totalImages = images.length;
-    const loadedImages = images.filter((img) => img.complete).length;
-    let progress = 0;
-    if (totalImages > 0) {
-      progress = (loadedImages / totalImages) * 100;
-    } else {
-      const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-      let totalBytes = 0;
-      let loadedBytes = 0;
-      for (const entry of entries) {
-        const size = entry.transferSize || entry.decodedBodySize || 0;
-        if (!size) continue;
-        totalBytes += size;
-        if (entry.duration > 0 || entry.transferSize === 0) loadedBytes += size;
-      }
-      if (totalBytes > 0) progress = (loadedBytes / totalBytes) * 100;
+    const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+    let totalBytes = 0;
+    let loadedBytes = 0;
+    for (const entry of entries) {
+      const size = entry.transferSize || entry.decodedBodySize || 0;
+      if (!size) continue;
+      totalBytes += size;
+      if (entry.responseEnd > 0 || entry.transferSize === 0) loadedBytes += size;
     }
-    targetProgress = Math.min(progress, 100);
-    if (resourcesEl) resourcesEl.textContent = `${loadedImages} / ${totalImages} 个资源`;
+    const rawReal = totalBytes > 0 ? (loadedBytes / totalBytes) * 100 : 0;
+    const elapsed = (performance.now() - animStartTime) / 1000;
+    const t = Math.min(elapsed / 15, 1);
+    const timeBaseline = 82 * t * (2 - t);
+    const phaseIn = Math.min(elapsed / 4, 1);
+    const scaledReal = rawReal * phaseIn;
+    const blended = Math.max(timeBaseline, Math.min(scaledReal, 100));
+    if (blended > maxTargetSeen) maxTargetSeen = blended;
+    targetProgress = maxTargetSeen;
+    if (resourcesEl) {
+      resourcesEl.textContent = totalBytes > 0 ? `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}` : "";
+    }
   };
+
+  let animStartTime = 0;
 
   const rotateHint = () => {
     if (!hintEl || finished) return;
@@ -222,10 +238,11 @@ function setupSiteLoadingGate() {
 
   const startProgress = () => {
     if (rafId) return;
+    animStartTime = performance.now();
     startHintRotation();
     updateRealProgress();
     rafId = requestAnimationFrame(animateProgress);
-    intervalId = window.setInterval(updateRealProgress, 50);
+    intervalId = window.setInterval(updateRealProgress, 100);
   };
 
   const finish = () => {
@@ -234,25 +251,30 @@ function setupSiteLoadingGate() {
     if (!overlay) ensureOverlay();
     if (!overlay) return;
     finished = true;
-    if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
     if (lettersTimer) window.clearInterval(lettersTimer);
     if (hintTimer) window.clearInterval(hintTimer);
     if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
-    setProgress(100);
     if (readyTimerId) window.clearTimeout(readyTimerId);
-    readyTimerId = window.setTimeout(() => {
-      root.dataset.siteLoading = "ready";
-      const hash = window.location.hash;
-      if (hash) {
-        const el = document.querySelector(hash);
-        if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+    targetProgress = 100;
+    const reveal = () => {
+      if (displayProgress >= 99.8) {
+        setProgress(100);
+        root.dataset.siteLoading = "ready";
+        const hash = window.location.hash;
+        if (hash) {
+          const el = document.querySelector(hash);
+          if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+        }
+        if (overlay) {
+          overlay.classList.add("is-hidden");
+          window.setTimeout(() => overlay.remove(), 600);
+        }
+      } else {
+        requestAnimationFrame(reveal);
       }
-    }, 120);
-    if (overlay) {
-      overlay.classList.add("is-hidden");
-      window.setTimeout(() => overlay.remove(), 820);
-    }
+    };
+    requestAnimationFrame(reveal);
   };
 
   const ensureOverlay = () => {
@@ -343,6 +365,9 @@ function setupSiteLoadingGate() {
   window.showLoadingPreview = () => {
     window.__EDITOR_KEEP_LOADING_OVERLAY = true;
     finished = false;
+    targetProgress = 0;
+    displayProgress = 0;
+    maxTargetSeen = 0;
     if (lettersTimer) window.clearInterval(lettersTimer);
     if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
@@ -360,7 +385,8 @@ function setupSiteLoadingGate() {
     resourcesEl = null;
     hintEl = null;
     ensureOverlay();
-    setProgress(35);
+    setProgress(0);
+    startProgress();
   };
 
   const waitForReady = async () => {
@@ -1671,10 +1697,12 @@ function renderProjects(items) {
     .map((item, index) => {
       const title = localizeText(item.title);
       const text = localizeText(item.text);
+      const year = item.year || "";
       return `
         <article class="detail-item">
           <time>${String(index + 1).padStart(2, "0")}</time>
           <div>
+            ${year ? `<p class="detail-type" style="color:#2997FF">${escapeHtml(year)}</p>` : ""}
             <h3>${item.url ? `<a href="${escapeHtml(assetUrl(item.url))}">${escapeHtml(title)}</a>` : escapeHtml(title)}</h3>
             <p>${escapeHtml(text)}</p>
           </div>

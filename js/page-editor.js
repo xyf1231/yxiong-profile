@@ -258,6 +258,7 @@ const pageSchemas = {
       group("论文卡片", [
         rangeField("--results-publication-padding-top", "上边距", 0, 120, 1, "px", "--results-publication-padding-top-mobile"),
         rangeField("--results-publication-padding-bottom", "下边距", 0, 120, 1, "px", "--results-publication-padding-bottom-mobile"),
+        rangeField("--results-publication-padding-left-right", "左右内边距", 0, 80, 1, "px", "--results-publication-padding-left-right-mobile"),
         rangeField("--results-publication-index-offset-top", "序号距上边缘", -40, 40, 1, "px", "--results-publication-index-offset-top-mobile"),
         rangeField("--results-publication-index-offset-left", "序号距左边缘", -40, 40, 1, "px", "--results-publication-index-offset-left-mobile"),
         rangeField("--results-publication-title-font-size", "英文标题字号", 0.7, 2.5, 0.01, "rem", "--results-publication-title-font-size-mobile"),
@@ -267,6 +268,12 @@ const pageSchemas = {
         rangeField("--results-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px"),
         rangeField("--results-publication-pdf-gap", "PDF 距上方内容间距", 0, 100, 1, "px", "--results-publication-pdf-gap-mobile"),
         rangeField("--results-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
+      ]),
+      group("详情卡片（专利/项目）", [
+        textField("--results-detail-padding", "卡片内边距（简写）"),
+        rangeField("--results-detail-title-font-size", "标题字号", 0.5, 2.5, 0.01, "rem", "--results-detail-title-font-size-mobile"),
+        rangeField("--results-detail-text-font-size", "正文字号", 0.4, 2, 0.01, "rem", "--results-detail-text-font-size-mobile"),
+        rangeField("--results-detail-type-font-size", "类型标签字号", 0.3, 1.5, 0.01, "rem", "--results-detail-type-font-size-mobile"),
       ]),
     ],
   },

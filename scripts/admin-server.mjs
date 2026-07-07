@@ -10,6 +10,7 @@ import { existsSync } from "node:fs";
 import { spawn } from "node:child_process";
 import { basename, extname, join, normalize, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import os from "node:os";
 
 // 目录与端口配置
 const scriptDir = fileURLToPath(new URL(".", import.meta.url));
@@ -433,6 +434,47 @@ async function testGitHubConnection(res) {
   }
 }
 
+async function pullAndCopyToDownloads(res) {
+  try {
+    const pullChild = spawn("git", ["pull", "origin", "main"], { cwd: rootDir });
+    let pullOut = "";
+    let pullErr = "";
+    pullChild.stdout.on("data", (chunk) => (pullOut += chunk));
+    pullChild.stderr.on("data", (chunk) => (pullErr += chunk));
+    const pullCode = await new Promise((resolve) => pullChild.on("close", resolve));
+    if (pullCode !== 0 && pullErr.includes("Could not resolve") || pullErr.includes("Failed to connect")) {
+      sendJson(res, 200, { ok: false, message: `Git Pull 失败: ${pullErr.trim() || pullOut.trim()}` });
+      return;
+    }
+    const version = await readVersionFile();
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    const downloadDir = resolve(os.homedir(), "Downloads", `个人简历网站-${version}-${timestamp}`);
+    await mkdir(downloadDir, { recursive: true });
+    await cp(rootDir, downloadDir, {
+      recursive: true,
+      filter: (source) => {
+        const relativePath = relative(rootDir, source).replace(/\\/g, "/");
+        if (!relativePath) return true;
+        if (relativePath === ".git" || relativePath.startsWith(".git/")) return false;
+        if (relativePath === "node_modules" || relativePath.startsWith("node_modules/")) return false;
+        if (relativePath === "备份" || relativePath.startsWith("备份/")) return false;
+        return true;
+      },
+    });
+    sendJson(res, 200, {
+      ok: true,
+      version,
+      pullOutput: pullOut.trim(),
+      downloadPath: downloadDir,
+      message: pullCode !== 0
+        ? `Git pull 有警告，但代码已下载到: ${downloadDir}`
+        : `已从 GitHub 拉取最新代码，下载到: ${downloadDir}`,
+    });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
 async function gitAddCommitPush(req, res) {
   try {
     const body = await readRequestBody(req);
@@ -724,6 +766,10 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/git/push" && req.method === "POST") {
       await gitAddCommitPush(req, res);
+      return;
+    }
+    if (url.pathname === "/api/git/pull-to-downloads" && req.method === "POST") {
+      await pullAndCopyToDownloads(res);
       return;
     }
     if (url.pathname === "/api/preview/status" && req.method === "GET") {

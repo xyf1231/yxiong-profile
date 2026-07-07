@@ -1054,6 +1054,35 @@ async function deployToGitHub() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  版本更新 — 从 GitHub 拉到下载文件夹
+// ═══════════════════════════════════════════════════════════════
+
+async function pullToDownloads() {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再操作。", "error");
+    return;
+  }
+  if (!confirm("将从 GitHub 拉取最新代码并下载到「下载」文件夹，确定继续？")) return;
+  const btn = document.querySelector("#btn-pull-to-downloads");
+  if (btn) { btn.disabled = true; btn.textContent = "拉取中…"; }
+  deployLog("正在从 GitHub 拉取最新代码…", "cmd");
+  try {
+    const result = await apiPost("/api/git/pull-to-downloads");
+    if (result.ok) {
+      deployLog(`✅ ${result.message}`, "success");
+      deployLog(`版本: ${result.version}`, "info");
+      if (result.pullOutput) deployLog(result.pullOutput, "info");
+    } else {
+      deployLog(`❌ ${result.message}`, "error");
+    }
+  } catch (err) {
+    deployLog(`❌ 错误: ${err.message}`, "error");
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = "从 GitHub 下载到下载文件夹"; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  版本更新 — 本地预览
 // ═══════════════════════════════════════════════════════════════
 
@@ -1605,6 +1634,7 @@ function init() {
   document.querySelector("#btn-network-diagnostics")?.addEventListener("click", runNetworkDiagnostics);
   document.querySelector("#btn-optimize-images")?.addEventListener("click", optimizeImages);
   document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
+  document.querySelector("#btn-pull-to-downloads")?.addEventListener("click", pullToDownloads);
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);
   document.querySelector("#btn-preview-stop")?.addEventListener("click", stopPreview);
   document.querySelector("#btn-clear-log")?.addEventListener("click", clearDeployLog);

@@ -5,18 +5,15 @@
  */
 
 :root {
-  /* 遮罩在视口之外额外扩展的像素（越大覆盖面越广） */
-  --loading-mask-extra: 300px;
-
   /* 遮罩层背景与模糊 */
   --loading-overlay-bg:
-    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.16), transparent 20%),
-    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.18), transparent 24%),
-    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.12), transparent 32%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.985), rgba(2, 4, 9, 0.955));
-  --loading-overlay-backdrop-blur: 14px;
-  --loading-overlay-backdrop-saturate: 1.1;
+    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.35), transparent 22%),
+    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.28), transparent 20%),
+    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.30), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.22), transparent 32%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.55), rgba(2, 4, 9, 0.45));
+  --loading-overlay-backdrop-blur: 28px;
+  --loading-overlay-backdrop-saturate: 1.3;
 
   /* 内容卡片 */
   --loading-card-width: min(92vw, 420px);
@@ -43,17 +40,19 @@
   --loading-bar-bg: linear-gradient(90deg, #2997FF, #64D2FF 34%, #7c3aed 68%, #f97316);
   --loading-bar-shadow: 0 0 24px rgba(41, 151, 255, 0.28), 0 0 26px rgba(124, 58, 237, 0.16);
 
-  /* 资源计数 */
-  --loading-resources-font-size: 0.85rem;
-  --loading-hint-font-size: 0.8rem;
+  /* 资源计数与提示 */
+  --loading-resources-font-size: 1.2rem;
+  --loading-resources-margin-top: 18px;
+  --loading-hint-font-size: 1.1rem;
+  --loading-hint-margin-top: 8px;
 
   /* 移动端覆盖变量 */
   --loading-percent-font-size-mobile: clamp(1.5rem, 10vw, 8rem);
   --loading-letters-height-mobile: 150px;
   --loading-track-height-mobile: 12px;
   --loading-card-gap-mobile: 0px;
-  --loading-resources-font-size-mobile: 0.75rem;
-  --loading-hint-font-size-mobile: 0.7rem;
+  --loading-resources-font-size-mobile: 1rem;
+  --loading-hint-font-size-mobile: 0.95rem;
 }
 
 @media (max-width: 700px) {

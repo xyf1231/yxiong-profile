@@ -34,6 +34,15 @@
   /* 论文卡片上下边距 */
   --results-publication-padding-top: 20px;
   --results-publication-padding-bottom: 15px;
+  --results-publication-padding-left-right: 26px;
+
+  /* 详情卡片（专利/项目）内边距 */
+  --results-detail-padding: 20px 22px;
+
+  /* 详情卡片（专利/项目）文字字号 */
+  --results-detail-title-font-size: 1.5rem;
+  --results-detail-text-font-size: 1rem;
+  --results-detail-type-font-size: 1rem;
 
   /* 论文卡片文字与间距 */
   --results-publication-title-font-size: 1.5rem;
@@ -62,6 +71,15 @@
   /* 论文卡片上下边距（手机端） */
   --results-publication-padding-top-mobile: 18px;
   --results-publication-padding-bottom-mobile: 15px;
+  --results-publication-padding-left-right-mobile: 20px;
+
+  /* 详情卡片（专利/项目）内边距（手机端） */
+  --results-detail-padding-mobile: 16px 18px;
+
+  /* 详情卡片（专利/项目）文字字号（手机端） */
+  --results-detail-title-font-size-mobile: var(--font-body);
+  --results-detail-text-font-size-mobile: var(--font-body);
+  --results-detail-type-font-size-mobile: var(--font-kicker);
 
   /* 论文卡片序号偏移（手机端） */
   --results-publication-index-offset-top-mobile: 0px;
@@ -112,10 +130,12 @@
   color: var(--results-title-color) !important;
 }
 
-/* 论文卡片上下边距 */
+/* 论文卡片内边距 */
 .results-page .all-publication-list .publication-item {
   padding-top: var(--results-publication-padding-top) !important;
   padding-bottom: var(--results-publication-padding-bottom) !important;
+  padding-left: var(--results-publication-padding-left-right) !important;
+  padding-right: var(--results-publication-padding-left-right) !important;
 }
 
 /* 论文卡片序号偏移 */
@@ -145,6 +165,26 @@
 .results-page .all-publication-list .pdf-actions {
   margin-top: var(--results-publication-pdf-gap) !important;
   margin-right: var(--results-publication-pdf-offset-right) !important;
+}
+
+/* 详情卡片（专利/项目）内边距 */
+.results-page .detail-item {
+  padding: var(--results-detail-padding) !important;
+}
+
+/* 详情卡片（专利/项目）标题字号 */
+.results-page .detail-item h3 {
+  font-size: var(--results-detail-title-font-size) !important;
+}
+
+/* 详情卡片（专利/项目）正文字号 */
+.results-page .detail-item p {
+  font-size: var(--results-detail-text-font-size) !important;
+}
+
+/* 详情卡片（专利/项目）类型标签字号 */
+.results-page .detail-item .detail-type {
+  font-size: var(--results-detail-type-font-size) !important;
 }
 
 /* 列表间距 */
@@ -189,6 +229,24 @@
   .results-page .all-publication-list .publication-item {
     padding-top: var(--results-publication-padding-top-mobile) !important;
     padding-bottom: var(--results-publication-padding-bottom-mobile) !important;
+    padding-left: var(--results-publication-padding-left-right-mobile) !important;
+    padding-right: var(--results-publication-padding-left-right-mobile) !important;
+  }
+
+  .results-page .detail-item {
+    padding: var(--results-detail-padding-mobile) !important;
+  }
+
+  .results-page .detail-item h3 {
+    font-size: var(--results-detail-title-font-size-mobile) !important;
+  }
+
+  .results-page .detail-item p {
+    font-size: var(--results-detail-text-font-size-mobile) !important;
+  }
+
+  .results-page .detail-item .detail-type {
+    font-size: var(--results-detail-type-font-size-mobile) !important;
   }
 
   .results-page .all-publication-list .publication-copy > h3 {
