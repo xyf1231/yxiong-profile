@@ -89,6 +89,23 @@ function setupSiteLoadingGate() {
 
   let overlay = null;
   let barEl = null;
+  let resourcesEl = null;
+  let hintEl = null;
+  let hintTimer = null;
+  let hintFadeTimer = null;
+  let hintIndex = 0;
+  let hintInit = false;
+  let resourceInterval = null;
+
+  const loadingHints = [
+    "正在建立安全连接...",
+    "正在加载页面样式...",
+    "正在加载字体文件...",
+    "正在加载媒体资源...",
+    "正在加载脚本文件...",
+    "正在优化显示效果...",
+    "即将准备就绪...",
+  ];
 
   let finished = false;
   let current = 0;
@@ -124,6 +141,9 @@ function setupSiteLoadingGate() {
     if (finishTimerId) window.clearTimeout(finishTimerId);
     if (revealTimerId) window.clearTimeout(revealTimerId);
     if (lettersTimer) window.clearInterval(lettersTimer);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    if (resourceInterval) window.clearInterval(resourceInterval);
     setProgress(100);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
@@ -153,11 +173,15 @@ function setupSiteLoadingGate() {
           <div class="site-loading-letters" id="site-loading-letters" style="width: min(80vw, 360px); height: 110px; margin: -8px 0 4px;"></div>
           <div class="site-loading-kicker">${getLoadingGreeting()}</div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
+          <div class="site-loading-resources" aria-label="加载资源数"></div>
+          <div class="site-loading-hint" aria-live="off"></div>
         </div>
       `;
       (document.body || document.documentElement).appendChild(overlay);
     }
     barEl = overlay.querySelector(".site-loading-bar");
+    resourcesEl = overlay.querySelector(".site-loading-resources");
+    hintEl = overlay.querySelector(".site-loading-hint");
 
     // 加载并播放 Letters 手写文字动画
     (function () {
@@ -203,12 +227,55 @@ function setupSiteLoadingGate() {
     })();
   };
 
+  const updateResourceCount = () => {
+    if (finished || !resourcesEl) return;
+    const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+    let totalCount = 0;
+    let loadedCount = 0;
+    for (const entry of entries) {
+      const size = entry.transferSize || entry.decodedBodySize || 0;
+      if (!size) continue;
+      totalCount++;
+      if (entry.duration > 0) loadedCount++;
+    }
+    resourcesEl.textContent = `${loadedCount} / ${totalCount}`;
+  };
+
+  const rotateHint = () => {
+    if (!hintEl || finished) return;
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    hintEl.classList.remove("visible");
+    hintFadeTimer = window.setTimeout(() => {
+      if (!hintEl || finished) return;
+      hintIndex = (hintIndex + 1) % loadingHints.length;
+      hintEl.textContent = loadingHints[hintIndex];
+      hintEl.classList.add("visible");
+    }, 600);
+  };
+
+  const startHintRotation = () => {
+    if (hintInit) return;
+    hintInit = true;
+    if (!hintEl) return;
+    hintEl.textContent = loadingHints[0];
+    requestAnimationFrame(() => {
+      if (!hintEl || finished) return;
+      hintEl.classList.add("visible");
+    });
+    if (hintTimer) window.clearInterval(hintTimer);
+    hintTimer = window.setInterval(rotateHint, 3000);
+  };
+
   const waitForReady = async () => {
     try {
       ensureOverlay();
       lockedScrollY = window.scrollY || 0;
       document.body.style.top = `-${lockedScrollY}px`;
       startProgress();
+      startHintRotation();
+      if (resourceInterval) window.clearInterval(resourceInterval);
+      resourceInterval = window.setInterval(updateResourceCount, 200);
+      updateResourceCount();
       const loadPromise = document.readyState === "complete"
         ? Promise.resolve()
         : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
@@ -249,7 +316,7 @@ function setupSiteLoadingGate() {
     document.addEventListener("DOMContentLoaded", waitForReady, { once: true });
   }
 
-  window.setTimeout(finish, 3000);
+  window.setTimeout(finish, 15000);
 }
 
 setupSiteLoadingGate();
@@ -1444,6 +1511,7 @@ function renderProfilePublications(items) {
 function renderAllPublications(items) {
   const target = document.querySelector("#all-publication-list");
   if (!target) return;
+  window._allPublicationItems = items;
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";

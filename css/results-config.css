@@ -32,7 +32,7 @@
   --results-list-gap: var(--global-list-gap);
 
   /* 论文卡片上下边距 */
-  --results-publication-padding-top: 18px;
+  --results-publication-padding-top: 20px;
   --results-publication-padding-bottom: 15px;
 
   /* 论文卡片文字与间距 */
@@ -40,9 +40,13 @@
   --results-publication-subtitle-font-size: 1rem;
   --results-publication-authors-font-size: 1rem;
   --results-publication-meta-font-size: 1rem;
-  --results-publication-meta-gap: 10px;
-  --results-publication-pdf-offset-bottom: 0px;
+  --results-publication-meta-gap: 5px;
+  --results-publication-pdf-gap: 0px;
   --results-publication-pdf-offset-right: 0px;
+
+  /* 论文卡片序号偏移 */
+  --results-publication-index-offset-top: -23px;
+  --results-publication-index-offset-left: -16px;
 
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
@@ -59,12 +63,16 @@
   --results-publication-padding-top-mobile: 18px;
   --results-publication-padding-bottom-mobile: 15px;
 
+  /* 论文卡片序号偏移（手机端） */
+  --results-publication-index-offset-top-mobile: 0px;
+  --results-publication-index-offset-left-mobile: 0px;
+
   /* 论文卡片文字与间距（手机端） */
   --results-publication-title-font-size-mobile: 1.2rem;
   --results-publication-subtitle-font-size-mobile: 0.8rem;
   --results-publication-authors-font-size-mobile: 0.8rem;
   --results-publication-meta-font-size-mobile: 1rem;
-  --results-publication-pdf-offset-bottom-mobile: 0px;
+  --results-publication-pdf-gap-mobile: 0px;
   --results-publication-pdf-offset-right-mobile: 0px;
 }
 
@@ -110,6 +118,12 @@
   padding-bottom: var(--results-publication-padding-bottom) !important;
 }
 
+/* 论文卡片序号偏移 */
+.results-page .all-publication-list .publication-item time {
+  margin-top: var(--results-publication-index-offset-top) !important;
+  margin-left: var(--results-publication-index-offset-left) !important;
+}
+
 /* 论文卡片文字与间距 */
 .results-page .all-publication-list .publication-copy > h3 {
   font-size: var(--results-publication-title-font-size) !important;
@@ -129,7 +143,7 @@
 }
 
 .results-page .all-publication-list .pdf-actions {
-  margin-bottom: var(--results-publication-pdf-offset-bottom) !important;
+  margin-top: var(--results-publication-pdf-gap) !important;
   margin-right: var(--results-publication-pdf-offset-right) !important;
 }
 
@@ -194,8 +208,13 @@
     margin-bottom: 0 !important;
   }
 
+  .results-page .all-publication-list .publication-item time {
+    margin-top: var(--results-publication-index-offset-top-mobile) !important;
+    margin-left: var(--results-publication-index-offset-left-mobile) !important;
+  }
+
   .results-page .all-publication-list .pdf-actions {
-    margin-bottom: var(--results-publication-pdf-offset-bottom-mobile) !important;
+    margin-top: var(--results-publication-pdf-gap-mobile) !important;
     margin-right: var(--results-publication-pdf-offset-right-mobile) !important;
   }
 }

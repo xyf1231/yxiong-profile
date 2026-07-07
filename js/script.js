@@ -117,6 +117,22 @@ function setupSiteLoadingGate() {
   let overlay = null;
   let barEl = null;
   let percentEl = null;
+  let resourcesEl = null;
+  let hintEl = null;
+  let hintTimer = null;
+  let hintFadeTimer = null;
+  let hintIndex = 0;
+  let hintInit = false;
+
+  const loadingHints = [
+    "正在建立安全连接...",
+    "正在加载页面样式...",
+    "正在加载字体文件...",
+    "正在加载媒体资源...",
+    "正在加载脚本文件...",
+    "正在优化显示效果...",
+    "即将准备就绪...",
+  ];
 
   let finished = false;
   let current = 0;
@@ -154,21 +170,54 @@ function setupSiteLoadingGate() {
     const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
     let totalBytes = 0;
     let loadedBytes = 0;
+    let totalCount = 0;
+    let loadedCount = 0;
     for (const entry of entries) {
       const size = entry.transferSize || entry.decodedBodySize || 0;
       if (!size) continue;
+      totalCount++;
       totalBytes += size;
-      if (entry.duration > 0) loadedBytes += size;
+      if (entry.duration > 0) {
+        loadedCount++;
+        loadedBytes += size;
+      }
     }
     let progress = 0;
     if (totalBytes > 0) {
       progress = (loadedBytes / totalBytes) * 100;
     }
     targetProgress = Math.min(progress, 98);
+    if (resourcesEl) resourcesEl.textContent = `${loadedCount} / ${totalCount}`;
+  };
+
+  const rotateHint = () => {
+    if (!hintEl || finished) return;
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    hintEl.classList.remove("visible");
+    hintFadeTimer = window.setTimeout(() => {
+      if (!hintEl || finished) return;
+      hintIndex = (hintIndex + 1) % loadingHints.length;
+      hintEl.textContent = loadingHints[hintIndex];
+      hintEl.classList.add("visible");
+    }, 600);
+  };
+
+  const startHintRotation = () => {
+    if (hintInit) return;
+    hintInit = true;
+    if (!hintEl) return;
+    hintEl.textContent = loadingHints[0];
+    requestAnimationFrame(() => {
+      if (!hintEl || finished) return;
+      hintEl.classList.add("visible");
+    });
+    if (hintTimer) window.clearInterval(hintTimer);
+    hintTimer = window.setInterval(rotateHint, 3000);
   };
 
   const startProgress = () => {
     if (rafId) return;
+    startHintRotation();
     updateRealProgress();
     rafId = requestAnimationFrame(animateProgress);
     intervalId = window.setInterval(updateRealProgress, 50);
@@ -183,6 +232,8 @@ function setupSiteLoadingGate() {
     if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
     if (lettersTimer) window.clearInterval(lettersTimer);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
     setProgress(100);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
@@ -210,12 +261,16 @@ function setupSiteLoadingGate() {
           <div class="site-loading-letters" id="site-loading-letters"></div>
           <div class="site-loading-track" aria-hidden="true"><div class="site-loading-bar"></div></div>
           <div class="site-loading-percent" aria-label="加载进度">0%</div>
+          <div class="site-loading-resources" aria-label="加载资源数"></div>
+          <div class="site-loading-hint" aria-live="off"></div>
         </div>
       `;
       (document.body || document.documentElement).appendChild(overlay);
     }
     barEl = overlay.querySelector(".site-loading-bar");
     percentEl = overlay.querySelector(".site-loading-percent");
+    resourcesEl = overlay.querySelector(".site-loading-resources");
+    hintEl = overlay.querySelector(".site-loading-hint");
 
     // 加载并播放 Letters 手写文字动画
     startLettersAnimation();
@@ -287,21 +342,27 @@ function setupSiteLoadingGate() {
     if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
     if (readyTimerId) window.clearTimeout(readyTimerId);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    hintInit = false;
+    hintIndex = 0;
     const root = document.documentElement;
     root.dataset.siteLoading = "pending";
     if (overlay) overlay.remove();
     overlay = null;
     barEl = null;
     percentEl = null;
+    resourcesEl = null;
+    hintEl = null;
     ensureOverlay();
     setProgress(35);
   };
 
   const waitForReady = async () => {
-    // 兜底：最多 4 秒必须解除加载门，避免资源卡死导致页面无法滚动
+    // 兜底：最多 20 秒必须解除加载门
     window.setTimeout(() => {
       if (!finished) finish();
-    }, 4000);
+    }, 20000);
     try {
       ensureOverlay();
       setProgress(0);
@@ -314,7 +375,7 @@ function setupSiteLoadingGate() {
           document.fonts?.ready || Promise.resolve(),
           loadPromise,
         ]),
-        new Promise((resolve) => window.setTimeout(resolve, 5000)),
+        new Promise((resolve) => window.setTimeout(resolve, 15000)),
       ]);
       const mediaTasks = [...document.images]
         .filter((img) => !img.complete)
@@ -333,7 +394,7 @@ function setupSiteLoadingGate() {
         : [];
       await Promise.race([
         Promise.allSettled([...mediaTasks, ...videoTasks]),
-        new Promise((resolve) => window.setTimeout(resolve, 3000)),
+        new Promise((resolve) => window.setTimeout(resolve, 10000)),
       ]);
     } finally {
       finish();
@@ -1541,6 +1602,7 @@ function renderProfilePublications(items) {
 function renderAllPublications(items) {
   const target = document.querySelector("#all-publication-list");
   if (!target) return;
+  window._allPublicationItems = items;
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";
@@ -2522,6 +2584,26 @@ document.addEventListener("click", (event) => {
     sessionStorage.setItem("pdfReturnScroll", String(window.scrollY));
   } catch {}
   showPdfLoading(link);
+});
+
+/* Ensure "全部论文" link navigates properly on mobile */
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest("[data-i18n='viewAllPapers']");
+  if (!btn) return;
+  event.stopPropagation();
+});
+
+/* Fallback: ensure "展开全部论文" button click expands the list */
+document.addEventListener("click", (event) => {
+  const btn = event.target.closest(".all-publications-more");
+  if (!btn) return;
+  const target = document.querySelector("#all-publication-list");
+  if (!target) return;
+  event.stopPropagation();
+  event.preventDefault();
+  target.dataset.expanded = "true";
+  const items = window._allPublicationItems;
+  if (items) renderAllPublications(items);
 });
 
 /* Paper preview click handler removed to ensure full-page scrolling on mobile */

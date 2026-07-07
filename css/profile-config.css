@@ -55,13 +55,14 @@
   --profile-research-gap: 4px;
 
   /* 研究内容卡片文字 */
-  --profile-research-title-font-size: 1.8rem;
-  --profile-research-text-font-size: 1.5rem;
+  --profile-research-title-font-size: 1.5rem;
+  --profile-research-text-font-size: 1.2rem;
 
   /* 研究内容卡片尺寸与内边距 */
-  --profile-research-card-padding: 24px;
-  --profile-research-card-min-height: 290px;
-  --profile-research-image-gap: clamp(22px, 2vw, 32px);
+  --profile-research-card-padding: 25px;
+  --profile-research-card-padding-bottom: 8px;
+  --profile-research-card-min-height: 180px;
+  --profile-research-image-gap: clamp(0.5rem, 1.7vw, 4rem);
 
   /* 学习工作经历卡片 */
   --profile-experience-title-font-size: 1.5rem;
@@ -74,9 +75,17 @@
   --profile-publication-subtitle-font-size: 1rem;
   --profile-publication-authors-font-size: 1rem;
   --profile-publication-meta-font-size: 1rem;
-  --profile-publication-meta-gap: 0px;
-  --profile-publication-pdf-offset-bottom: 0px;
+  --profile-publication-meta-gap: 5px;
+  --profile-publication-pdf-gap: 0px;
   --profile-publication-pdf-offset-right: 0px;
+
+  /* 代表论文卡片上下边距 */
+  --profile-publication-padding-top: 20px;
+  --profile-publication-padding-bottom: 15px;
+
+  /* 代表论文卡片序号偏移 */
+  --profile-publication-index-offset-top: -20px;
+  --profile-publication-index-offset-left: -16px;
 
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
@@ -101,8 +110,16 @@
   --profile-publication-subtitle-font-size-mobile: 0.8rem;
   --profile-publication-authors-font-size-mobile: 0.8rem;
   --profile-publication-meta-font-size-mobile: 1rem;
-  --profile-publication-pdf-offset-bottom-mobile: 0px;
+  --profile-publication-pdf-gap-mobile: 0px;
   --profile-publication-pdf-offset-right-mobile: 0px;
+
+  /* 代表论文卡片上下边距（手机端） */
+  --profile-publication-padding-top-mobile: 18px;
+  --profile-publication-padding-bottom-mobile: 15px;
+
+  /* 代表论文卡片序号偏移（手机端） */
+  --profile-publication-index-offset-top-mobile: 0px;
+  --profile-publication-index-offset-left-mobile: 0px;
 
   /* 研究内容卡片文字（手机端） */
   --profile-research-title-font-size-mobile: 1.5rem;
@@ -110,6 +127,7 @@
 
   /* 研究内容卡片尺寸与内边距（手机端） */
   --profile-research-card-padding-mobile: 20px;
+  --profile-research-card-padding-bottom-mobile: 20px;
   --profile-research-card-min-height-mobile: 250px;
   --profile-research-image-gap-mobile: clamp(16px, 3vw, 22px);
 
@@ -292,6 +310,8 @@
 .profile-view-all-papers .button.secondary {
   width: 100%;
   max-width: 420px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* 代表论文卡片文字与间距 */
@@ -313,13 +333,26 @@
 }
 
 .profile-page #profile-publication-list .pdf-actions {
-  margin-bottom: var(--profile-publication-pdf-offset-bottom) !important;
+  margin-top: var(--profile-publication-pdf-gap) !important;
   margin-right: var(--profile-publication-pdf-offset-right) !important;
+}
+
+/* 代表论文卡片上下边距 */
+.profile-page #profile-publication-list .publication-item {
+  padding-top: var(--profile-publication-padding-top) !important;
+  padding-bottom: var(--profile-publication-padding-bottom) !important;
+}
+
+/* 代表论文卡片序号偏移 */
+.profile-page #profile-publication-list .publication-item time {
+  margin-top: var(--profile-publication-index-offset-top) !important;
+  margin-left: var(--profile-publication-index-offset-left) !important;
 }
 
 /* 研究内容卡片尺寸与内边距 */
 .profile-page #research-list .feature-card {
   padding: var(--profile-research-card-padding) !important;
+  padding-bottom: var(--profile-research-card-padding-bottom) !important;
   min-height: var(--profile-research-card-min-height) !important;
 }
 .profile-page #research-list .feature-card-image {
@@ -418,6 +451,7 @@
   /* 研究内容卡片尺寸与内边距（手机端） */
   .profile-page #research-list .feature-card {
     padding: var(--profile-research-card-padding-mobile) !important;
+    padding-bottom: var(--profile-research-card-padding-bottom-mobile) !important;
     min-height: var(--profile-research-card-min-height-mobile) !important;
   }
   .profile-page #research-list .feature-card-image {
@@ -458,8 +492,18 @@
     margin-bottom: 0 !important;
   }
 
+  .profile-page #profile-publication-list .publication-item {
+    padding-top: var(--profile-publication-padding-top-mobile) !important;
+    padding-bottom: var(--profile-publication-padding-bottom-mobile) !important;
+  }
+
+  .profile-page #profile-publication-list .publication-item time {
+    margin-top: var(--profile-publication-index-offset-top-mobile) !important;
+    margin-left: var(--profile-publication-index-offset-left-mobile) !important;
+  }
+
   .profile-page #profile-publication-list .pdf-actions {
-    margin-bottom: var(--profile-publication-pdf-offset-bottom-mobile) !important;
+    margin-top: var(--profile-publication-pdf-gap-mobile) !important;
     margin-right: var(--profile-publication-pdf-offset-right-mobile) !important;
   }
 }
