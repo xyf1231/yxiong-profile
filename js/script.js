@@ -187,6 +187,11 @@ function setupSiteLoadingGate() {
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
       root.dataset.siteLoading = "ready";
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+      }
     }, 120);
     if (overlay) {
       overlay.classList.add("is-hidden");
@@ -1548,7 +1553,7 @@ function renderAllPublications(items) {
       const date = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item">
+        <article class="publication-item${expanded ? ' is-revealed' : ''}">
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">

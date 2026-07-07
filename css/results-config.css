@@ -32,8 +32,15 @@
   --results-list-gap: var(--global-list-gap);
 
   /* 论文卡片上下边距 */
-  --results-publication-padding-top: 26px;
-  --results-publication-padding-bottom: 38px;
+  --results-publication-padding-top: 18px;
+  --results-publication-padding-bottom: 15px;
+
+  /* 论文卡片文字与间距 */
+  --results-publication-title-font-size: 1.5rem;
+  --results-publication-subtitle-font-size: 1rem;
+  --results-publication-authors-font-size: 1rem;
+  --results-publication-meta-font-size: 1rem;
+  --results-publication-meta-gap: 10px;
 
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
@@ -47,8 +54,15 @@
   --results-list-gap-mobile: var(--global-list-gap-mobile);
 
   /* 论文卡片上下边距（手机端） */
-  --results-publication-padding-top-mobile: 20px;
-  --results-publication-padding-bottom-mobile: 24px;
+  --results-publication-padding-top-mobile: 18px;
+  --results-publication-padding-bottom-mobile: 15px;
+
+  /* 论文卡片文字与间距（手机端） */
+  --results-publication-title-font-size-mobile: 1.2rem;
+  --results-publication-subtitle-font-size-mobile: 0.8rem;
+  --results-publication-authors-font-size-mobile: 0.8rem;
+  --results-publication-meta-font-size-mobile: 1rem;
+  --results-publication-meta-pdf-gap-mobile: 0px;
 }
 
 /* 容器 */
@@ -93,6 +107,24 @@
   padding-bottom: var(--results-publication-padding-bottom) !important;
 }
 
+/* 论文卡片文字与间距 */
+.results-page .all-publication-list .publication-copy > h3 {
+  font-size: var(--results-publication-title-font-size) !important;
+}
+
+.results-page .all-publication-list .publication-subtitle {
+  font-size: var(--results-publication-subtitle-font-size) !important;
+}
+
+.results-page .all-publication-list .publication-authors {
+  font-size: var(--results-publication-authors-font-size) !important;
+}
+
+.results-page .all-publication-list .publication-meta {
+  font-size: var(--results-publication-meta-font-size) !important;
+  margin-bottom: var(--results-publication-meta-gap) !important;
+}
+
 /* 列表间距 */
 .results-page .all-publication-list,
 .results-page .detail-list {
@@ -135,5 +167,26 @@
   .results-page .all-publication-list .publication-item {
     padding-top: var(--results-publication-padding-top-mobile) !important;
     padding-bottom: var(--results-publication-padding-bottom-mobile) !important;
+  }
+
+  .results-page .all-publication-list .publication-copy > h3 {
+    font-size: var(--results-publication-title-font-size-mobile) !important;
+  }
+
+  .results-page .all-publication-list .publication-subtitle {
+    font-size: var(--results-publication-subtitle-font-size-mobile) !important;
+  }
+
+  .results-page .all-publication-list .publication-authors {
+    font-size: var(--results-publication-authors-font-size-mobile) !important;
+  }
+
+  .results-page .all-publication-list .publication-meta {
+    font-size: var(--results-publication-meta-font-size-mobile) !important;
+    margin-bottom: 0 !important;
+  }
+
+  .results-page .all-publication-list .pdf-actions {
+    margin-top: var(--results-publication-meta-pdf-gap-mobile) !important;
   }
 }

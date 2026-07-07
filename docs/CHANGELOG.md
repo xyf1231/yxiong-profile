@@ -1,5 +1,35 @@
 # 更新日志
 
+## v1.11.9 - 2026-07-07
+- 类型：功能
+- 变更：在 editor「成果 → 论文卡片」与「个人简介 → 代表论文卡片」控制组中新增「中文标题字号」与「期刊年份字号」调节参数（均区分电脑端与手机端）。
+- 变更：`css/results-config.css` 与 `css/profile-config.css` 新增 `--results/profile-publication-subtitle-font-size`、`-meta-font-size` 等变量，并覆盖 `.publication-subtitle` 与 `.publication-meta` 的 `font-size`。
+- 检查：`node --check js/hero-editor.js`、`python3 scripts/check_braces.py css/profile-config.css css/results-config.css` 与 `node scripts/check-site.mjs` 通过（v1.11.9）
+- 部署：未部署
+
+## v1.11.8 - 2026-07-07
+- 类型：修复
+- 变更：修复成果页（`results.html`）点击「展开全部论文」后新增的卡片不显示的问题。原因是 `setupRevealAnimations()` 只在初始渲染时执行一次，新加入的 `.publication-item` 没有获得 `is-revealed` 类，导致 `opacity: 0`。已在 `js/script.js` 与 `js/global.js` 的 `renderAllPublications()` 中，展开后为所有卡片直接添加 `is-revealed`。
+- 类型：修复
+- 变更：修复简介页「全部论文」链接跳转到成果页后没有定位到全部论文模块的问题。`js/script.js` 与 `js/global.js` 的加载门 `finish()` 在页面就绪后，若 URL 存在 hash（如 `#papers`），则调用 `scrollIntoView` 滚动到对应模块。
+- 检查：`node --check js/script.js`、`node --check js/global.js` 通过
+- 部署：未部署
+- 类型：功能
+- 变更：在 editor「成果 → 论文卡片」与「个人简介 → 代表论文卡片」控制组中新增三项可调参数（均区分电脑端与手机端）：
+  - 英文标题字号（`--results/profile-publication-title-font-size`）
+  - 作者名字号（`--results/profile-publication-authors-font-size`）
+  - 期刊与 PDF 间距（`--results/profile-publication-meta-gap`，手机端映射到 `--results/profile-publication-meta-pdf-gap-mobile`）
+- 变更：`css/results-config.css` 与 `css/profile-config.css` 新增对应 CSS 变量及覆盖规则，通过高特异性选择器覆盖 `css/styles.css` 中 `.publication-copy > h3`、`.publication-authors`、`.publication-meta`、`.pdf-actions` 的默认样式。
+- 检查：`node --check js/hero-editor.js`、`python3 scripts/check_braces.py css/profile-config.css css/results-config.css` 与 `node scripts/check-site.mjs` 通过（v1.11.8）
+- 部署：未部署
+
+## v1.11.7 - 2026-07-07
+- 类型：功能
+- 变更：在 editor「成果」页面新增「论文卡片」控制组，提供电脑端与手机端的论文卡片上/下边距调节选项（`--results-publication-padding-top` / `--results-publication-padding-bottom` 及其移动端变量）。
+- 变更：`css/results-config.css` 新增论文卡片上下边距变量与覆盖规则，通过更高特异性的 `.results-page .all-publication-list .publication-item` 选择器覆盖 `css/styles.css` 中的默认 `padding`，方便在 editor 中实时调节论文卡片留白。
+- 检查：`node --check js/hero-editor.js`、`python3 scripts/check_braces.py css/results-config.css` 与 `node scripts/check-site.mjs` 通过（v1.11.7）
+- 部署：未部署
+
 ## v1.11.6 - 2026-07-07
 - 类型：调整
 - 变更：删除简介页（profile.html）代表论文标题右侧的「详情请见 全部成果」文字链接。

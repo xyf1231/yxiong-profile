@@ -54,6 +54,13 @@
   /* 研究内容卡片间距（桌面端继承全局列表间距） */
   --profile-research-gap: var(--global-list-gap);
 
+  /* 代表论文卡片文字与间距 */
+  --profile-publication-title-font-size: 1.24rem;
+  --profile-publication-subtitle-font-size: 0.95rem;
+  --profile-publication-authors-font-size: 0.95rem;
+  --profile-publication-meta-font-size: 0.85rem;
+  --profile-publication-meta-gap: 8px;
+
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
   --profile-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -71,6 +78,13 @@
   --profile-en-name-size-mobile: 1.5rem;
   --profile-bio-font-size-mobile: 1rem;
   --profile-bio-line-height-mobile: 1.5;
+
+  /* 代表论文卡片文字与间距（手机端） */
+  --profile-publication-title-font-size-mobile: 1.2rem;
+  --profile-publication-subtitle-font-size-mobile: 0.8rem;
+  --profile-publication-authors-font-size-mobile: 0.8rem;
+  --profile-publication-meta-font-size-mobile: 1rem;
+  --profile-publication-meta-pdf-gap-mobile: 0px;
 }
 
 /* 容器 */
@@ -225,6 +239,24 @@
   max-width: 420px;
 }
 
+/* 代表论文卡片文字与间距 */
+.profile-page #profile-publication-list .publication-copy > h3 {
+  font-size: var(--profile-publication-title-font-size) !important;
+}
+
+.profile-page #profile-publication-list .publication-subtitle {
+  font-size: var(--profile-publication-subtitle-font-size) !important;
+}
+
+.profile-page #profile-publication-list .publication-authors {
+  font-size: var(--profile-publication-authors-font-size) !important;
+}
+
+.profile-page #profile-publication-list .publication-meta {
+  font-size: var(--profile-publication-meta-font-size) !important;
+  margin-bottom: var(--profile-publication-meta-gap) !important;
+}
+
 @media (max-width: 768px) {
   .profile-page .section-wrap {
     padding: var(--profile-section-padding-mobile) 0 !important;
@@ -306,5 +338,27 @@
   .profile-page .section-wrap#research .feature-grid,
   .profile-page #research-list.feature-grid {
     gap: var(--profile-research-gap-mobile) !important;
+  }
+
+  /* 代表论文卡片文字与间距（手机端） */
+  .profile-page #profile-publication-list .publication-copy > h3 {
+    font-size: var(--profile-publication-title-font-size-mobile) !important;
+  }
+
+  .profile-page #profile-publication-list .publication-subtitle {
+    font-size: var(--profile-publication-subtitle-font-size-mobile) !important;
+  }
+
+  .profile-page #profile-publication-list .publication-authors {
+    font-size: var(--profile-publication-authors-font-size-mobile) !important;
+  }
+
+  .profile-page #profile-publication-list .publication-meta {
+    font-size: var(--profile-publication-meta-font-size-mobile) !important;
+    margin-bottom: 0 !important;
+  }
+
+  .profile-page #profile-publication-list .pdf-actions {
+    margin-top: var(--profile-publication-meta-pdf-gap-mobile) !important;
   }
 }

@@ -208,6 +208,13 @@ const pageSchemas = {
           return f;
         })(),
       ]),
+      group("代表论文卡片", [
+        rangeField("--profile-publication-title-font-size", "英文标题字号", 0.7, 2.5, 0.01, "rem", "--profile-publication-title-font-size-mobile"),
+        rangeField("--profile-publication-subtitle-font-size", "中文标题字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-subtitle-font-size-mobile"),
+        rangeField("--profile-publication-authors-font-size", "作者名字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-authors-font-size-mobile"),
+        rangeField("--profile-publication-meta-font-size", "期刊年份字号", 0.6, 1.5, 0.01, "rem", "--profile-publication-meta-font-size-mobile"),
+        rangeField("--profile-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px", "--profile-publication-meta-pdf-gap-mobile"),
+      ]),
     ],
   },
   results: {
@@ -237,6 +244,11 @@ const pageSchemas = {
       group("论文卡片", [
         rangeField("--results-publication-padding-top", "上边距", 0, 120, 1, "px", "--results-publication-padding-top-mobile"),
         rangeField("--results-publication-padding-bottom", "下边距", 0, 120, 1, "px", "--results-publication-padding-bottom-mobile"),
+        rangeField("--results-publication-title-font-size", "英文标题字号", 0.7, 2.5, 0.01, "rem", "--results-publication-title-font-size-mobile"),
+        rangeField("--results-publication-subtitle-font-size", "中文标题字号", 0.6, 1.5, 0.01, "rem", "--results-publication-subtitle-font-size-mobile"),
+        rangeField("--results-publication-authors-font-size", "作者名字号", 0.6, 1.5, 0.01, "rem", "--results-publication-authors-font-size-mobile"),
+        rangeField("--results-publication-meta-font-size", "期刊年份字号", 0.6, 1.5, 0.01, "rem", "--results-publication-meta-font-size-mobile"),
+        rangeField("--results-publication-meta-gap", "期刊与 PDF 间距", 0, 60, 1, "px", "--results-publication-meta-pdf-gap-mobile"),
       ]),
     ],
   },
