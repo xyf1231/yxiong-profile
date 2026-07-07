@@ -63,23 +63,26 @@ html[data-lang-ready="pending"] body {
 
 html[data-site-loading="pending"],
 html[data-site-loading="pending"] body {
-  overflow: hidden;
-  overflow: clip;
   overscroll-behavior: none;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
-html[data-site-loading="pending"] body {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+html[data-site-loading="pending"]::before,
+html[data-site-loading="pending"]::after {
+  /* 遮罩层只负责视觉遮挡，不拦截触摸/滚动事件，让用户在加载时即可上下滑动 */
+  pointer-events: none;
 }
 
 html[data-lang-ready="ready"] body,
 html[data-site-loading="ready"] body {
   opacity: 1;
   transition: opacity 220ms ease-out;
+}
+
+html[data-site-loading="ready"],
+html[data-site-loading="ready"] body {
+  overflow: visible;
+  touch-action: pan-y;
 }
 
 html[data-site-loading="pending"]::before {
@@ -115,6 +118,7 @@ html[data-site-loading="pending"]::after {
   padding: 24px;
   overflow: hidden;
   overflow: clip;
+  pointer-events: none;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   background:
     radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.22), transparent 22%),
@@ -1352,7 +1356,7 @@ main > .section-band:first-child > .section-wrap {
 .section-kicker {
   margin: 0 0 14px;
   color: var(--accent);
-  font-size: var(--font-kicker);
+  font-size: clamp(0.8rem, 2.5vw, 1.2rem);
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -10227,7 +10231,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
 
 
 
-/* v1.10.26 mobile nav Apple-style list layout */
+/* v1.10.30 mobile nav Apple-style list layout */
 @media (max-width: 860px) {
   .nav-links {
     padding: clamp(30px, 7vh, 56px) max(26px, env(safe-area-inset-right)) max(42px, env(safe-area-inset-bottom)) max(26px, env(safe-area-inset-left)) !important;
@@ -10248,7 +10252,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     border: 0 !important;
     border-radius: 0 !important;
     padding: 0 !important;
-    margin-bottom: clamp(18px, 3.6vh, 30px) !important;
+    margin-bottom: clamp(4px, 1vh, 10px) !important;
   }
 
   .nav-cards-five .nav-card:last-child {
@@ -10269,8 +10273,8 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     align-items: center !important;
     justify-content: space-between !important;
     width: 100% !important;
-    min-height: 54px !important;
-    padding: 12px 6px !important;
+    min-height: 44px !important;
+    padding: 8px 6px !important;
     border-radius: 0 !important;
     border-bottom: 0 !important;
     background: transparent !important;
@@ -10302,7 +10306,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     font-weight: 520 !important;
     color: rgba(255, 255, 255, 0.62) !important;
     padding-left: 26px !important;
-    min-height: 46px !important;
+    min-height: 40px !important;
   }
 
   .nav-cards-five .nav-card-links a:hover,
@@ -10313,9 +10317,23 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
     transform: translateX(2px) !important;
   }
 
+  .nav-cards-five .nav-card-links a[aria-current="page"],
+  .nav-cards-five .nav-card-links a[aria-current="location"] {
+    background: transparent !important;
+    box-shadow: none !important;
+    color: inherit !important;
+  }
+
   .nav-cards-five .nav-card-arrow {
     font-size: 0.95em !important;
     opacity: 0.45 !important;
   }
 }
 
+
+
+
+/* v1.10.27 unify desktop nav and section heading sizes */
+.nav-desktop-items a {
+  font-size: 15px !important;
+}

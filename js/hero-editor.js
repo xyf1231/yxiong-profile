@@ -115,8 +115,8 @@ const pageSchemas = {
     },
     cssGroups: [
       group("主标题", [
-        clampField("--hero-title-font-size-zh", "中文标题字号 (vw)", 2, 14, 0.1, "vw", "3rem", "7rem", "--hero-title-font-size-zh-mobile"),
-        clampField("--hero-title-font-size-en", "英文标题字号 (vw)", 2, 14, 0.1, "vw", "2.8rem", "6.5rem", "--hero-title-font-size-en-mobile"),
+        clampField("--hero-title-font-size-zh", "中文标题字号 (vw)", 2, 14, 0.1, "vw", "3rem", "10rem", "--hero-title-font-size-zh-mobile"),
+        clampField("--hero-title-font-size-en", "英文标题字号 (vw)", 2, 14, 0.1, "vw", "2.8rem", "10rem", "--hero-title-font-size-en-mobile"),
         rangeField("--hero-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--hero-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         rangeField("--hero-title-gap", "分行间距", 0, 0.3, 0.001, "em"),
@@ -133,7 +133,7 @@ const pageSchemas = {
       group("眉标", [
         selectField("--hero-eyebrow-display", "显示", displayOptions),
         colorField("--hero-eyebrow-color", "颜色"),
-        clampField("--hero-eyebrow-font-size", "字号 (vw)", 0.5, 3, 0.1, "vw", "0.6rem", "1.5rem", "--hero-eyebrow-font-size-mobile"),
+        clampField("--hero-eyebrow-font-size", "字号 (vw)", 0.5, 5, 0.1, "vw", "0.6rem", "2.5rem", "--hero-eyebrow-font-size-mobile"),
         rangeField("--hero-eyebrow-margin-bottom", "下边距", 0, 40, 1, "px", "--hero-eyebrow-margin-bottom-mobile"),
         rangeField("--hero-eyebrow-letter-spacing", "字间距", 0, 0.5, 0.01, "em", "--hero-eyebrow-letter-spacing-mobile"),
       ]),
@@ -143,14 +143,14 @@ const pageSchemas = {
         textField("--hero-text-shadow", "文字阴影"),
       ]),
       group("其他模块标题", [
-        clampField("--home-frame-heading-size", "研究亮点标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--home-frame-heading-size-mobile"),
-        clampField("--news-heading-size", "新闻标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--news-heading-size-mobile"),
-        clampField("--home-bento-heading-size", "快速导航标题 (vw)", 2, 8, 0.1, "vw", "3rem", "5.7rem", "--home-bento-heading-size-mobile"),
-        clampField("--section-kicker-font-size", "小标签字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem"),
+        clampField("--home-frame-heading-size", "研究亮点标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--home-frame-heading-size-mobile"),
+        clampField("--news-heading-size", "新闻标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--news-heading-size-mobile"),
+        clampField("--home-bento-heading-size", "快速导航标题 (vw)", 2, 12, 0.1, "vw", "2rem", "8rem", "--home-bento-heading-size-mobile"),
+        clampField("--section-kicker-font-size", "小标签字号 (vw)", 0.3, 4, 0.05, "vw", "0.6rem", "2rem"),
       ]),
       group("快速导航卡片", [
-        clampField("--home-bento-card-title-font-size", "卡片标题 (vw)", 1, 5, 0.1, "vw", "2rem", "4.25rem", "--home-bento-card-title-font-size-mobile"),
-        clampField("--home-bento-card-text-font-size", "卡片描述 (vw)", 0.5, 2, 0.05, "vw", "0.8rem", "1.1rem", "--home-bento-card-text-font-size-mobile"),
+        clampField("--home-bento-card-title-font-size", "卡片标题 (vw)", 1, 8, 0.1, "vw", "1.5rem", "6rem", "--home-bento-card-title-font-size-mobile"),
+        clampField("--home-bento-card-text-font-size", "卡片描述 (vw)", 0.4, 3, 0.05, "vw", "0.7rem", "1.5rem", "--home-bento-card-text-font-size-mobile"),
       ]),
     ],
   },
@@ -191,27 +191,27 @@ const pageSchemas = {
     },
     cssGroups: [
       group("页面大标题", [
-        clampField("--profile-intro-title-size", "字号 (vw)", 2, 8, 0.1, "vw", "2.8rem", "5rem", "--profile-intro-title-size-mobile"),
+        clampField("--profile-intro-title-size", "字号 (vw)", 1.5, 12, 0.1, "vw", "1.5rem", "8rem", "--profile-intro-title-size-mobile"),
         rangeField("--profile-intro-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--profile-intro-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--profile-intro-title-color", "颜色"),
       ]),
       group("Section 小标签", [
-        clampField("--profile-kicker-font-size", "字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem", "--profile-kicker-font-size-mobile"),
+        clampField("--profile-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--profile-kicker-font-size-mobile"),
         rangeField("--profile-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
         colorField("--profile-kicker-color", "颜色"),
         rangeField("--profile-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
       ]),
       group("Section 标题", [
-        clampField("--profile-title-font-size", "字号 (vw)", 2, 8, 0.1, "vw", "2.2rem", "4rem", "--profile-title-font-size-mobile"),
+        clampField("--profile-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--profile-title-font-size-mobile"),
         rangeField("--profile-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--profile-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--profile-title-color", "颜色"),
       ]),
       group("容器与间距", [
-        rangeField("--profile-section-padding", "Section 上下间距", 20, 200, 1, "px", "--profile-section-padding-mobile"),
-        rangeField("--profile-first-section-padding-top", "首 Section 上间距", 40, 240, 1, "px", "--profile-first-section-padding-top-mobile"),
-        rangeField("--profile-bio-font-size", "简介正文字号", 0.8, 2, 0.05, "rem"),
+        rangeField("--profile-section-padding", "Section 上下间距", 10, 300, 1, "px", "--profile-section-padding-mobile"),
+        rangeField("--profile-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--profile-first-section-padding-top-mobile"),
+        rangeField("--profile-bio-font-size", "简介正文字号", 0.7, 3, 0.05, "rem"),
         rangeField("--profile-bio-line-height", "简介正文行高", 1.2, 2.5, 0.05, ""),
       ]),
     ],
@@ -238,21 +238,21 @@ const pageSchemas = {
     },
     cssGroups: [
       group("Section 小标签", [
-        clampField("--results-kicker-font-size", "字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem", "--results-kicker-font-size-mobile"),
+        clampField("--results-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--results-kicker-font-size-mobile"),
         rangeField("--results-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
         colorField("--results-kicker-color", "颜色"),
         rangeField("--results-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
       ]),
       group("Section 标题", [
-        clampField("--results-title-font-size", "字号 (vw)", 2, 8, 0.1, "vw", "2.2rem", "4rem", "--results-title-font-size-mobile"),
+        clampField("--results-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--results-title-font-size-mobile"),
         rangeField("--results-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--results-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--results-title-color", "颜色"),
       ]),
       group("容器与间距", [
-        rangeField("--results-section-padding", "Section 上下间距", 20, 200, 1, "px", "--results-section-padding-mobile"),
-        rangeField("--results-first-section-padding-top", "首 Section 上间距", 40, 240, 1, "px", "--results-first-section-padding-top-mobile"),
-        rangeField("--results-list-gap", "列表项间距", 8, 48, 1, "px"),
+        rangeField("--results-section-padding", "Section 上下间距", 10, 300, 1, "px", "--results-section-padding-mobile"),
+        rangeField("--results-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--results-first-section-padding-top-mobile"),
+        rangeField("--results-list-gap", "列表项间距", 4, 80, 1, "px"),
       ]),
     ],
   },
@@ -273,21 +273,21 @@ const pageSchemas = {
     },
     cssGroups: [
       group("Section 小标签", [
-        clampField("--honors-kicker-font-size", "字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem", "--honors-kicker-font-size-mobile"),
+        clampField("--honors-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--honors-kicker-font-size-mobile"),
         rangeField("--honors-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
         colorField("--honors-kicker-color", "颜色"),
         rangeField("--honors-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
       ]),
       group("Section 标题", [
-        clampField("--honors-title-font-size", "字号 (vw)", 2, 8, 0.1, "vw", "2.2rem", "4rem", "--honors-title-font-size-mobile"),
+        clampField("--honors-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--honors-title-font-size-mobile"),
         rangeField("--honors-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--honors-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--honors-title-color", "颜色"),
       ]),
       group("容器与间距", [
-        rangeField("--honors-section-padding", "Section 上下间距", 20, 200, 1, "px", "--honors-section-padding-mobile"),
-        rangeField("--honors-first-section-padding-top", "首 Section 上间距", 40, 240, 1, "px", "--honors-first-section-padding-top-mobile"),
-        rangeField("--honors-list-gap", "列表项间距", 8, 48, 1, "px"),
+        rangeField("--honors-section-padding", "Section 上下间距", 10, 300, 1, "px", "--honors-section-padding-mobile"),
+        rangeField("--honors-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--honors-first-section-padding-top-mobile"),
+        rangeField("--honors-list-gap", "列表项间距", 4, 80, 1, "px"),
       ]),
     ],
   },
@@ -313,21 +313,21 @@ const pageSchemas = {
     },
     cssGroups: [
       group("Section 小标签", [
-        clampField("--activities-kicker-font-size", "字号 (vw)", 0.5, 2.5, 0.05, "vw", "0.8rem", "1.2rem", "--activities-kicker-font-size-mobile"),
+        clampField("--activities-kicker-font-size", "字号 (vw)", 0.3, 4, 0.05, "vw", "0.5rem", "2rem", "--activities-kicker-font-size-mobile"),
         rangeField("--activities-kicker-letter-spacing", "字间距", 0, 0.5, 0.01, "em"),
         colorField("--activities-kicker-color", "颜色"),
         rangeField("--activities-kicker-margin-bottom", "下边距", 0, 40, 1, "px"),
       ]),
       group("Section 标题", [
-        clampField("--activities-title-font-size", "字号 (vw)", 2, 8, 0.1, "vw", "2.2rem", "4rem", "--activities-title-font-size-mobile"),
+        clampField("--activities-title-font-size", "字号 (vw)", 1.5, 10, 0.1, "vw", "1.5rem", "6rem", "--activities-title-font-size-mobile"),
         rangeField("--activities-title-line-height", "行高", 0.9, 1.6, 0.01, ""),
         rangeField("--activities-title-letter-spacing", "字间距", -0.05, 0.2, 0.001, "em"),
         colorField("--activities-title-color", "颜色"),
       ]),
       group("容器与间距", [
-        rangeField("--activities-section-padding", "Section 上下间距", 20, 200, 1, "px", "--activities-section-padding-mobile"),
-        rangeField("--activities-first-section-padding-top", "首 Section 上间距", 40, 240, 1, "px", "--activities-first-section-padding-top-mobile"),
-        rangeField("--activities-list-gap", "列表项间距", 8, 48, 1, "px"),
+        rangeField("--activities-section-padding", "Section 上下间距", 10, 300, 1, "px", "--activities-section-padding-mobile"),
+        rangeField("--activities-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--activities-first-section-padding-top-mobile"),
+        rangeField("--activities-list-gap", "列表项间距", 4, 80, 1, "px"),
       ]),
     ],
   },
@@ -475,11 +475,11 @@ function createRangeControl(field, value, activeName) {
   slider.dataset.control = "range";
   slider.className = "slider";
 
+  // 使用 text 而非 number，避免输入小数点时被浏览器提前解析截断
   const number = document.createElement("input");
-  number.type = "number";
-  number.min = field.min;
-  number.max = field.max;
-  number.step = field.step;
+  number.type = "text";
+  number.inputMode = "decimal";
+  number.pattern = "[-+]?[0-9]*\\.?[0-9]*";
   number.value = value;
   number.dataset.var = name;
   number.dataset.control = "number";
@@ -489,13 +489,30 @@ function createRangeControl(field, value, activeName) {
   unit.className = "unit";
   unit.textContent = field.unit || "";
 
+  function toCssValue(raw) {
+    const num = parseFloat(raw);
+    if (Number.isNaN(num)) return null;
+    const clamped = Math.max(field.min, Math.min(field.max, num));
+    return field.unit ? `${clamped}${field.unit}` : String(clamped);
+  }
+
   slider.addEventListener("input", () => {
-    number.value = slider.value;
-    handleCssInput(name, slider.value, field);
+    const cssValue = toCssValue(slider.value);
+    if (!cssValue) return;
+    number.value = parseFloat(slider.value);
+    handleCssInput(name, cssValue, field);
   });
   number.addEventListener("input", () => {
-    slider.value = number.value;
-    handleCssInput(name, number.value, field);
+    const cssValue = toCssValue(number.value);
+    if (!cssValue) return;
+    slider.value = parseFloat(number.value);
+    handleCssInput(name, cssValue, field);
+  });
+  number.addEventListener("blur", () => {
+    const num = parseFloat(number.value);
+    if (!Number.isNaN(num)) {
+      number.value = num;
+    }
   });
 
   wrapper.appendChild(slider);
@@ -524,22 +541,38 @@ function createClampControl(field, value, activeName) {
   slider.dataset.var = name;
   slider.className = "slider";
 
+  // 使用 text 而非 number，避免输入小数点时被浏览器提前解析截断
   const number = document.createElement("input");
-  number.type = "number";
-  number.min = field.min;
-  number.max = field.max;
-  number.step = field.step;
+  number.type = "text";
+  number.inputMode = "decimal";
+  number.pattern = "[-+]?[0-9]*\\.?[0-9]*";
   number.value = numericValue;
   number.dataset.var = name;
   number.className = "number-input";
 
+  function toSliderNumber(raw) {
+    const num = parseFloat(raw);
+    if (Number.isNaN(num)) return null;
+    return Math.max(field.min, Math.min(field.max, num));
+  }
+
   slider.addEventListener("input", () => {
-    number.value = slider.value;
-    handleCssInput(name, buildClamp(slider.value, field), field);
+    const num = toSliderNumber(slider.value);
+    if (num === null) return;
+    number.value = num;
+    handleCssInput(name, buildClamp(num, field), field);
   });
   number.addEventListener("input", () => {
-    slider.value = number.value;
-    handleCssInput(name, buildClamp(number.value, field), field);
+    const num = toSliderNumber(number.value);
+    if (num === null) return;
+    slider.value = num;
+    handleCssInput(name, buildClamp(num, field), field);
+  });
+  number.addEventListener("blur", () => {
+    const num = parseFloat(number.value);
+    if (!Number.isNaN(num)) {
+      number.value = num;
+    }
   });
 
   rangeWrapper.appendChild(slider);
@@ -640,7 +673,7 @@ function renderContentField(lang, key, label, value, multiline) {
   const row = document.createElement("div");
   row.className = "field-row";
   const id = `content-${lang}-${key}`;
-  row.appendChild(createLabel(`${label}（${lang === "zh" ? "中" : "EN"）`, id));
+  row.appendChild(createLabel(`${label}（${lang === "zh" ? "中" : "EN"}）`, id));
 
   const input = document.createElement(multiline ? "textarea" : "input");
   if (!multiline) input.type = "text";
@@ -743,7 +776,8 @@ function syncRelatedControls(name, value, field) {
       if (!parsed) return;
       if (el.dataset.control === "raw") {
         el.value = value;
-      } else {
+      } else if (el !== document.activeElement) {
+        // 正在输入的数字框不同步，避免小数点被吞掉
         el.value = parsed.value;
       }
     }

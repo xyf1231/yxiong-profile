@@ -16,7 +16,7 @@
   --results-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --results-title-font-size: var(--font-h2);
+  --results-title-font-size: clamp(2.2rem, 7vw, 4rem);
   --results-title-line-height: 1.12;
   --results-title-letter-spacing: -0.02em;
   --results-title-color: rgba(255, 255, 255, 0.96);
@@ -32,19 +32,18 @@
 }
 
 /* 容器 */
-.results-page .section-wrap,
-.section-wrap {
+.results-page .section-wrap {
   width: min(100% - 40px, var(--results-container-max-width));
-  padding: var(--results-section-padding) 0;
+  padding: var(--results-section-padding) 0 !important;
 }
 
-main > .section-wrap:first-child,
-main > .section-band:first-child > .section-wrap {
-  padding-top: var(--results-first-section-padding-top);
+.results-page main > .section-wrap:first-child,
+.results-page main > .section-band:first-child > .section-wrap {
+  padding-top: var(--results-first-section-padding-top) !important;
 }
 
 /* Kicker */
-.section-kicker {
+.results-page .section-kicker {
   font-size: var(--results-kicker-font-size) !important;
   letter-spacing: var(--results-kicker-letter-spacing) !important;
   color: var(--results-kicker-color) !important;
@@ -52,7 +51,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* Section title */
-.section-heading h2 {
+.results-page .section-heading h2 {
   font-size: var(--results-title-font-size) !important;
   line-height: var(--results-title-line-height) !important;
   letter-spacing: var(--results-title-letter-spacing) !important;
@@ -60,26 +59,26 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* 列表间距 */
-.all-publication-list,
-.detail-list {
+.results-page .all-publication-list,
+.results-page .detail-list {
   gap: var(--results-list-gap);
 }
 
 @media (max-width: 768px) {
-  .section-wrap {
-    padding: var(--results-section-padding-mobile) 0;
+  .results-page .section-wrap {
+    padding: var(--results-section-padding-mobile) 0 !important;
   }
 
-  main > .section-wrap:first-child,
-  main > .section-band:first-child > .section-wrap {
-    padding-top: var(--results-first-section-padding-top-mobile);
+  .results-page main > .section-wrap:first-child,
+  .results-page main > .section-band:first-child > .section-wrap {
+    padding-top: var(--results-first-section-padding-top-mobile) !important;
   }
 
-  .section-kicker {
+  .results-page .section-kicker {
     font-size: var(--results-kicker-font-size-mobile) !important;
   }
 
-  .section-heading h2 {
+  .results-page .section-heading h2 {
     font-size: var(--results-title-font-size-mobile) !important;
   }
 }

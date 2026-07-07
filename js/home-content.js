@@ -2,7 +2,6 @@
  * home-content.js — 首页各模块文案配置
  * 通过 hero-editor.html 读取/编辑。
  * 加载后会被 script.js 的 applyLanguage 读取，覆盖 translations 中的对应键。
- * 同时提供 window.HOME_CONTENT（历史兼容）与 window.PAGE_CONTENT（统一页面覆盖）。
  */
 window.HOME_CONTENT = {
   "zh": {

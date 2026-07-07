@@ -1821,6 +1821,18 @@ function setupNavigation() {
   document.querySelectorAll(`[data-nav="${current}"]`).forEach((node) => {
     node.setAttribute("aria-current", "page");
   });
+
+  // 移动端菜单：根据 URL hash 高亮对应的子菜单项
+  const hash = window.location.hash.replace("#", "");
+  if (hash) {
+    document.querySelectorAll(".nav-card-links a").forEach((link) => {
+      const linkHash = link.getAttribute("href")?.split("#")[1];
+      if (linkHash && linkHash === hash) {
+        link.setAttribute("aria-current", "location");
+      }
+    });
+  }
+
   updateNavIndicator(nav);
   requestAnimationFrame(() => updateNavIndicator(nav));
 }

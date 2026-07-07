@@ -10,19 +10,19 @@
   --profile-first-section-padding-top: clamp(112px, 12vw, 156px);
 
   /* 页面顶部大标题 */
-  --profile-intro-title-size: var(--font-h1);
+  --profile-intro-title-size: clamp(1.5rem, 6vw, 8rem);
   --profile-intro-title-line-height: 1.12;
   --profile-intro-title-letter-spacing: -0.02em;
   --profile-intro-title-color: rgba(255, 255, 255, 0.96);
 
   /* Section kicker */
-  --profile-kicker-font-size: var(--font-kicker);
+  --profile-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
   --profile-kicker-letter-spacing: 0.14em;
   --profile-kicker-color: var(--accent);
   --profile-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --profile-title-font-size: var(--font-h2);
+  --profile-title-font-size: clamp(1.5rem, 6vw, 6rem);
   --profile-title-line-height: 1.12;
   --profile-title-letter-spacing: -0.02em;
   --profile-title-color: rgba(255, 255, 255, 0.96);
@@ -40,19 +40,23 @@
 }
 
 /* 容器 */
-.profile-page .section-wrap,
-.section-wrap {
+.profile-page .section-wrap {
   width: min(100% - 40px, var(--profile-container-max-width));
-  padding: var(--profile-section-padding) 0;
+  padding: var(--profile-section-padding) 0 !important;
 }
 
-main > .section-wrap:first-child,
-main > .section-band:first-child > .section-wrap {
-  padding-top: var(--profile-first-section-padding-top);
+.profile-page main > .section-wrap:first-child,
+.profile-page main > .section-band:first-child > .section-wrap {
+  padding-top: var(--profile-first-section-padding-top) !important;
+}
+
+/* 个人名片区首 Section 上间距被 styles.css 高特异性规则覆盖，需单独提升 */
+.profile-page main > .profile-combo.section-wrap:first-child {
+  padding-top: var(--profile-first-section-padding-top) !important;
 }
 
 /* 页面顶部大标题 */
-.profile-intro-title {
+.profile-page .profile-intro-heading-inner .profile-intro-title {
   font-size: var(--profile-intro-title-size) !important;
   line-height: var(--profile-intro-title-line-height) !important;
   letter-spacing: var(--profile-intro-title-letter-spacing) !important;
@@ -60,7 +64,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* Kicker */
-.section-kicker {
+.profile-page .section-kicker {
   font-size: var(--profile-kicker-font-size) !important;
   letter-spacing: var(--profile-kicker-letter-spacing) !important;
   color: var(--profile-kicker-color) !important;
@@ -68,11 +72,11 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* Section title */
-.section-heading h2,
-#profile-research-title,
-#profile-experience-title,
-#profile-selected-title,
-#profile-appointments-title {
+.profile-page .section-heading h2,
+.profile-page #profile-research-title,
+.profile-page #profile-experience-title,
+.profile-page #profile-selected-title,
+.profile-page #profile-appointments-title {
   font-size: var(--profile-title-font-size) !important;
   line-height: var(--profile-title-line-height) !important;
   letter-spacing: var(--profile-title-letter-spacing) !important;
@@ -80,34 +84,35 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* 简介正文 */
-.profile-bio-text {
-  font-size: var(--profile-bio-font-size);
-  line-height: var(--profile-bio-line-height);
+.profile-page .profile-bio-text {
+  font-size: var(--profile-bio-font-size) !important;
+  line-height: var(--profile-bio-line-height) !important;
 }
 
 @media (max-width: 768px) {
-  .section-wrap {
-    padding: var(--profile-section-padding-mobile) 0;
+  .profile-page .section-wrap {
+    padding: var(--profile-section-padding-mobile) 0 !important;
   }
 
-  main > .section-wrap:first-child,
-  main > .section-band:first-child > .section-wrap {
-    padding-top: var(--profile-first-section-padding-top-mobile);
+  .profile-page main > .section-wrap:first-child,
+  .profile-page main > .section-band:first-child > .section-wrap,
+  .profile-page main > .profile-combo.section-wrap:first-child {
+    padding-top: var(--profile-first-section-padding-top-mobile) !important;
   }
 
-  .profile-intro-title {
+  .profile-page .profile-intro-title {
     font-size: var(--profile-intro-title-size-mobile) !important;
   }
 
-  .section-kicker {
+  .profile-page .section-kicker {
     font-size: var(--profile-kicker-font-size-mobile) !important;
   }
 
-  .section-heading h2,
-  #profile-research-title,
-  #profile-experience-title,
-  #profile-selected-title,
-  #profile-appointments-title {
+  .profile-page .section-heading h2,
+  .profile-page #profile-research-title,
+  .profile-page #profile-experience-title,
+  .profile-page #profile-selected-title,
+  .profile-page #profile-appointments-title {
     font-size: var(--profile-title-font-size-mobile) !important;
   }
 }

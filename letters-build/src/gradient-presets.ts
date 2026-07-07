@@ -7,13 +7,13 @@ export interface GradientStop {
 }
 
 export interface GradientPreset {
-  cat: 'apple' | 'morandi' | 'classic';
+  cat: 'apple' | 'morandi' | 'classic' | 'colorful';
   stops: GradientStop[];
 }
 
 export const GRADIENT_PRESETS = rawPresets as Record<string, GradientPreset>;
 
-export type GradientCategory = 'all' | 'apple' | 'morandi' | 'classic';
+export type GradientCategory = 'all' | 'apple' | 'morandi' | 'classic' | 'colorful';
 
 export function hexToHsl(hex: string): { h: number; s: number; l: number } {
   const clean = hex.replace('#', '');
@@ -131,7 +131,7 @@ export function getPresetKeysByCategory(category: Exclude<GradientCategory, 'all
 }
 
 export function getCategories(): Exclude<GradientCategory, 'all'>[] {
-  return ['apple', 'morandi', 'classic'];
+  return ['apple', 'morandi', 'classic', 'colorful'];
 }
 
 export function getRandomPreset(category: GradientCategory = 'all'): string | null {

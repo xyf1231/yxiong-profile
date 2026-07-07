@@ -23808,7 +23808,7 @@
 			]
 		},
 		rainbow: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23837,7 +23837,7 @@
 			]
 		},
 		sunrise: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23866,7 +23866,7 @@
 			]
 		},
 		rasta: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23895,7 +23895,7 @@
 			]
 		},
 		plasma: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23924,7 +23924,7 @@
 			]
 		},
 		aurora: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23953,7 +23953,7 @@
 			]
 		},
 		heat: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -23982,7 +23982,7 @@
 			]
 		},
 		"ice-fire": {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -24011,7 +24011,7 @@
 			]
 		},
 		sunset: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -24040,7 +24040,7 @@
 			]
 		},
 		oceanic: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -24069,7 +24069,7 @@
 			]
 		},
 		neon: {
-			"cat": "classic",
+			"cat": "colorful",
 			"stops": [
 				{
 					"offset": "0%",
@@ -24094,6 +24094,256 @@
 				{
 					"offset": "100%",
 					"color": "#ffff00"
+				}
+			]
+		},
+		bubblegum: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#ff6b9d"
+				},
+				{
+					"offset": "25%",
+					"color": "#c44569"
+				},
+				{
+					"offset": "50%",
+					"color": "#8e44ad"
+				},
+				{
+					"offset": "75%",
+					"color": "#00d2ff"
+				},
+				{
+					"offset": "100%",
+					"color": "#3a7bd5"
+				}
+			]
+		},
+		galaxy: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#0f0c29"
+				},
+				{
+					"offset": "25%",
+					"color": "#302b63"
+				},
+				{
+					"offset": "50%",
+					"color": "#24243e"
+				},
+				{
+					"offset": "75%",
+					"color": "#ff00cc"
+				},
+				{
+					"offset": "100%",
+					"color": "#333399"
+				}
+			]
+		},
+		tropical: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#00ff87"
+				},
+				{
+					"offset": "25%",
+					"color": "#60efff"
+				},
+				{
+					"offset": "50%",
+					"color": "#fff720"
+				},
+				{
+					"offset": "75%",
+					"color": "#ff6a00"
+				},
+				{
+					"offset": "100%",
+					"color": "#ff0055"
+				}
+			]
+		},
+		cyber: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#00f5ff"
+				},
+				{
+					"offset": "25%",
+					"color": "#ff00ff"
+				},
+				{
+					"offset": "50%",
+					"color": "#ffff00"
+				},
+				{
+					"offset": "75%",
+					"color": "#00f5ff"
+				},
+				{
+					"offset": "100%",
+					"color": "#ff00ff"
+				}
+			]
+		},
+		fire: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#ff0000"
+				},
+				{
+					"offset": "25%",
+					"color": "#ff5e00"
+				},
+				{
+					"offset": "50%",
+					"color": "#ff9d00"
+				},
+				{
+					"offset": "75%",
+					"color": "#ffea00"
+				},
+				{
+					"offset": "100%",
+					"color": "#ffff99"
+				}
+			]
+		},
+		lemonade: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#fff200"
+				},
+				{
+					"offset": "25%",
+					"color": "#ffdd00"
+				},
+				{
+					"offset": "50%",
+					"color": "#ff8c00"
+				},
+				{
+					"offset": "75%",
+					"color": "#ff006e"
+				},
+				{
+					"offset": "100%",
+					"color": "#d300c5"
+				}
+			]
+		},
+		"ocean-bright": {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#00c9ff"
+				},
+				{
+					"offset": "25%",
+					"color": "#92fe9d"
+				},
+				{
+					"offset": "50%",
+					"color": "#00d2ff"
+				},
+				{
+					"offset": "75%",
+					"color": "#3a7bd5"
+				},
+				{
+					"offset": "100%",
+					"color": "#00c6ff"
+				}
+			]
+		},
+		"sunset-bright": {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#ff512f"
+				},
+				{
+					"offset": "25%",
+					"color": "#f09819"
+				},
+				{
+					"offset": "50%",
+					"color": "#ed213a"
+				},
+				{
+					"offset": "75%",
+					"color": "#93291e"
+				},
+				{
+					"offset": "100%",
+					"color": "#ff512f"
+				}
+			]
+		},
+		candy: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#ff0000"
+				},
+				{
+					"offset": "25%",
+					"color": "#ffffff"
+				},
+				{
+					"offset": "50%",
+					"color": "#00bfff"
+				},
+				{
+					"offset": "75%",
+					"color": "#ff69b4"
+				},
+				{
+					"offset": "100%",
+					"color": "#8a2be2"
+				}
+			]
+		},
+		northern: {
+			"cat": "colorful",
+			"stops": [
+				{
+					"offset": "0%",
+					"color": "#00ff9d"
+				},
+				{
+					"offset": "25%",
+					"color": "#00d2ff"
+				},
+				{
+					"offset": "50%",
+					"color": "#3a7bd5"
+				},
+				{
+					"offset": "75%",
+					"color": "#7b2cbf"
+				},
+				{
+					"offset": "100%",
+					"color": "#ff006e"
 				}
 			]
 		}
@@ -24186,7 +24436,8 @@
 		return [
 			"apple",
 			"morandi",
-			"classic"
+			"classic",
+			"colorful"
 		];
 	}
 	function getRandomPreset(category = "all") {
@@ -24253,14 +24504,35 @@
 			strokeLinecap: "round",
 			strokeLinejoin: "round",
 			children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" }), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M3 3v5h5" })]
+		}),
+		heart: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+			viewBox: "0 0 24 24",
+			width: "14",
+			height: "14",
+			fill: "currentColor",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" })
+		}),
+		heartOutline: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("svg", {
+			viewBox: "0 0 24 24",
+			width: "14",
+			height: "14",
+			fill: "none",
+			stroke: "currentColor",
+			strokeWidth: "2",
+			strokeLinecap: "round",
+			strokeLinejoin: "round",
+			children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("path", { d: "M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" })
 		})
 	};
-	var CATEGORY_LABELS = {
+	var TAB_LABELS = {
 		all: "全部",
 		apple: "Apple Tones",
 		morandi: "Morandi",
-		classic: "Classic"
+		classic: "Classic",
+		colorful: "Colorful",
+		favorites: "收藏"
 	};
+	var FAVORITES_STORAGE_KEY = "letters-gradient-favorites";
 	var PHASE_LABELS = {
 		idle: "就绪",
 		drawing: "DRAW",
@@ -24290,7 +24562,22 @@
 		const [brightness, setBrightness] = (0, import_react.useState)(initial.brightness);
 		const [selectedPresets, setSelectedPresets] = (0, import_react.useState)(new Set(initial.selectedPresets));
 		const [activePresetKey, setActivePresetKey] = (0, import_react.useState)(getRandomPreset("all") || getPresetKeys()[0]);
-		const [category, setCategory] = (0, import_react.useState)("all");
+		const [tab, setTab] = (0, import_react.useState)("all");
+		const [favorites, setFavorites] = (0, import_react.useState)(/* @__PURE__ */ new Set());
+		(0, import_react.useEffect)(() => {
+			try {
+				const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+				if (raw) {
+					const parsed = JSON.parse(raw);
+					if (Array.isArray(parsed)) setFavorites(new Set(parsed.filter((k) => typeof k === "string")));
+				}
+			} catch {}
+		}, []);
+		(0, import_react.useEffect)(() => {
+			try {
+				localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favorites)));
+			} catch {}
+		}, [favorites]);
 		const [progress, setProgress] = (0, import_react.useState)(1);
 		const [phase, setPhase] = (0, import_react.useState)("idle");
 		const [isPlaying, setIsPlaying] = (0, import_react.useState)(false);
@@ -24448,9 +24735,10 @@
 		const safeText = text.slice(0, 60) || "Hello";
 		const filteredPresets = (0, import_react.useMemo)(() => {
 			const keys = getPresetKeys();
-			if (category === "all") return keys;
-			return keys.filter((k) => GRADIENT_PRESETS[k].cat === category);
-		}, [category]);
+			if (tab === "all") return keys;
+			if (tab === "favorites") return keys.filter((k) => favorites.has(k));
+			return keys.filter((k) => GRADIENT_PRESETS[k].cat === tab);
+		}, [tab, favorites]);
 		const selectedCount = selectedPresets.size;
 		const totalCount = getPresetKeys().length;
 		const togglePreset = (key) => {
@@ -24461,6 +24749,15 @@
 				return next;
 			});
 		};
+		const toggleFavorite = (0, import_react.useCallback)((key, e) => {
+			e?.stopPropagation();
+			setFavorites((prev) => {
+				const next = new Set(prev);
+				if (next.has(key)) next.delete(key);
+				else next.add(key);
+				return next;
+			});
+		}, []);
 		const selectAll = () => {
 			setSelectedPresets(new Set(filteredPresets));
 		};
@@ -24588,11 +24885,13 @@
 									overflow: "hidden"
 								},
 								children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", { style: {
-									width: `${progress * 100}%`,
+									width: "100%",
 									height: "100%",
 									background: getCssGradient(activePresetKey, brightness, saturation),
 									borderRadius: "3px",
-									transition: "width 0.05s linear"
+									transform: `scaleX(${progress})`,
+									transformOrigin: "left center",
+									willChange: "transform"
 								} })
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 								style: {
@@ -24813,7 +25112,9 @@
 										selectedCount,
 										" / ",
 										totalCount,
-										" 已选"
+										" 已选 · ",
+										favorites.size,
+										" 收藏"
 									]
 								})]
 							}), /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
@@ -24843,22 +25144,26 @@
 								gap: "8px",
 								flexWrap: "wrap"
 							},
-							children: ["all", ...getCategories()].map((c) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+							children: [
+								"all",
+								...getCategories(),
+								"favorites"
+							].map((t) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 								type: "button",
-								onClick: () => setCategory(c),
+								onClick: () => setTab(t),
 								style: {
 									padding: "6px 14px",
 									borderRadius: "999px",
 									border: "1px solid",
-									borderColor: category === c ? "rgba(168, 85, 247, 0.8)" : "rgba(255, 255, 255, 0.1)",
-									background: category === c ? "rgba(168, 85, 247, 0.2)" : "rgba(0, 0, 0, 0.35)",
-									color: category === c ? "#fff" : "rgba(255, 255, 255, 0.6)",
+									borderColor: tab === t ? "rgba(168, 85, 247, 0.8)" : "rgba(255, 255, 255, 0.1)",
+									background: tab === t ? "rgba(168, 85, 247, 0.2)" : "rgba(0, 0, 0, 0.35)",
+									color: tab === t ? "#fff" : "rgba(255, 255, 255, 0.6)",
 									cursor: "pointer",
 									fontSize: "0.85rem",
 									fontWeight: 600
 								},
-								children: CATEGORY_LABELS[c]
-							}, c))
+								children: TAB_LABELS[t]
+							}, t))
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 							style: {
@@ -24872,6 +25177,7 @@
 							children: filteredPresets.map((key) => {
 								const selected = selectedPresets.has(key);
 								const isActive = activePresetKey === key;
+								const isFavorite = favorites.has(key);
 								return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("button", {
 									type: "button",
 									onClick: () => togglePreset(key),
@@ -24891,37 +25197,74 @@
 										transition: "transform 0.1s, box-shadow 0.2s"
 									},
 									title: key,
-									children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										style: {
-											fontSize: "0.7rem",
-											fontWeight: 700,
-											color: "#fff",
-											textShadow: "0 1px 2px rgba(0,0,0,0.6)",
-											textTransform: "capitalize",
-											textAlign: "left",
-											lineHeight: 1.1
-										},
-										children: key
-									}), selected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
-										style: {
-											position: "absolute",
-											top: "4px",
-											right: "4px",
-											width: "16px",
-											height: "16px",
-											borderRadius: "50%",
-											background: "rgba(255,255,255,0.9)",
-											color: "#a855f7",
-											display: "flex",
-											alignItems: "center",
-											justifyContent: "center",
-											fontSize: "10px",
-											fontWeight: 800
-										},
-										children: "✓"
-									})]
+									children: [
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
+											type: "button",
+											onClick: (e) => toggleFavorite(key, e),
+											style: {
+												position: "absolute",
+												top: "4px",
+												left: "4px",
+												width: "20px",
+												height: "20px",
+												borderRadius: "50%",
+												border: "none",
+												background: isFavorite ? "rgba(236, 72, 153, 0.92)" : "rgba(0, 0, 0, 0.35)",
+												color: "#fff",
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												cursor: "pointer",
+												boxShadow: "0 1px 3px rgba(0,0,0,0.3)",
+												transition: "background 0.15s",
+												zIndex: 2
+											},
+											"aria-label": isFavorite ? "取消收藏" : "收藏",
+											title: isFavorite ? "取消收藏" : "收藏",
+											children: isFavorite ? ICONS.heart : ICONS.heartOutline
+										}),
+										/* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											style: {
+												fontSize: "0.7rem",
+												fontWeight: 700,
+												color: "#fff",
+												textShadow: "0 1px 2px rgba(0,0,0,0.6)",
+												textTransform: "capitalize",
+												textAlign: "left",
+												lineHeight: 1.1
+											},
+											children: key
+										}),
+										selected && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("span", {
+											style: {
+												position: "absolute",
+												top: "4px",
+												right: "4px",
+												width: "16px",
+												height: "16px",
+												borderRadius: "50%",
+												background: "rgba(255,255,255,0.9)",
+												color: "#a855f7",
+												display: "flex",
+												alignItems: "center",
+												justifyContent: "center",
+												fontSize: "10px",
+												fontWeight: 800
+											},
+											children: "✓"
+										})
+									]
 								}, key);
 							})
+						}),
+						filteredPresets.length === 0 && tab === "favorites" && /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
+							style: {
+								textAlign: "center",
+								padding: "28px 12px",
+								color: "rgba(255, 255, 255, 0.4)",
+								fontSize: "0.85rem"
+							},
+							children: "暂无收藏渐变，点击任意卡片左上角的心形即可收藏。"
 						})
 					]
 				})

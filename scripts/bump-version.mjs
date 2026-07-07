@@ -21,19 +21,34 @@ if (!nextVersion || !/^\d+\.\d+\.\d+$/.test(nextVersion)) {
 // 缓存戳与页脚文本
 const cacheToken = `v${nextVersion}`;
 const footerText = `Version ${nextVersion}`;
-const htmlFiles = fs.readdirSync(root).filter((file) => file.endsWith(".html"));
+
+function collectHtmlFiles(dir) {
+  const items = fs.readdirSync(dir, { withFileTypes: true });
+  let files = [];
+  for (const item of items) {
+    const fullPath = path.join(dir, item.name);
+    if (item.isDirectory() && item.name !== "node_modules" && !item.name.startsWith(".")) {
+      files = files.concat(collectHtmlFiles(fullPath));
+    } else if (item.isFile() && item.name.endsWith(".html")) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+const htmlFiles = collectHtmlFiles(root);
 let changedFiles = 0;
 
-for (const file of htmlFiles) {
-  const filePath = path.join(root, file);
+for (const filePath of htmlFiles) {
   const before = fs.readFileSync(filePath, "utf8");
-  let after = before.replace(/((?:css\/styles\.css|css\/[^"']*-config\.css|js\/(?:data|script|admin)\.js|js\/[^"']*-content\.js)\?v=)[^"']+/g, `$1${cacheToken}`);
+  // 统一更新所有 ?v= 缓存戳（覆盖 css/js 及 letters-dist 等产物）
+  let after = before.replace(/\?v=[^"']+/g, `?v=${cacheToken}`);
   after = after.replace(/Version \d+\.\d+\.\d+/g, footerText);
 
   if (after !== before) {
     fs.writeFileSync(filePath, after, "utf8");
     changedFiles += 1;
-    console.log(`updated ${file}`);
+    console.log(`updated ${path.relative(root, filePath)}`);
   }
 }
 

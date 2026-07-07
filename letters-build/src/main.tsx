@@ -63,14 +63,30 @@ const ICONS = {
       <path d="M3 3v5h5" />
     </svg>
   ),
+  heart: (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+    </svg>
+  ),
+  heartOutline: (
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+    </svg>
+  ),
 };
 
-const CATEGORY_LABELS: Record<GradientCategory, string> = {
+type TabKey = GradientCategory | 'favorites';
+
+const TAB_LABELS: Record<TabKey, string> = {
   all: '全部',
   apple: 'Apple Tones',
   morandi: 'Morandi',
   classic: 'Classic',
+  colorful: 'Colorful',
+  favorites: '收藏',
 };
+
+const FAVORITES_STORAGE_KEY = 'letters-gradient-favorites';
 
 const PHASE_LABELS: Record<Phase, string> = {
   idle: '就绪',
@@ -108,7 +124,35 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
   const [activePresetKey, setActivePresetKey] = useState<string>(
     getRandomPreset('all') || getPresetKeys()[0]
   );
-  const [category, setCategory] = useState<GradientCategory>('all');
+  const [tab, setTab] = useState<TabKey>('all');
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // 从 localStorage 读取收藏
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(FAVORITES_STORAGE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setFavorites(new Set(parsed.filter((k) => typeof k === 'string')));
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  // 收藏变化时持久化
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        FAVORITES_STORAGE_KEY,
+        JSON.stringify(Array.from(favorites))
+      );
+    } catch {
+      // ignore storage errors
+    }
+  }, [favorites]);
 
   // 受控动画状态
   const [progress, setProgress] = useState(1);
@@ -330,9 +374,10 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
 
   const filteredPresets = useMemo(() => {
     const keys = getPresetKeys();
-    if (category === 'all') return keys;
-    return keys.filter((k) => GRADIENT_PRESETS[k].cat === category);
-  }, [category]);
+    if (tab === 'all') return keys;
+    if (tab === 'favorites') return keys.filter((k) => favorites.has(k));
+    return keys.filter((k) => GRADIENT_PRESETS[k].cat === tab);
+  }, [tab, favorites]);
 
   const selectedCount = selectedPresets.size;
   const totalCount = getPresetKeys().length;
@@ -348,6 +393,19 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
       return next;
     });
   };
+
+  const toggleFavorite = useCallback(
+    (key: string, e?: React.MouseEvent) => {
+      e?.stopPropagation();
+      setFavorites((prev) => {
+        const next = new Set(prev);
+        if (next.has(key)) next.delete(key);
+        else next.add(key);
+        return next;
+      });
+    },
+    []
+  );
 
   const selectAll = () => {
     setSelectedPresets(new Set(filteredPresets));
@@ -494,11 +552,13 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
           >
             <div
               style={{
-                width: `${progress * 100}%`,
+                width: '100%',
                 height: '100%',
                 background: getCssGradient(activePresetKey, brightness, saturation),
                 borderRadius: '3px',
-                transition: 'width 0.05s linear',
+                transform: `scaleX(${progress})`,
+                transformOrigin: 'left center',
+                willChange: 'transform',
               }}
             />
           </div>
@@ -732,7 +792,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
               渐变池
             </span>
             <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.55)' }}>
-              {selectedCount} / {totalCount} 已选
+              {selectedCount} / {totalCount} 已选 · {favorites.size} 收藏
             </span>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -743,30 +803,30 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
         </div>
 
         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-          {(['all', ...getCategories()] as GradientCategory[]).map((c) => (
+          {(['all', ...getCategories(), 'favorites'] as TabKey[]).map((t) => (
             <button
-              key={c}
+              key={t}
               type="button"
-              onClick={() => setCategory(c)}
+              onClick={() => setTab(t)}
               style={{
                 padding: '6px 14px',
                 borderRadius: '999px',
                 border: '1px solid',
                 borderColor:
-                  category === c
+                  tab === t
                     ? 'rgba(168, 85, 247, 0.8)'
                     : 'rgba(255, 255, 255, 0.1)',
                 background:
-                  category === c
+                  tab === t
                     ? 'rgba(168, 85, 247, 0.2)'
                     : 'rgba(0, 0, 0, 0.35)',
-                color: category === c ? '#fff' : 'rgba(255, 255, 255, 0.6)',
+                color: tab === t ? '#fff' : 'rgba(255, 255, 255, 0.6)',
                 cursor: 'pointer',
                 fontSize: '0.85rem',
                 fontWeight: 600,
               }}
             >
-              {CATEGORY_LABELS[c]}
+              {TAB_LABELS[t]}
             </button>
           ))}
         </div>
@@ -784,6 +844,7 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
           {filteredPresets.map((key) => {
             const selected = selectedPresets.has(key);
             const isActive = activePresetKey === key;
+            const isFavorite = favorites.has(key);
             return (
               <button
                 key={key}
@@ -810,6 +871,34 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
                 }}
                 title={key}
               >
+                <button
+                  type="button"
+                  onClick={(e) => toggleFavorite(key, e)}
+                  style={{
+                    position: 'absolute',
+                    top: '4px',
+                    left: '4px',
+                    width: '20px',
+                    height: '20px',
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: isFavorite
+                      ? 'rgba(236, 72, 153, 0.92)'
+                      : 'rgba(0, 0, 0, 0.35)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
+                    transition: 'background 0.15s',
+                    zIndex: 2,
+                  }}
+                  aria-label={isFavorite ? '取消收藏' : '收藏'}
+                  title={isFavorite ? '取消收藏' : '收藏'}
+                >
+                  {isFavorite ? ICONS.heart : ICONS.heartOutline}
+                </button>
                 <span
                   style={{
                     fontSize: '0.7rem',
@@ -848,6 +937,18 @@ function Playground({ initialConfig }: { initialConfig?: PlaygroundConfig }) {
             );
           })}
         </div>
+        {filteredPresets.length === 0 && tab === 'favorites' && (
+          <div
+            style={{
+              textAlign: 'center',
+              padding: '28px 12px',
+              color: 'rgba(255, 255, 255, 0.4)',
+              fontSize: '0.85rem',
+            }}
+          >
+            暂无收藏渐变，点击任意卡片左上角的心形即可收藏。
+          </div>
+        )}
       </div>
     </div>
   );

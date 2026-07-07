@@ -166,7 +166,7 @@ function setupSiteLoadingGate() {
     if (readyTimerId) window.clearTimeout(readyTimerId);
     readyTimerId = window.setTimeout(() => {
       root.dataset.siteLoading = "ready";
-    }, 700);
+    }, 120);
     if (overlay) {
       overlay.classList.add("is-hidden");
       window.setTimeout(() => overlay.remove(), 820);
@@ -227,6 +227,10 @@ function setupSiteLoadingGate() {
   };
 
   const waitForReady = async () => {
+    // 兜底：最多 4 秒必须解除加载门，避免资源卡死导致页面无法滚动
+    window.setTimeout(() => {
+      if (!finished) finish();
+    }, 4000);
     try {
       ensureOverlay();
       setProgress(0);
@@ -1841,6 +1845,18 @@ function setupNavigation() {
   document.querySelectorAll(`[data-nav="${current}"]`).forEach((node) => {
     node.setAttribute("aria-current", "page");
   });
+
+  // 移动端菜单：根据 URL hash 高亮对应的子菜单项
+  const hash = window.location.hash.replace("#", "");
+  if (hash) {
+    document.querySelectorAll(".nav-card-links a").forEach((link) => {
+      const linkHash = link.getAttribute("href")?.split("#")[1];
+      if (linkHash && linkHash === hash) {
+        link.setAttribute("aria-current", "location");
+      }
+    });
+  }
+
   updateNavIndicator(nav);
   requestAnimationFrame(() => updateNavIndicator(nav));
 }

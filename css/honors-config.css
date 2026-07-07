@@ -16,7 +16,7 @@
   --honors-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --honors-title-font-size: var(--font-h2);
+  --honors-title-font-size: clamp(2.2rem, 7vw, 4rem);
   --honors-title-line-height: 1.12;
   --honors-title-letter-spacing: -0.02em;
   --honors-title-color: rgba(255, 255, 255, 0.96);
@@ -32,19 +32,18 @@
 }
 
 /* 容器 */
-.honors-page .section-wrap,
-.section-wrap {
+.honors-page .section-wrap {
   width: min(100% - 40px, var(--honors-container-max-width));
-  padding: var(--honors-section-padding) 0;
+  padding: var(--honors-section-padding) 0 !important;
 }
 
-main > .section-wrap:first-child,
-main > .section-band:first-child > .section-wrap {
-  padding-top: var(--honors-first-section-padding-top);
+.honors-page main > .section-wrap:first-child,
+.honors-page main > .section-band:first-child > .section-wrap {
+  padding-top: var(--honors-first-section-padding-top) !important;
 }
 
 /* Kicker */
-.section-kicker {
+.honors-page .section-kicker {
   font-size: var(--honors-kicker-font-size) !important;
   letter-spacing: var(--honors-kicker-letter-spacing) !important;
   color: var(--honors-kicker-color) !important;
@@ -52,7 +51,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* Section title */
-.section-heading h2 {
+.honors-page .section-heading h2 {
   font-size: var(--honors-title-font-size) !important;
   line-height: var(--honors-title-line-height) !important;
   letter-spacing: var(--honors-title-letter-spacing) !important;
@@ -60,25 +59,25 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* 列表间距 */
-.detail-list {
+.honors-page .detail-list {
   gap: var(--honors-list-gap);
 }
 
 @media (max-width: 768px) {
-  .section-wrap {
-    padding: var(--honors-section-padding-mobile) 0;
+  .honors-page .section-wrap {
+    padding: var(--honors-section-padding-mobile) 0 !important;
   }
 
-  main > .section-wrap:first-child,
-  main > .section-band:first-child > .section-wrap {
-    padding-top: var(--honors-first-section-padding-top-mobile);
+  .honors-page main > .section-wrap:first-child,
+  .honors-page main > .section-band:first-child > .section-wrap {
+    padding-top: var(--honors-first-section-padding-top-mobile) !important;
   }
 
-  .section-kicker {
+  .honors-page .section-kicker {
     font-size: var(--honors-kicker-font-size-mobile) !important;
   }
 
-  .section-heading h2 {
+  .honors-page .section-heading h2 {
     font-size: var(--honors-title-font-size-mobile) !important;
   }
 }

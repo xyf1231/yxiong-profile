@@ -16,7 +16,7 @@
   --activities-kicker-margin-bottom: 14px;
 
   /* Section title */
-  --activities-title-font-size: var(--font-h2);
+  --activities-title-font-size: clamp(2.2rem, 7vw, 4rem);
   --activities-title-line-height: 1.12;
   --activities-title-letter-spacing: -0.02em;
   --activities-title-color: rgba(255, 255, 255, 0.96);
@@ -32,19 +32,18 @@
 }
 
 /* 容器 */
-.activities-page .section-wrap,
-.section-wrap {
+.activities-page .section-wrap {
   width: min(100% - 40px, var(--activities-container-max-width));
-  padding: var(--activities-section-padding) 0;
+  padding: var(--activities-section-padding) 0 !important;
 }
 
-main > .section-wrap:first-child,
-main > .section-band:first-child > .section-wrap {
-  padding-top: var(--activities-first-section-padding-top);
+.activities-page main > .section-wrap:first-child,
+.activities-page main > .section-band:first-child > .section-wrap {
+  padding-top: var(--activities-first-section-padding-top) !important;
 }
 
 /* Kicker */
-.section-kicker {
+.activities-page .section-kicker {
   font-size: var(--activities-kicker-font-size) !important;
   letter-spacing: var(--activities-kicker-letter-spacing) !important;
   color: var(--activities-kicker-color) !important;
@@ -52,7 +51,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* Section title */
-.section-heading h2 {
+.activities-page .section-heading h2 {
   font-size: var(--activities-title-font-size) !important;
   line-height: var(--activities-title-line-height) !important;
   letter-spacing: var(--activities-title-letter-spacing) !important;
@@ -60,25 +59,25 @@ main > .section-band:first-child > .section-wrap {
 }
 
 /* 列表间距 */
-.detail-list {
+.activities-page .detail-list {
   gap: var(--activities-list-gap);
 }
 
 @media (max-width: 768px) {
-  .section-wrap {
-    padding: var(--activities-section-padding-mobile) 0;
+  .activities-page .section-wrap {
+    padding: var(--activities-section-padding-mobile) 0 !important;
   }
 
-  main > .section-wrap:first-child,
-  main > .section-band:first-child > .section-wrap {
-    padding-top: var(--activities-first-section-padding-top-mobile);
+  .activities-page main > .section-wrap:first-child,
+  .activities-page main > .section-band:first-child > .section-wrap {
+    padding-top: var(--activities-first-section-padding-top-mobile) !important;
   }
 
-  .section-kicker {
+  .activities-page .section-kicker {
     font-size: var(--activities-kicker-font-size-mobile) !important;
   }
 
-  .section-heading h2 {
+  .activities-page .section-heading h2 {
     font-size: var(--activities-title-font-size-mobile) !important;
   }
 }

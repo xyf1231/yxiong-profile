@@ -41,12 +41,27 @@ for (const file of requiredFiles) {
   if (!fs.existsSync(path.join(root, file))) errors.push(`missing required file: ${file}`);
 }
 
-const htmlFiles = fs.readdirSync(root).filter((file) => file.endsWith(".html"));
+function collectHtmlFiles(dir) {
+  const items = fs.readdirSync(dir, { withFileTypes: true });
+  let files = [];
+  for (const item of items) {
+    const fullPath = path.join(dir, item.name);
+    if (item.isDirectory() && item.name !== "node_modules" && !item.name.startsWith(".")) {
+      files = files.concat(collectHtmlFiles(fullPath));
+    } else if (item.isFile() && item.name.endsWith(".html")) {
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+const htmlFiles = collectHtmlFiles(root);
 const versions = new Set();
 const footerVersions = new Set();
 
-for (const file of htmlFiles) {
-  const content = fs.readFileSync(path.join(root, file), "utf8");
+for (const filePath of htmlFiles) {
+  const content = fs.readFileSync(filePath, "utf8");
+  const file = path.relative(root, filePath);
   for (const match of content.matchAll(/\?v=([^"']+)/g)) versions.add(match[1]);
   for (const match of content.matchAll(/Version (\d+\.\d+\.\d+)/g)) footerVersions.add(match[1]);
 
