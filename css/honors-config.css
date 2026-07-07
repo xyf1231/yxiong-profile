@@ -32,8 +32,8 @@
   --honors-list-gap: var(--global-list-gap);
 
   /* 序号圆圈大小与文字 */
-  --honors-index-size: 60px;
-  --honors-index-font-size: 1.3rem;
+  --honors-index-size: clamp(52px, 3.7vw, 68px);
+  --honors-index-font-size: var(--font-body);
 
   /* 手机端 */
   --honors-first-section-gap-mobile: 0px;
@@ -47,8 +47,8 @@
   --honors-list-gap-mobile: var(--global-list-gap-mobile);
 
   /* 序号圆圈大小与文字（手机端） */
-  --honors-index-size-mobile: 50px;
-  --honors-index-font-size-mobile: 1.1rem;
+  --honors-index-size-mobile: 54px;
+  --honors-index-font-size-mobile: 1.08rem;
 }
 
 /* 容器 */

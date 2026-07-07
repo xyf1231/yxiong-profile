@@ -88,15 +88,9 @@
   --profile-publication-index-offset-top: -20px;
   --profile-publication-index-offset-left: -16px;
 
-  /* 「全部论文」按钮字号 */
-  --profile-view-all-font-size: var(--font-small);
-
   /* 序号圆圈大小与文字 */
-  --profile-index-size: 60px;
-  --profile-index-font-size: 1.3rem;
-
-  /* 「全部论文」按钮字号（手机端） */
-  --profile-view-all-font-size-mobile: 0.9rem;
+  --profile-index-size: clamp(52px, 3.7vw, 68px);
+  --profile-index-font-size: var(--font-body);
 
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
@@ -133,15 +127,15 @@
   --profile-publication-index-offset-left-mobile: -6px;
 
   /* 序号圆圈大小与文字（手机端） */
-  --profile-index-size-mobile: 50px;
-  --profile-index-font-size-mobile: 1.1rem;
+  --profile-index-size-mobile: 54px;
+  --profile-index-font-size-mobile: 1.08rem;
 
   /* 研究内容卡片文字（手机端） */
   --profile-research-title-font-size-mobile: 1.5rem;
   --profile-research-text-font-size-mobile: 0.9rem;
 
   /* 研究内容卡片尺寸与内边距（手机端） */
-  --profile-research-card-padding-mobile: 20px;
+  --profile-research-card-padding-mobile: 15px;
   --profile-research-card-padding-top-mobile: 8px;
   --profile-research-card-padding-bottom-mobile: 8px;
   --profile-research-card-min-height-mobile: 205px;
@@ -328,7 +322,6 @@
   max-width: 420px;
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  font-size: var(--profile-view-all-font-size) !important;
 }
 
 /* 代表论文卡片文字与间距 */
@@ -544,10 +537,5 @@
   .profile-page #profile-publication-list .pdf-actions {
     margin-top: var(--profile-publication-pdf-gap-mobile) !important;
     margin-right: var(--profile-publication-pdf-offset-right-mobile) !important;
-  }
-
-  /* 「全部论文」按钮字号（手机端） */
-  .profile-view-all-papers .button.secondary {
-    font-size: var(--profile-view-all-font-size-mobile) !important;
   }
 }

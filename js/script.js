@@ -1137,7 +1137,7 @@ function setupNewsCarousel(root) {
     if (behavior === "auto") {
       track.style.transitionDuration = "0ms";
     } else {
-      track.style.transitionDuration = "440ms";
+      track.style.transitionDuration = "320ms";
     }
 
     window.requestAnimationFrame(() => {
@@ -1271,7 +1271,7 @@ function setupNewsCarousel(root) {
     // 如果是纵向手势，直接复位，不触发任何横向切换
     if (dragLocked === 'vertical') {
       dragLocked = null;
-      track.style.transitionDuration = "440ms";
+      track.style.transitionDuration = "320ms";
       track.dataset.offset = String(dragBaseOffset);
       track.style.transform = `translate3d(${dragBaseOffset}px, 0, 0)`;
       return;
@@ -1806,7 +1806,7 @@ function renderSite() {
   renderContacts(data.contacts || []);
   applyLanguage();
   setupGlassSurface();
-  // setupBorderGlow(); — replaced by js/border-glow.js
+  setupBorderGlow();
   setupNavigation();
 }
 
@@ -2319,6 +2319,18 @@ function setupRevealAnimations() {
   window.addEventListener("resize", scheduleRevealCheck, { passive: true });
 }
 
+function fixProfileRevealOrder() {
+  const profilePapers = document.querySelectorAll("#profile-publication-list .publication-item");
+  if (!profilePapers.length) return;
+  profilePapers.forEach(function (paper, i) {
+    paper.style.setProperty("--reveal-delay", (i * 55) + "ms");
+  });
+  var viewAllBtn = document.querySelector(".profile-view-all-papers");
+  if (viewAllBtn) {
+    viewAllBtn.style.setProperty("--reveal-delay", (profilePapers.length * 55 + 50) + "ms");
+  }
+}
+
 function resizeCanvas() {
   if (!canvas || !ctx) return;
   const isHomePage = document.body.classList.contains("home-dark");
@@ -2614,6 +2626,7 @@ async function initSite() {
   renderSite();
   setupHomeFrameSequence();
   setupRevealAnimations();
+  fixProfileRevealOrder();
   window.addEventListener("resize", resizeCanvas);
   window.addEventListener("scroll", updateHeader, { passive: true });
 }

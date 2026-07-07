@@ -32,8 +32,8 @@
   --activities-list-gap: var(--global-list-gap);
 
   /* 序号圆圈大小与文字 */
-  --activities-index-size: 60px;
-  --activities-index-font-size: 1.3rem;
+  --activities-index-size: clamp(52px, 3.7vw, 68px);
+  --activities-index-font-size: var(--font-body);
 
   /* 手机端 */
   --activities-first-section-gap-mobile: 0px;

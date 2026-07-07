@@ -10,7 +10,7 @@ const pages = [
   { id: "honors", label: "荣誉", file: "honors.html", cssPath: "css/honors-config.css", contentPath: "js/honors-content.js", contentVar: "PAGE_CONTENT" },
   { id: "activities", label: "学术活动", file: "activities.html", cssPath: "css/activities-config.css", contentPath: "js/activities-content.js", contentVar: "PAGE_CONTENT" },
   { id: "loading", label: "加载页", file: "index.html", cssPath: "css/loading-config.css", contentPath: "js/loading-content.js", contentVar: "LOADING_CONTENT" },
-  { id: "global", label: "全局", file: "profile.html", cssPath: "css/global-section-config.css", contentPath: null, contentVar: null },
+  { id: "global", label: "全局 Section", file: "profile.html", cssPath: "css/global-section-config.css", contentPath: null, contentVar: null },
 ];
 
 let currentPageId = "home";
@@ -69,8 +69,8 @@ function selectField(name, label, options) {
   return { name, label, type: "select", options };
 }
 
-function textField(name, label, mobileName) {
-  return { name, label, type: "text", mobileName: mobileName || null };
+function textField(name, label) {
+  return { name, label, type: "text" };
 }
 
 function colorField(name, label) {
@@ -234,9 +234,6 @@ const pageSchemas = {
         rangeField("--profile-index-size", "圆圈大小", 30, 120, 1, "px", "--profile-index-size-mobile"),
         rangeField("--profile-index-font-size", "圆圈内文字大小", 0.5, 3, 0.05, "rem", "--profile-index-font-size-mobile"),
       ]),
-      group("全部论文按钮", [
-        rangeField("--profile-view-all-font-size", "按钮字号", 0.5, 2.5, 0.02, "rem", "--profile-view-all-font-size-mobile"),
-      ]),
     ],
   },
   results: {
@@ -364,24 +361,19 @@ const pageSchemas = {
         rangeField("--global-list-gap", "列表项间距", 4, 80, 1, "px", "--global-list-gap-mobile"),
       ]),
       group("导航栏", [
-        rangeField("--nav-link-font-size", "链接字号", 0.5, 1.8, 0.02, "rem", "--nav-link-font-size-mobile"),
+        rangeField("--nav-height", "导航栏高度", 40, 120, 1, "px"),
+        rangeField("--nav-link-font-size", "菜单链接字号", 0.5, 1.8, 0.02, "rem", "--nav-link-font-size-mobile"),
         rangeField("--nav-link-font-weight", "字重", 400, 900, 100, ""),
         rangeField("--nav-link-gap", "链接间距", 2, 40, 1, "px", "--nav-link-gap-mobile"),
         textField("--nav-link-padding", "链接内边距（简写）"),
-        textField("--nav-major-font-size", "展开菜单大标题字号", "--nav-major-font-size-mobile"),
-        textField("--nav-sub-font-size", "展开菜单副链接字号", "--nav-sub-font-size-mobile"),
       ]),
       group("头像圆圈", [
-        rangeField("--nav-brand-size", "圆圈大小", 20, 60, 1, "px", "--nav-brand-size-mobile"),
-        rangeField("--nav-brand-font-size", "圆圈内文字大小", 0.4, 1.5, 0.02, "rem", "--nav-brand-font-size-mobile"),
+        rangeField("--nav-brand-size", "圆圈大小", 20, 60, 1, "px"),
+        rangeField("--nav-brand-font-size", "圆圈内文字大小", 0.4, 1.5, 0.02, "rem"),
       ]),
       group("语言切换", [
         rangeField("--lang-toggle-font-size", "字号", 0.5, 1.8, 0.02, "rem", "--lang-toggle-font-size-mobile"),
         textField("--lang-toggle-padding", "内边距（简写）"),
-        textField("--lang-toggle-top", "桌面端距顶部"),
-        textField("--lang-toggle-right", "桌面端距右侧"),
-        textField("--lang-toggle-top-mobile", "手机端距顶部"),
-        textField("--lang-toggle-right-mobile", "手机端距右侧"),
       ]),
     ],
   },
@@ -877,7 +869,7 @@ function renderForm() {
   if (currentPageId === "loading") {
     hint.innerHTML = "提示：加载页配置为全站共用；右侧预览会冻结加载遮罩以便调整样式与动画。";
   } else if (currentPageId === "global") {
-    hint.innerHTML = "提示：全局样式会同步影响所有页面的 Section 排版、导航栏和语言切换；右侧预览使用个人简介页。";
+    hint.innerHTML = "提示：全局 Section 样式会同步影响 profile / results / honors / activities 四页以及首页 Section 小标签；右侧预览使用个人简介页。";
   } else {
     hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
   }
@@ -894,7 +886,13 @@ function renderForm() {
     btn.type = "button";
     btn.className = `mode-btn ${editorMode === mode ? "active" : ""}`;
     btn.textContent = mode === "desktop" ? "桌面端" : "手机端";
-    btn.addEventListener("click", () => switchMode(mode));
+    btn.addEventListener("click", () => {
+      editorMode = mode;
+      headerModeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+      renderForm();
+      updatePreviewModeClass();
+      updatePreview();
+    });
     modeToggle.appendChild(btn);
   });
   elForm.appendChild(modeToggle);
@@ -953,22 +951,9 @@ function schedulePreviewUpdate() {
   updateTimer = window.setTimeout(updatePreview, 80);
 }
 
-function switchMode(mode) {
-  if (editorMode === mode) return;
-  editorMode = mode;
-  headerModeBtns.forEach((btn) => btn.classList.toggle("active", btn.dataset.mode === mode));
-  renderForm();
-  updatePreviewModeClass();
-  updatePreview();
-}
-
 function updatePreviewModeClass() {
   if (!elPreview) return;
   elPreview.classList.toggle("mobile-preview", editorMode === "mobile");
-  const phoneFrame = document.getElementById("phone-frame");
-  if (phoneFrame) {
-    phoneFrame.classList.toggle("active", editorMode === "mobile");
-  }
 }
 
 function updatePreview() {
@@ -1137,7 +1122,15 @@ function init() {
     btn.addEventListener("click", () => switchPreviewLang(btn.dataset.previewLang));
   });
   headerModeBtns.forEach((btn) => {
-    btn.addEventListener("click", () => switchMode(btn.dataset.mode));
+    btn.addEventListener("click", () => {
+      const mode = btn.dataset.mode;
+      if (editorMode === mode) return;
+      editorMode = mode;
+      headerModeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
+      renderForm();
+      updatePreviewModeClass();
+      updatePreview();
+    });
   });
   if (elPreview) {
     elPreview.onload = () => {

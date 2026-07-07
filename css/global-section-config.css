@@ -1,7 +1,6 @@
 /**
- * global-section-config.css — 全站 Section 通用排版变量
- * 通过 page-editor.html 读取/编辑，覆盖 profile / results / honors / activities 等
- * 内容页的 Section 小标签、标题、间距。
+ * global-section-config.css — 全站排版变量
+ * 通过 page-editor.html 读取/编辑，覆盖所有页面的 Section 小标签、标题、间距以及导航栏。
  */
 
 :root {
@@ -28,22 +27,19 @@
   --global-list-gap: 20px;
 
   /* 导航栏 */
-  --nav-link-font-size: 1.12rem;
+  --nav-height: 60px;
+  --nav-link-font-size: 1rem;
   --nav-link-font-weight: 700;
-  --nav-link-gap: 34px;
+  --nav-link-gap: 40px;
   --nav-link-padding: 9px 12px 11px;
-  --nav-major-font-size: clamp(1.72rem, 2.25vw, 2.35rem);
-  --nav-sub-font-size: clamp(1rem, 1.12vw, 1.16rem);
 
   /* 头像圆圈 */
-  --nav-brand-size: 32px;
-  --nav-brand-font-size: 0.72rem;
+  --nav-brand-size: 35px;
+  --nav-brand-font-size: 0.82rem;
 
   /* 语言切换 */
   --lang-toggle-font-size: 0.82rem;
   --lang-toggle-padding: 0 11px;
-  --lang-toggle-top: 50%;
-  --lang-toggle-right: max(24px, calc((100vw - 1100px) / 2));
 
   /* 手机端 */
   --global-section-kicker-font-size-mobile: clamp(0.5rem, 4vw, 2rem);
@@ -57,69 +53,50 @@
 
   --nav-link-font-size-mobile: 0.82rem;
   --nav-link-gap-mobile: 6px;
-  --nav-major-font-size-mobile: clamp(1.6rem, 7vw, 2.4rem);
-  --nav-sub-font-size-mobile: clamp(1.05rem, 4.5vw, 1.6rem);
-  --nav-brand-size-mobile: 32px;
-  --nav-brand-font-size-mobile: 0.82rem;
   --lang-toggle-font-size-mobile: 0.82rem;
-  --lang-toggle-top-mobile: 8px;
-  --lang-toggle-right-mobile: calc(max(18px, env(safe-area-inset-right)) + 48px);
 }
 
-/* ── 导航栏全局覆写 ── */
-.site-header .nav-links a {
+/* ── 导航栏高度 ── */
+.site-header {
+  height: var(--nav-height) !important;
+}
+
+/* ── 导航栏链接字体（顶部 + 展开菜单卡片，高特异性统一覆盖） ── */
+.site-header .nav-links a,
+body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a {
   font-size: var(--nav-link-font-size) !important;
+}
+.site-header .nav-links a {
   font-weight: var(--nav-link-font-weight) !important;
   padding: var(--nav-link-padding) !important;
 }
 .nav-desktop-items {
   gap: var(--nav-link-gap) !important;
 }
+
+/* ── 语言切换 ── */
 .language-toggle {
   font-size: var(--lang-toggle-font-size) !important;
   padding: var(--lang-toggle-padding) !important;
 }
-/* 桌面端头像（绝对定位） */
+
+/* ── 桌面端头像 ── */
 @media (min-width: 861px) {
   .site-header .nav-brand {
     width: var(--nav-brand-size) !important;
     height: var(--nav-brand-size) !important;
     font-size: var(--nav-brand-font-size) !important;
   }
-  .site-header > .language-toggle {
-    top: var(--lang-toggle-top) !important;
-    right: var(--lang-toggle-right) !important;
-  }
 }
 
-/* 桌面端菜单卡片链接 */
-@media (min-width: 861px) {
-  .nav-cards-five .nav-major-link {
-    font-size: var(--nav-major-font-size) !important;
-  }
-  .nav-cards-five .nav-sub-link {
-    font-size: var(--nav-sub-font-size) !important;
-  }
-}
-
-@media (max-width: 860px) {
-  /* 手机端头像（导航内） */
-  .nav-brand {
-    width: var(--nav-brand-size-mobile) !important;
-    height: var(--nav-brand-size-mobile) !important;
-    font-size: var(--nav-brand-font-size-mobile) !important;
-  }
-  /* 手机端菜单卡片链接 */
-  .nav-cards-five .nav-major-link {
-    font-size: var(--nav-major-font-size-mobile) !important;
-  }
-  .nav-cards-five .nav-sub-link {
-    font-size: var(--nav-sub-font-size-mobile) !important;
-  }
-}
-
+/* ── 手机端 ── */
 @media (max-width: 768px) {
-  .site-header .nav-links a {
+  .site-header {
+    height: auto !important;
+    min-height: var(--nav-height) !important;
+  }
+  .site-header .nav-links a,
+  body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a {
     font-size: var(--nav-link-font-size-mobile) !important;
   }
   .nav-desktop-items {
@@ -127,14 +104,5 @@
   }
   .language-toggle {
     font-size: var(--lang-toggle-font-size-mobile) !important;
-  }
-}
-
-/* 手机端语言切换（fixed 定位） */
-@media (max-width: 860px) {
-  .site-header > .language-toggle {
-    position: fixed !important;
-    top: var(--lang-toggle-top-mobile) !important;
-    right: var(--lang-toggle-right-mobile) !important;
   }
 }
