@@ -522,4 +522,9 @@
     margin-top: var(--profile-publication-pdf-gap-mobile) !important;
     margin-right: var(--profile-publication-pdf-offset-right-mobile) !important;
   }
+
+  /* 防止代表论文卡片内容区溢出遮挡下方「全部论文」按钮 */
+  .profile-page #profile-publication-list .publication-copy {
+    min-height: auto !important;
+  }
 }

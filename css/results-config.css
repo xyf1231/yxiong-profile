@@ -34,7 +34,6 @@
   /* 论文卡片上下边距 */
   --results-publication-padding-top: 20px;
   --results-publication-padding-bottom: 15px;
-  --results-publication-padding-left-right: 26px;
 
   /* 详情卡片（专利/项目）内边距 */
   --results-detail-padding: 20px 22px;
@@ -71,7 +70,6 @@
   /* 论文卡片上下边距（手机端） */
   --results-publication-padding-top-mobile: 18px;
   --results-publication-padding-bottom-mobile: 15px;
-  --results-publication-padding-left-right-mobile: 20px;
 
   /* 详情卡片（专利/项目）内边距（手机端） */
   --results-detail-padding-mobile: 16px 18px;
@@ -130,12 +128,10 @@
   color: var(--results-title-color) !important;
 }
 
-/* 论文卡片内边距 */
+/* 论文卡片上下边距 */
 .results-page .all-publication-list .publication-item {
   padding-top: var(--results-publication-padding-top) !important;
   padding-bottom: var(--results-publication-padding-bottom) !important;
-  padding-left: var(--results-publication-padding-left-right) !important;
-  padding-right: var(--results-publication-padding-left-right) !important;
 }
 
 /* 论文卡片序号偏移 */
@@ -229,8 +225,6 @@
   .results-page .all-publication-list .publication-item {
     padding-top: var(--results-publication-padding-top-mobile) !important;
     padding-bottom: var(--results-publication-padding-bottom-mobile) !important;
-    padding-left: var(--results-publication-padding-left-right-mobile) !important;
-    padding-right: var(--results-publication-padding-left-right-mobile) !important;
   }
 
   .results-page .detail-item {

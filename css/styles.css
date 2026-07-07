@@ -7402,6 +7402,7 @@ body.nav-mega-open::after {
   .publication-item .publication-copy,
   .all-publication-list .publication-copy {
     display: block;
+    min-height: auto;
   }
 
   .publication-item .pdf-actions .pdf-download-link,

@@ -2248,7 +2248,7 @@ function setupBorderGlow() {
   if (typeof initBorderGlow !== "function") return;
 
   var cards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .timeline li, .home-bento-card"
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .detail-item, .project-card, .achievement-item, .profile-combo, .timeline li, .home-bento-card"
   );
 
   cards.forEach(function(card) {
