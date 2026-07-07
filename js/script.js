@@ -1137,7 +1137,7 @@ function setupNewsCarousel(root) {
     if (behavior === "auto") {
       track.style.transitionDuration = "0ms";
     } else {
-      track.style.transitionDuration = "320ms";
+      track.style.transitionDuration = "440ms";
     }
 
     window.requestAnimationFrame(() => {
@@ -1271,7 +1271,7 @@ function setupNewsCarousel(root) {
     // 如果是纵向手势，直接复位，不触发任何横向切换
     if (dragLocked === 'vertical') {
       dragLocked = null;
-      track.style.transitionDuration = "320ms";
+      track.style.transitionDuration = "440ms";
       track.dataset.offset = String(dragBaseOffset);
       track.style.transform = `translate3d(${dragBaseOffset}px, 0, 0)`;
       return;
@@ -1806,7 +1806,7 @@ function renderSite() {
   renderContacts(data.contacts || []);
   applyLanguage();
   setupGlassSurface();
-  setupBorderGlow();
+  // setupBorderGlow(); — replaced by js/border-glow.js
   setupNavigation();
 }
 

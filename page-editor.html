@@ -5,7 +5,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>页面编辑器 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.11.22" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.11.23" />
     <style>
       :root {
         --editor-bg: #05050a;
@@ -671,6 +671,39 @@
         border-color: var(--editor-accent);
         color: #fff;
       }
+      .preview-mode-toggles {
+        display: flex;
+        gap: 6px;
+      }
+      .preview-mode-toggles .mode-btn {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+      }
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.7rem;
+        color: var(--editor-muted);
+        letter-spacing: 0.02em;
+        padding: 0 6px;
+        border-left: 1px solid var(--editor-border);
+      }
+      .preview-shortcuts kbd {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 20px;
+        height: 20px;
+        padding: 0 5px;
+        border-radius: 4px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(255,255,255,0.1);
+        font-family: inherit;
+        font-size: 0.65rem;
+        font-weight: 700;
+        color: var(--editor-text);
+        line-height: 1;
+      }
     </style>
   </head>
   <body>
@@ -684,6 +717,10 @@
         <div class="lang-switch">
           <button type="button" data-preview-lang="zh" class="active">中</button>
           <button type="button" data-preview-lang="en">EN</button>
+        </div>
+        <div class="preview-mode-toggles" id="header-mode-toggles">
+          <button type="button" class="mode-btn active" data-mode="desktop" id="header-mode-desktop">桌面端</button>
+          <button type="button" class="mode-btn" data-mode="mobile" id="header-mode-mobile">手机端</button>
         </div>
         <span id="status"></span>
         <button id="btn-reload-preview" class="btn" type="button">刷新预览</button>

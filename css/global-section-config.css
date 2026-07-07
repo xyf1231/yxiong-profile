@@ -27,6 +27,24 @@
   /* 列表项 / 卡片间距 */
   --global-list-gap: 20px;
 
+  /* 导航栏 */
+  --nav-link-font-size: 1.12rem;
+  --nav-link-font-weight: 700;
+  --nav-link-gap: 34px;
+  --nav-link-padding: 9px 12px 11px;
+  --nav-major-font-size: clamp(1.72rem, 2.25vw, 2.35rem);
+  --nav-sub-font-size: clamp(1rem, 1.12vw, 1.16rem);
+
+  /* 头像圆圈 */
+  --nav-brand-size: 32px;
+  --nav-brand-font-size: 0.72rem;
+
+  /* 语言切换 */
+  --lang-toggle-font-size: 0.82rem;
+  --lang-toggle-padding: 0 11px;
+  --lang-toggle-top: 50%;
+  --lang-toggle-right: max(24px, calc((100vw - 1100px) / 2));
+
   /* 手机端 */
   --global-section-kicker-font-size-mobile: clamp(0.5rem, 4vw, 2rem);
   --global-section-kicker-letter-spacing-mobile: 0.12em;
@@ -36,4 +54,87 @@
   --global-section-padding-mobile: 50px;
   --global-first-section-padding-top-mobile: 100px;
   --global-list-gap-mobile: 4px;
+
+  --nav-link-font-size-mobile: 0.82rem;
+  --nav-link-gap-mobile: 6px;
+  --nav-major-font-size-mobile: clamp(1.6rem, 7vw, 2.4rem);
+  --nav-sub-font-size-mobile: clamp(1.05rem, 4.5vw, 1.6rem);
+  --nav-brand-size-mobile: 32px;
+  --nav-brand-font-size-mobile: 0.82rem;
+  --lang-toggle-font-size-mobile: 0.82rem;
+  --lang-toggle-top-mobile: 8px;
+  --lang-toggle-right-mobile: calc(max(18px, env(safe-area-inset-right)) + 48px);
+}
+
+/* ── 导航栏全局覆写 ── */
+.site-header .nav-links a {
+  font-size: var(--nav-link-font-size) !important;
+  font-weight: var(--nav-link-font-weight) !important;
+  padding: var(--nav-link-padding) !important;
+}
+.nav-desktop-items {
+  gap: var(--nav-link-gap) !important;
+}
+.language-toggle {
+  font-size: var(--lang-toggle-font-size) !important;
+  padding: var(--lang-toggle-padding) !important;
+}
+/* 桌面端头像（绝对定位） */
+@media (min-width: 861px) {
+  .site-header .nav-brand {
+    width: var(--nav-brand-size) !important;
+    height: var(--nav-brand-size) !important;
+    font-size: var(--nav-brand-font-size) !important;
+  }
+  .site-header > .language-toggle {
+    top: var(--lang-toggle-top) !important;
+    right: var(--lang-toggle-right) !important;
+  }
+}
+
+/* 桌面端菜单卡片链接 */
+@media (min-width: 861px) {
+  .nav-cards-five .nav-major-link {
+    font-size: var(--nav-major-font-size) !important;
+  }
+  .nav-cards-five .nav-sub-link {
+    font-size: var(--nav-sub-font-size) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  /* 手机端头像（导航内） */
+  .nav-brand {
+    width: var(--nav-brand-size-mobile) !important;
+    height: var(--nav-brand-size-mobile) !important;
+    font-size: var(--nav-brand-font-size-mobile) !important;
+  }
+  /* 手机端菜单卡片链接 */
+  .nav-cards-five .nav-major-link {
+    font-size: var(--nav-major-font-size-mobile) !important;
+  }
+  .nav-cards-five .nav-sub-link {
+    font-size: var(--nav-sub-font-size-mobile) !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header .nav-links a {
+    font-size: var(--nav-link-font-size-mobile) !important;
+  }
+  .nav-desktop-items {
+    gap: var(--nav-link-gap-mobile) !important;
+  }
+  .language-toggle {
+    font-size: var(--lang-toggle-font-size-mobile) !important;
+  }
+}
+
+/* 手机端语言切换（fixed 定位） */
+@media (max-width: 860px) {
+  .site-header > .language-toggle {
+    position: fixed !important;
+    top: var(--lang-toggle-top-mobile) !important;
+    right: var(--lang-toggle-right-mobile) !important;
+  }
 }

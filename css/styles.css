@@ -5915,7 +5915,7 @@ body.nav-mega-open::after {
   display: flex;
   gap: clamp(18px, 2vw, 30px);
   align-items: stretch;
-  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 440ms var(--ease-smooth);
 }
 
 .news-carousel-track .news-card,
@@ -5932,7 +5932,8 @@ body.nav-mega-open::after {
   opacity: 0.72;
   overflow: hidden;
   overflow: clip;
-  transition: opacity 240ms var(--ease-apple), transform 240ms var(--ease-apple);
+  transform: scale(0.98);
+  transition: opacity 440ms var(--ease-smooth), transform 440ms var(--ease-smooth);
 }
 
 .news-carousel-track .news-card.is-active {
@@ -5942,6 +5943,7 @@ body.nav-mega-open::after {
 
 .news-carousel-track .news-card:hover {
   opacity: 1;
+  transform: scale(1);
 }
 
 .news-carousel-track .news-card-image {
