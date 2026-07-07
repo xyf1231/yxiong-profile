@@ -1554,6 +1554,11 @@ function renderAllPublications(items) {
       target.dataset.expanded = "true";
       renderAllPublications(items);
     });
+    moreBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      target.dataset.expanded = "true";
+      renderAllPublications(items);
+    }, { passive: false });
   }
 }
 
@@ -2535,26 +2540,6 @@ function showPdfPreview(url) {
   modal.classList.add("is-visible");
 }
 
-
-/* Mobile: intercept touchstart before :hover applies to nearby cards */
-document.addEventListener("touchstart", (event) => {
-  const moreBtn = event.target.closest(".all-publications-more");
-  if (moreBtn) {
-    event.preventDefault();
-    const target = document.querySelector("#all-publication-list");
-    if (target && target.dataset.expanded !== "true") {
-      target.dataset.expanded = "true";
-      const items = window._allPublicationItems;
-      if (items) renderAllPublications(items);
-    }
-    return;
-  }
-  const viewBtn = event.target.closest("[data-i18n='viewAllPapers']");
-  if (viewBtn) {
-    event.preventDefault();
-    window.location.href = viewBtn.getAttribute("href");
-  }
-}, { passive: false });
 
 
 initSite();

@@ -173,21 +173,26 @@ function setupSiteLoadingGate() {
 
   const updateRealProgress = () => {
     if (finished) return;
-    const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-    let totalBytes = 0;
-    let loadedBytes = 0;
-    for (const entry of entries) {
-      const size = entry.transferSize || entry.decodedBodySize || 0;
-      if (!size) continue;
-      totalBytes += size;
-      if (entry.duration > 0) loadedBytes += size;
-    }
+    const images = [...document.images];
+    const totalImages = images.length;
+    const loadedImages = images.filter((img) => img.complete).length;
     let progress = 0;
-    if (totalBytes > 0) {
-      progress = (loadedBytes / totalBytes) * 100;
+    if (totalImages > 0) {
+      progress = (loadedImages / totalImages) * 100;
+    } else {
+      const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+      let totalBytes = 0;
+      let loadedBytes = 0;
+      for (const entry of entries) {
+        const size = entry.transferSize || entry.decodedBodySize || 0;
+        if (!size) continue;
+        totalBytes += size;
+        if (entry.duration > 0 || entry.transferSize === 0) loadedBytes += size;
+      }
+      if (totalBytes > 0) progress = (loadedBytes / totalBytes) * 100;
     }
-    targetProgress = Math.min(progress, 98);
-    if (resourcesEl) resourcesEl.textContent = `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}`;
+    targetProgress = Math.min(progress, 100);
+    if (resourcesEl) resourcesEl.textContent = `${loadedImages} / ${totalImages} 个资源`;
   };
 
   const rotateHint = () => {
@@ -1640,6 +1645,11 @@ function renderAllPublications(items) {
       target.dataset.expanded = "true";
       renderAllPublications(items);
     });
+    moreBtn.addEventListener("touchstart", (e) => {
+      e.preventDefault();
+      target.dataset.expanded = "true";
+      renderAllPublications(items);
+    }, { passive: false });
   }
 }
 
@@ -2600,26 +2610,6 @@ document.addEventListener("click", (event) => {
   event.stopImmediatePropagation();
   window.open(card.dataset.paperPreview, "_blank", "noopener,noreferrer");
 });
-
-/* Mobile: intercept touchstart before :hover applies to nearby cards */
-document.addEventListener("touchstart", (event) => {
-  const moreBtn = event.target.closest(".all-publications-more");
-  if (moreBtn) {
-    event.preventDefault();
-    const target = document.querySelector("#all-publication-list");
-    if (target && target.dataset.expanded !== "true") {
-      target.dataset.expanded = "true";
-      const items = window._allPublicationItems;
-      if (items) renderAllPublications(items);
-    }
-    return;
-  }
-  const viewBtn = event.target.closest("[data-i18n='viewAllPapers']");
-  if (viewBtn) {
-    event.preventDefault();
-    window.location.href = viewBtn.getAttribute("href");
-  }
-}, { passive: false });
 
 
 initSite();
