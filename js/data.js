@@ -58,7 +58,7 @@
       "titleEn": "Received Science and Technology Award from Jiangsu Institute of Communications",
       "text": "相关光缆运维关键技术与装备获奖，体现光纤器件与工程应用结合。",
       "textEn": "Awarded for key technologies and equipment for optical cable operation and maintenance.",
-      "image": "resources/images/light-fingerprint-main.webp",
+      "image": "resources/images/2025-获江苏省通信学会科学技术奖-main.jpg",
       "url": "honors.html#awards"
     },
     {
