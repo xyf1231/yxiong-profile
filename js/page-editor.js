@@ -178,6 +178,10 @@ const pageSchemas = {
         colorField("--lightfall-color-3", "色彩 3（右）", "--lightfall-color-3-mobile"),
         colorField("--lightfall-bg-color", "背景色", "--lightfall-bg-color-mobile"),
       ]),
+      group("序号位置", [
+        rangeField("--home-card-index-offset-top", "研究卡片序号纵向偏移", -40, 40, 1, "px", "--home-card-index-offset-top-mobile"),
+        rangeField("--home-card-index-offset-left", "研究卡片序号横向偏移", -40, 40, 1, "px", "--home-card-index-offset-left-mobile"),
+      ]),
     ],
   },
   profile: {
@@ -259,6 +263,14 @@ const pageSchemas = {
         { ...rangeField("--profile-view-all-btn-font-size-mobile", "字号", 0.5, 2, 0.05, "rem"), mobileOnly: true, mobileName: "--profile-view-all-btn-font-size-mobile" },
         rangeField("--profile-view-all-btn-font-weight", "字重", 400, 900, 100, "", "--profile-view-all-btn-font-weight-mobile"),
       ]),
+      group("序号徽标", [
+        { ...rangeField("--profile-publication-index-top-mobile", "论文序号距上边缘", 10, 80, 1, "px"), mobileOnly: true, mobileName: "--profile-publication-index-top-mobile" },
+        { ...rangeField("--profile-publication-index-left-mobile", "论文序号距左边缘", 10, 80, 1, "px"), mobileOnly: true, mobileName: "--profile-publication-index-left-mobile" },
+        rangeField("--profile-exp-index-offset-top", "经历序号纵向偏移", -40, 40, 1, "px", "--profile-exp-index-offset-top-mobile"),
+        rangeField("--profile-exp-index-offset-left", "经历序号横向偏移", -40, 40, 1, "px", "--profile-exp-index-offset-left-mobile"),
+        rangeField("--profile-research-index-offset-top", "研究卡片序号纵向偏移", -40, 40, 1, "px", "--profile-research-index-offset-top-mobile"),
+        rangeField("--profile-research-index-offset-left", "研究卡片序号横向偏移", -40, 40, 1, "px", "--profile-research-index-offset-left-mobile"),
+      ]),
     ],
   },
   results: {
@@ -305,6 +317,10 @@ const pageSchemas = {
         rangeField("--results-detail-text-font-size", "正文字号", 0.4, 2, 0.01, "rem", "--results-detail-text-font-size-mobile"),
         rangeField("--results-detail-type-font-size", "类型标签字号", 0.3, 1.5, 0.01, "rem", "--results-detail-type-font-size-mobile"),
       ]),
+      group("序号位置", [
+        rangeField("--results-detail-index-offset-top", "详情卡片序号纵向偏移", -40, 40, 1, "px", "--results-detail-index-offset-top-mobile"),
+        rangeField("--results-detail-index-offset-left", "详情卡片序号横向偏移", -40, 40, 1, "px", "--results-detail-index-offset-left-mobile"),
+      ]),
     ],
   },
   honors: {
@@ -325,6 +341,10 @@ const pageSchemas = {
     cssGroups: [
       group("容器与间距", [
         rangeField("--honors-first-section-gap", "首 Section 与后续间距", 0, 300, 1, "px", "--honors-first-section-gap-mobile"),
+      ]),
+      group("序号位置", [
+        rangeField("--honors-index-offset-top", "序号纵向偏移", -40, 40, 1, "px", "--honors-index-offset-top-mobile"),
+        rangeField("--honors-index-offset-left", "序号横向偏移", -40, 40, 1, "px", "--honors-index-offset-left-mobile"),
       ]),
     ],
   },
@@ -348,7 +368,12 @@ const pageSchemas = {
         ["reviews", "标题", false],
       ],
     },
-    cssGroups: [],
+    cssGroups: [
+      group("序号位置", [
+        rangeField("--activities-index-offset-top", "序号纵向偏移", -40, 40, 1, "px", "--activities-index-offset-top-mobile"),
+        rangeField("--activities-index-offset-left", "序号横向偏移", -40, 40, 1, "px", "--activities-index-offset-left-mobile"),
+      ]),
+    ],
   },
   global: {
     contentGroupTitles: {},
@@ -378,6 +403,10 @@ const pageSchemas = {
         { ...clampField("--nav-major-font-size-mobile", "一级字体大小", 0.5, 12, 0.05, "vw", "0.5rem", "5rem"), mobileOnly: true, mobileName: "--nav-major-font-size-mobile" },
         { ...clampField("--nav-sub-font-size-mobile", "二级字体大小", 0.5, 12, 0.05, "vw", "0.5rem", "5rem"), mobileOnly: true, mobileName: "--nav-sub-font-size-mobile" },
         rangeField("--nav-card-gap", "下拉行间距", 0, 40, 1, "px", "--nav-card-gap-mobile"),
+      ]),
+      group("序号徽标", [
+        rangeField("--global-index-size", "徽标尺寸", 36, 100, 1, "px", "--global-index-size-mobile"),
+        rangeField("--global-index-font-size", "文字大小", 0.6, 2, 0.05, "rem", "--global-index-font-size-mobile"),
       ]),
     ],
   },

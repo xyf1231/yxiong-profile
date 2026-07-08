@@ -56,6 +56,10 @@
   --home-bento-card-title-font-size: clamp(1.5rem, 3vw, 6rem);
   --home-bento-card-text-font-size: clamp(0.7rem, 1.5vw, 1.5rem);
 
+  /* 研究卡片序号偏移 */
+  --home-card-index-offset-top: 0px;
+  --home-card-index-offset-left: 0px;
+
   /* 手机端（<= 768px） */
   --hero-title-font-size-zh-mobile: clamp(3rem, 14vw, 7rem);
   --hero-title-font-size-en-mobile: clamp(2.8rem, 14vw, 6.5rem);
@@ -112,6 +116,10 @@
   --lightfall-color-2-mobile: #5227FF;
   --lightfall-color-3-mobile: #FF9FFC;
   --lightfall-bg-color-mobile: #0A29FF;
+
+  /* 研究卡片序号偏移（手机端） */
+  --home-card-index-offset-top-mobile: 0px;
+  --home-card-index-offset-left-mobile: 0px;
 }
 
 /* Hero 区域最小高度 */
@@ -231,6 +239,12 @@ html .clean-copy p:not(.eyebrow) {
   font-size: var(--home-bento-card-text-font-size) !important;
 }
 
+/* 研究卡片序号偏移 */
+.feature-card .card-index {
+  margin-top: var(--home-card-index-offset-top) !important;
+  margin-left: var(--home-card-index-offset-left) !important;
+}
+
 /* 手机端（<= 768px）覆盖 */
 @media (max-width: 768px) {
   /* Hero 主标题 */
@@ -288,5 +302,10 @@ html .clean-copy p:not(.eyebrow) {
 
   .home-bento-card p {
     font-size: var(--home-bento-card-text-font-size-mobile) !important;
+  }
+
+  .feature-card .card-index {
+    margin-top: var(--home-card-index-offset-top-mobile) !important;
+    margin-left: var(--home-card-index-offset-left-mobile) !important;
   }
 }

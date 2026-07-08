@@ -56,6 +56,10 @@
   --results-publication-index-offset-top: -23px;
   --results-publication-index-offset-left: -16px;
 
+  /* 详情卡片序号偏移 */
+  --results-detail-index-offset-top: 0px;
+  --results-detail-index-offset-left: 0px;
+
   /* 手机端 */
   --results-first-section-gap-mobile: 20px;
   --results-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -82,6 +86,10 @@
   /* 论文卡片序号偏移（手机端） */
   --results-publication-index-offset-top-mobile: 0px;
   --results-publication-index-offset-left-mobile: 0px;
+
+  /* 详情卡片序号偏移（手机端） */
+  --results-detail-index-offset-top-mobile: 0px;
+  --results-detail-index-offset-left-mobile: 0px;
 
   /* 论文卡片文字与间距（手机端） */
   --results-publication-title-font-size-mobile: 1.2rem;
@@ -138,6 +146,12 @@
 .results-page .all-publication-list .publication-item time {
   margin-top: var(--results-publication-index-offset-top) !important;
   margin-left: var(--results-publication-index-offset-left) !important;
+}
+
+/* 详情卡片序号偏移 */
+.results-page .detail-item time {
+  margin-top: var(--results-detail-index-offset-top) !important;
+  margin-left: var(--results-detail-index-offset-left) !important;
 }
 
 /* 论文卡片文字与间距 */
@@ -277,6 +291,11 @@
   .results-page .all-publication-list .publication-item time {
     margin-top: var(--results-publication-index-offset-top-mobile) !important;
     margin-left: var(--results-publication-index-offset-left-mobile) !important;
+  }
+
+  .results-page .detail-item time {
+    margin-top: var(--results-detail-index-offset-top-mobile) !important;
+    margin-left: var(--results-detail-index-offset-left-mobile) !important;
   }
 
   .results-page .all-publication-list .pdf-actions {

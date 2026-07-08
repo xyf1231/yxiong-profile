@@ -76,7 +76,7 @@
   --profile-publication-authors-font-size: 1rem;
   --profile-publication-meta-font-size: 1rem;
   --profile-publication-meta-gap: 5px;
-  --profile-publication-pdf-gap: 0px;
+  --profile-publication-pdf-gap: 8px;
   --profile-publication-pdf-offset-right: 0px;
 
   /* 代表论文卡片上下边距 */
@@ -86,6 +86,14 @@
   /* 代表论文卡片序号偏移 */
   --profile-publication-index-offset-top: -20px;
   --profile-publication-index-offset-left: -16px;
+
+  /* 经历时间轴序号偏移 */
+  --profile-exp-index-offset-top: 0px;
+  --profile-exp-index-offset-left: 0px;
+
+  /* 研究内容卡片序号偏移 */
+  --profile-research-index-offset-top: 0px;
+  --profile-research-index-offset-left: 0px;
 
   /* 全部论文按钮 */
   --profile-view-all-btn-font-size: 1vw;
@@ -124,6 +132,16 @@
   /* 代表论文卡片序号偏移（手机端） */
   --profile-publication-index-offset-top-mobile: 0px;
   --profile-publication-index-offset-left-mobile: 0px;
+
+  /* 经历时间轴序号偏移（手机端） */
+  --profile-exp-index-offset-top-mobile: 0px;
+  --profile-exp-index-offset-left-mobile: 0px;
+
+  /* 研究内容卡片序号偏移（手机端） */
+  --profile-research-index-offset-top-mobile: 0px;
+  --profile-research-index-offset-left-mobile: 0px;
+  --profile-publication-index-top-mobile: 34px;
+  --profile-publication-index-left-mobile: 34px;
 
   /* 研究内容卡片文字（手机端） */
   --profile-research-title-font-size-mobile: 1.5rem;
@@ -331,11 +349,6 @@
     font-size: var(--profile-view-all-btn-font-size);
   }
 
-  /* 电脑端代表论文 PDF 按钮上移、文字 1rem */
-  .profile-page #profile-publication-list .pdf-actions {
-    bottom: clamp(50px, 5vw, 70px) !important;
-  }
-
   .profile-page #profile-publication-list .pdf-download-link {
     font-size: 1rem !important;
   }
@@ -374,6 +387,26 @@
 .profile-page #profile-publication-list .publication-item time {
   margin-top: var(--profile-publication-index-offset-top) !important;
   margin-left: var(--profile-publication-index-offset-left) !important;
+}
+
+/* 经历时间轴序号偏移 */
+.profile-page .timeline .item-index {
+  width: var(--global-index-size) !important;
+  height: var(--global-index-size) !important;
+  min-width: var(--global-index-size) !important;
+  font-size: var(--global-index-font-size) !important;
+  margin-top: var(--profile-exp-index-offset-top) !important;
+  margin-left: var(--profile-exp-index-offset-left) !important;
+}
+
+/* 研究内容卡片序号偏移 */
+.profile-page .feature-card .card-index {
+  width: var(--global-index-size) !important;
+  height: var(--global-index-size) !important;
+  min-width: var(--global-index-size) !important;
+  font-size: var(--global-index-font-size) !important;
+  margin-top: var(--profile-research-index-offset-top) !important;
+  margin-left: var(--profile-research-index-offset-left) !important;
 }
 
 /* 研究内容卡片尺寸与内边距 */
@@ -500,6 +533,22 @@
   .profile-page #experience-list li time {
     font-size: var(--profile-experience-time-font-size-mobile) !important;
   }
+  .profile-page .timeline .item-index {
+    width: var(--global-index-size-mobile) !important;
+    height: var(--global-index-size-mobile) !important;
+    min-width: var(--global-index-size-mobile) !important;
+    font-size: var(--global-index-font-size-mobile) !important;
+    margin-top: var(--profile-exp-index-offset-top-mobile) !important;
+    margin-left: var(--profile-exp-index-offset-left-mobile) !important;
+  }
+  .profile-page .feature-card .card-index {
+    width: var(--global-index-size-mobile) !important;
+    height: var(--global-index-size-mobile) !important;
+    min-width: var(--global-index-size-mobile) !important;
+    font-size: var(--global-index-font-size-mobile) !important;
+    margin-top: var(--profile-research-index-offset-top-mobile) !important;
+    margin-left: var(--profile-research-index-offset-left-mobile) !important;
+  }
 
   /* 代表论文卡片文字与间距（手机端） */
   .profile-page #profile-publication-list .publication-copy > h3 {
@@ -527,6 +576,8 @@
   .profile-page #profile-publication-list .publication-item time {
     margin-top: var(--profile-publication-index-offset-top-mobile) !important;
     margin-left: var(--profile-publication-index-offset-left-mobile) !important;
+    top: var(--profile-publication-index-top-mobile) !important;
+    left: var(--profile-publication-index-left-mobile) !important;
   }
 
   .profile-page #profile-publication-list .pdf-actions {

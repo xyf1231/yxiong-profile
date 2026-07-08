@@ -2277,7 +2277,7 @@ function setupBorderGlow() {
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);
 
-    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media");
+    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media") || (card.parentElement && card.parentElement.classList.contains("timeline")) || card.classList.contains("detail-item");
 
     if (!skipWrap) {
       var inner = document.createElement("div");
@@ -2304,7 +2304,7 @@ function setupBorderGlow() {
     glowIntensity: 1.5,
     edgeSensitivity: 0,
     fillOpacity: 0.5,
-    animated: true,
+    animated: false,
     sweepFan: false,
     sweepSpeed: 2,
     sweepIntensity: 1,
@@ -2328,7 +2328,7 @@ function setupGlassSurface() {
 // 初始化滚动 reveal 动画
 function setupRevealAnimations() {
   const targets = document.querySelectorAll(
-    ".reveal, .section-heading, .home-bento-grid, .news-grid, .feature-grid, .detail-list, .timeline-section .timeline, .publication-list, .project-list, .achievement-list, .profile-combo, .profile-photo, .contact-inner, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > .glass-surface, .detail-item, .project-card, .achievement-item, .home-bento-card",
+    ".reveal, .section-heading, .home-bento-grid, .news-grid, .feature-grid, .detail-list, .timeline-section .timeline, .publication-list, .project-list, .achievement-list, .profile-combo, .profile-photo, .contact-inner, .news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > .glass-surface, .detail-item, .project-card, .achievement-item, .home-bento-card, .button.secondary",
   );
   if (!targets.length) return;
 
@@ -2340,8 +2340,8 @@ function setupRevealAnimations() {
 
   let rafId = 0;
   const revealList = Array.from(targets).map((node, index) => {
-    if (node.classList.contains("home-bento-card") || node.classList.contains("publication-item") || node.classList.contains("detail-item") || node.classList.contains("achievement-item") || node.classList.contains("feature-card") || node.classList.contains("news-card")) {
-      node.style.setProperty("--reveal-delay", `${Math.min(index * 45, 420)}ms`);
+    if (node.classList.contains("home-bento-card") || node.classList.contains("publication-item") || node.classList.contains("detail-item") || node.classList.contains("achievement-item") || node.classList.contains("feature-card") || node.classList.contains("news-card") || node.classList.contains("button")) {
+      node.style.setProperty("--reveal-delay", `${Math.min(index * 60, 2000)}ms`);
     }
     return node;
   });
@@ -2357,6 +2357,27 @@ function setupRevealAnimations() {
       const rect = node.getBoundingClientRect();
       if (rect.top < startLine && rect.bottom > endLine) {
         node.classList.add("is-revealed");
+        // cap reveal delay for scrolled-into-view cards (not first-screen)
+        var rDelay = parseInt(node.style.getPropertyValue("--reveal-delay")) || 0;
+        if (rDelay > 200) {
+          rDelay = 200;
+          node.style.setProperty("--reveal-delay", "200ms");
+        }
+        // trigger glow sweep in sync with card entrance
+        if (node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
+          var rh = Math.round(500 * 0.4);
+          var rs = Math.round(500 * 0.6);
+          setTimeout(function() {
+            delete node.dataset.sweepPlayed;
+            node.classList.remove("sweep-active");
+            playSweepAnimation(node, {
+              speed: 2, intensity: 1, fadeIn: 100,
+              rotateHalf: rh, rotateSecond: rs,
+              rotateDelay: rh, fadeOutDelay: rh + rs,
+              fadeOut: 200,
+            });
+          }, rDelay);
+        }
       }
     }
   };
@@ -2366,7 +2387,6 @@ function setupRevealAnimations() {
     rafId = window.requestAnimationFrame(revealInView);
   };
 
-  revealInView();
   window.addEventListener("scroll", scheduleRevealCheck, { passive: true });
   window.addEventListener("resize", scheduleRevealCheck, { passive: true });
 }

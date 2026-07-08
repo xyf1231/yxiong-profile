@@ -44,6 +44,10 @@
   --lang-toggle-font-size: 0.82rem;
   --lang-toggle-padding: 0 11px;
 
+  /* 序号徽标（全局） */
+  --global-index-size: 70px;
+  --global-index-font-size: 1.4rem;
+
   /* 手机端 */
   --global-section-kicker-font-size-mobile: clamp(0.5rem, 4vw, 2rem);
   --global-section-kicker-letter-spacing-mobile: 0.12em;
@@ -60,6 +64,10 @@
   --nav-sub-font-size-mobile: clamp(0.5rem, 5vw, 5rem);
   --nav-card-gap-mobile: 0px;
   --lang-toggle-font-size-mobile: 0.82rem;
+
+  /* 序号徽标（全局手机端） */
+  --global-index-size-mobile: 54px;
+  --global-index-font-size-mobile: 1.08rem;
 }
 
 /* ── 导航栏高度 ── */
@@ -130,4 +138,30 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub
   .language-toggle {
     font-size: var(--lang-toggle-font-size-mobile) !important;
   }
+
+  /* 手机端序号徽标 */
+  .item-index,
+  .card-index,
+  .publication-item time,
+  .all-publication-list time,
+  .detail-item time,
+  .profile-publication-item > span {
+    width: var(--global-index-size-mobile) !important;
+    height: var(--global-index-size-mobile) !important;
+    min-width: var(--global-index-size-mobile) !important;
+    font-size: var(--global-index-font-size-mobile) !important;
+  }
+}
+
+/* ── 全站序号徽标 ── */
+.item-index,
+.card-index,
+.publication-item time,
+.all-publication-list time,
+.detail-item time,
+.profile-publication-item > span {
+  width: var(--global-index-size) !important;
+  height: var(--global-index-size) !important;
+  min-width: var(--global-index-size) !important;
+  font-size: var(--global-index-font-size) !important;
 }

@@ -29,9 +29,9 @@
   --duration-fast: 160ms;
   --duration-normal: 280ms;
   --duration-slow: 520ms;
-  --reveal-distance: 14px;
+  --reveal-distance: 20px;
   --reveal-blur: 0px;
-  --reveal-duration: 720ms;
+  --reveal-duration: 1000ms;
   --reveal-delay-step: 120ms;
 
   --font-hero: clamp(3.2rem, 8vw, 7.4rem);        /* 首页大标题 */
@@ -90,6 +90,10 @@ html[data-site-loading="pending"] body {
 html[data-site-loading="pending"]::before,
 html[data-site-loading="pending"]::after {
   pointer-events: none;
+}
+
+html[data-site-loading="pending"] .site-header {
+  z-index: 10001;
 }
 
 html[data-lang-ready="ready"] body,
@@ -7801,11 +7805,20 @@ body.nav-mega-open::after {
   }
 
   .profile-timeline .timeline li {
-    border: 1.5px solid rgba(255, 255, 255, 0.14) !important;
-    border-radius: 28px !important;
-    background: rgba(255, 255, 255, 0.055) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.16) !important;
-    padding: clamp(20px, 2vw, 28px) clamp(110px, 8vw, 132px) clamp(20px, 2vw, 28px) clamp(22px, 2.2vw, 34px) !important;
+    display: grid !important;
+    grid-template-columns: 72px 1fr !important;
+    gap: 18px !important;
+    padding: clamp(20px, 2vw, 28px) clamp(22px, 2.2vw, 34px) !important;
+  }
+
+  .profile-timeline .timeline .item-index {
+    position: static !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    transform: none !important;
+    align-self: center;
+    justify-self: center;
   }
 
   .profile-timeline .timeline li:hover {
@@ -8199,7 +8212,8 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 .detail-item,
 .project-card,
 .achievement-item,
-.home-bento-card {
+.home-bento-card,
+.button.secondary {
   opacity: 0;
   transform: translate3d(0, var(--reveal-distance), 0);
   filter: none;
@@ -8234,7 +8248,8 @@ html[lang="en"] .clean-copy h1 { max-width: min(1120px, 94vw) !important; font-s
 .detail-item.is-revealed,
 .project-card.is-revealed,
 .achievement-item.is-revealed,
-.home-bento-card.is-revealed {
+.home-bento-card.is-revealed,
+.button.secondary.is-revealed {
   opacity: 1;
   transform: translate3d(0, 0, 0);
   filter: none;
@@ -8480,8 +8495,8 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 }
 
 .profile-timeline .timeline .item-index {
-  align-self: start;
-  margin-top: 2px;
+  align-self: center;
+  margin-top: 0;
 }
 
 .profile-timeline .timeline time {
@@ -8506,7 +8521,7 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 
 @media (min-width: 861px) {
   .profile-timeline .timeline li {
-    padding-right: clamp(118px, 8.4vw, 148px) !important;
+    padding: clamp(22px, 2.4vw, 36px) clamp(24px, 2.6vw, 40px) !important;
   }
 }
 

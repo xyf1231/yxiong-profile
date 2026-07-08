@@ -28,9 +28,9 @@
   --duration-fast: 160ms;
   --duration-normal: 280ms;
   --duration-slow: 520ms;
-  --reveal-distance: 14px;
+  --reveal-distance: 20px;
   --reveal-blur: 0px;
-  --reveal-duration: 720ms;
+  --reveal-duration: 1000ms;
   --reveal-delay-step: 120ms;
 
   --font-hero: clamp(3.2rem, 8vw, 7.4rem);        /* 首页大标题 */
