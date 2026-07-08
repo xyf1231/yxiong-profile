@@ -262,6 +262,7 @@ function setupSiteLoadingGate() {
         setProgress(100);
       }
       root.dataset.siteLoading = "ready";
+      if (typeof replayAllSweep === "function") replayAllSweep();
       window.dispatchEvent(new Event("scroll", { bubbles: true }));
       const hash = window.location.hash;
       if (hash) {

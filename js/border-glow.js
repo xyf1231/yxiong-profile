@@ -252,6 +252,7 @@ function initBorderGlow(cards, options) {
       if (options.sweepFadeOut != null) sweepOpts.fadeOut = options.sweepFadeOut;
 
       // use rAF to ensure card is laid out; if already visible, play immediately
+      card.dataset.sweepOpts = JSON.stringify(sweepOpts);
       requestAnimationFrame(function() {
         var rect = card.getBoundingClientRect();
         if (rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0 && rect.height > 0) {
@@ -287,3 +288,17 @@ window.addEventListener('scroll', function() {
     }
   }, 50);
 }, { passive: true });
+
+function replayAllSweep() {
+  var cards = document.querySelectorAll('.border-glow-card');
+  for (var i = 0; i < cards.length; i++) {
+    var c = cards[i];
+    if (!c.dataset.sweepOpts) continue;
+    delete c.dataset.sweepPlayed;
+    c.classList.remove("sweep-active");
+    try {
+      var opts = JSON.parse(c.dataset.sweepOpts);
+      playSweepAnimation(c, opts);
+    } catch (e) { /* ignore */ }
+  }
+}

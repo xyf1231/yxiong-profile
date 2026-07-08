@@ -37,10 +37,11 @@
 }
 
 .border-glow-card::before {
-  border-radius: calc(var(--border-radius) + 1.5px);
+  border-radius: var(--border-radius);
 }
 
 .border-glow-card > .edge-light {
+  inset: calc(var(--glow-padding) * -1 - 1.5px);
   border-radius: calc(var(--border-radius) + var(--glow-padding));
 }
 
@@ -89,7 +90,7 @@
 
 /* ---------- .edge-light — outer glow layer ---------- */
 .border-glow-card > .edge-light {
-  inset: calc(var(--glow-padding) * -1);
+  inset: calc(var(--glow-padding) * -1 - 1.5px);
   pointer-events: none;
   z-index: 1;
 
