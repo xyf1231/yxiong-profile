@@ -2247,17 +2247,20 @@ function setupBorderGlow() {
   if (isCompactNav()) return;
   if (typeof initBorderGlow !== "function") return;
 
-  var cards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .detail-item, .project-card, .achievement-item, .profile-combo, .timeline li, .home-bento-card"
+  var allCards = document.querySelectorAll(
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .timeline li, .home-bento-card"
   );
 
-  cards.forEach(function(card) {
+  allCards.forEach(function(card) {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
     card.classList.add("border-glow-card");
 
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);
+
+    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item");
+    if (skipWrap) return;
 
     var inner = document.createElement("div");
     inner.className = "border-glow-inner";
@@ -2272,7 +2275,11 @@ function setupBorderGlow() {
     card.appendChild(inner);
   });
 
-  initBorderGlow(Array.from(cards), {
+  var glowCards = Array.from(allCards).filter(function(card) {
+    return !card.classList.contains("news-card") && !card.classList.contains("news-article-card") && !card.classList.contains("news-info-card");
+  });
+
+  initBorderGlow(glowCards, {
     edgeSensitivity: 30,
     glowColor: "40 80 80",
     glowRadius: 40,

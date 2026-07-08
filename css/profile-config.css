@@ -314,6 +314,11 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+.profile-view-all-papers .button.secondary:hover {
+  transform: none;
+  filter: none;
+}
+
 @media (min-width: 861px) {
   /* 电脑端「全部论文」按钮字体 */
   .profile-view-all-papers .button.secondary {
