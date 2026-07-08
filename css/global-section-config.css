@@ -66,10 +66,8 @@
   --lang-toggle-font-size-mobile: 0.82rem;
 
   /* 序号徽标（全局手机端） */
-  --global-index-size-mobile: 80px;
-  --global-index-font-size-mobile: 1rem;
-  --mobile-index-size: var(--global-index-size-mobile);
-  --mobile-index-font-size: var(--global-index-font-size-mobile);
+  --global-index-size-mobile: 55px;
+  --global-index-font-size-mobile: 1.2rem;
   --mobile-index-top: 22px;
   --mobile-index-right: 20px;
   --mobile-index-left: 20px;
@@ -145,17 +143,22 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub
     font-size: var(--lang-toggle-font-size-mobile) !important;
   }
 
-  /* 手机端序号徽标 */
-  .item-index,
-  .card-index,
-  .publication-item time,
-  .all-publication-list time,
-  .detail-item time,
-  .profile-publication-item > span {
-    width: var(--mobile-index-size) !important;
-    height: var(--mobile-index-size) !important;
-    min-width: var(--mobile-index-size) !important;
-    font-size: var(--mobile-index-font-size) !important;
+  /* 手机端序号徽标 — 统一覆盖全部卡片类型 */
+  .item-index, .card-index,
+  .publication-item time, .all-publication-list time,
+  .detail-item time, .profile-publication-item > span,
+  .results-page .all-publication-list .publication-item time,
+  .results-page .detail-item time,
+  .profile-page .publication-item time,
+  .profile-page .detail-item time,
+  .profile-page .feature-card .card-index,
+  .profile-page .timeline .item-index,
+  .honors-page .detail-item time, .honors-page .item-index,
+  .activities-page .detail-item time, .activities-page .item-index {
+    width: var(--global-index-size-mobile) !important;
+    height: var(--global-index-size-mobile) !important;
+    min-width: var(--global-index-size-mobile) !important;
+    font-size: var(--global-index-font-size-mobile) !important;
   }
 }
 

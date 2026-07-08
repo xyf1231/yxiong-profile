@@ -253,10 +253,6 @@
     right: auto !important;
     left: auto !important;
     transform: none !important;
-    min-width: var(--mobile-index-size, 48px) !important;
-    min-height: var(--mobile-index-size, 48px) !important;
-    width: var(--mobile-index-size, 48px) !important;
-    height: var(--mobile-index-size, 48px) !important;
   }
 
   .results-page .detail-item h3 {

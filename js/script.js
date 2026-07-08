@@ -700,18 +700,6 @@ const venueChinese = {
   "Advanced Materials": "《先进材料》",
 };
 
-const representativeOrder = [
-  "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
-  "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
-  "Ultrahigh responsivity photodetectors of 2D covalent organic frameworks integrated on graphene.",
-  "Multifunctional integration on optical fiber tips: Challenges and opportunities.",
-  "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
-  "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array.",
-  "Active fiber tips with optoelectronic integration: state-of-the-art, future trends, and challenges.",
-  "Broadband optical-fiber-compatible photodetector based on a graphene-MoS2-WS2 heterostructure with a synergetic photogenerating mechanism.",
-  "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.",
-  "Optical fiber tip integrated photoelectrochemical sensors.",
-];
 
 const textEnglish = {
   "长期": "Ongoing",
@@ -1587,34 +1575,9 @@ function showPdfLoading(link) {
 function renderPublications(items) {
   const target = document.querySelector("#publication-list");
   if (!target) return;
-  // 直接使用 data.publications 数组的顺序，前 5 篇作为代表论文
-  target.innerHTML = items.slice(0, 5)
-    .map((item, index) => {
-      const title = item.title;
-      const subtitle = currentLang === "zh" ? item.titleZh || publicationChineseTitles[item.title] || "" : "";
-      const venue = item.venue;
-      const year = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
-      const image = publicationImageMarkup(item, title);
-      return `
-        <article class="publication-item">
-          <time>${String(index + 1).padStart(2, "0")}</time>
-          ${image}
-          <div class="publication-copy">
-            <h3>${escapeHtml(title)}</h3>
-            ${subtitle ? `<p class="publication-subtitle">${escapeHtml(subtitle)}</p>` : ""}
-            <p class="publication-authors">${highlightAuthor(item.authors || "")}</p>
-            <p class="publication-meta"><strong class="publication-journal">${escapeHtml(venue || "")}</strong>${year ? ` <span class="publication-year">${escapeHtml(year)}</span>` : ""}</p>
-            ${pdfDownloadLink(item.url)}
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
 
 function getRepresentativePublications(items, limit = 5) {
-  // 直接使用 data.publications 数组的顺序
-  return items.slice(0, limit);
+  return items.filter(p => p.representative).slice(0, limit);
 }
 
 // 渲染简介页代表论文
@@ -1810,9 +1773,8 @@ function renderSite() {
   renderResearch(data.research || []);
   renderNews(data.news || []);
   renderNewsDetail(data.news || []);
-  renderPublications(data.publications || []);
-  renderProfilePublications(data.publications || []);
-  renderAllPublications(data.allPublications || data.publications || []);
+  renderProfilePublications(data.allPublications || []);
+  renderAllPublications(data.allPublications || []);
   renderProjects(data.projects || []);
   renderAchievements(data.achievements || []);
   renderDetailLists(data.achievements || []);

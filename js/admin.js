@@ -1309,7 +1309,7 @@ async function listLocalFiles(bucket = storageBucket?.value || "images") {
       return;
     }
     storageList.innerHTML = files.map((file) => {
-      const relativeUrl = `${bucket}/${file.path}`;
+      const relativeUrl = `${storageFolderPath(bucket)}/${file.path}`;
       const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
       return `
         <article class="storage-item" data-path="${escapeHtml(file.path)}">

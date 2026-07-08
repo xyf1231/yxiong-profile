@@ -1,4 +1,4 @@
-﻿window.DEFAULT_SITE_DATA = {
+window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "assetSource": "vercel",
   "profile": {
@@ -52,7 +52,7 @@
       "subtitle": "",
       "text": "Nature Electronics | 光纤端面集成：原位读懂纤内光“指纹”南京大学徐飞、袁洪涛和陆延青联合团队提出光纤端面三维集成的单像素器件，实现纤内四维光信息单拍原位识别一束光进入光纤时，携带的不只是“亮不亮”。它还可能以不同的光纤模式传输，以不同方向振动，拥有不同的颜色和不同的强度。过去，",
       "textEn": "",
-      "image": "images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main",
+      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp",
       "url": "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html",
       "contentHtml": "<h1 style=\"font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin:0 0 20px;\">Nature Electronics | 光纤端面集成：原位读懂纤内光“指纹”</h1>\n<div class=\"news-rich-content\"><h3>南京大学徐飞、袁洪涛和陆延青联合团队提出光纤端面三维集成的单像素器件，实现纤内四维光信息单拍原位识别</h3><p>一束光进入光纤时，携带的不只是“亮不亮”。它还可能以不同的光纤模式传输，以不同方向振动，拥有不同的颜色和不同的强度。过去，要完整读出这些信息，往往需要多个分光、准直、滤波、偏振、成像、探测等光－机－电元件共同配合，系统复杂且容易引入延时和噪声。现在，南京大学等单位组成的研究团队把这些功能浓缩到光纤端面上一枚微米尺度的三维光电器件中，让光在抵达光纤尖端的一瞬间，留下属于自己的多维“指纹”。</p><p>相关成果以 “Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip”为题发表于《<em>Nature Electronics</em>》。论文第一作者为熊毅丰特任副研究员/准聘助理教授、方韶晨博士和徐伊宁博士，通讯作者为徐飞教授、袁洪涛教授和陆延青教授。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-1.png\"></p><h2>一、从“看见光”到“读懂光”</h2><p>光是光纤通信的高速信使。纤内的一束光不仅有强弱，还具有模式、偏振、波长等多个维度，这些自由度相互关联、复杂耦合（图1）。光的维度越丰富，光纤的信息容量就越大；但多维信息相互耦合，也让接收端的识别更加困难。因此，人们需要一种更小、更快、更直接的读光方式，可以不再依赖庞大的外部光学系统，而是在光的传播现场原位完成多维信息快速准确的识别。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-2.png\"></p><p><strong>图1 | 光的多个自由度相互关联、复杂耦合。</strong></p><h2>二、光纤尖端上的微型“解码站”</h2><p>为了实现这种原位光信息识别，研究团队将两组各向异性的探测器直接堆叠集成到两模光纤的端面上（图2）。它不像普通相机那样依靠大量像素成像，而是通过材料、电极和算法的协同设计，让一个微米尺度的纤芯像素产生六路彼此不同的光电响应。器件的感光层由黑磷和黑砷磷两层二维材料构成，其按特定晶向扭转堆叠，并配合同心环形、类光栅的微电极结构，使不同模式、不同偏振、不同波长和不同强度的光在器件中激发出可区分的电压组合。换句话说，一束光进入器件后，会在六个端口留下六个数字；这些数字组合起来，就像一串密码，记录了这束光的多维“指纹”信息。要让这串“密码”真正可读，关键在于不同光维度必须在器件中形成可区分的响应。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-3.png\"></p><p><strong>图2 | 光纤尖端上集成的微型“解码站”，用单个像素单拍识别光的多维“指纹”。</strong></p><h2>三、多维响应机制：让不同光信息留下不同电信号</h2><p>为了让单个像素“读懂”光的多个维度，器件并不是简单地把光转换成电信号，而是利用模式、强度、偏振和波长在材料与电极结构中的不同作用机制，让每一类信息都留下可区分的响应特征（图3）。</p><p>对于模式识别，LP<sub>01</sub>、LP<sub>11</sub> 等光纤模式在纤芯端面具有不同的空间光场分布。环形微电极相当于多个空间取样点，能够感知非均匀光场引起的光生载流子差异，从而将模式信息转化为不同端口之间的电压差异；对于强度识别，黑磷和黑砷磷材料及不同电极位置具有差异化的非线性光强响应，使光强变化在多个端口产生不同的电压特征；对于偏振识别，黑磷和黑砷磷本身具有各向异性，两层材料又按特定晶向扭转堆叠，因此能够产生带有相位差的偏振响应曲线；对于波长识别，类光栅的环形电极结构会引起与波长相关的局域光场重分布，结合黑磷和黑砷磷具有不同的色散和光电响应，使不同波长在端面上留下不同的光电响应图案。</p><p>因此，六个端口输出的不再是单一强度信号，而是一组同时包含模式、偏振、波长和强度信息的特征向量。换言之，器件先在物理层面把多维光信息“写入”六路电信号，再由算法在数据层面将它们“读出”。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-4.png\"></p><p><strong>图3 | 器件的多维响应机制：将模式、强度、偏振和波长差异转化为可区分的光电响应。</strong></p><h2>四、一拍测量，识别近万种光状态</h2><p>在明确这些响应机制后，研究团队构建了包含模式、偏振、波长和强度的四维输入空间，覆盖近万个不同的输入光状态。器件通过六个端口同时输出具有丰富特征的光电压信号，再与预标定数据库进行匹配，最终实现超过 99% 的四维光状态识别准确率。</p><p>更重要的是，器件不只会“背答案”。对于没有直接出现在标定点上的未知状态，它也能通过高维预标定和三维插值建立精细化数据集，并利用同样的解耦算法完成预测。在线偏振识别中，未知状态的平均偏差约 0.34°；在波长识别中，未知状态的平均偏差约 0.12 nm；在强度识别中，未知状态的平均偏差约 1.12×10<sup>-3</sup> mW。进一步在偏振、波长和强度同时变化的多维光入射条件下，器件仍能保持较高重构精度（图4）。这说明，前述多维响应机制不仅能够区分预设状态，也能支撑对未知光状态的连续重构。相比依赖多次扫描或多像素采样的传统方法，该方案大幅减少了数据采集需求，并可在个人计算机上实现微秒量级的数据处理。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-5.png\"></p><p><strong>图4 | 器件对入射高维光场的解析结果。</strong></p><h2>五、把图像藏进光的四个维度</h2><p>为了展示这种四维读光能力的应用潜力，研究团队进一步进行了图像加密通信实验（图5）。他们把一幅RGB图像拆分成红、绿、蓝三个通道，用偏振表示颜色通道，用波长隐藏密钥，用模式和强度承载像素信息。于是，图像不再只是“明暗点阵”，而是被藏进光的四个维度中。</p><p>接收端的单像素器件读取光信号后，算法根据恢复出的模式、偏振、波长和强度完成解码，最终重建图像。实验中，重建图像与原始图像的结构相似度达到 0.9917。若缺少任一维度的准确识别，图像就会明显失真，这也直观说明了多维光探测在信息容量和安全通信中的价值。</p><p><img src=\"resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-6.png\"></p><p><strong>图5 | 多维光参量的图像加密通信演示。</strong></p><h2>六、从光纤尖端出发的想象力</h2><p>这项工作展示了一种新的思路：未来的光探测器不一定要越来越大、越来越复杂，也可以变得更小、更靠近光传播的现场。把多维识别能力集成到光纤端面，意味着复杂的探测可以直接发生在光信号传输的终点，减少外部光学系统带来的损耗、延时和串扰。当光的每一个维度都可以被调制和识别，光纤所能承载的世界也将变得更加丰富。这项工作不仅展示了光纤端面器件的精巧设计，也为未来高维光信息技术打开了新的想象空间。</p><p>该工作受到了国家重点研发计划2021YFA1401103、2024YFA1408104等基金资助。</p><p>论文信息：</p><p>• 论文题目：Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip</p><p>• 期刊：Nature Electronics</p><p>• 第一作者：熊毅丰、方韶晨、徐伊宁</p><p>• 通讯作者：陆延青、袁洪涛、徐飞</p><p>• 主要完成单位：南京大学固体微结构国家实验室、现代工程与应用科学学院等</p><p>• DOI：10.1038/s41928-026-01660-x</p></div>",
       "content": "Nature Electronics | 光纤端面集成：原位读懂纤内光“指纹”南京大学徐飞、袁洪涛和陆延青联合团队提出光纤端面三维集成的单像素器件，实现纤内四维光信息单拍原位识别一束光进入光纤时，携带的不只是“亮不亮”。它还可能以不同的光纤模式传输，以不同方向振动，拥有不同的颜色和不同的强度。过去，要完整读出这些信息，往往需要多个分光、准直、滤波、偏振、成像、探测等光－机－电元件共同配合，系统复杂且容易引入延时和噪声。现在，南京大学等单位组成的研究团队把这些功能浓缩到光纤端面上一枚微米尺度的三维光电器件中，让光在抵达光纤尖端的一瞬间，留下属于自己的多维“指纹”。相关成果以 “Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip”为题发表于《Nature Electronics》。论文第一作者为熊毅丰特任副研究员/准聘助理教授、方韶晨博士和徐伊宁博士，通讯作者为徐飞教授、袁洪涛教授和陆延青教授。一、从“看见光”到“读懂光”光是光纤通信的高速信使。纤内的一束光不仅有强弱，还具有模式、偏振、波长等多个维度，这些自由度相互关联、复杂耦合（图1）。光的维度越丰富，光纤的信息容量就越大；但多维信息相互耦合，也让接收端的识别更加困难。因此，人们需要一种更小、更快、更直接的读光方式，可以不再依赖庞大的外部光学系统，而是在光的传播现场原位完成多维信息快速准确的识别。图1 | 光的多个自由度相互关联、复杂耦合。二、光纤尖端上的微型“解码站”为了实现这种原位光信息识别，研究团队将两组各向异性的探测器直接堆叠集成到两模光纤的端面上（图2）。它不像普通相机那样依靠大量像素成像，而是通过材料、电极和算法的协同设计，让一个微米尺度的纤芯像素产生六路彼此不同的光电响应。器件的感光层由黑磷和黑砷磷两层二维材料构成，其按特定晶向扭转堆叠，并配合同心环形、类光栅的微电极结构，使不同模式、不同偏振、不同波长和不同强度的光在器件中激发出可区分的电压组合。换句话说，一束光进入器件后，会在六个端口留下六个数字；这些数字组合起来，就像一串密码，记录了这束光的多维“指纹”信息。要让这串“密码”真正可读，关键在于不同光维度必须在器件中形成可区分的响应。图2 | 光纤尖端上集成的微型“解码站”，用单个像素单拍识别光的多维“指纹”。三、多维响应机制：让不同光信息留下不同电信号为了让单个像素“读懂”光的多个维度，器件并不是简单地把光转换成电信号，而是利用模式、强度、偏振和波长在材料与电极结构中的不同作用机制，让每一类信息都留下可区分的响应特征（图3）。对于模式识别，LP01、LP11 等光纤模式在纤芯端面具有不同的空间光场分布。环形微电极相当于多个空间取样点，能够感知非均匀光场引起的光生载流子差异，从而将模式信息转化为不同端口之间的电压差异；对于强度识别，黑磷和黑砷磷材料及不同电极位置具有差异化的非线性光强响应，使光强变化在多个端口产生不同的电压特征；对于偏振识别，黑磷和黑砷磷本身具有各向异性，两层材料又按特定晶向扭转堆叠，因此能够产生带有相位差的偏振响应曲线；对于波长识别，类光栅的环形电极结构会引起与波长相关的局域光场重分布，结合黑磷和黑砷磷具有不同的色散和光电响应，使不同波长在端面上留下不同的光电响应图案。因此，六个端口输出的不再是单一强度信号，而是一组同时包含模式、偏振、波长和强度信息的特征向量。换言之，器件先在物理层面把多维光信息“写入”六路电信号，再由算法在数据层面将它们“读出”。图3 | 器件的多维响应机制：将模式、强度、偏振和波长差异转化为可区分的光电响应。四、一拍测量，识别近万种光状态在明确这些响应机制后，研究团队构建了包含模式、偏振、波长和强度的四维输入空间，覆盖近万个不同的输入光状态。器件通过六个端口同时输出具有丰富特征的光电压信号，再与预标定数据库进行匹配，最终实现超过 99% 的四维光状态识别准确率。更重要的是，器件不只会“背答案”。对于没有直接出现在标定点上的未知状态，它也能通过高维预标定和三维插值建立精细化数据集，并利用同样的解耦算法完成预测。在线偏振识别中，未知状态的平均偏差约 0.34°；在波长识别中，未知状态的平均偏差约 0.12 nm；在强度识别中，未知状态的平均偏差约 1.12×10-3 mW。进一步在偏振、波长和强度同时变化的多维光入射条件下，器件仍能保持较高重构精度（图4）。这说明，前述多维响应机制不仅能够区分预设状态，也能支撑对未知光状态的连续重构。相比依赖多次扫描或多像素采样的传统方法，该方案大幅减少了数据采集需求，并可在个人计算机上实现微秒量级的数据处理。图4 | 器件对入射高维光场的解析结果。五、把图像藏进光的四个维度为了展示这种四维读光能力的应用潜力，研究团队进一步进行了图像加密通信实验（图5）。他们把一幅RGB图像拆分成红、绿、蓝三个通道，用偏振表示颜色通道，用波长隐藏密钥，用模式和强度承载像素信息。于是，图像不再只是“明暗点阵”，而是被藏进光的四个维度中。接收端的单像素器件读取光信号后，算法根据恢复出的模式、偏振、波长和强度完成解码，最终重建图像。实验中，重建图像与原始图像的结构相似度达到 0.9917。若缺少任一维度的准确识别，图像就会明显失真，这也直观说明了多维光探测在信息容量和安全通信中的价值。图5 | 多维光参量的图像加密通信演示。六、从光纤尖端出发的想象力这项工作展示了一种新的思路：未来的光探测器不一定要越来越大、越来越复杂，也可以变得更小、更靠近光传播的现场。把多维识别能力集成到光纤端面，意味着复杂的探测可以直接发生在光信号传输的终点，减少外部光学系统带来的损耗、延时和串扰。当光的每一个维度都可以被调制和识别，光纤所能承载的世界也将变得更加丰富。这项工作不仅展示了光纤端面器件的精巧设计，也为未来高维光信息技术打开了新的想象空间。该工作受到了国家重点研发计划2021YFA1401103、2024YFA1408104等基金资助。论文信息：• 论文题目：Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip• 期刊：Nature Electronics• 第一作者：熊毅丰、方韶晨、徐伊宁• 通讯作者：陆延青、袁洪涛、徐飞• 主要完成单位：南京大学固体微结构国家实验室、现代工程与应用科学学院等• DOI：10.1038/s41928-026-01660-x",
@@ -104,128 +104,6 @@
       "pdf": "resources/papers/light-fingerprint-2026.pdf"
     }
   ],
-  "publications": [
-    {
-      "year": "2026",
-      "title": "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
-      "titleZh": "利用光纤端面单像素器件识别光的模式、偏振、波长和强度",
-      "authors": "Xiong, Y., Fang, S., Xu, Y., Lei, Y., Ao, L., Zhan, L., Ding, Z., Zhu, H., Chen, M., Li, Z., Ren, W., Chen, J., Chen, Y., Lu, Y., Yuan, H., and Xu, F.",
-      "venue": "Nature Electronics",
-      "venueZh": "《自然·电子学》",
-      "date": "2026",
-      "impact": "40.9 (2025)",
-      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp",
-      "url": "resources/papers/light-fingerprint-2026.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
-      "titleZh": "用于光纤集成偏振计的扭转黑磷范德瓦尔斯堆叠结构",
-      "authors": "Xiong, Y., Wang, Y., Zhu, R., Xu, H., Wu, C., Chen, J., Ma, Y., Liu, Y., Chen, Y., Watanabe, K., Taniguchi, T., Shi, M., Chen, X., Lu, Y., Zhan, P., Hao, Y., and Xu, F.",
-      "venue": "Science Advances",
-      "venueZh": "《科学进展》",
-      "date": "2022-05-04",
-      "impact": "13.6 (2022)",
-      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp",
-      "url": "resources/papers/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array.",
-      "titleZh": "基于端面集成石墨烯探测阵列的超紧凑多芯光纤解复用器",
-      "authors": "Xiong, Y., Xu, H., Wang, Y., Wu, C., Ding, Z., Chen, M., Hao, Y., Chen, Y., and Xu, F.",
-      "venue": "ACS Photonics",
-      "venueZh": "《ACS 光子学》",
-      "date": "2022-05-02",
-      "impact": "7.0 (2022)",
-      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp",
-      "url": "resources/papers/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet.pdf"
-    },
-    {
-      "year": "2025",
-      "title": "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
-      "titleZh": "基于铌酸锂驱动器的兆赫兹速率宽调谐光纤滤波器",
-      "authors": "Tong, H., Xiong, Y., Wang, Z., Chen, Z., Qin, Z., Xing, Z., Lu, Z., Ding, H., Chen, Y., and Xu, F.",
-      "venue": "Laser & Photonics Reviews",
-      "venueZh": "《激光与光子学评论》",
-      "date": "2025-07-02",
-      "impact": "10.0 (2024)",
-      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp",
-      "url": "resources/papers/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators.pdf"
-    },
-    {
-      "year": "2024",
-      "title": "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.",
-      "titleZh": "集成铌酸锂压电驱动器的超高速高线性光纤法布里-珀罗可调滤波器",
-      "authors": "Tong, H., Xiong, Y., Ding, H., Chen, Z., Qin, Z., Chen, W., Tang, J., Yu, S., and Xu, F.",
-      "venue": "ACS Photonics",
-      "venueZh": "《ACS 光子学》",
-      "date": "2024-03-15",
-      "impact": "6.7 (2024)",
-      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp",
-      "url": "resources/papers/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul.pdf"
-    },
-    {
-      "year": "2023",
-      "title": "Active fiber tips with optoelectronic integration: state-of-the-art, future trends, and challenges.",
-      "titleZh": "光电集成有源光纤端面：研究现状、未来趋势与挑战",
-      "authors": "Xiong, Y., Ding, Z., and Xu, F.",
-      "venue": "Journal of Lightwave Technology",
-      "venueZh": "《光波技术期刊》",
-      "date": "2023-07-01",
-      "impact": "4.1 (2023)",
-      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp",
-      "url": "resources/papers/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall.pdf"
-    },
-    {
-      "year": "2020",
-      "title": "Multifunctional integration on optical fiber tips: Challenges and opportunities.",
-      "titleZh": "光纤端面多功能集成：挑战与机遇",
-      "authors": "Xiong, Y., and Xu, F.",
-      "venue": "Advanced Photonics",
-      "venueZh": "《先进光子学》",
-      "date": "2020-09-25",
-      "impact": "18.8 (2025)",
-      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp",
-      "url": "resources/papers/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities.pdf"
-    },
-    {
-      "year": "2020",
-      "title": "Ultrahigh responsivity photodetectors of 2D covalent organic frameworks integrated on graphene.",
-      "titleZh": "集成于石墨烯上的二维共价有机框架超高响应度光电探测器",
-      "authors": "Xiong, Y., Liao, Q., Huang, Z., Huang, X., Ke, C., Zhu, H., Dong, C., Wang, H., Xi, K., Zhan, P., Xu, F., and Lu, Y.",
-      "venue": "Advanced Materials",
-      "venueZh": "《先进材料》",
-      "date": "2020-03-04",
-      "impact": "30.849 (2020)",
-      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp",
-      "url": "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf"
-    },
-    {
-      "year": "2019",
-      "title": "Broadband optical-fiber-compatible photodetector based on a graphene-MoS2-WS2 heterostructure with a synergetic photogenerating mechanism.",
-      "titleZh": "基于石墨烯-MoS2-WS2 异质结构协同光生机制的宽带光纤兼容光电探测器",
-      "authors": "Xiong, Y., Chen, J., Lu, Y., and Xu, F.",
-      "venue": "Advanced Electronic Materials",
-      "venueZh": "《先进电子材料》",
-      "date": "2018-11-25",
-      "impact": "5.3",
-      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp",
-      "url": "resources/papers/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Optical fiber tip integrated photoelectrochemical sensors.",
-      "titleZh": "光纤端面集成光电化学生物传感器",
-      "authors": "Wang, H., Xiong, Y., Wu, C., Zhu, H., Chen, Y., and Xu, F.",
-      "venue": "Optics Express",
-      "venueZh": "《光学快报》",
-      "date": "2022-02-28",
-      "impact": "5.3",
-      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp",
-      "url": "resources/papers/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors.pdf"
-    }
-  ],
   "allPublications": [
     {
       "year": "2026",
@@ -236,7 +114,9 @@
       "venueZh": "《自然·电子学》",
       "date": "2026",
       "url": "resources/papers/light-fingerprint-2026.pdf",
-      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp"
+      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2026",
@@ -246,7 +126,9 @@
       "venue": "Nature Communications",
       "venueZh": "《自然·通讯》",
       "date": "2026",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2025",
@@ -256,7 +138,9 @@
       "venue": "Advanced Functional Materials",
       "venueZh": "《先进功能材料》",
       "date": "2025",
-      "url": "resources/papers/2025-metasurface-integrated-pattern-preserved-fiber-mode-separator.pdf"
+      "url": "resources/papers/2025-metasurface-integrated-pattern-preserved-fiber-mode-separator.pdf",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2025",
@@ -267,7 +151,9 @@
       "venueZh": "《激光与光子学评论》",
       "date": "2025-07-02",
       "url": "resources/papers/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators.pdf",
-      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp"
+      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2024",
@@ -277,7 +163,9 @@
       "venue": "Nature Communications",
       "venueZh": "《自然·通讯》",
       "date": "2024",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2024",
@@ -287,8 +175,10 @@
       "venue": "ACS Photonics",
       "venueZh": "《ACS 光子学》",
       "date": "2024-03-15",
-      "url": "",
-      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp"
+      "url": "resources/papers/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul.pdf",
+      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2023",
@@ -298,7 +188,9 @@
       "venue": "Optics Letters",
       "venueZh": "《光学快报》",
       "date": "2023",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2023",
@@ -308,7 +200,9 @@
       "venue": "Optics & Laser Technology",
       "venueZh": "《光学与激光技术》",
       "date": "2023",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2023",
@@ -318,8 +212,10 @@
       "venue": "Journal of Lightwave Technology",
       "venueZh": "《光波技术期刊》",
       "date": "2023-07-01",
-      "url": "",
-      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp"
+      "url": "resources/papers/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall.pdf",
+      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2022",
@@ -329,7 +225,9 @@
       "venue": "Optics Letters",
       "venueZh": "《光学快报》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -339,7 +237,9 @@
       "venue": "Advanced Photonics",
       "venueZh": "《先进光子学》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -349,7 +249,9 @@
       "venue": "Optics Express",
       "venueZh": "《光学快报》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -359,7 +261,9 @@
       "venue": "Advanced Optical Materials",
       "venueZh": "《先进光学材料》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -369,8 +273,10 @@
       "venue": "Science Advances",
       "venueZh": "《科学进展》",
       "date": "2022-05-04",
-      "url": "",
-      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp"
+      "url": "resources/papers/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters.pdf",
+      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2022",
@@ -380,8 +286,10 @@
       "venue": "ACS Photonics",
       "venueZh": "《ACS 光子学》",
       "date": "2022-05-02",
-      "url": "",
-      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp"
+      "url": "resources/papers/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet.pdf",
+      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2022",
@@ -391,8 +299,10 @@
       "venue": "Optics Express",
       "venueZh": "《光学快报》",
       "date": "2022-02-28",
-      "url": "",
-      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp"
+      "url": "resources/papers/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors.pdf",
+      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2021",
@@ -402,7 +312,9 @@
       "venue": "Light: Science & Applications",
       "venueZh": "《光：科学与应用》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2021",
@@ -412,7 +324,9 @@
       "venue": "Journal of Lightwave Technology",
       "venueZh": "《光波技术期刊》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2021",
@@ -422,7 +336,9 @@
       "venue": "Advanced Optical Materials",
       "venueZh": "《先进光学材料》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2020",
@@ -432,8 +348,10 @@
       "venue": "Advanced Photonics",
       "venueZh": "《先进光子学》",
       "date": "2020-09-25",
-      "url": "",
-      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp"
+      "url": "resources/papers/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities.pdf",
+      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2020",
@@ -443,8 +361,10 @@
       "venue": "Advanced Materials",
       "venueZh": "《先进材料》",
       "date": "2020-03-04",
-      "url": "",
-      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp"
+      "url": "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf",
+      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2020",
@@ -454,7 +374,9 @@
       "venue": "Sensors",
       "venueZh": "《传感器》",
       "date": "2020",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2019",
@@ -464,8 +386,10 @@
       "venue": "Advanced Electronic Materials",
       "venueZh": "《先进电子材料》",
       "date": "2018-11-25",
-      "url": "",
-      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp"
+      "url": "resources/papers/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct.pdf",
+      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2016",
@@ -475,7 +399,9 @@
       "venue": "Langmuir",
       "venueZh": "《朗缪尔》",
       "date": "2016",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     }
   ],
   "projects": [
