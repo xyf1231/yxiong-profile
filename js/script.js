@@ -321,14 +321,26 @@ function setupSiteLoadingGate() {
     const presets = split(shared.presets).length
       ? split(shared.presets)
       : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
-    const duration = Math.max(0.1, parseFloat(shared.duration) || 2);
+    const durationVal = Math.max(0.1, parseFloat(shared.duration) || 2);
     const erase = String(shared.erase).trim().toLowerCase() !== "false";
+
+    function cssNum(name, fallback) {
+      try {
+        const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return v ? parseFloat(v) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    const duration = cssNum('--loading-anim-duration', durationVal) || 2;
+    const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2.5;
+    const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 0;
+    const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 0;
+
     // 切换间隔至少覆盖一次绘制（+ 擦除）所需时间
     const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
     const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
-    const strokeWidth = parseFloat(shared.strokeWidth) || 2;
-    const brightness = parseFloat(shared.brightness) || 30;
-    const saturation = parseFloat(shared.saturation) || 40;
 
     let index = 0;
 
@@ -2247,7 +2259,7 @@ function setupBorderGlow() {
   if (typeof initBorderGlow !== "function") return;
 
   var allCards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .timeline li, .home-bento-card"
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a"
   );
 
   allCards.forEach(function(card) {
@@ -2258,7 +2270,7 @@ function setupBorderGlow() {
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);
 
-    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item");
+    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo");
 
     if (!skipWrap) {
       var inner = document.createElement("div");

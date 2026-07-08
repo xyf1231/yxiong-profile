@@ -7,11 +7,11 @@
 :root {
   /* 遮罩层背景与模糊 */
   --loading-overlay-bg:
-    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.38), transparent 22%),
-    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.32), transparent 20%),
-    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.34), transparent 24%),
-    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.26), transparent 32%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.25), rgba(2, 4, 9, 0.18));
+    radial-gradient(circle at 18% 22%, rgba(124, 58, 237, 0.42), transparent 22%),
+    radial-gradient(circle at 82% 18%, rgba(249, 115, 22, 0.36), transparent 20%),
+    radial-gradient(circle at 50% 72%, rgba(6, 182, 212, 0.38), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(41, 151, 255, 0.30), transparent 32%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.12), rgba(2, 4, 9, 0.06));
   --loading-overlay-backdrop-blur: 28px;
   --loading-overlay-backdrop-saturate: 1.3;
 
@@ -26,15 +26,21 @@
   --loading-letters-margin: -50px 0 5px;
   --loading-letters-scale: 1;
 
+  /* 手写动画参数（CSS 变量优先于 JS 配置） */
+  --loading-anim-stroke-width: 2.5;
+  --loading-anim-brightness: 40;
+  --loading-anim-saturation: 50;
+  --loading-anim-duration: 2;
+
   /* 百分比数字 */
-  --loading-percent-color: rgba(255, 255, 255, 0.92);
+  --loading-percent-color: rgba(255, 255, 255, 0.96);
   --loading-percent-font-size: clamp(1.5rem, 5vw, 8rem);
   --loading-percent-margin-top: 30px;
-  --loading-percent-text-shadow: 0 0 28px rgba(41, 151, 255, 0.35), 0 0 56px rgba(124, 58, 237, 0.22);
+  --loading-percent-text-shadow: 0 0 32px rgba(41, 151, 255, 0.40), 0 0 64px rgba(124, 58, 237, 0.28);
 
   /* 进度条轨道 */
   --loading-track-height: 20px;
-  --loading-track-bg: rgba(255, 255, 255, 0.04);
+  --loading-track-bg: rgba(255, 255, 255, 0.08);
   --loading-track-margin-top: 10px;
 
   /* 进度条填充 */

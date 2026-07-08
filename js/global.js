@@ -283,13 +283,25 @@ function setupSiteLoadingGate() {
       }
       const words = split(shared.words).length ? split(shared.words) : ["hello", "welcome", "coming", "loading"];
       const presets = split(shared.presets).length ? split(shared.presets) : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
-      const duration = Math.max(0.1, parseFloat(shared.duration) || 2);
+      const durationVal = Math.max(0.1, parseFloat(shared.duration) || 2);
       const erase = String(shared.erase).trim().toLowerCase() !== "false";
+
+      function cssNum(name, fallback) {
+        try {
+          const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+          return v ? parseFloat(v) : fallback;
+        } catch {
+          return fallback;
+        }
+      }
+
+      const duration = cssNum('--loading-anim-duration', durationVal) || 2;
+      const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2.5;
+      const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 0;
+      const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 0;
+
       const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
       const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
-      const strokeWidth = parseFloat(shared.strokeWidth) || 2;
-      const brightness = parseFloat(shared.brightness) || 30;
-      const saturation = parseFloat(shared.saturation) || 40;
       let index = 0;
       function shuffle(arr) { const copy = arr.slice(); for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
       const shuffledWords = shuffle(words);

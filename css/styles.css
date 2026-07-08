@@ -120,8 +120,8 @@ html[data-site-loading="pending"]::before {
   height: 100%;
   z-index: 9999;
   background:
-    radial-gradient(circle at center, rgba(41, 151, 255, 0.22), transparent 58%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.10));
+    radial-gradient(circle at center, rgba(41, 151, 255, 0.15), transparent 55%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.04));
   content: "";
 }
 
@@ -160,7 +160,6 @@ html[data-site-loading="pending"]::after {
   transition: opacity 800ms ease, transform 800ms ease;
 }
 
-/* 临时注释：overlay 遮罩伪元素
 .site-loading-overlay::before,
 .site-loading-overlay::after {
   position: absolute;
@@ -171,24 +170,23 @@ html[data-site-loading="pending"]::after {
 
 .site-loading-overlay::before {
   background:
-    radial-gradient(circle at 35% 30%, rgba(249, 115, 22, 0.12), transparent 16%),
-    radial-gradient(circle at 65% 26%, rgba(124, 58, 237, 0.14), transparent 18%),
-    radial-gradient(circle at 50% 82%, rgba(6, 182, 212, 0.1), transparent 22%);
-  filter: blur(30px);
+    radial-gradient(circle at 35% 30%, rgba(249, 115, 22, 0.18), transparent 16%),
+    radial-gradient(circle at 65% 26%, rgba(124, 58, 237, 0.20), transparent 18%),
+    radial-gradient(circle at 50% 82%, rgba(6, 182, 212, 0.16), transparent 22%);
+  filter: blur(40px);
   mix-blend-mode: screen;
   animation: siteLoadingDrift 14s ease-in-out infinite alternate;
 }
 
 .site-loading-overlay::after {
   background:
-    radial-gradient(circle at 50% 48%, rgba(41, 151, 255, 0.08), transparent 26%),
-    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.018) 50%, transparent 58%);
-  filter: blur(10px);
+    radial-gradient(circle at 50% 48%, rgba(41, 151, 255, 0.10), transparent 26%),
+    linear-gradient(115deg, transparent 0 42%, rgba(255, 255, 255, 0.03) 50%, transparent 58%);
+  filter: blur(14px);
   mix-blend-mode: screen;
   animation: siteLoadingSweep 16s linear infinite;
-  opacity: 0.7;
+  opacity: 0.6;
 }
-*/
 
 .site-loading-overlay.is-hidden {
   opacity: 0 !important;
@@ -333,7 +331,7 @@ html[data-site-loading="pending"]::after {
   font-size: var(--loading-resources-font-size);
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: rgba(200, 206, 220, 0.8);
+  color: rgba(220, 228, 240, 0.88);
   margin-top: var(--loading-resources-margin-top, 16px);
   font-variant-numeric: tabular-nums;
 }
@@ -342,7 +340,7 @@ html[data-site-loading="pending"]::after {
   font-size: var(--loading-hint-font-size);
   font-weight: 400;
   letter-spacing: 0.04em;
-  color: rgba(200, 206, 220, 0.75);
+  color: rgba(210, 216, 230, 0.82);
   opacity: 0;
   transition: opacity 0.6s ease;
   min-height: 1.2em;
@@ -945,7 +943,7 @@ main > .section-band:first-child > .section-wrap {
 /* Hero 区域：首屏大图/视频背景、标题、行动按钮 */
 .hero {
   position: relative;
-  min-height: 92vh;
+  min-height: 92dvh;
   display: grid;
   align-items: center;
   overflow: hidden;
@@ -956,12 +954,12 @@ main > .section-band:first-child > .section-wrap {
 }
 
 .portal-hero {
-  min-height: 94vh;
+  min-height: 94dvh;
   isolation: isolate;
 }
 
 .fiber-hero {
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at 74% 42%, rgba(41, 151, 255, 0.15), transparent 24%),
     radial-gradient(circle at 32% 68%, rgba(100, 210, 255, 0.1), transparent 30%),
@@ -971,7 +969,7 @@ main > .section-band:first-child > .section-wrap {
 .fiber-hero::after {
   position: absolute;
   inset: auto 0 0;
-  height: 34vh;
+  height: 34dvh;
   pointer-events: none;
   content: "";
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.95));
@@ -979,21 +977,21 @@ main > .section-band:first-child > .section-wrap {
 
 .fiber-story {
   position: relative;
-  min-height: 360vh;
+  min-height: 360dvh;
   background: #000000;
 }
 
 .fiber-sticky {
   position: sticky;
   top: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   overflow: hidden;
   overflow: clip;
   background: #000000;
 }
 
 .clean-hero {
-  min-height: 100vh;
+  min-height: 100dvh;
   background:
     radial-gradient(circle at 78% 18%, rgba(82, 39, 255, 0.06), transparent 28%),
     radial-gradient(circle at 34% 78%, rgba(255, 159, 252, 0.03), transparent 32%),
@@ -1003,7 +1001,7 @@ main > .section-band:first-child > .section-wrap {
 .clean-hero::after {
   position: absolute;
   inset: auto 0 0;
-  height: 40vh;
+  height: 40dvh;
   pointer-events: none;
   content: "";
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.92));
@@ -1250,7 +1248,7 @@ main > .section-band:first-child > .section-wrap {
   position: relative;
   z-index: 3;
   display: grid;
-  min-height: 100vh;
+  min-height: 100dvh;
   align-content: center;
   width: min(100% - 40px, var(--max));
   margin: 0 auto;
@@ -1336,7 +1334,7 @@ main > .section-band:first-child > .section-wrap {
 
 .page-hero {
   position: relative;
-  min-height: 72vh;
+  min-height: 72dvh;
   display: grid;
   align-items: end;
   overflow: hidden;
@@ -1360,7 +1358,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 .profile-landing {
-  min-height: 86vh;
+  min-height: 86dvh;
   align-items: end;
   background:
     radial-gradient(circle at 78% 18%, rgba(100, 210, 255, 0.14), transparent 30%),
@@ -3555,7 +3553,7 @@ html[lang="en"] .subtle-name {
   }
 
   .page-hero {
-    min-height: 68vh;
+    min-height: 68dvh;
   }
 
   .profile-landing {
@@ -6326,8 +6324,8 @@ body.nav-mega-open::after {
   .clean-stage,
   .lightfall-container,
   #research-canvas {
-    min-height: 78vh;
-    height: 78vh;
+    min-height: 78dvh;
+    height: 78dvh;
   }
 
   .clean-copy h1 {
@@ -9791,7 +9789,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 .home-frame-stage {
   position: sticky;
   top: 0;
-  min-height: 100vh;
+  min-height: 100dvh;
   width: 100%;
   display: grid;
   place-items: start center;
