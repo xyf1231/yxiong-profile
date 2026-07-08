@@ -11,14 +11,14 @@ window.LOADING_CONTENT = {
     "greeting": "Welcome"
   },
   "shared": {
-    "words": "welcome, loading, creating, hello",
-    "presets": "rainbow, sunrise, rasta, plasma, aurora, ice-fire, cyber, northern, fire, lemonade, bubblegum, neon, sunset-bright, tropical",
+    "words": "welcome, loading, creating, exploring, building, dreaming",
+    "presets": "rainbow, sunrise, rasta, plasma, aurora, ice-fire, sunset, oceanic, neon, bubblegum, tropical, cyber, fire, lemonade, sunset-bright, candy, northern",
     "interval": "3000",
     "duration": "2",
     "erase": "true",
-    "strokeWidth": "2",
-    "brightness": "10",
-    "saturation": "30",
+    "strokeWidth": "2.5",
+    "brightness": "20",
+    "saturation": "0",
     "greeting": ""
   }
 };
