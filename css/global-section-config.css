@@ -66,10 +66,10 @@
   --lang-toggle-font-size-mobile: 0.82rem;
 
   /* 序号徽标（全局手机端） */
-  --global-index-size-mobile: 50px;
+  --global-index-size-mobile: 80px;
   --global-index-font-size-mobile: 1rem;
-  --mobile-index-size: 48px;
-  --mobile-index-font-size: 0.98rem;
+  --mobile-index-size: var(--global-index-size-mobile);
+  --mobile-index-font-size: var(--global-index-font-size-mobile);
   --mobile-index-top: 22px;
   --mobile-index-right: 20px;
   --mobile-index-left: 20px;
@@ -152,10 +152,10 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub
   .all-publication-list time,
   .detail-item time,
   .profile-publication-item > span {
-    width: var(--global-index-size-mobile) !important;
-    height: var(--global-index-size-mobile) !important;
-    min-width: var(--global-index-size-mobile) !important;
-    font-size: var(--global-index-font-size-mobile) !important;
+    width: var(--mobile-index-size) !important;
+    height: var(--mobile-index-size) !important;
+    min-width: var(--mobile-index-size) !important;
+    font-size: var(--mobile-index-font-size) !important;
   }
 }
 

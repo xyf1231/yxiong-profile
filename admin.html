@@ -29,7 +29,7 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.11.59" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.11.60" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -752,7 +752,6 @@
                       <p class="section-kicker" id="editor-kicker">编辑</p>
                       <h2 id="editor-title">编辑当前条目</h2>
                     </div>
-                    <button class="admin-button" id="add-item" type="button">新增</button>
                   </div>
                   <form class="form-grid" id="content-form"></form>
                   <p class="upload-note">上传 PDF 会自动保存到 resources/，图片会自动保存到 resources/；“保存到本地”会同步当前条目并更新 data.js。</p>
@@ -791,6 +790,10 @@
               </div>
 
               <div class="cms-list-col">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                  <h3 style="font-size:0.95rem;font-weight:700;margin:0;color:rgba(255,255,255,0.75);">条目列表</h3>
+                  <button class="admin-button" id="add-item" type="button">+ 新增</button>
+                </div>
                 <section class="item-list" id="item-list"></section>
               </div>
             </div>
@@ -1031,7 +1034,7 @@
     </div>
 
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.11.59" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.11.59" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.11.60" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.11.60" charset="utf-8"></script>
   </body>
 </html>
