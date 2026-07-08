@@ -334,9 +334,9 @@ function setupSiteLoadingGate() {
     }
 
     const duration = cssNum('--loading-anim-duration', durationVal) || 2;
-    const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2.5;
-    const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 0;
-    const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 0;
+    const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2;
+    const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 20;
+    const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 20;
 
     // 切换间隔至少覆盖一次绘制（+ 擦除）所需时间
     const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;

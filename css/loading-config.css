@@ -27,16 +27,16 @@
   --loading-letters-scale: 1;
 
   /* 手写动画参数（CSS 变量优先于 JS 配置） */
-  --loading-anim-stroke-width: 2.5;
-  --loading-anim-brightness: 40;
-  --loading-anim-saturation: 50;
+  --loading-anim-stroke-width: 2;
+  --loading-anim-brightness: 50;
+  --loading-anim-saturation: 80;
   --loading-anim-duration: 2;
 
   /* 百分比数字 */
-  --loading-percent-color: rgba(255, 255, 255, 0.96);
+  --loading-percent-color: rgba(255, 255, 255, 0.92);
   --loading-percent-font-size: clamp(1.5rem, 5vw, 8rem);
   --loading-percent-margin-top: 30px;
-  --loading-percent-text-shadow: 0 0 32px rgba(41, 151, 255, 0.40), 0 0 64px rgba(124, 58, 237, 0.28);
+  --loading-percent-text-shadow: 0 0 20px rgba(41, 151, 255, 0.25), 0 0 40px rgba(124, 58, 237, 0.15);
 
   /* 进度条轨道 */
   --loading-track-height: 20px;
@@ -45,7 +45,7 @@
 
   /* 进度条填充 */
   --loading-bar-bg: linear-gradient(90deg, #2997FF, #64D2FF 34%, #7c3aed 68%, #f97316);
-  --loading-bar-shadow: 0 0 32px rgba(41, 151, 255, 0.40), 0 0 36px rgba(124, 58, 237, 0.24);
+  --loading-bar-shadow: 0 0 24px rgba(41, 151, 255, 0.28), 0 0 26px rgba(124, 58, 237, 0.16);
 
   /* 资源计数与提示 */
   --loading-resources-font-size: 1.2rem;

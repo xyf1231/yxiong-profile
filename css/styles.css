@@ -112,7 +112,7 @@ html[data-site-loading="ready"] body {
   min-height: auto;
 }
 
-html[data-site-loading="pending"]::before {
+/* html[data-site-loading="pending"]::before {
   position: absolute;
   top: 0;
   left: 0;
@@ -123,7 +123,7 @@ html[data-site-loading="pending"]::before {
     radial-gradient(circle at center, rgba(41, 151, 255, 0.15), transparent 55%),
     linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.04));
   content: "";
-}
+} */
 
 html[data-site-loading="pending"]::after {
   position: absolute;
@@ -404,7 +404,7 @@ body {
 
 @supports (height: 100dvh) {
   body {
-    min-height: 100dvh;
+    min-height: calc(var(--vh, 1vh) * 100);
   }
 }
 
@@ -943,7 +943,7 @@ main > .section-band:first-child > .section-wrap {
 /* Hero 区域：首屏大图/视频背景、标题、行动按钮 */
 .hero {
   position: relative;
-  min-height: 92dvh;
+  min-height: calc(var(--vh, 1vh) * 92);
   display: grid;
   align-items: center;
   overflow: hidden;
@@ -954,12 +954,12 @@ main > .section-band:first-child > .section-wrap {
 }
 
 .portal-hero {
-  min-height: 94dvh;
+  min-height: calc(var(--vh, 1vh) * 94);
   isolation: isolate;
 }
 
 .fiber-hero {
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   background:
     radial-gradient(circle at 74% 42%, rgba(41, 151, 255, 0.15), transparent 24%),
     radial-gradient(circle at 32% 68%, rgba(100, 210, 255, 0.1), transparent 30%),
@@ -969,7 +969,7 @@ main > .section-band:first-child > .section-wrap {
 .fiber-hero::after {
   position: absolute;
   inset: auto 0 0;
-  height: 34dvh;
+  height: calc(var(--vh, 1vh) * 34);
   pointer-events: none;
   content: "";
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.95));
@@ -977,21 +977,21 @@ main > .section-band:first-child > .section-wrap {
 
 .fiber-story {
   position: relative;
-  min-height: 360dvh;
+  min-height: calc(var(--vh, 1vh) * 360);
   background: #000000;
 }
 
 .fiber-sticky {
   position: sticky;
   top: 0;
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   overflow: clip;
   background: #000000;
 }
 
 .clean-hero {
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   background:
     radial-gradient(circle at 78% 18%, rgba(82, 39, 255, 0.06), transparent 28%),
     radial-gradient(circle at 34% 78%, rgba(255, 159, 252, 0.03), transparent 32%),
@@ -1001,7 +1001,7 @@ main > .section-band:first-child > .section-wrap {
 .clean-hero::after {
   position: absolute;
   inset: auto 0 0;
-  height: 40dvh;
+  height: calc(var(--vh, 1vh) * 40);
   pointer-events: none;
   content: "";
   background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.92));
@@ -1248,7 +1248,7 @@ main > .section-band:first-child > .section-wrap {
   position: relative;
   z-index: 3;
   display: grid;
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   align-content: center;
   width: min(100% - 40px, var(--max));
   margin: 0 auto;
@@ -1334,7 +1334,7 @@ main > .section-band:first-child > .section-wrap {
 
 .page-hero {
   position: relative;
-  min-height: 72dvh;
+  min-height: calc(var(--vh, 1vh) * 72);
   display: grid;
   align-items: end;
   overflow: hidden;
@@ -1358,7 +1358,7 @@ main > .section-band:first-child > .section-wrap {
 }
 
 .profile-landing {
-  min-height: 86dvh;
+  min-height: calc(var(--vh, 1vh) * 86);
   align-items: end;
   background:
     radial-gradient(circle at 78% 18%, rgba(100, 210, 255, 0.14), transparent 30%),
@@ -3553,7 +3553,7 @@ html[lang="en"] .subtle-name {
   }
 
   .page-hero {
-    min-height: 68dvh;
+    min-height: calc(var(--vh, 1vh) * 68);
   }
 
   .profile-landing {
@@ -3904,7 +3904,7 @@ body.nav-mega-open::after {
     left: 0;
     z-index: 10001;
     height: auto;
-    max-height: calc(100dvh - 48px);
+    max-height: calc(calc(var(--vh, 1vh) * 100) - 48px);
     padding: 28px clamp(22px, 7vw, 34px) 34px;
     align-items: stretch;
     overflow-y: auto;
@@ -4201,7 +4201,7 @@ body.nav-mega-open::after {
   .nav-links {
     top: 52px;
     bottom: 0;
-    min-height: calc(100dvh - 52px);
+    min-height: calc(calc(var(--vh, 1vh) * 100) - 52px);
     max-height: none;
     padding: clamp(36px, 9vh, 74px) 34px max(38px, env(safe-area-inset-bottom));
     background:
@@ -4214,7 +4214,7 @@ body.nav-mega-open::after {
   }
 
   .nav-links.is-open {
-    height: calc(100dvh - 52px);
+    height: calc(calc(var(--vh, 1vh) * 100) - 52px);
     transform: translateY(0);
   }
 
@@ -4689,9 +4689,9 @@ body.nav-mega-open::after {
     width: 100vw !important;
     min-width: 100vw !important;
     max-width: none !important;
-    height: calc(100dvh - var(--mobile-nav-height)) !important;
-    min-height: calc(100dvh - var(--mobile-nav-height)) !important;
-    max-height: calc(100dvh - var(--mobile-nav-height)) !important;
+    height: calc(calc(var(--vh, 1vh) * 100) - var(--mobile-nav-height)) !important;
+    min-height: calc(calc(var(--vh, 1vh) * 100) - var(--mobile-nav-height)) !important;
+    max-height: calc(calc(var(--vh, 1vh) * 100) - var(--mobile-nav-height)) !important;
     margin: 0 !important;
     padding: clamp(26px, 6vh, 46px) max(28px, env(safe-area-inset-right)) max(36px, env(safe-area-inset-bottom)) max(28px, env(safe-area-inset-left)) !important;
     overflow-x: hidden !important;
@@ -6324,8 +6324,8 @@ body.nav-mega-open::after {
   .clean-stage,
   .lightfall-container,
   #research-canvas {
-    min-height: 78dvh;
-    height: 78dvh;
+    min-height: calc(var(--vh, 1vh) * 78);
+    height: calc(var(--vh, 1vh) * 78);
   }
 
   .clean-copy h1 {
@@ -9789,7 +9789,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 .home-frame-stage {
   position: sticky;
   top: 0;
-  min-height: 100dvh;
+  min-height: calc(var(--vh, 1vh) * 100);
   width: 100%;
   display: grid;
   place-items: start center;
