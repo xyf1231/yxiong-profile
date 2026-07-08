@@ -87,6 +87,43 @@ function playSweepAnimation(card, opts) {
   var fadeOutDelay = (opts.fadeOutDelay != null ? opts.fadeOutDelay : 2500) / speed;
   var intensity = opts.intensity != null ? opts.intensity : 1;
   var peak = 100 * intensity;
+  var fanHover = opts.fanHover;
+
+  // ---- temporary style overrides for sweep color scheme ----
+  var sweepColors = opts.colors;
+  var sweepGlowColor = opts.glowColor;
+  var saved = {};
+
+  function applySweepVars() {
+    if (fanHover) setSweepFan(false);
+    if (!sweepColors && !sweepGlowColor) return;
+    var s = card.style;
+    var hoverKeys = ["--glow-color","--glow-color-60","--glow-color-50","--glow-color-40","--glow-color-30","--glow-color-20","--glow-color-10",
+      "--gradient-one","--gradient-two","--gradient-three","--gradient-four","--gradient-five","--gradient-six","--gradient-seven","--gradient-base"];
+    hoverKeys.forEach(function(k) {
+      var cur = s.getPropertyValue(k);
+      if (cur) { saved[k] = cur; }
+    });
+    if (sweepGlowColor) {
+      var gv = buildGlowVars(sweepGlowColor, 1.5);
+      for (var k in gv) { s.setProperty(k, gv[k]); }
+    }
+    if (sweepColors) {
+      var gv2 = buildGradientVars(sweepColors);
+      for (var k in gv2) { s.setProperty(k, gv2[k]); }
+    }
+  }
+
+  function restoreHoverVars() {
+    if (fanHover) setSweepFan(true);
+    var s = card.style;
+    for (var k in saved) { s.setProperty(k, saved[k]); }
+    saved = {};
+  }
+  // -----------------------------------------------------------
+
+  applySweepVars();
+  card.dataset.glowSweeping = "true";
 
   var angleStart = 110;
   var angleEnd = 465;
@@ -108,7 +145,11 @@ function playSweepAnimation(card, opts) {
 
   animateValue({ ease: easeInCubic, delay: fadeOutDelay, duration: fadeOut, start: peak, end: 0,
     onUpdate: function(v) { card.style.setProperty('--edge-proximity', v); },
-    onEnd: function() { card.classList.remove('sweep-active'); }
+    onEnd: function() {
+      card.classList.remove('sweep-active');
+      delete card.dataset.glowSweeping;
+      restoreHoverVars();
+    }
   });
 }
 
@@ -117,6 +158,7 @@ function setupPointerTracking(card) {
   card.dataset.glowPointer = 'true';
 
   card.addEventListener('pointermove', function(e) {
+    if (card.dataset.glowSweeping) return;
     var rect = card.getBoundingClientRect();
     var x = e.clientX - rect.left;
     var y = e.clientY - rect.top;
@@ -143,6 +185,7 @@ function setupPointerTracking(card) {
   });
 
   card.addEventListener('pointerleave', function() {
+    if (card.dataset.glowSweeping) return;
     card.style.setProperty('--edge-proximity', '0');
   });
 }
@@ -159,6 +202,8 @@ function initBorderGlow(cards, options) {
   var sweepIntensity = options.sweepIntensity != null ? options.sweepIntensity : 1;
   var sweepFan = options.sweepFan !== false;
   var colors = options.colors || ['#c084fc', '#f472b6', '#38bdf8'];
+  var sweepColors = options.sweepColors || null;
+  var sweepGlowColor = options.sweepGlowColor || null;
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
 
   var glowVars = buildGlowVars(glowColor, glowIntensity);
@@ -179,6 +224,9 @@ function initBorderGlow(cards, options) {
       var sweepOpts = {};
       sweepOpts.speed = sweepSpeed;
       sweepOpts.intensity = sweepIntensity;
+      sweepOpts.fanHover = sweepFan;
+      if (sweepColors) sweepOpts.colors = sweepColors;
+      if (sweepGlowColor) sweepOpts.glowColor = sweepGlowColor;
       if (options.sweepFadeIn != null) sweepOpts.fadeIn = options.sweepFadeIn;
       if (options.sweepRotate != null) {
         sweepOpts.rotateHalf = options.sweepRotate * 0.4;

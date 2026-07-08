@@ -1634,7 +1634,7 @@ function renderAllPublications(items) {
   const sorted = [...items].sort((a, b) => publicationTime(b) - publicationTime(a));
   const compact = isCompactNav();
   const expanded = target.dataset.expanded === "true";
-  const visibleItems = compact && !expanded ? sorted.slice(0, 12) : sorted;
+  const visibleItems = compact && !expanded ? sorted.slice(0, 5) : sorted;
   const listHtml = visibleItems
     .map((item, index) => {
       const title = item.title;
@@ -2281,6 +2281,7 @@ function setupBorderGlow() {
   if (glowCards.length === 0) return;
 
   if (isCompactNav()) {
+    // mobile
     initBorderGlow(glowCards, {
       colors: ["#000080", "#3377ff", "#99bbff"],
       glowColor: "220 80 80",
@@ -2297,15 +2298,16 @@ function setupBorderGlow() {
       sweepFadeOut: 400,
     });
   } else {
+    // desktop — fan on hover only, no sweep animation
     initBorderGlow(glowCards, {
-      edgeSensitivity: 0,
+      colors: ["#0d0887", "#f89540", "#ffffff"],
       glowColor: "28 80 80",
       glowRadius: 40,
       glowIntensity: 1.5,
-      coneSpread: 25,
-      animated: true,
-      colors: ["#0d0887", "#f89540", "#ffffff"],
+      edgeSensitivity: 0,
       fillOpacity: 0.5,
+      animated: false,
+      sweepFan: true,
     });
   }
 }

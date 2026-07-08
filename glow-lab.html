@@ -750,7 +750,7 @@
         cards.forEach(function(c) {
           delete c.dataset.sweepPlayed;
           c.classList.remove("sweep-active");
-          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
+          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fanHover: P.sweepFan, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
         });
         if (!looping) startLoop();
         updateCode();
@@ -763,7 +763,7 @@
         cards.forEach(function(c) {
           delete c.dataset.sweepPlayed;
           c.classList.remove("sweep-active");
-          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
+          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fanHover: P.sweepFan, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
         });
         loopTimer = setTimeout(loopSweep, (P.sweepFadeIn + P.sweepRotate + P.sweepFadeOut) / P.sweepSpeed * 1.1);
       }

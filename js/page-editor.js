@@ -10,7 +10,7 @@ const pages = [
   { id: "honors", label: "荣誉", file: "honors.html", cssPath: "css/honors-config.css", contentPath: "js/honors-content.js", contentVar: "PAGE_CONTENT" },
   { id: "activities", label: "学术活动", file: "activities.html", cssPath: "css/activities-config.css", contentPath: "js/activities-content.js", contentVar: "PAGE_CONTENT" },
   { id: "loading", label: "加载页", file: "index.html", cssPath: "css/loading-config.css", contentPath: "js/loading-content.js", contentVar: "LOADING_CONTENT" },
-  { id: "global", label: "全局 Section", file: "profile.html", cssPath: "css/global-section-config.css", contentPath: null, contentVar: null },
+  { id: "global", label: "全局", file: "profile.html", cssPath: "css/global-section-config.css", contentPath: null, contentVar: null },
 ];
 
 let currentPageId = "home";
@@ -341,6 +341,13 @@ const pageSchemas = {
         rangeField("--global-first-section-padding-top", "首 Section 上间距", 20, 320, 1, "px", "--global-first-section-padding-top-mobile"),
         rangeField("--global-section-heading-gap", "标题与内容间距", 0, 120, 1, "px", "--global-section-heading-gap-mobile"),
         rangeField("--global-list-gap", "列表项间距", 4, 80, 1, "px", "--global-list-gap-mobile"),
+      ]),
+      group("导航下拉菜单", [
+        { ...rangeField("--nav-major-font-size", "一级字体大小", 0.5, 4, 0.05, "rem"), desktopOnly: true },
+        { ...rangeField("--nav-sub-font-size", "二级字体大小", 0.5, 3, 0.05, "rem"), desktopOnly: true },
+        { ...clampField("--nav-major-font-size-mobile", "一级字体大小", 0.5, 12, 0.05, "vw", "0.5rem", "5rem"), mobileOnly: true, mobileName: "--nav-major-font-size-mobile" },
+        { ...clampField("--nav-sub-font-size-mobile", "二级字体大小", 0.5, 12, 0.05, "vw", "0.5rem", "5rem"), mobileOnly: true, mobileName: "--nav-sub-font-size-mobile" },
+        rangeField("--nav-card-gap", "下拉行间距", 0, 40, 1, "px", "--nav-card-gap-mobile"),
       ]),
     ],
   },
@@ -837,7 +844,7 @@ function renderForm() {
   if (currentPageId === "loading") {
     hint.innerHTML = "提示：加载页配置为全站共用；右侧预览会冻结加载遮罩以便调整样式与动画。";
   } else if (currentPageId === "global") {
-    hint.innerHTML = "提示：全局 Section 样式会同步影响 profile / results / honors / activities 四页以及首页 Section 小标签；右侧预览使用个人简介页。";
+    hint.innerHTML = "提示：全局样式会同步影响 profile / results / honors / activities 四页以及首页 Section 小标签；右侧预览使用个人简介页。";
   } else {
     hint.innerHTML = "提示：主标题输入多行文字即可分行显示；修改后右侧预览实时更新，点右上角「EN」可切换查看英文效果。";
   }

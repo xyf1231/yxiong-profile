@@ -32,9 +32,9 @@
   --nav-link-font-weight: 700;
   --nav-link-gap: 30px;
   --nav-link-padding: 9px 12px 11px;
-  --nav-card-gap: 5px;
-  --nav-major-font-size: 1.1rem;
-  --nav-sub-font-size: 0.85rem;
+  --nav-card-gap: 2px;
+  --nav-major-font-size: 1.8rem;
+  --nav-sub-font-size: 1.4rem;
 
   /* 头像圆圈 */
   --nav-brand-size: 35px;
@@ -56,8 +56,8 @@
 
   --nav-link-font-size-mobile: 0.82rem;
   --nav-link-gap-mobile: 4px;
-  --nav-major-font-size-mobile: clamp(0.8rem, 8vw, 4rem);
-  --nav-sub-font-size-mobile: clamp(0.5rem, 6vw, 2.5rem);
+  --nav-major-font-size-mobile: clamp(0.5rem, 8vw, 5rem);
+  --nav-sub-font-size-mobile: clamp(0.5rem, 5vw, 5rem);
   --nav-card-gap-mobile: 0px;
   --lang-toggle-font-size-mobile: 0.82rem;
 }
