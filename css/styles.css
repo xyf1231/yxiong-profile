@@ -5041,24 +5041,6 @@ body.nav-mega-open::after {
 }
 
 
-/* v1.5.39 align glow border radius with rounded cards */
-.border-glow-card {
-  border-radius: var(--border-radius, inherit) !important;
-}
-
-.border-glow-card::before {
-  border-radius: var(--border-radius, inherit) !important;
-}
-
-.feature-card.border-glow-card,
-.detail-item.border-glow-card,
-.publication-item.border-glow-card,
-.project-card.border-glow-card,
-.news-card.border-glow-card,
-.profile-publication-item.border-glow-card,
-.all-publication-list > .border-glow-card {
-  --border-radius: clamp(22px, 2.4vw, 32px);
-}
 
 
 /* v1.5.40 language placement hardening and Apple-style news bento */
