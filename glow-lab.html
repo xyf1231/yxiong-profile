@@ -43,14 +43,13 @@
 
       .layout {
         display: grid;
-        grid-template-columns: 340px 1fr;
+        grid-template-columns: 400px 1fr;
         gap: 18px;
         padding: 18px 24px 0;
         flex: 1;
         min-height: 0;
       }
 
-      /* ── left panel ── */
       .panel {
         background: var(--surface);
         border: 1px solid var(--border);
@@ -58,13 +57,6 @@
         padding: 16px;
         overflow-y: auto;
         max-height: calc(100vh - 180px);
-      }
-      .panel h2 {
-        font-size: 0.82rem;
-        font-weight: 700;
-        margin-bottom: 14px;
-        color: var(--muted);
-        letter-spacing: 0.05em;
       }
 
       .ctrl-group {
@@ -85,17 +77,13 @@
 
       .field {
         display: grid;
-        grid-template-columns: 90px 1fr;
+        grid-template-columns: 100px 1fr;
         align-items: center;
         gap: 10px;
         margin-bottom: 8px;
       }
       .field:last-child { margin-bottom: 0; }
-      .field label {
-        font-size: 0.78rem;
-        font-weight: 600;
-        color: var(--text);
-      }
+      .field label { font-size: 0.78rem; font-weight: 600; color: var(--text); }
       .field .value { font-size: 0.72rem; color: var(--muted); min-width: 36px; text-align: right; font-variant-numeric: tabular-nums; }
 
       .slider-row {
@@ -116,8 +104,7 @@
       }
       .slider-row input[type="range"]::-webkit-slider-thumb {
         -webkit-appearance: none;
-        width: 14px;
-        height: 14px;
+        width: 14px; height: 14px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
@@ -125,47 +112,106 @@
         box-shadow: 0 2px 6px rgba(0,0,0,0.4);
       }
       .slider-row input[type="range"]::-moz-range-thumb {
-        width: 14px;
-        height: 14px;
+        width: 14px; height: 14px;
         border-radius: 50%;
         background: var(--accent);
         cursor: pointer;
         border: 2px solid #fff;
       }
 
-      .color-row {
+      .toggle-row {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        padding: 4px 0;
       }
-      .color-row .swatch {
-        width: 24px; height: 24px;
-        border-radius: 50%;
-        border: 2px solid rgba(255,255,255,0.15);
-        flex-shrink: 0;
-        cursor: pointer;
-      }
-      .color-row input[type="text"] {
-        flex: 1;
-        background: rgba(0,0,0,0.35);
+      .toggle-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--accent); cursor: pointer; }
+      .toggle-row span { font-size: 0.78rem; font-weight: 600; }
+
+      .reset-btn {
+        appearance: none;
         border: 1px solid var(--border);
         border-radius: 8px;
-        padding: 6px 10px;
-        color: var(--text);
-        font-size: 0.78rem;
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        outline: none;
+        background: transparent;
+        color: var(--muted);
+        padding: 6px 14px;
+        font-size: 0.76rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.16s;
+        margin-top: 6px;
+        width: 100%;
       }
-      .color-row input[type="text"]:focus { border-color: var(--accent); }
+      .reset-btn:hover { background: var(--surface-hover); color: var(--text); }
+      .loop-active { background: var(--accent-dim) !important; border-color: var(--accent) !important; color: var(--accent) !important; }
 
-      .color-row input[type="color"] {
-        position: absolute;
-        opacity: 0;
-        width: 0; height: 0;
-        pointer-events: none;
+      /* ── preset browser ── */
+      .cat-tabs {
+        display: flex;
+        gap: 3px;
+        margin-bottom: 8px;
+      }
+      .cat-tabs button {
+        flex: 1;
+        appearance: none;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--muted);
+        padding: 5px 4px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.16s;
+      }
+      .cat-tabs button:hover { background: var(--surface-hover); color: var(--text); }
+      .cat-tabs button.active {
+        background: var(--accent-dim);
+        border-color: var(--accent);
+        color: var(--accent);
       }
 
-      /* ── right / preview area ── */
+      .preset-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 5px;
+      }
+      .preset-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        padding: 5px 3px;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.12s;
+      }
+      .preset-item:hover { background: var(--surface-hover); }
+      .preset-item.active { border-color: var(--accent); background: var(--accent-dim); }
+      .preset-item .mini-bar {
+        width: 100%;
+        height: 16px;
+        border-radius: 4px;
+      }
+      .preset-item .pname {
+        font-size: 0.6rem;
+        color: var(--muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+      .preset-item.active .pname { color: var(--accent); }
+
+      .selected-preset-name {
+        font-size: 0.72rem;
+        color: var(--accent);
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      /* ── preview ── */
       .preview-area {
         display: flex;
         flex-direction: column;
@@ -180,34 +226,17 @@
         align-content: start;
         min-height: 280px;
       }
-
       .sample-card {
         padding: 28px 22px;
         min-height: 120px;
       }
-      .sample-card h3 {
-        font-size: 1rem;
-        font-weight: 700;
-        margin-bottom: 6px;
-      }
-      .sample-card p {
-        font-size: 0.82rem;
-        color: var(--muted);
-        line-height: 1.5;
-      }
+      .sample-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 6px; }
+      .sample-card p { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
       .sample-card.wide { grid-column: 1 / -1; }
+      .sample-card.tall { min-height: 240px; }
 
-      /* ── code output ── */
-      .code-section {
-        padding: 18px 24px 24px;
-      }
-      .code-section h2 {
-        font-size: 0.82rem;
-        font-weight: 700;
-        color: var(--muted);
-        letter-spacing: 0.05em;
-        margin-bottom: 8px;
-      }
+      .code-section { padding: 18px 24px 24px; }
+      .code-section h2 { font-size: 0.82rem; font-weight: 700; color: var(--muted); letter-spacing: 0.05em; margin-bottom: 8px; }
       .code-section pre {
         background: rgba(0,0,0,0.4);
         border: 1px solid var(--border);
@@ -221,12 +250,6 @@
         white-space: pre-wrap;
         word-break: break-all;
       }
-      .code-section pre .hl { color: #7dd3fc; }
-      .code-section pre .str { color: #a5f3fc; }
-      .code-section pre .num { color: #fde68a; }
-      .code-section pre .kw { color: #c084fc; }
-      .code-section pre .cm { color: #6b7280; }
-
       .copy-btn {
         appearance: none;
         border: 1px solid var(--border);
@@ -246,35 +269,6 @@
       .copy-btn:hover { background: var(--surface-hover); color: var(--text); }
       .copy-btn.copied { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-      .toggle-row {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 4px 0;
-      }
-      .toggle-row input[type="checkbox"] {
-        width: 18px; height: 18px;
-        accent-color: var(--accent);
-        cursor: pointer;
-      }
-      .toggle-row span { font-size: 0.78rem; font-weight: 600; }
-
-      .reset-btn {
-        appearance: none;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: transparent;
-        color: var(--muted);
-        padding: 6px 14px;
-        font-size: 0.76rem;
-        font-weight: 700;
-        cursor: pointer;
-        transition: all 0.16s;
-        margin-top: 6px;
-        width: 100%;
-      }
-      .reset-btn:hover { background: var(--surface-hover); color: var(--text); }
-
       @media (max-width: 820px) {
         .layout { grid-template-columns: 1fr; }
         .panel { max-height: none; }
@@ -292,28 +286,32 @@
     </header>
 
     <div class="layout">
-      <!-- left: controls -->
-      <div class="panel" id="controls-panel"><!-- populated by JS --></div>
+      <div class="panel" id="controls-panel"></div>
 
-      <!-- right: preview + code -->
       <div class="preview-area">
         <div class="preview-cards" id="card-container">
           <div class="sample-card border-glow-card">
             <div class="border-glow-inner">
               <h3>研究卡片</h3>
-              <p>将鼠标移入/移出查看边缘发光效果。<br>发光强度、颜色、范围等参数可通过左侧面板调节。</p>
+              <p>鼠标移入查看边缘发光效果，<br>参数通过左侧面板实时调节。</p>
             </div>
           </div>
           <div class="sample-card border-glow-card">
             <div class="border-glow-inner">
               <h3>项目卡片</h3>
-              <p>发光角度跟随指针位置，<br>实时响应鼠标移动。</p>
+              <p>发光角度跟随指针位置，<br>实时响应鼠标移动方向。</p>
             </div>
           </div>
           <div class="sample-card border-glow-card wide">
             <div class="border-glow-inner">
               <h3>通栏宽卡片</h3>
-              <p>支持各种宽高比例的卡片。调节「发光半径」控制光晕扩散范围，调节「光束范围」控制发光扇形的宽窄。</p>
+              <p>调节「发光半径」控制光晕扩散范围，「光束范围」控制发光扇形的宽窄，「发光强度」控制图层不透明度。</p>
+            </div>
+          </div>
+          <div class="sample-card border-glow-card wide tall">
+            <div class="border-glow-inner">
+              <h3>高卡片</h3>
+              <p>更高尺寸的卡片，用于测试发光在垂直方向上的表现。<br><br>发光交互敏感度由「边缘敏感度」参数控制，<br>值越低鼠标离卡片越远时发光越早出现。<br><br>「发光强度」控制所有发光层的整体亮度。</p>
             </div>
           </div>
         </div>
@@ -328,77 +326,220 @@
 
     <script src="js/border-glow.js"></script>
     <script>
+      /* ============================================================
+         Gradient Presets — 50 种渐变预设
+         ============================================================ */
+      var GRADIENT_PRESETS = {"apple":["midnight","graphite","pacific","alpine","slate","indigo","silver","rose-gold","sky","sage","titanium","ocean","mist","orchid","bronze"],"morandi":["dusty-rose","muted-sage","steel-blue","warm-sand","soft-lilac","terracotta","seafoam","soft-peach","dusty-lavender","olive-gray","muted-blush","slate-rose","cream-stone","mint-gray","mauve-gray"],"classic":["golden","crimson","navy","emerald","ruby","sapphire","amber","violet","teal","coral","rainbow","sunrise","rasta","plasma","aurora","heat","ice-fire","sunset","oceanic","neon"]};
+
+      var PRESET_COLORS = {
+        midnight:["#0a0a1a","#1a1a3a","#2a2a5a","#3a3a7a","#4a4a9a","#5a5aba"],graphite:["#1a1a1c","#2a2a2e","#3a3a3e","#4a4a4e","#5a5a5e","#6a6a6e"],pacific:["#0a2a2a","#0a3a4a","#1a4a6a","#2a5a8a","#3a6aaa","#4a7aca"],alpine:["#0a2a1a","#1a3a2a","#2a4a3a","#3a5a4a","#4a6a5a","#5a7a6a"],slate:["#1a2a3a","#2a3a4a","#3a4a5a","#4a5a6a","#5a6a7a","#6a7a8a"],indigo:["#1a1a3a","#2a2a5a","#3a3a7a","#4a4a9a","#5a5aba","#6a6ada"],silver:["#3a3a3a","#4a4a4a","#5a5a5a","#6a6a6a","#7a7a7a","#8a8a8a"],"rose-gold":["#5a3a3a","#6a4a4a","#7a5a5a","#8a6a6a","#9a7a7a","#aa8a8a"],sky:["#0a2a4a","#1a3a5a","#2a4a6a","#3a5a7a","#4a6a8a","#5a7a9a"],sage:["#0a2a1a","#1a3a2a","#2a4a3a","#3a5a4a","#4a6a5a","#5a7a6a"],titanium:["#2a2a2a","#3a3a3a","#4a4a4a","#5a5a5a","#6a6a6a","#7a7a7a"],ocean:["#0a2a3a","#1a3a5a","#2a4a7a","#3a5a9a","#4a6aba","#5a7aca"],mist:["#2a3a4a","#3a4a5a","#4a5a6a","#5a6a7a","#6a7a8a","#7a8a9a"],orchid:["#3a2a3a","#4a3a4a","#5a4a5a","#6a5a6a","#7a6a7a","#8a7a8a"],bronze:["#4a3a2a","#5a4a3a","#6a5a4a","#7a6a5a","#8a7a6a","#9a8a7a"],"dusty-rose":["#6a4a4a","#7a5a5a","#8a6a6a","#9a7a7a","#aa8a8a","#ba9a9a"],"muted-sage":["#4a6a5a","#5a7a6a","#6a8a7a","#7a9a8a","#8aaa9a","#9abaaa"],"steel-blue":["#4a5a6a","#5a6a7a","#6a7a8a","#7a8a9a","#8a9aaa","#9ababa"],"warm-sand":["#7a6a5a","#8a7a6a","#9a8a7a","#aa9a8a","#baaa9a","#cabab9"],"soft-lilac":["#5a4a6a","#6a5a7a","#7a6a8a","#8a7a9a","#9a8aaa","#aa9aba"],terracotta:["#7a5a4a","#8a6a5a","#9a7a6a","#aa8a7a","#ba9a8a","#caab9a"],seafoam:["#4a6a5a","#5a7a6a","#6a8a7a","#7a9a8a","#8aaaba","#9abaca"],"soft-peach":["#8a6a5a","#9a7a6a","#aa8a7a","#ba9a8a","#caaaaa","#dababa"],"dusty-lavender":["#5a4a6a","#6a5a7a","#7a6a8a","#8a7a9a","#9a8aaa","#aa9aba"],"olive-gray":["#5a5a4a","#6a6a5a","#7a7a6a","#8a8a7a","#9a9a8a","#aaaa9a"],"muted-blush":["#8a6a6a","#9a7a7a","#aa8a8a","#ba9a9a","#caaaaa","#dababa"],"slate-rose":["#5a4a5a","#6a5a6a","#7a6a7a","#8a7a8a","#9a8a9a","#aa9aaa"],"cream-stone":["#8a7a6a","#9a8a7a","#aa9a8a","#baaa9a","#cabaaa","#dacaba"],"mint-gray":["#4a6a5a","#5a7a6a","#6a8a7a","#7a9a8a","#8aaaba","#9ababa"],"mauve-gray":["#6a5a6a","#7a6a7a","#8a7a8a","#9a8a9a","#aa9aaa","#ba9aba"],golden:["#8B4513","#CD853F","#DAA520","#FFD700","#F0E68C","#FFFACD"],crimson:["#4a0000","#800000","#b30000","#dc143c","#ff4d6d","#ff8fa3"],navy:["#000080","#0033cc","#0055ff","#3377ff","#6699ff","#99bbff"],emerald:["#004d40","#00695c","#00897b","#009688","#4db6ac","#80cbc4"],ruby:["#3d0000","#660000","#990000","#cc0000","#ff0000","#ff5555"],sapphire:["#000033","#001a66","#003399","#0044cc","#3366ff","#6688ff"],amber:["#6b3100","#8b4513","#b87333","#daa520","#ffd700","#ffec8b"],violet:["#1a0033","#330066","#4d0099","#6600cc","#7f00ff","#aa55ff"],teal:["#003333","#006666","#009999","#00cccc","#00ffff","#55ffff"],coral:["#6b0000","#993333","#cc5555","#ff7f50","#ffa07a","#ffccaa"],rainbow:["#ff0000","#ff7f00","#ffff00","#00ff00","#0000ff","#8b00ff"],sunrise:["#2d0036","#800080","#ff1493","#ff8c00","#ffd700","#ffffe0"],rasta:["#006400","#228b22","#ffd700","#ff8c00","#dc143c","#8b0000"],plasma:["#0d0887","#7e03a8","#cc4778","#f89540","#f0f921","#ffffff"],aurora:["#004d00","#00b300","#00ffff","#0080ff","#8000ff","#ff00ff"],heat:["#000000","#330000","#ff0000","#ff6600","#ffff00","#ffffff"],"ice-fire":["#00008b","#00ced1","#00ff00","#ffff00","#ff4500","#ff0000"],sunset:["#000033","#4b0082","#ff1493","#ff4500","#dc143c","#4a0000"],oceanic:["#000000","#000080","#008b8b","#00fa9a","#7fff00","#ffffff"],neon:["#000000","#9400d3","#ff00ff","#00ffff","#39ff14","#ffff00"]};
+
+      var ALL_PRESETS = [];
+      var CAT_KEYS = ["apple","morandi","classic"];
+      var CAT_LABELS = { apple: "Apple", morandi: "Morandi", classic: "Classic" };
+      CAT_KEYS.forEach(function(c) {
+        GRADIENT_PRESETS[c].forEach(function(name) { ALL_PRESETS.push(name); });
+      });
+
+      var selectedPreset = null;
+      var activeCat = "apple";
+
+      function hexToHsl(hex) {
+        hex = hex.replace(/^#/,'');
+        if (hex.length===3) hex=hex.split('').map(function(c){return c+c}).join('');
+        var r=parseInt(hex.substr(0,2),16)/255,g=parseInt(hex.substr(2,2),16)/255,b=parseInt(hex.substr(4,2),16)/255;
+        var max=Math.max(r,g,b),min=Math.min(r,g,b);
+        var h=0,s=0,l=(max+min)/2;
+        if (max!==min) {
+          var d=max-min;
+          s=l>0.5?d/(2-max-min):d/(max+min);
+          switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}
+          h/=6;
+        }
+        return {h:h*360,s:s*100,l:l*100};
+      }
+
+      function deriveGlowColor(colors) {
+        var hsl = hexToHsl(colors[3] || colors[0]);
+        return Math.round(hsl.h) + " " + Math.round(Math.min(hsl.s, 80)) + " 80";
+      }
+
+      function hslToHex(h,s,l) {
+        s/=100; l/=100;
+        var a=s*Math.min(l,1-l);
+        var f=function(n){var k=(n+h/30)%12;return l-a*Math.max(Math.min(k-3,9-k,1),-1);};
+        var r=Math.round(f(0)*255); var g=Math.round(f(8)*255); var b=Math.round(f(4)*255);
+        return "#"+[r,g,b].map(function(v){return v.toString(16).padStart(2,"0");}).join("");
+      }
+
+      function adjustColors(colors, boost) {
+        if (boost === 1.0) return colors.slice();
+        return colors.map(function(hex) {
+          var hsl = hexToHsl(hex);
+          hsl.s = Math.min(100, Math.max(0, hsl.s * boost));
+          return hslToHex(hsl.h, hsl.s, hsl.l);
+        });
+      }
+
+      function applyPreset(name) {
+        selectedPreset = name;
+        var stops = PRESET_COLORS[name];
+        P.colors = [stops[0], stops[3], stops[5]];
+        P.glowColor = deriveGlowColor(stops);
+        renderControls();
+        applyGlow();
+      }
+
       /* ── defaults ── */
       var DEFAULTS = {
-        glowColor: "40 80 80",
+        glowColor: deriveGlowColor(PRESET_COLORS.neon),
         glowRadius: 40,
         glowIntensity: 1.0,
         edgeSensitivity: 30,
-        coneSpread: 25,
         fillOpacity: 0.5,
+        colorBoost: 1.0,
         animated: false,
-        colors: ["#c084fc", "#f472b6", "#38bdf8"],
+        colors: [PRESET_COLORS.neon[0], PRESET_COLORS.neon[3], PRESET_COLORS.neon[5]],
       };
 
       var P = Object.assign({}, DEFAULTS);
+      selectedPreset = "neon";
       var applyTimer = null;
+      var loopTimer = null;
+      var looping = false;
 
-      /* ── helpers ── */
-      function qs(s, ctx) { return (ctx || document).querySelector(s); }
-      function qsa(s, ctx) { return Array.from((ctx || document).querySelectorAll(s)); }
+      function qs(s,ctx){return(ctx||document).querySelector(s);}
+      function qsa(s,ctx){return Array.from((ctx||document).querySelectorAll(s));}
 
       /* ── render controls ── */
       function renderControls() {
         var panel = document.getElementById("controls-panel");
         panel.innerHTML = "";
 
-        // ── color group ──
-        var g1 = fieldset("发光颜色");
-        g1.append(rangeField("亮度 HSL", "glowColor", { text: true, val: P.glowColor }));
-        g1.append(triColorField());
-        panel.appendChild(g1);
+        // ── gradient preset ──
+        var gp = fieldset("渐变配色");
+        var selName = document.createElement("div");
+        selName.className = "selected-preset-name";
+        selName.textContent = selectedPreset || "未选择";
+        gp.appendChild(selName);
 
-        // ── geometry group ──
-        var g2 = fieldset("几何参数");
-        g2.append(rangeField("发光半径", "glowRadius", { min: 0, max: 120, step: 1, unit: "px", val: P.glowRadius }));
-        g2.append(rangeField("光束范围", "coneSpread", { min: 5, max: 50, step: 1, val: P.coneSpread }));
-        g2.append(rangeField("卡片圆角", "_borderRadius", { text: true, val: P._borderRadius || "clamp(22px, 2.4vw, 32px)" }));
-        panel.appendChild(g2);
+        var cats = document.createElement("div");
+        cats.className = "cat-tabs";
+        CAT_KEYS.forEach(function(c) {
+          var btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = activeCat === c ? "active" : "";
+          btn.textContent = CAT_LABELS[c];
+          btn.addEventListener("click", function() { activeCat = c; renderControls(); });
+          cats.appendChild(btn);
+        });
+        gp.appendChild(cats);
 
-        // ── intensity group ──
-        var g3 = fieldset("强度与透明度");
-        g3.append(rangeField("发光强度", "glowIntensity", { min: 0.1, max: 3, step: 0.1, val: P.glowIntensity }));
-        g3.append(rangeField("边缘敏感度", "edgeSensitivity", { min: 0, max: 100, step: 1, val: P.edgeSensitivity }));
-        g3.append(rangeField("填充不透明度", "fillOpacity", { min: 0, max: 1, step: 0.05, val: P.fillOpacity }));
-        panel.appendChild(g3);
+        var grid = document.createElement("div");
+        grid.className = "preset-grid";
+        var presets = GRADIENT_PRESETS[activeCat];
+        presets.forEach(function(name) {
+          var stops = PRESET_COLORS[name];
+          var item = document.createElement("div");
+          item.className = "preset-item" + (selectedPreset === name ? " active" : "");
+          var bar = document.createElement("div");
+          bar.className = "mini-bar";
+          var grad = "linear-gradient(90deg";
+          stops.forEach(function(c,i) {
+            grad += "," + c + " " + (i*20) + "%";
+          });
+          grad += ")";
+          bar.style.background = grad;
+          var label = document.createElement("span");
+          label.className = "pname";
+          label.textContent = name;
+          item.appendChild(bar);
+          item.appendChild(label);
+          item.addEventListener("click", function() { applyPreset(name); });
+          grid.appendChild(item);
+        });
+        gp.appendChild(grid);
+        panel.appendChild(gp);
 
-        // ── animation group ──
-        var g4 = fieldset("动画");
+        // ── 鼠标悬停 ──
+        var gHover = fieldset("鼠标悬停");
+
+        // glowColor control
+        var gcRow = document.createElement("div");
+        gcRow.className = "field";
+        var gcLbl = document.createElement("label");
+        gcLbl.textContent = "发光颜色";
+        gcRow.appendChild(gcLbl);
+        var gcWrap = document.createElement("div");
+        gcWrap.className = "color-row";
+        var gcInp = document.createElement("input");
+        gcInp.type = "text";
+        gcInp.value = P.glowColor;
+        gcInp.style.cssText = "flex:1;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--text);font-size:0.78rem;font-family:ui-monospace,monospace;outline:none;";
+        var gcSwatch = document.createElement("span");
+        gcSwatch.className = "swatch";
+        gcSwatch.style.width = "20px"; gcSwatch.style.height = "20px";
+        gcSwatch.style.background = "hsl(" + P.glowColor.replace(/\s+/g, " ") + ")";
+        gcInp.addEventListener("input", function() {
+          P.glowColor = gcInp.value;
+          gcSwatch.style.background = "hsl(" + gcInp.value.replace(/\s+/g, " ") + ")";
+          scheduleApply();
+        });
+        gcWrap.appendChild(gcInp);
+        gcWrap.appendChild(gcSwatch);
+        gcRow.appendChild(gcWrap);
+        var gcDesc = document.createElement("div");
+        gcDesc.style.cssText = "grid-column:1/-1;font-size:0.68rem;color:var(--muted);line-height:1.4;margin-top:-4px;";
+        gcDesc.textContent = "边缘光的 HSL 颜色，格式：色相 饱和度 明度，选中预设时自动生成";
+        gcRow.appendChild(gcDesc);
+        gHover.appendChild(gcRow);
+
+        gHover.append(rangeField("颜色增强","colorBoost",{min:0.5,max:2,step:0.05,val:P.colorBoost,desc:"渐变网格颜色的饱和度倍率，值越高颜色越鲜艳"}));
+        gHover.append(rangeField("发光半径","glowRadius",{min:0,max:120,step:1,unit:"px",val:P.glowRadius,desc:"光晕从卡片边缘向外扩散的距离，值越大光晕范围越广"}));
+        gHover.append(rangeField("发光强度","glowIntensity",{min:0.1,max:3,step:0.1,val:P.glowIntensity,desc:"发光层的不透明度倍率，值越高边缘光越亮"}));
+        gHover.append(rangeField("边缘敏感度","edgeSensitivity",{min:0,max:100,step:1,val:P.edgeSensitivity,desc:"鼠标靠近边缘多远时触发发光，值越低越早触发"}));
+        gHover.append(rangeField("填充不透明度","fillOpacity",{min:0,max:1,step:0.05,val:P.fillOpacity,desc:"卡片内部填充色的透明度" }));
+        gHover.append(rangeField("卡片圆角","_borderRadius",{text:true,val:P._borderRadius||"clamp(22px, 2.4vw, 32px)",desc:"卡片四个角的圆角半径"}));
+        panel.appendChild(gHover);
+
+        // ── 入场扫光动画 ──
+        var gAnim = fieldset("入场扫光动画");
         var trow = document.createElement("div");
         trow.className = "toggle-row";
         var cb = document.createElement("input");
         cb.type = "checkbox";
         cb.checked = P.animated;
-        cb.addEventListener("change", function() {
-          P.animated = cb.checked;
-          scheduleApply();
-        });
+        cb.addEventListener("change",function(){P.animated=cb.checked;scheduleApply();});
         var tl = document.createElement("span");
-        tl.textContent = "入场扫光动画";
-        trow.appendChild(cb);
-        trow.appendChild(tl);
-        g4.appendChild(trow);
-        panel.appendChild(g4);
+        tl.textContent = "页面加载时自动播放扫光";
+        trow.appendChild(cb); trow.appendChild(tl);
+        gAnim.appendChild(trow);
 
-        // ── reset ──
+        var loopBtn = document.createElement("button");
+        loopBtn.type = "button";
+        loopBtn.id = "loop-btn";
+        loopBtn.className = looping ? "reset-btn loop-active" : "reset-btn";
+        loopBtn.textContent = looping ? "停止循环" : "循环播放";
+        loopBtn.addEventListener("click", function() {
+          if (looping) { stopLoop(); }
+          else { startLoop(); }
+        });
+        gAnim.appendChild(loopBtn);
+
+        var animHint = document.createElement("p");
+        animHint.style.cssText = "font-size:0.68rem;color:var(--muted);line-height:1.4;margin:6px 0 0;";
+        animHint.textContent = "扫光动画在卡片进入视口时自动播放一次，开启后每个卡片只播放一次。循环播放按钮可反复触发。";
+        gAnim.appendChild(animHint);
+        panel.appendChild(gAnim);
+
+        // reset
         var resetBtn = document.createElement("button");
         resetBtn.className = "reset-btn";
         resetBtn.textContent = "重置为默认值";
-        resetBtn.addEventListener("click", function() {
-          Object.keys(DEFAULTS).forEach(function(k) { P[k] = DEFAULTS[k]; });
-          delete P._borderRadius;
-          renderControls();
-          applyGlow();
+        resetBtn.addEventListener("click",function(){
+          Object.keys(DEFAULTS).forEach(function(k){P[k]=DEFAULTS[k];});
+          delete P._borderRadius; selectedPreset="neon"; activeCat="apple";
+          renderControls(); applyGlow();
         });
         panel.appendChild(resetBtn);
       }
@@ -412,243 +553,226 @@
         return fs;
       }
 
-      function rangeField(label, key, opts) {
-        opts = opts || {};
-        var row = document.createElement("div");
-        row.className = "field";
-
-        var lbl = document.createElement("label");
-        lbl.textContent = label;
+      function rangeField(label,key,opts) {
+        opts=opts||{};
+        var row=document.createElement("div");
+        row.className="field";
+        var lbl=document.createElement("label");
+        lbl.textContent=label;
         row.appendChild(lbl);
 
         if (opts.text) {
-          // text input for complex values
-          var inner = document.createElement("div");
-          inner.style.cssText = "display:flex;align-items:center;gap:6px;";
-          var inp = document.createElement("input");
-          inp.type = "text";
-          inp.value = opts.val;
-          inp.style.cssText = "flex:1;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--text);font-size:0.78rem;font-family:ui-monospace,monospace;outline:none;";
-          inp.addEventListener("input", function() {
-            P[key] = inp.value;
-            scheduleApply();
-          });
+          var inner=document.createElement("div");
+          inner.style.cssText="display:flex;align-items:center;gap:6px;";
+          var inp=document.createElement("input");
+          inp.type="text";
+          inp.value=opts.val;
+          inp.style.cssText="flex:1;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:8px;padding:5px 10px;color:var(--text);font-size:0.78rem;font-family:ui-monospace,monospace;outline:none;";
+          inp.addEventListener("input",function(){P[key]=inp.value;scheduleApply();});
           inner.appendChild(inp);
           row.appendChild(inner);
           return row;
         }
 
-        var inner = document.createElement("div");
-        inner.className = "slider-row";
+        var inner=document.createElement("div");
+        inner.className="slider-row";
+        var sl=document.createElement("input");
+        sl.type="range";
+        sl.min=opts.min;sl.max=opts.max;sl.step=opts.step||1;
+        sl.value=opts.val;
+        var valSpan=document.createElement("span");
+        valSpan.className="value";
+        valSpan.textContent=opts.val+(opts.unit||"");
 
-        var sl = document.createElement("input");
-        sl.type = "range";
-        sl.min = opts.min; sl.max = opts.max; sl.step = opts.step || 1;
-        sl.value = opts.val;
-
-        var valSpan = document.createElement("span");
-        valSpan.className = "value";
-        valSpan.textContent = opts.val + (opts.unit || "");
-
-        function update(v) {
-          var num = parseFloat(v);
-          if (Number.isNaN(num)) return;
-          num = Math.max(opts.min, Math.min(opts.max, num));
-          P[key] = num;
-          valSpan.textContent = num + (opts.unit || "");
+        function update(v){
+          var num=parseFloat(v);
+          if(Number.isNaN(num))return;
+          num=Math.max(opts.min,Math.min(opts.max,num));
+          P[key]=num;
+          valSpan.textContent=num+(opts.unit||"");
+          numInp.value=num;
           scheduleApply();
         }
-
-        sl.addEventListener("input", function() { update(sl.value); });
+        sl.addEventListener("input",function(){update(sl.value);});
         inner.appendChild(sl);
         inner.appendChild(valSpan);
 
-        // number input
-        var numInp = document.createElement("input");
-        numInp.type = "text";
-        numInp.inputMode = "decimal";
-        numInp.pattern = "[-+]?[0-9]*\\.?[0-9]*";
-        numInp.value = opts.val;
-        numInp.style.cssText = "width:52px;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:6px;padding:4px 6px;color:var(--text);font-size:0.76rem;text-align:center;outline:none;font-family:inherit;";
-        numInp.addEventListener("input", function() {
-          var v = parseFloat(numInp.value);
-          if (Number.isNaN(v)) return;
-          v = Math.max(opts.min, Math.min(opts.max, v));
-          sl.value = v;
-          P[key] = v;
-          valSpan.textContent = v + (opts.unit || "");
+        var numInp=document.createElement("input");
+        numInp.type="text";
+        numInp.inputMode="decimal";
+        numInp.pattern="[-+]?[0-9]*\\.?[0-9]*";
+        numInp.value=opts.val;
+        numInp.style.cssText="width:52px;background:rgba(0,0,0,0.35);border:1px solid var(--border);border-radius:6px;padding:4px 6px;color:var(--text);font-size:0.76rem;text-align:center;outline:none;font-family:inherit;";
+        numInp.addEventListener("input",function(){
+          var v=parseFloat(numInp.value);
+          if(Number.isNaN(v))return;
+          v=Math.max(opts.min,Math.min(opts.max,v));
+          sl.value=v;P[key]=v;
+          valSpan.textContent=v+(opts.unit||"");
           scheduleApply();
         });
-        numInp.addEventListener("blur", function() {
-          var v = parseFloat(numInp.value);
-          if (!Number.isNaN(v)) numInp.value = v;
-        });
+        numInp.addEventListener("blur",function(){var v=parseFloat(numInp.value);if(!Number.isNaN(v))numInp.value=v;});
         inner.appendChild(numInp);
-
         row.appendChild(inner);
+        if (opts.desc) {
+          var d = document.createElement("div");
+          d.style.cssText = "grid-column:1/-1;font-size:0.68rem;color:var(--muted);line-height:1.4;margin-top:-4px;";
+          d.textContent = opts.desc;
+          row.appendChild(d);
+        }
         return row;
       }
 
-      function triColorField() {
-        var wrapper = document.createElement("div");
-        wrapper.style.cssText = "display:flex;flex-direction:column;gap:5px;padding:2px 0;";
-        ["渐变色 1", "渐变色 2", "渐变色 3"].forEach(function(lbl, i) {
-          var rowC = document.createElement("div");
-          rowC.className = "color-row";
-          var swatch = document.createElement("span");
-          swatch.className = "swatch";
-          swatch.style.background = P.colors[i];
-          var inp = document.createElement("input");
-          inp.type = "text";
-          inp.value = P.colors[i];
-          var picker = document.createElement("input");
-          picker.type = "color";
-          picker.value = P.colors[i];
-          picker.addEventListener("input", function() {
-            P.colors[i] = picker.value;
-            inp.value = picker.value;
-            swatch.style.background = picker.value;
-            scheduleApply();
-          });
-          swatch.addEventListener("click", function() { picker.click(); });
-          inp.addEventListener("input", function() {
-            P.colors[i] = inp.value;
-            swatch.style.background = inp.value;
-            scheduleApply();
-          });
-          var lblEl = document.createElement("span");
-          lblEl.textContent = lbl;
-          lblEl.style.cssText = "font-size:0.7rem;color:var(--muted);min-width:62px;";
-          rowC.appendChild(lblEl);
-          rowC.appendChild(swatch);
-          rowC.appendChild(inp);
-          rowC.appendChild(picker);
-          wrapper.appendChild(rowC);
-        });
-        return wrapper;
+      /* ── build computed glow colors (not CSS var refs) ── */
+      function parseHSL(hslStr) {
+        var m=hslStr.match(/([\d.]+)\s*([\d.]+)%?\s*([\d.]+)%?/);
+        if(!m)return{h:40,s:80,l:80};
+        return{h:parseFloat(m[1]),s:parseFloat(m[2]),l:parseFloat(m[3])};
       }
 
-      /* ── apply glow to cards ── */
-      function scheduleApply() {
-        clearTimeout(applyTimer);
-        applyTimer = setTimeout(applyGlow, 40);
+      function glowColorValues(hslStr,intensity) {
+        var hsl=parseHSL(hslStr);
+        var base=hsl.h+"deg "+hsl.s+"% "+hsl.l+"%";
+        var opacities=[100,60,50,40,30,20,10];
+        var keys=["","-60","-50","-40","-30","-20","-10"];
+        var vals={};
+        for(var i=0;i<opacities.length;i++){
+          vals["--glow-color"+keys[i]]="hsl("+base+" / "+Math.min(opacities[i]*intensity,100)+"%)";
+        }
+        return vals;
       }
 
-      function buildGlowShadows(r) {
-        // scale box-shadow values proportional to radius (default 40px = 1.0)
-        var s = r / 40;
-        function b(v) { return Math.round(v * s); }
-        var vars = ["--glow-color", "--glow-color-60", "--glow-color-50", "--glow-color-40",
-                     "--glow-color-30", "--glow-color-20", "--glow-color-10"];
+      function buildGlowShadows(radius,intensity,hslStr) {
+        var s=radius/40;
+        function b(v){return Math.round(v*s);}
+        var c=glowColorValues(hslStr,intensity);
+        var keys=["--glow-color","--glow-color-60","--glow-color-50","--glow-color-40","--glow-color-30","--glow-color-20","--glow-color-10"];
+        var resolved=[];
+        keys.forEach(function(k){resolved.push(c[k]);});
+        function sh(inset,blur,spread,idx){
+          return (inset?"inset ":"")+"0 0 "+blur+"px "+spread+"px "+resolved[idx];
+        }
         return [
-          "inset 0 0 0 " + Math.max(1, b(1)) + "px var(" + vars[0] + ")",
-          "inset 0 0 " + b(1) + "px 0 var(" + vars[1] + ")",
-          "inset 0 0 " + b(3) + "px 0 var(" + vars[2] + ")",
-          "inset 0 0 " + b(6) + "px 0 var(" + vars[3] + ")",
-          "inset 0 0 " + b(15) + "px 0 var(" + vars[4] + ")",
-          "inset 0 0 " + b(25) + "px " + Math.max(1, b(2)) + "px var(" + vars[5] + ")",
-          "inset 0 0 " + b(50) + "px " + Math.max(1, b(2)) + "px var(" + vars[6] + ")",
-          "0 0 " + b(1) + "px 0 var(" + vars[1] + ")",
-          "0 0 " + b(3) + "px 0 var(" + vars[2] + ")",
-          "0 0 " + b(6) + "px 0 var(" + vars[3] + ")",
-          "0 0 " + b(15) + "px 0 var(" + vars[4] + ")",
-          "0 0 " + b(25) + "px " + Math.max(1, b(2)) + "px var(" + vars[5] + ")",
-          "0 0 " + b(50) + "px " + Math.max(1, b(2)) + "px var(" + vars[6] + ")",
+          sh(true,0,1,0),
+          sh(true,b(1),0,1),
+          sh(true,b(3),0,2),
+          sh(true,b(6),0,3),
+          sh(true,b(15),0,4),
+          sh(true,b(25),Math.max(1,b(2)),5),
+          sh(true,b(50),Math.max(1,b(2)),6),
+          sh(false,b(1),0,1),
+          sh(false,b(3),0,2),
+          sh(false,b(6),0,3),
+          sh(false,b(15),0,4),
+          sh(false,b(25),Math.max(1,b(2)),5),
+          sh(false,b(50),Math.max(1,b(2)),6),
         ].join(",\n    ");
       }
 
+      /* ── apply ── */
+      function scheduleApply(){clearTimeout(applyTimer);applyTimer=setTimeout(applyGlow,40);}
+
       function applyGlow() {
-        var cards = qsa(".border-glow-card");
-        // reset: remove inline style + event listeners
-        cards.forEach(function(c) {
-          delete c.dataset.glowPointer;
-          delete c.dataset.glowReady;
-          delete c.dataset.sweepPlayed;
+        stopLoop();
+        var cards=qsa(".border-glow-card");
+        cards.forEach(function(c){
+          delete c.dataset.glowPointer;delete c.dataset.glowReady;delete c.dataset.sweepPlayed;
           c.classList.remove("sweep-active");
-          var s = c.style;
-          var props = [
-            "--edge-sensitivity", "--glow-padding", "--cone-spread", "--fill-opacity",
-            "--edge-proximity", "--cursor-angle",
-            "--glow-color", "--glow-color-60", "--glow-color-50", "--glow-color-40",
-            "--glow-color-30", "--glow-color-20", "--glow-color-10",
-            "--gradient-one", "--gradient-two", "--gradient-three", "--gradient-four",
-            "--gradient-five", "--gradient-six", "--gradient-seven", "--gradient-base",
-          ];
-          props.forEach(function(p) { s.removeProperty(p); });
+          var props=["--edge-sensitivity","--glow-padding","--cone-spread","--fill-opacity","--edge-proximity","--cursor-angle",
+            "--glow-color","--glow-color-60","--glow-color-50","--glow-color-40","--glow-color-30","--glow-color-20","--glow-color-10",
+            "--gradient-one","--gradient-two","--gradient-three","--gradient-four","--gradient-five","--gradient-six","--gradient-seven","--gradient-base"];
+          props.forEach(function(p){c.style.removeProperty(p);});
+        });
+        // remove then create edge-light elements (border-glow.js does not create them)
+        qsa(".border-glow-card>.edge-light").forEach(function(el){el.remove();});
+        cards.forEach(function(c){
+          var el=document.createElement("div");
+          el.className="edge-light";
+          c.appendChild(el);
         });
 
-        // remove edge-light elements
-        qsa(".border-glow-card > .edge-light").forEach(function(el) { el.remove(); });
+        // inject dynamic box-shadow with COMPUTED colors (not CSS var refs) — intensity applied here
+        var shadowStyle=document.getElementById("glow-lab-shadow");
+        if(!shadowStyle){shadowStyle=document.createElement("style");shadowStyle.id="glow-lab-shadow";document.head.appendChild(shadowStyle);}
+        var shadows=buildGlowShadows(P.glowRadius,P.glowIntensity,P.glowColor);
+        var borderRadius=P._borderRadius||"clamp(22px, 2.4vw, 32px)";
+        shadowStyle.textContent=
+          ".border-glow-card>.edge-light::before{box-shadow:\n    "+shadows+";\n}"+
+          ".border-glow-card{--border-radius:"+borderRadius+"!important;}";
 
-        // inject dynamic shadow style scaled by glowRadius
-        var shadowStyle = document.getElementById("glow-lab-shadow");
-        if (!shadowStyle) {
-          shadowStyle = document.createElement("style");
-          shadowStyle.id = "glow-lab-shadow";
-          document.head.appendChild(shadowStyle);
-        }
-        var shadows = buildGlowShadows(P.glowRadius);
-        var borderRadius = P._borderRadius || "clamp(22px, 2.4vw, 32px)";
-        shadowStyle.textContent =
-          ".border-glow-card > .edge-light::before {\n" +
-          "  box-shadow:\n    " + shadows + ";\n" +
-          "}\n" +
-          ".border-glow-card {\n" +
-          "  --border-radius: " + borderRadius + " !important;\n" +
-          "}";
-
-        // call init
-        initBorderGlow(cards, {
-          glowColor: P.glowColor,
-          glowRadius: P.glowRadius,
-          glowIntensity: P.glowIntensity,
-          edgeSensitivity: P.edgeSensitivity,
-          coneSpread: P.coneSpread,
-          fillOpacity: P.fillOpacity,
-          colors: P.colors,
-          animated: P.animated,
+        // call initBorderGlow (sets gradient mesh colors + pointer tracking)
+        var boostedColors = adjustColors(P.colors, P.colorBoost);
+        initBorderGlow(cards,{
+          glowColor:P.glowColor,
+          glowRadius:P.glowRadius,
+          glowIntensity:P.glowIntensity,
+          edgeSensitivity:P.edgeSensitivity,
+          coneSpread:25,
+          fillOpacity:P.fillOpacity,
+          colors: boostedColors,
+          animated:P.animated,
         });
 
         updateCode();
       }
 
+      /* ── loop sweep animation ── */
+      function loopSweep() {
+        if (!looping) return;
+        var cards = qsa(".border-glow-card");
+        cards.forEach(function(c) {
+          delete c.dataset.sweepPlayed;
+          c.classList.remove("sweep-active");
+          playSweepAnimation(c);
+        });
+        loopTimer = setTimeout(loopSweep, 4500);
+      }
+
+      function startLoop() {
+        looping = true;
+        var btn = document.getElementById("loop-btn");
+        if (btn) { btn.textContent = "停止循环"; btn.classList.add("loop-active"); }
+        loopSweep();
+      }
+
+      function stopLoop() {
+        looping = false;
+        clearTimeout(loopTimer);
+        var btn = document.getElementById("loop-btn");
+        if (btn) { btn.textContent = "循环播放"; btn.classList.remove("loop-active"); }
+      }
+
       /* ── code output ── */
       function updateCode() {
-        var out = document.getElementById("code-output");
-        var lines = [];
+        var out=document.getElementById("code-output");
+        var lines=[];
         lines.push("initBorderGlow(cards, {");
         lines.push("  glowColor: " + JSON.stringify(P.glowColor) + ",");
         lines.push("  glowRadius: " + P.glowRadius + ",");
         lines.push("  glowIntensity: " + P.glowIntensity + ",");
         lines.push("  edgeSensitivity: " + P.edgeSensitivity + ",");
-        lines.push("  coneSpread: " + P.coneSpread + ",");
         lines.push("  fillOpacity: " + P.fillOpacity + ",");
         lines.push("  colors: " + JSON.stringify(P.colors) + ",");
         lines.push("  animated: " + (P.animated ? "true" : "false") + ",");
         lines.push("});");
-        out.textContent = lines.join("\n");
+        out.textContent=lines.join("\n");
       }
 
       /* ── copy ── */
-      document.getElementById("copy-btn").addEventListener("click", function() {
-        var text = document.getElementById("code-output").textContent;
-        navigator.clipboard.writeText(text).then(function() {
-          var btn = document.getElementById("copy-btn");
-          btn.textContent = "已复制";
-          btn.classList.add("copied");
-          setTimeout(function() {
-            btn.textContent = "复制";
-            btn.classList.remove("copied");
-          }, 1800);
-        }).catch(function() {});
+      document.getElementById("copy-btn").addEventListener("click",function(){
+        var text=document.getElementById("code-output").textContent;
+        navigator.clipboard.writeText(text).then(function(){
+          var btn=document.getElementById("copy-btn");
+          btn.textContent="已复制";btn.classList.add("copied");
+          setTimeout(function(){btn.textContent="复制";btn.classList.remove("copied");},1800);
+        }).catch(function(){});
       });
 
       /* ── reset ── */
-      document.getElementById("btn-reset").addEventListener("click", function() {
-        Object.keys(DEFAULTS).forEach(function(k) { P[k] = DEFAULTS[k]; });
-        delete P._borderRadius;
-        renderControls();
-        applyGlow();
+      document.getElementById("btn-reset").addEventListener("click",function(){
+        Object.keys(DEFAULTS).forEach(function(k){P[k]=DEFAULTS[k];});
+        delete P._borderRadius; selectedPreset="neon"; activeCat="apple";
+        renderControls(); applyGlow();
       });
 
       /* ── init ── */
