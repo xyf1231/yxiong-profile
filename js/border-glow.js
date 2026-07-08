@@ -251,15 +251,23 @@ function initBorderGlow(cards, options) {
       }
       if (options.sweepFadeOut != null) sweepOpts.fadeOut = options.sweepFadeOut;
 
-      var observer = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting) {
-            playSweepAnimation(card, sweepOpts);
-            observer.unobserve(card);
-          }
-        });
-      }, { threshold: 0.3 });
-      observer.observe(card);
+      // use rAF to ensure card is laid out; if already visible, play immediately
+      requestAnimationFrame(function() {
+        var rect = card.getBoundingClientRect();
+        if (rect.top < window.innerHeight && rect.bottom > 0 && rect.width > 0 && rect.height > 0) {
+          playSweepAnimation(card, sweepOpts);
+        } else {
+          var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+              if (entry.isIntersecting) {
+                playSweepAnimation(card, sweepOpts);
+                observer.unobserve(card);
+              }
+            });
+          }, { threshold: 0.3 });
+          observer.observe(card);
+        }
+      });
     }
   });
 

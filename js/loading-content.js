@@ -12,7 +12,7 @@ window.LOADING_CONTENT = {
   },
   "shared": {
     "words": "welcome, loading, creating, exploring, building, dreaming",
-    "presets": "rainbow, sunrise, rasta, plasma, aurora, ice-fire, sunset, oceanic, neon, bubblegum, tropical, cyber, fire, lemonade, sunset-bright, candy, northern",
+    "presets": "rainbow, sunrise, rasta, plasma, aurora, ice-fire, cyber, northern, fire, lemonade, bubblegum, neon, sunset-bright, tropical, sunset, candy, ocean-bright",
     "interval": "3000",
     "duration": "2",
     "erase": "true",
