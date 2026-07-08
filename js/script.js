@@ -262,7 +262,6 @@ function setupSiteLoadingGate() {
         setProgress(100);
       }
       root.dataset.siteLoading = "ready";
-      if (typeof replayAllSweep === "function") replayAllSweep();
       window.dispatchEvent(new Event("scroll", { bubbles: true }));
       const hash = window.location.hash;
       if (hash) {
@@ -2273,9 +2272,9 @@ function setupBorderGlow() {
   allCards.forEach(function(card) {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
+    card.classList.add("border-glow-card");
 
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
-    card.classList.add("border-glow-card");
     card.style.setProperty("--border-radius", borderRadius);
 
     var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media");
@@ -2289,7 +2288,7 @@ function setupBorderGlow() {
       card.appendChild(inner);
     }
 
-    var edgeLight = document.createElement("div");
+    var edgeLight = document.createElement("span");
     edgeLight.className = "edge-light";
     card.appendChild(edgeLight);
   });
@@ -2306,7 +2305,6 @@ function setupBorderGlow() {
     edgeSensitivity: 0,
     fillOpacity: 0.5,
     animated: true,
-    hoverEnabled: !isCompactNav(),
     sweepFan: false,
     sweepSpeed: 2,
     sweepIntensity: 1,

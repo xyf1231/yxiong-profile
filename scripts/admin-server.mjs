@@ -37,6 +37,10 @@ const pythonCandidates = [
 let previewServer = null;
 let previewPort = 3456;
 
+// ── 备份预览服务器状态 ──
+const backupPreviews = new Map(); // backupName -> { server, port, path }
+let nextBackupPort = 3457;
+
 // 静态文件 MIME 类型映射
 const mimeTypes = {
   ".html": "text/html; charset=utf-8",
@@ -605,6 +609,86 @@ async function getPreviewStatus(res) {
   });
 }
 
+// ── 备份预览服务器（独立端口，不冲突）──
+function createBackupPreviewServer(backupPath) {
+  return createServer(async (req, res) => {
+    try {
+      const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
+      let pathname = decodeURIComponent(url.pathname);
+      if (pathname === "/") pathname = "/index.html";
+      const filePath = normalize(join(backupPath, pathname));
+      if (!filePath.startsWith(backupPath)) {
+        res.writeHead(403);
+        res.end("Forbidden");
+        return;
+      }
+      const info = await stat(filePath);
+      if (!info.isFile()) throw new Error("not a file");
+      const body = await readFile(filePath);
+      res.writeHead(200, {
+        "Content-Type": mimeTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
+        "Cache-Control": "no-store",
+      });
+      res.end(body);
+    } catch {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+    }
+  });
+}
+
+async function startBackupPreview(res, backupPath, backupName) {
+  if (backupPreviews.has(backupName)) {
+    const existing = backupPreviews.get(backupName);
+    sendJson(res, 200, { ok: true, running: true, port: existing.port, url: `http://localhost:${existing.port}`, message: "备份预览已在运行" });
+    return;
+  }
+  try {
+    const port = nextBackupPort++;
+    const server = createBackupPreviewServer(backupPath);
+    await new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(port, "127.0.0.1", () => {
+        server.removeListener("error", reject);
+        resolve();
+      });
+    });
+    backupPreviews.set(backupName, { server, port, path: backupPath });
+    sendJson(res, 200, {
+      ok: true,
+      running: true,
+      port,
+      url: `http://localhost:${port}`,
+      message: `备份预览已启动: http://localhost:${port}`,
+    });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: `启动备份预览失败: ${error.message}` });
+  }
+}
+
+async function stopBackupPreview(res, backupName) {
+  const entry = backupPreviews.get(backupName);
+  if (!entry) {
+    sendJson(res, 200, { ok: true, running: false, message: "备份预览未运行" });
+    return;
+  }
+  try {
+    entry.server.close();
+    backupPreviews.delete(backupName);
+    sendJson(res, 200, { ok: true, running: false, port: entry.port, message: "备份预览已关闭" });
+  } catch (error) {
+    sendJson(res, 500, { ok: false, message: error.message });
+  }
+}
+
+function listBackupPreviews(res) {
+  const entries = [];
+  for (const [name, info] of backupPreviews) {
+    entries.push({ name, port: info.port, url: `http://localhost:${info.port}`, path: info.path });
+  }
+  sendJson(res, 200, { ok: true, previews: entries });
+}
+
 // ── 通用文件读写 API（用于样式编辑器等工具页）──
 function isWritableProjectPath(fullPath, relativePath) {
   const rel = relativePath.replace(/\\/g, "/");
@@ -782,6 +866,29 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/preview/stop" && req.method === "POST") {
       await stopPreview(res);
+      return;
+    }
+
+    // ── 备份预览 API ──
+    if (url.pathname === "/api/backup-preview/start" && req.method === "POST") {
+      const body = await readRequestBody(req);
+      const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+      const backupName = payload.backupName || "";
+      if (!backupName) { sendJson(res, 400, { ok: false, message: "缺少 backupName" }); return; }
+      const backups = await listBackupDirs();
+      const selected = backups.find((entry) => entry.name === backupName);
+      if (!selected) { sendJson(res, 404, { ok: false, message: "备份不存在" }); return; }
+      await startBackupPreview(res, selected.path, backupName);
+      return;
+    }
+    if (url.pathname === "/api/backup-preview/stop" && req.method === "POST") {
+      const body = await readRequestBody(req);
+      const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+      await stopBackupPreview(res, payload.backupName || "");
+      return;
+    }
+    if (url.pathname === "/api/backup-preview/list" && req.method === "GET") {
+      listBackupPreviews(res);
       return;
     }
 

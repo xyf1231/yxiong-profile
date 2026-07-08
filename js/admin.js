@@ -1218,6 +1218,7 @@ async function loadDeployData() {
     refreshGitStatus(true),
     checkPreviewStatus(),
     loadBackupsPanel(),
+    loadBackupPreviews(),
   ]);
   deployLog("版本仪表盘数据加载完成", "success");
 }
@@ -1398,6 +1399,7 @@ function renderBackupList(backups) {
           </div>
           <div class="backup-item-actions">
             <button class="deploy-btn primary" type="button" data-backup-action="restore" data-backup-name="${escapeHtml(item.name)}">还原</button>
+            <button class="deploy-btn success" type="button" data-backup-action="preview" data-backup-name="${escapeHtml(item.name)}">打开备份</button>
             <button class="deploy-btn" type="button" data-backup-action="select" data-backup-name="${escapeHtml(item.name)}">选中</button>
             <button class="deploy-btn danger" type="button" data-backup-action="delete" data-backup-name="${escapeHtml(item.name)}">删除</button>
           </div>
@@ -1465,6 +1467,81 @@ async function deleteBackup(backupName) {
   }
 }
 
+// ═══════════════════════════════════════════════════════════════
+//  备份预览
+// ═══════════════════════════════════════════════════════════════
+
+async function startBackupPreview(backupName) {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再操作。", "error");
+    return;
+  }
+  if (!backupName) return;
+  try {
+    setLocalStatus(`正在启动备份预览：${backupName}…`, "info");
+    const result = await localRequest("/api/backup-preview/start", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ backupName }),
+    });
+    if (result.ok && result.url) {
+      setLocalStatus(`备份预览已启动：${result.url}`, "success");
+      window.open(result.url, "_blank", "noopener");
+      await loadBackupPreviews();
+    } else {
+      setLocalStatus(`启动备份预览失败：${result.message}`, "error");
+    }
+  } catch (error) {
+    setLocalStatus(`启动备份预览失败：${error.message}`, "error");
+  }
+}
+
+async function stopBackupPreview(backupName) {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  if (!backupName) return;
+  try {
+    const result = await localRequest("/api/backup-preview/stop", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ backupName }),
+    });
+    if (result.ok) {
+      setLocalStatus(`备份预览已关闭：${backupName}`, "success");
+      await loadBackupPreviews();
+    }
+  } catch (error) {
+    setLocalStatus(`关闭备份预览失败：${error.message}`, "error");
+  }
+}
+
+async function loadBackupPreviews() {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  const container = document.querySelector("#backup-preview-status");
+  if (!container) return;
+  try {
+    const result = await localRequest("/api/backup-preview/list");
+    const previews = result.previews || [];
+    if (!previews.length) {
+      container.innerHTML = `<div class="deploy-mini-item"><span>无运行中的备份预览</span></div>`;
+      return;
+    }
+    container.innerHTML = previews
+      .map(
+        (p) => `
+        <div class="deploy-mini-item">
+          <span>${escapeHtml(p.name.replace(/^site-backup-/, ""))}</span>
+          <strong style="display:flex;align-items:center;gap:6px;">
+            <a href="${p.url}" target="_blank" rel="noopener" style="color:#2997FF;text-decoration:none;font-weight:600;">:${p.port}</a>
+            <button class="deploy-btn danger" type="button" data-backup-preview-stop="${escapeHtml(p.name)}" style="height:28px;padding:0 8px;font-size:0.72rem;">停止</button>
+          </strong>
+        </div>`,
+      )
+      .join("");
+  } catch (error) {
+    container.innerHTML = `<div class="deploy-mini-item"><span>加载失败：${escapeHtml(error.message)}</span></div>`;
+  }
+}
+
 async function checkLocalServer() {
   if (!USE_LOCAL_ADMIN_SERVER) {
     setLocalStatus("当前不是本地后台模式：请双击「站点维护.command」，再从 http://localhost:8787/admin.html 打开。", "error");
@@ -1516,6 +1593,12 @@ function init() {
     if (!restoreBackupSelect.value) return;
     setLocalStatus(`已选择备份：${restoreBackupSelect.value}`, "info");
   });
+  document.querySelector("#btn-refresh-backup-previews")?.addEventListener("click", loadBackupPreviews);
+  document.querySelector("#backup-preview-status")?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-backup-preview-stop]");
+    if (!button) return;
+    await stopBackupPreview(button.dataset.backupPreviewStop);
+  });
   backupList?.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-backup-action]");
     if (!button) return;
@@ -1527,6 +1610,8 @@ function init() {
     } else if (action === "restore") {
       if (restoreBackupSelect) restoreBackupSelect.value = backupName;
       await restoreSite();
+    } else if (action === "preview") {
+      await startBackupPreview(backupName);
     } else if (action === "delete") {
       await deleteBackup(backupName);
     }
