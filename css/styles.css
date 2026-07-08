@@ -55,8 +55,9 @@ html {
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
   background: #000000;
-  min-height: 100dvh;
+  min-height: 100%;
   min-height: -webkit-fill-available;
+  min-height: 100lvh;
 }
 
 
@@ -102,8 +103,9 @@ html[data-site-loading="ready"] {
   overflow: visible;
   touch-action: pan-y;
   height: auto;
-  min-height: 100dvh;
+  min-height: 100%;
   min-height: -webkit-fill-available;
+  min-height: 100lvh;
 }
 
 html[data-site-loading="ready"] body {
@@ -112,8 +114,11 @@ html[data-site-loading="ready"] body {
   touch-action: pan-y;
   width: auto;
   height: auto;
-  min-height: 100dvh;
+  min-height: 100vh;
   min-height: -webkit-fill-available;
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: 100lvh;
 }
 
 /* html[data-site-loading="pending"]::before {
@@ -404,8 +409,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-  min-height: 100dvh;
+  min-height: 100vh;
   min-height: -webkit-fill-available;
+  min-height: 100svh;
+  min-height: 100dvh;
+  min-height: 100lvh;
 }
 
 img,
@@ -2454,7 +2462,7 @@ html[lang="en"] .subtle-name {
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 26px clamp(20px, 4vw, 48px);
+  padding: 26px clamp(20px, 4vw, 48px) max(26px, env(safe-area-inset-bottom));
   color: var(--muted);
   font-size: var(--font-small);
   font-weight: 500;
@@ -6163,9 +6171,7 @@ body.nav-mega-open::after {
   padding: clamp(18px, 2vw, 28px);
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 24px;
-  background: linear-gradient(145deg, rgb(8 12 18 / 72%), rgb(8 12 18 / 42%));
-  backdrop-filter: blur(18px) saturate(1.35);
-  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  background: linear-gradient(145deg, rgb(8 12 18 / 88%), rgb(8 12 18 / 64%));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 10%), 0 20px 54px rgb(0 0 0 / 32%);
 }
 

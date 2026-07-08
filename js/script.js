@@ -2341,7 +2341,7 @@ function setupRevealAnimations() {
 
   const revealInView = () => {
     rafId = 0;
-    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const viewportHeight = (window.visualViewport && window.visualViewport.height) || window.innerHeight || document.documentElement.clientHeight;
     const startLine = viewportHeight * 0.985;
     const endLine = viewportHeight * 0.02;
 
@@ -2490,14 +2490,17 @@ function drawLightfallStars() {
     if (point.y > height + 20) point.y = -20;
     if (point.x < -20) point.x = width + 20;
     const twinkle = 0.32 + Math.sin(point.x * 0.01 + point.y * 0.02) * 0.18;
+    const r = point.r * (0.52 + twinkle * 0.28);
+    const alpha = 0.1 + twinkle * 0.34;
     ctx.beginPath();
-    ctx.arc(point.x, point.y, point.r * (0.52 + twinkle * 0.28), 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(166, 200, 255, ${0.1 + twinkle * 0.34})`;
-    ctx.shadowColor = "rgba(82, 39, 255, 0.28)";
-    ctx.shadowBlur = 2 + twinkle * 3;
+    ctx.arc(point.x, point.y, r * 2.4, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(82, 39, 255, ${alpha * 0.35})`;
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(point.x, point.y, r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(166, 200, 255, ${alpha})`;
     ctx.fill();
   }
-  ctx.shadowBlur = 0;
 }
 
 function drawLightfallStreaks() {
@@ -2519,10 +2522,14 @@ function drawLightfallStreaks() {
     ctx.beginPath();
     ctx.moveTo(tailX, tailY);
     ctx.lineTo(headX, headY);
+    ctx.strokeStyle = hexToRgba(streak.color, alpha * 0.22);
+    ctx.lineWidth = streak.width * 3.2;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(tailX, tailY);
+    ctx.lineTo(headX, headY);
     ctx.strokeStyle = gradient;
     ctx.lineWidth = streak.width;
-    ctx.shadowColor = streak.color;
-    ctx.shadowBlur = 6;
     ctx.stroke();
 
     ctx.beginPath();
@@ -2537,7 +2544,6 @@ function drawLightfallStreaks() {
       lightStreaks[i] = createLightStreak(false);
     }
   }
-  ctx.shadowBlur = 0;
 }
 
 function hexToRgba(hex, alpha) {
