@@ -1699,9 +1699,8 @@ function renderSite(page = "shared") {
     renderResearch(data.research || []);
     renderNews(data.news || []);
     renderNewsDetail(data.news || []);
-    renderPublications(data.publications || []);
-    renderProfilePublications(data.publications || []);
-    renderAllPublications(data.allPublications || data.publications || []);
+    renderProfilePublications(data.allPublications || []);
+    renderAllPublications(data.allPublications || []);
     renderProjects(data.projects || []);
     renderAchievements(data.achievements || []);
     renderDetailLists(data.achievements || []);
