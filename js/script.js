@@ -1575,6 +1575,7 @@ function showPdfLoading(link) {
 function renderPublications(items) {
   const target = document.querySelector("#publication-list");
   if (!target) return;
+}
 
 function getRepresentativePublications(items, limit = 5) {
   return items.filter(p => p.representative).slice(0, limit);

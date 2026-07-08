@@ -56,7 +56,8 @@ const schemas = {
     ],
   },
   publications: {
-    title: "论文",
+    title: "论文管理",
+    dataKey: "allPublications",
     fields: [
       ["year", "年份"],
       ["title", "英文题名", "textarea"],
@@ -66,22 +67,9 @@ const schemas = {
       ["venueZh", "期刊中文"],
       ["date", "发表日期"],
       ["impact", "影响因子"],
-      ["image", "主图", "image"],
+      ["image", "图片/主图", "image"],
       ["url", "PDF/链接", "file"],
-    ],
-  },
-  allPublications: {
-    title: "全部论文",
-    fields: [
-      ["year", "年份"],
-      ["title", "英文题名", "textarea"],
-      ["titleZh", "中文题名", "textarea"],
-      ["authors", "作者", "textarea"],
-      ["venue", "期刊英文"],
-      ["venueZh", "期刊中文"],
-      ["date", "发表日期"],
-      ["image", "图片", "image"],
-      ["url", "PDF/链接", "file"],
+      ["representative", "代表性论文", "checkbox"],
     ],
   },
   projects: { title: "项目", fields: [["title", "标题"], ["text", "说明", "textarea"], ["image", "图片", "image"], ["url", "链接"]] },
@@ -241,7 +229,9 @@ function buildUploadFilename(file, key, target) {
 }
 
 function currentCollection() {
-  return schemas[activeTab].type === "object" ? data[activeTab] : data[activeTab] || [];
+  const schema = schemas[activeTab];
+  const dataKey = schema.dataKey || activeTab;
+  return schema.type === "object" ? data[dataKey] : data[dataKey] || [];
 }
 
 function readFile(file) {
@@ -544,10 +534,14 @@ function buildForm() {
   const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
   form.innerHTML = schema.fields
     .map(([key, label, kind]) => {
-      const value = source[key] || "";
+      const value = source[key];
       const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
       if (kind === "richtext") return richTextFieldHtml(key, label, value);
       if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
+      if (kind === "checkbox") {
+        const checked = value ? " checked" : "";
+        return `<label class="${cls} checkbox-field"><span class="checkbox-label"><input type="checkbox" name="${key}"${checked} /> ${label}</span></label>`;
+      }
       if (kind === "image" || kind === "file") {
         const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
         const bucket = kind === "image" ? "images" : "papers";
@@ -675,9 +669,13 @@ async function saveCurrent() {
   syncAllRichTextSources();
   const schema = schemas[activeTab];
   const target = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
-  for (const [key] of schema.fields) {
-    const value = form.elements[key]?.value;
-    if (value !== undefined) target[key] = value || "";
+  for (const [key, , kind] of schema.fields) {
+    const el = form.elements[key];
+    if (kind === "checkbox" && el) {
+      target[key] = el.checked ? true : false;
+    } else {
+      target[key] = el?.value || "";
+    }
   }
   for (const [key, , kind] of schema.fields) {
     if (kind !== "image" && kind !== "file") continue;

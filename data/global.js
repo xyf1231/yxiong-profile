@@ -1,8 +1,3 @@
-/**
- * data/global.js — 站点内容数据库（全局副本）
- * 与 js/data.js 内容保持一致，用于兼容旧引用或全局注入场景。
- * 实际渲染以 js/data.js 为准；修改时请同步更新两个文件。
- */
 window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
   "assetSource": "vercel",
@@ -94,128 +89,6 @@ window.DEFAULT_SITE_DATA = {
       "pdf": "resources/papers/light-fingerprint-2026.pdf"
     }
   ],
-  "publications": [
-    {
-      "year": "2026",
-      "title": "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
-      "titleZh": "利用光纤端面单像素器件识别光的模式、偏振、波长和强度",
-      "authors": "Xiong, Y., Fang, S., Xu, Y., Lei, Y., Ao, L., Zhan, L., Ding, Z., Zhu, H., Chen, M., Li, Z., Ren, W., Chen, J., Chen, Y., Lu, Y., Yuan, H., and Xu, F.",
-      "venue": "Nature Electronics",
-      "venueZh": "《自然·电子学》",
-      "date": "2026",
-      "impact": "40.9 (2025)",
-      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp",
-      "url": "resources/papers/light-fingerprint-2026.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
-      "titleZh": "用于光纤集成偏振计的扭转黑磷范德瓦尔斯堆叠结构",
-      "authors": "Xiong, Y., Wang, Y., Zhu, R., Xu, H., Wu, C., Chen, J., Ma, Y., Liu, Y., Chen, Y., Watanabe, K., Taniguchi, T., Shi, M., Chen, X., Lu, Y., Zhan, P., Hao, Y., and Xu, F.",
-      "venue": "Science Advances",
-      "venueZh": "《科学进展》",
-      "date": "2022-05-04",
-      "impact": "13.6 (2022)",
-      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp",
-      "url": "resources/papers/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array.",
-      "titleZh": "基于端面集成石墨烯探测阵列的超紧凑多芯光纤解复用器",
-      "authors": "Xiong, Y., Xu, H., Wang, Y., Wu, C., Ding, Z., Chen, M., Hao, Y., Chen, Y., and Xu, F.",
-      "venue": "ACS Photonics",
-      "venueZh": "《ACS 光子学》",
-      "date": "2022-05-02",
-      "impact": "7.0 (2022)",
-      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp",
-      "url": "resources/papers/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet.pdf"
-    },
-    {
-      "year": "2025",
-      "title": "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
-      "titleZh": "基于铌酸锂驱动器的兆赫兹速率宽调谐光纤滤波器",
-      "authors": "Tong, H., Xiong, Y., Wang, Z., Chen, Z., Qin, Z., Xing, Z., Lu, Z., Ding, H., Chen, Y., and Xu, F.",
-      "venue": "Laser & Photonics Reviews",
-      "venueZh": "《激光与光子学评论》",
-      "date": "2025-07-02",
-      "impact": "10.0 (2024)",
-      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp",
-      "url": "resources/papers/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators.pdf"
-    },
-    {
-      "year": "2024",
-      "title": "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.",
-      "titleZh": "集成铌酸锂压电驱动器的超高速高线性光纤法布里-珀罗可调滤波器",
-      "authors": "Tong, H., Xiong, Y., Ding, H., Chen, Z., Qin, Z., Chen, W., Tang, J., Yu, S., and Xu, F.",
-      "venue": "ACS Photonics",
-      "venueZh": "《ACS 光子学》",
-      "date": "2024-03-15",
-      "impact": "6.7 (2024)",
-      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp",
-      "url": "resources/papers/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul.pdf"
-    },
-    {
-      "year": "2023",
-      "title": "Active fiber tips with optoelectronic integration: state-of-the-art, future trends, and challenges.",
-      "titleZh": "光电集成有源光纤端面：研究现状、未来趋势与挑战",
-      "authors": "Xiong, Y., Ding, Z., and Xu, F.",
-      "venue": "Journal of Lightwave Technology",
-      "venueZh": "《光波技术期刊》",
-      "date": "2023-07-01",
-      "impact": "4.1 (2023)",
-      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp",
-      "url": "resources/papers/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall.pdf"
-    },
-    {
-      "year": "2020",
-      "title": "Multifunctional integration on optical fiber tips: Challenges and opportunities.",
-      "titleZh": "光纤端面多功能集成：挑战与机遇",
-      "authors": "Xiong, Y., and Xu, F.",
-      "venue": "Advanced Photonics",
-      "venueZh": "《先进光子学》",
-      "date": "2020-09-25",
-      "impact": "18.8 (2025)",
-      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp",
-      "url": "resources/papers/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities.pdf"
-    },
-    {
-      "year": "2020",
-      "title": "Ultrahigh responsivity photodetectors of 2D covalent organic frameworks integrated on graphene.",
-      "titleZh": "集成于石墨烯上的二维共价有机框架超高响应度光电探测器",
-      "authors": "Xiong, Y., Liao, Q., Huang, Z., Huang, X., Ke, C., Zhu, H., Dong, C., Wang, H., Xi, K., Zhan, P., Xu, F., and Lu, Y.",
-      "venue": "Advanced Materials",
-      "venueZh": "《先进材料》",
-      "date": "2020-03-04",
-      "impact": "30.849 (2020)",
-      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp",
-      "url": "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf"
-    },
-    {
-      "year": "2019",
-      "title": "Broadband optical-fiber-compatible photodetector based on a graphene-MoS2-WS2 heterostructure with a synergetic photogenerating mechanism.",
-      "titleZh": "基于石墨烯-MoS2-WS2 异质结构协同光生机制的宽带光纤兼容光电探测器",
-      "authors": "Xiong, Y., Chen, J., Lu, Y., and Xu, F.",
-      "venue": "Advanced Electronic Materials",
-      "venueZh": "《先进电子材料》",
-      "date": "2018-11-25",
-      "impact": "5.3",
-      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp",
-      "url": "resources/papers/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct.pdf"
-    },
-    {
-      "year": "2022",
-      "title": "Optical fiber tip integrated photoelectrochemical sensors.",
-      "titleZh": "光纤端面集成光电化学生物传感器",
-      "authors": "Wang, H., Xiong, Y., Wu, C., Zhu, H., Chen, Y., and Xu, F.",
-      "venue": "Optics Express",
-      "venueZh": "《光学快报》",
-      "date": "2022-02-28",
-      "impact": "5.3",
-      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp",
-      "url": "resources/papers/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors.pdf"
-    }
-  ],
   "allPublications": [
     {
       "year": "2026",
@@ -226,7 +99,9 @@ window.DEFAULT_SITE_DATA = {
       "venueZh": "《自然·电子学》",
       "date": "2026",
       "url": "resources/papers/light-fingerprint-2026.pdf",
-      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp"
+      "image": "resources/images/2026-identification-of-the-mode-polarization-wavelength-and-intensity-of-light-using-a-one-pixe-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2026",
@@ -236,7 +111,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Nature Communications",
       "venueZh": "《自然·通讯》",
       "date": "2026",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2025",
@@ -246,7 +123,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Functional Materials",
       "venueZh": "《先进功能材料》",
       "date": "2025",
-      "url": "resources/papers/2025-metasurface-integrated-pattern-preserved-fiber-mode-separator.pdf"
+      "url": "resources/papers/2025-metasurface-integrated-pattern-preserved-fiber-mode-separator.pdf",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2025",
@@ -257,7 +136,9 @@ window.DEFAULT_SITE_DATA = {
       "venueZh": "《激光与光子学评论》",
       "date": "2025-07-02",
       "url": "resources/papers/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators.pdf",
-      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp"
+      "image": "resources/images/2025-megahertz-rate-widely-tunable-fiber-filters-enabled-by-linbo3-actuators-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2024",
@@ -267,7 +148,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Nature Communications",
       "venueZh": "《自然·通讯》",
       "date": "2024",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2024",
@@ -277,8 +160,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "ACS Photonics",
       "venueZh": "《ACS 光子学》",
       "date": "2024-03-15",
-      "url": "",
-      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp"
+      "url": "resources/papers/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul.pdf",
+      "image": "resources/images/2024-lithium-niobate-piezoelectric-actuator-integrated-fiber-fabry-perot-tunable-filter-with-ul-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2023",
@@ -288,7 +173,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Optics Letters",
       "venueZh": "《光学快报》",
       "date": "2023",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2023",
@@ -298,7 +185,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Optics & Laser Technology",
       "venueZh": "《光学与激光技术》",
       "date": "2023",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2023",
@@ -308,8 +197,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Journal of Lightwave Technology",
       "venueZh": "《光波技术期刊》",
       "date": "2023-07-01",
-      "url": "",
-      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp"
+      "url": "resources/papers/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall.pdf",
+      "image": "resources/images/2023-active-fiber-tips-with-optoelectronic-integration-state-of-the-art-future-trends-and-chall-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2022",
@@ -319,7 +210,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Optics Letters",
       "venueZh": "《光学快报》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -329,7 +222,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Photonics",
       "venueZh": "《先进光子学》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -339,7 +234,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Optics Express",
       "venueZh": "《光学快报》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -349,7 +246,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Optical Materials",
       "venueZh": "《先进光学材料》",
       "date": "2022",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2022",
@@ -359,8 +258,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Science Advances",
       "venueZh": "《科学进展》",
       "date": "2022-05-04",
-      "url": "",
-      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp"
+      "url": "resources/papers/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters.pdf",
+      "image": "resources/images/2022-twisted-black-phosphorus-based-van-der-waals-stacks-for-fiber-integrated-polarimeters-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2022",
@@ -370,8 +271,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "ACS Photonics",
       "venueZh": "《ACS 光子学》",
       "date": "2022-05-02",
-      "url": "",
-      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp"
+      "url": "resources/papers/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet.pdf",
+      "image": "resources/images/2022-ultracompact-multicore-fiber-de-multiplexer-using-an-endface-integrating-graphene-photodet-main.webp",
+      "impact": "",
+      "representative": true
     },
     {
       "year": "2022",
@@ -381,8 +284,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Optics Express",
       "venueZh": "《光学快报》",
       "date": "2022-02-28",
-      "url": "",
-      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp"
+      "url": "resources/papers/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors.pdf",
+      "image": "resources/images/2022-optical-fiber-tip-integrated-photoelectrochemical-sensors-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2021",
@@ -392,7 +297,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Light: Science & Applications",
       "venueZh": "《光：科学与应用》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2021",
@@ -402,7 +309,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Journal of Lightwave Technology",
       "venueZh": "《光波技术期刊》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2021",
@@ -412,7 +321,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Optical Materials",
       "venueZh": "《先进光学材料》",
       "date": "2021",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2020",
@@ -422,8 +333,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Photonics",
       "venueZh": "《先进光子学》",
       "date": "2020-09-25",
-      "url": "",
-      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp"
+      "url": "resources/papers/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities.pdf",
+      "image": "resources/images/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2020",
@@ -433,8 +346,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Materials",
       "venueZh": "《先进材料》",
       "date": "2020-03-04",
-      "url": "",
-      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp"
+      "url": "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf",
+      "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2020",
@@ -444,7 +359,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Sensors",
       "venueZh": "《传感器》",
       "date": "2020",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     },
     {
       "year": "2019",
@@ -454,8 +371,10 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Advanced Electronic Materials",
       "venueZh": "《先进电子材料》",
       "date": "2018-11-25",
-      "url": "",
-      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp"
+      "url": "resources/papers/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct.pdf",
+      "image": "resources/images/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct-main.webp",
+      "impact": "",
+      "representative": false
     },
     {
       "year": "2016",
@@ -465,7 +384,9 @@ window.DEFAULT_SITE_DATA = {
       "venue": "Langmuir",
       "venueZh": "《朗缪尔》",
       "date": "2016",
-      "url": ""
+      "url": "",
+      "representative": false,
+      "impact": ""
     }
   ],
   "projects": [
