@@ -187,7 +187,6 @@ function updateCardGlow(card, clientX, clientY) {
 
 function setupPointerTracking(card) {
   if (card.dataset.glowPointer === 'true') return;
-  if (window.matchMedia('(hover: none)').matches) return;
   card.dataset.glowPointer = 'true';
 
   card.addEventListener('pointerenter', function(e) {
