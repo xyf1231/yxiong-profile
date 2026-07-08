@@ -613,13 +613,58 @@ function renderList() {
       </article>`;
     return;
   }
-  list.dataset.sortable = "true";
   const items = currentCollection();
+  let repHtml = "";
+  if (activeTab === "publications") {
+    const order = data.representativeOrder || [];
+    const repItems = [];
+    for (const title of order) {
+      const found = items.findIndex(p => p.title === title);
+      if (found >= 0) repItems.push(found);
+    }
+    // Add any representative items not in order
+    items.forEach((item, idx) => {
+      if (item.representative && !repItems.includes(idx)) repItems.push(idx);
+    });
+    const repCount = repItems.length;
+    repHtml = `
+      <div class="rep-order-header">
+        <h4>★ 代表性论文排序 <span class="rep-count">${repCount}/5 篇</span></h4>
+        <p class="rep-order-hint">拖拽调整代表作显示顺序</p>
+      </div>
+      <div class="item-list rep-order-list" id="rep-order-list">
+        ${repItems.length === 0
+          ? `<div class="managed-item empty-item"><div style="text-align:center;width:100%;padding:20px;color:rgba(255,255,255,0.35);font-size:0.85rem;">暂无代表作，请在下方论文列表中勾选「代表性论文」</div></div>`
+          : repItems.map((dataIdx, displayIdx) => {
+              const item = items[dataIdx];
+              const title = item.title || "";
+              const venue = item.venue || "";
+              return `
+                <article class="managed-item" draggable="false" data-rep-index="${displayIdx}" data-array-index="${dataIdx}">
+                  <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
+                  <div class="managed-copy">
+                    <h3><span class="item-number">${String(displayIdx + 1).padStart(2, "0")}</span>${escapeHtml(title)}</h3>
+                    <p>${escapeHtml(venue)}</p>
+                  </div>
+                  <div class="item-actions">
+                    <button class="icon-button" data-action="rep-up" data-index="${displayIdx}" type="button" title="上移">▲</button>
+                    <button class="icon-button" data-action="rep-down" data-index="${displayIdx}" type="button" title="下移">▼</button>
+                  </div>
+                </article>`;
+            }).join("")
+        }
+      </div>
+      <hr class="rep-divider">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0;">
+        <h4 style="font-size:0.9rem;font-weight:700;margin:0;color:rgba(255,255,255,0.55);">全部论文</h4>
+      </div>`;
+  }
+  list.dataset.sortable = activeTab !== "publications" ? "true" : "false";
   if (items.length === 0) {
-    list.innerHTML = `<div class="managed-item empty-item"><div style="text-align:center;width:100%;padding:30px 20px;color:rgba(255,255,255,0.35);font-size:0.85rem;">暂无条目，点击「新增」添加</div></div>`;
+    list.innerHTML = repHtml + `<div class="managed-item empty-item"><div style="text-align:center;width:100%;padding:30px 20px;color:rgba(255,255,255,0.35);font-size:0.85rem;">暂无条目，点击「新增」添加</div></div>`;
     return;
   }
-  list.innerHTML = items
+  list.innerHTML = repHtml + items
     .map(
       (item, index) => `
         <article class="managed-item" draggable="false" data-index="${index}">
@@ -1663,6 +1708,25 @@ function init() {
       await reorderCurrentCollection(index, Math.max(0, index - 1));
     } else if (button.dataset.action === "down") {
       await reorderCurrentCollection(index, Math.min(currentCollection().length - 1, index + 1));
+    } else if (button.dataset.action === "rep-up" || button.dataset.action === "rep-down") {
+      const order = data.representativeOrder || [];
+      const items = currentCollection();
+      // Build current rep order from stored titles
+      const repTitles = [];
+      for (const t of order) {
+        if (items.find(p => p.title === t && p.representative)) repTitles.push(t);
+      }
+      // Add any reps not in order
+      items.forEach(p => { if (p.representative && !repTitles.includes(p.title)) repTitles.push(p.title); });
+      const from = index;
+      const to = button.dataset.action === "rep-up" ? Math.max(0, from - 1) : Math.min(repTitles.length - 1, from + 1);
+      if (from === to) return;
+      const [moved] = repTitles.splice(from, 1);
+      repTitles.splice(to, 0, moved);
+      data.representativeOrder = repTitles.slice(0, 5);
+      await persistAndWrite();
+      buildForm();
+      renderList();
     } else {
       currentCollection().splice(index, 1);
       editingIndex = 0;

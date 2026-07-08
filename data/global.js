@@ -691,5 +691,12 @@ window.DEFAULT_SITE_DATA = {
       "value": "GitHub",
       "url": "#"
     }
+  ],
+  "representativeOrder": [
+    "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
+    "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
+    "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.",
+    "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
+    "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array."
   ]
 };

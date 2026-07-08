@@ -1578,7 +1578,12 @@ function renderPublications(items) {
 }
 
 function getRepresentativePublications(items, limit = 5) {
-  return items.filter(p => p.representative).slice(0, limit);
+  const order = (getSiteData()?.representativeOrder) || [];
+  const reps = items.filter(p => p.representative);
+  if (order.length > 0) {
+    reps.sort((a, b) => order.indexOf(a.title) - order.indexOf(b.title));
+  }
+  return reps.slice(0, limit);
 }
 
 // 渲染简介页代表论文
