@@ -42,6 +42,11 @@ const displayOptions = [
   { value: "block", label: "显示" },
 ];
 
+const onOffOptions = [
+  { value: "0", label: "关闭" },
+  { value: "1", label: "开启" },
+];
+
 function group(title, fields) {
   return { title, fields };
 }
@@ -65,16 +70,16 @@ function rangeField(name, label, min, max, step, unit, mobileName) {
   return { name, label, type: "range", min, max, step, unit, mobileName: mobileName || null };
 }
 
-function selectField(name, label, options) {
-  return { name, label, type: "select", options };
+function selectField(name, label, options, mobileName) {
+  return { name, label, type: "select", options, mobileName: mobileName || null };
 }
 
-function textField(name, label) {
-  return { name, label, type: "text" };
+function textField(name, label, mobileName) {
+  return { name, label, type: "text", mobileName: mobileName || null };
 }
 
-function colorField(name, label) {
-  return { name, label, type: "color" };
+function colorField(name, label, mobileName) {
+  return { name, label, type: "color", mobileName: mobileName || null };
 }
 
 const pageSchemas = {
@@ -152,6 +157,26 @@ const pageSchemas = {
       group("快速导航卡片", [
         clampField("--home-bento-card-title-font-size", "卡片标题 (vw)", 1, 8, 0.1, "vw", "1.5rem", "6rem", "--home-bento-card-title-font-size-mobile"),
         clampField("--home-bento-card-text-font-size", "卡片描述 (vw)", 0.4, 3, 0.05, "vw", "0.7rem", "1.5rem", "--home-bento-card-text-font-size-mobile"),
+      ]),
+      group("Lightfall 粒子特效", [
+        rangeField("--lightfall-speed", "下落速度", 0.2, 2, 0.05, "", "--lightfall-speed-mobile"),
+        rangeField("--lightfall-streak-count", "光痕数量", 1, 16, 1, "", "--lightfall-streak-count-mobile"),
+        rangeField("--lightfall-streak-width", "光痕宽度", 0.2, 3, 0.1, "", "--lightfall-streak-width-mobile"),
+        rangeField("--lightfall-streak-length", "光痕长度", 0.2, 3, 0.1, "", "--lightfall-streak-length-mobile"),
+        rangeField("--lightfall-glow", "辉光强度", 0.1, 2, 0.05, "", "--lightfall-glow-mobile"),
+        rangeField("--lightfall-density", "光痕密度", 0.1, 2, 0.05, "", "--lightfall-density-mobile"),
+        rangeField("--lightfall-twinkle", "闪烁强度", 0, 2, 0.05, "", "--lightfall-twinkle-mobile"),
+        rangeField("--lightfall-zoom", "视野缩放", 1, 5, 0.1, "", "--lightfall-zoom-mobile"),
+        rangeField("--lightfall-bg-glow", "背景辉光", 0, 2, 0.05, "", "--lightfall-bg-glow-mobile"),
+        rangeField("--lightfall-opacity", "整体透明度", 0, 1, 0.05, "", "--lightfall-opacity-mobile"),
+        selectField("--lightfall-mouse", "鼠标交互", onOffOptions, "--lightfall-mouse-mobile"),
+        rangeField("--lightfall-mouse-strength", "鼠标强度", 0, 2, 0.05, "", "--lightfall-mouse-strength-mobile"),
+        rangeField("--lightfall-mouse-radius", "鼠标半径", 0.1, 2, 0.05, "", "--lightfall-mouse-radius-mobile"),
+        rangeField("--lightfall-mouse-dampening", "鼠标缓冲", 0.01, 0.5, 0.01, "", "--lightfall-mouse-dampening-mobile"),
+        colorField("--lightfall-color-1", "色彩 1（左）", "--lightfall-color-1-mobile"),
+        colorField("--lightfall-color-2", "色彩 2（中）", "--lightfall-color-2-mobile"),
+        colorField("--lightfall-color-3", "色彩 3（右）", "--lightfall-color-3-mobile"),
+        colorField("--lightfall-bg-color", "背景色", "--lightfall-bg-color-mobile"),
       ]),
     ],
   },
@@ -939,6 +964,9 @@ function updatePreview() {
   const css = buildCss(currentCssVars);
   injectCssIntoPreview(css);
   injectContentIntoPreview();
+  if (elPreview && elPreview.contentWindow && typeof elPreview.contentWindow.reloadLightfallUniforms === "function") {
+    elPreview.contentWindow.reloadLightfallUniforms();
+  }
 }
 
 function injectCssIntoPreview(css) {

@@ -256,25 +256,24 @@ function setupSiteLoadingGate() {
     if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
     if (readyTimerId) window.clearTimeout(readyTimerId);
     targetProgress = 100;
-    const reveal = () => {
-      if (displayProgress >= 99.8) {
+    const tryReveal = () => {
+      if (displayProgress < 100) {
+        displayProgress = 100;
         setProgress(100);
-        root.dataset.siteLoading = "ready";
-        window.dispatchEvent(new Event("scroll", { bubbles: true }));
-        const hash = window.location.hash;
-        if (hash) {
-          const el = document.querySelector(hash);
-          if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
-        }
-        if (overlay) {
-          overlay.classList.add("is-hidden");
-          window.setTimeout(() => overlay.remove(), 600);
-        }
-      } else {
-        requestAnimationFrame(reveal);
+      }
+      root.dataset.siteLoading = "ready";
+      window.dispatchEvent(new Event("scroll", { bubbles: true }));
+      const hash = window.location.hash;
+      if (hash) {
+        const el = document.querySelector(hash);
+        if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+      }
+      if (overlay) {
+        overlay.classList.add("is-hidden");
+        window.setTimeout(() => overlay.remove(), 600);
       }
     };
-    requestAnimationFrame(reveal);
+    requestAnimationFrame(tryReveal);
   };
 
   const ensureOverlay = () => {
@@ -2576,7 +2575,7 @@ void main() {
   gl_FragColor = color;
 }`;
 
-const LIGHTFALL_PROPS = {
+const LIGHTFALL_DEFAULTS = {
   colors: ['#A6C8FF', '#5227FF', '#FF9FFC'],
   backgroundColor: '#0A29FF',
   speed: 0.5,
@@ -2594,6 +2593,47 @@ const LIGHTFALL_PROPS = {
   mouseRadius: 1,
   mouseDampening: 0.15,
 };
+
+function loadLightfallProps() {
+  const style = getComputedStyle(document.documentElement);
+  const isMobile = window.innerWidth <= 768;
+  const read = (name, fallback) => {
+    const v = style.getPropertyValue(name).trim();
+    return v ? v : String(fallback);
+  };
+  const readResponsive = (name, fallback) => {
+    if (isMobile) {
+      const mv = style.getPropertyValue(name + "-mobile").trim();
+      if (mv) return mv;
+    }
+    const v = style.getPropertyValue(name).trim();
+    return v ? v : String(fallback);
+  };
+  return {
+    colors: [
+      readResponsive("--lightfall-color-1", LIGHTFALL_DEFAULTS.colors[0]),
+      readResponsive("--lightfall-color-2", LIGHTFALL_DEFAULTS.colors[1]),
+      readResponsive("--lightfall-color-3", LIGHTFALL_DEFAULTS.colors[2]),
+    ],
+    backgroundColor: readResponsive("--lightfall-bg-color", LIGHTFALL_DEFAULTS.backgroundColor),
+    speed: parseFloat(readResponsive("--lightfall-speed", LIGHTFALL_DEFAULTS.speed)),
+    streakCount: parseInt(readResponsive("--lightfall-streak-count", LIGHTFALL_DEFAULTS.streakCount), 10),
+    streakWidth: parseFloat(readResponsive("--lightfall-streak-width", LIGHTFALL_DEFAULTS.streakWidth)),
+    streakLength: parseFloat(readResponsive("--lightfall-streak-length", LIGHTFALL_DEFAULTS.streakLength)),
+    glow: parseFloat(readResponsive("--lightfall-glow", LIGHTFALL_DEFAULTS.glow)),
+    density: parseFloat(readResponsive("--lightfall-density", LIGHTFALL_DEFAULTS.density)),
+    twinkle: parseFloat(readResponsive("--lightfall-twinkle", LIGHTFALL_DEFAULTS.twinkle)),
+    zoom: parseFloat(readResponsive("--lightfall-zoom", LIGHTFALL_DEFAULTS.zoom)),
+    backgroundGlow: parseFloat(readResponsive("--lightfall-bg-glow", LIGHTFALL_DEFAULTS.backgroundGlow)),
+    opacity: parseFloat(readResponsive("--lightfall-opacity", LIGHTFALL_DEFAULTS.opacity)),
+    mouseInteraction: parseFloat(readResponsive("--lightfall-mouse", LIGHTFALL_DEFAULTS.mouseInteraction ? "1" : "0")) !== 0,
+    mouseStrength: parseFloat(readResponsive("--lightfall-mouse-strength", LIGHTFALL_DEFAULTS.mouseStrength)),
+    mouseRadius: parseFloat(readResponsive("--lightfall-mouse-radius", LIGHTFALL_DEFAULTS.mouseRadius)),
+    mouseDampening: parseFloat(readResponsive("--lightfall-mouse-dampening", LIGHTFALL_DEFAULTS.mouseDampening)),
+  };
+}
+
+let LIGHTFALL_PROPS = LIGHTFALL_DEFAULTS;
 
 function hexToRGB(hex) {
   const c = hex.replace("#", "").padEnd(6, "0");
@@ -2692,6 +2732,7 @@ function resizeLightfall() {
   lightfallCanvas.height = h;
   lightfallGL.viewport(0, 0, w, h);
   lightfallGL.uniform3f(lightfallUniforms.iResolution, w, h, 1);
+  window.reloadLightfallUniforms();
 }
 
 function renderLightfall(timestamp) {
@@ -2757,6 +2798,7 @@ function initLightfallWebGL() {
   gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
   gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 16, 8);
 
+  LIGHTFALL_PROPS = loadLightfallProps();
   setLightfallUniforms(gl);
   resizeLightfall();
 
@@ -2773,6 +2815,12 @@ function initLightfallWebGL() {
 
   lightfallRaf = requestAnimationFrame(renderLightfall);
 }
+
+window.reloadLightfallUniforms = function () {
+  if (!lightfallGL || !lightfallProgram) return;
+  LIGHTFALL_PROPS = loadLightfallProps();
+  setLightfallUniforms(lightfallGL);
+};
 
 function cubic(a, b, c, d, t) {
   const mt = 1 - t;

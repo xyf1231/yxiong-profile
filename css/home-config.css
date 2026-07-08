@@ -72,6 +72,46 @@
   --section-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
   --section-kicker-letter-spacing-mobile: var(--global-section-kicker-letter-spacing-mobile);
   --section-kicker-margin-bottom-mobile: var(--global-section-kicker-margin-bottom-mobile);
+
+  /* Lightfall 粒子特效 */
+  --lightfall-speed: 0.5;
+  --lightfall-streak-count: 2;
+  --lightfall-streak-width: 1;
+  --lightfall-streak-length: 1;
+  --lightfall-glow: 1;
+  --lightfall-density: 0.5;
+  --lightfall-twinkle: 1;
+  --lightfall-zoom: 3;
+  --lightfall-bg-glow: 0.5;
+  --lightfall-opacity: 1;
+  --lightfall-mouse: 0;
+  --lightfall-mouse-strength: 0.5;
+  --lightfall-mouse-radius: 1;
+  --lightfall-mouse-dampening: 0.15;
+  --lightfall-color-1: #A6C8FF;
+  --lightfall-color-2: #5227FF;
+  --lightfall-color-3: #FF9FFC;
+  --lightfall-bg-color: #0A29FF;
+
+  /* Lightfall 手机端 */
+  --lightfall-speed-mobile: 0.5;
+  --lightfall-streak-count-mobile: 1;
+  --lightfall-streak-width-mobile: 2;
+  --lightfall-streak-length-mobile: 2;
+  --lightfall-glow-mobile: 2;
+  --lightfall-density-mobile: 0.5;
+  --lightfall-twinkle-mobile: 1;
+  --lightfall-zoom-mobile: 3;
+  --lightfall-bg-glow-mobile: 1;
+  --lightfall-opacity-mobile: 1;
+  --lightfall-mouse-mobile: 0;
+  --lightfall-mouse-strength-mobile: 0.3;
+  --lightfall-mouse-radius-mobile: 0.6;
+  --lightfall-mouse-dampening-mobile: 0.15;
+  --lightfall-color-1-mobile: #A6C8FF;
+  --lightfall-color-2-mobile: #5227FF;
+  --lightfall-color-3-mobile: #FF9FFC;
+  --lightfall-bg-color-mobile: #0A29FF;
 }
 
 /* Hero 区域最小高度 */
