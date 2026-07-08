@@ -89,7 +89,7 @@
 
   /* 全部论文按钮 */
   --profile-view-all-btn-font-size: 1vw;
-  --profile-view-all-btn-font-weight: 600;
+  --profile-view-all-btn-font-weight: 700;
 
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
@@ -141,7 +141,7 @@
   --profile-experience-time-font-size-mobile: 0.9rem;
   --profile-experience-gap-mobile: 4px;
   --profile-view-all-btn-font-size-mobile: 1rem;
-  --profile-view-all-btn-font-weight-mobile: 600;
+  --profile-view-all-btn-font-weight-mobile: 700;
 }
 
 /* 容器 */
