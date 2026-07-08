@@ -99,6 +99,10 @@
   --profile-view-all-btn-font-size: 1vw;
   --profile-view-all-btn-font-weight: 700;
 
+  /* 序号徽标（继承全局） */
+  --profile-index-size: var(--global-index-size);
+  --profile-index-font-size: var(--global-index-font-size);
+
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
   --profile-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -160,6 +164,10 @@
   --profile-experience-gap-mobile: 4px;
   --profile-view-all-btn-font-size-mobile: 1rem;
   --profile-view-all-btn-font-weight-mobile: 700;
+
+  /* 序号徽标（继承全局手机端） */
+  --profile-index-size-mobile: var(--global-index-size-mobile);
+  --profile-index-font-size-mobile: var(--global-index-font-size-mobile);
 }
 
 /* 容器 */
@@ -389,22 +397,22 @@
   margin-left: var(--profile-publication-index-offset-left) !important;
 }
 
-/* 经历时间轴序号偏移 */
+/* 经历时间轴序号 */
 .profile-page .timeline .item-index {
-  width: var(--global-index-size) !important;
-  height: var(--global-index-size) !important;
-  min-width: var(--global-index-size) !important;
-  font-size: var(--global-index-font-size) !important;
+  width: var(--profile-index-size) !important;
+  height: var(--profile-index-size) !important;
+  min-width: var(--profile-index-size) !important;
+  font-size: var(--profile-index-font-size) !important;
   margin-top: var(--profile-exp-index-offset-top) !important;
   margin-left: var(--profile-exp-index-offset-left) !important;
 }
 
-/* 研究内容卡片序号偏移 */
+/* 研究内容卡片序号 */
 .profile-page .feature-card .card-index {
-  width: var(--global-index-size) !important;
-  height: var(--global-index-size) !important;
-  min-width: var(--global-index-size) !important;
-  font-size: var(--global-index-font-size) !important;
+  width: var(--profile-index-size) !important;
+  height: var(--profile-index-size) !important;
+  min-width: var(--profile-index-size) !important;
+  font-size: var(--profile-index-font-size) !important;
   margin-top: var(--profile-research-index-offset-top) !important;
   margin-left: var(--profile-research-index-offset-left) !important;
 }
@@ -534,10 +542,18 @@
     font-size: var(--profile-experience-time-font-size-mobile) !important;
   }
   .profile-page .timeline .item-index {
+    width: var(--profile-index-size-mobile) !important;
+    height: var(--profile-index-size-mobile) !important;
+    min-width: var(--profile-index-size-mobile) !important;
+    font-size: var(--profile-index-font-size-mobile) !important;
     margin-top: var(--profile-exp-index-offset-top-mobile) !important;
     margin-left: var(--profile-exp-index-offset-left-mobile) !important;
   }
   .profile-page .feature-card .card-index {
+    width: var(--profile-index-size-mobile) !important;
+    height: var(--profile-index-size-mobile) !important;
+    min-width: var(--profile-index-size-mobile) !important;
+    font-size: var(--profile-index-font-size-mobile) !important;
     margin-top: var(--profile-research-index-offset-top-mobile) !important;
     margin-left: var(--profile-research-index-offset-left-mobile) !important;
   }

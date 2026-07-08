@@ -1112,6 +1112,52 @@ async function saveConfig() {
         })
       );
     }
+
+    // 全局页面保存时，将序号变量同步写入所有页面配置
+    if (page.id === "global") {
+      const pageVarPrefix = {
+        profile: "profile",
+      };
+      const globalVal = (name) => currentCssVars[name];
+      const targets = pages.filter(p =>
+        p.id !== "global" && p.id !== "loading" && p.cssPath
+      );
+      const readResults = await Promise.all(
+        targets.map(t => api(`/api/read-file?path=${encodeURIComponent(t.cssPath)}`))
+      );
+      for (let i = 0; i < targets.length; i++) {
+        const prefix = pageVarPrefix[targets[i].id] || "global";
+        const indexVars = {
+          [`--${prefix}-index-size`]: globalVal("--global-index-size"),
+          [`--${prefix}-index-font-size`]: globalVal("--global-index-font-size"),
+          [`--${prefix}-index-size-mobile`]: globalVal("--global-index-size-mobile"),
+          [`--${prefix}-index-font-size-mobile`]: globalVal("--global-index-font-size-mobile"),
+        };
+        let targetCss = readResults[i].content;
+        targetCss = targetCss.replace(/:root\s*\{([^}]+)\}/s, (match, content) => {
+          let newContent = content;
+          Object.entries(indexVars).forEach(([name, value]) => {
+            if (value === undefined || value === null) return;
+            const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+            if (newContent.indexOf(escapedName) === -1) {
+              newContent += `\n  ${name}: ${value};`;
+            } else {
+              const regex = new RegExp(`(${escapedName}\\s*:\\s*)[^;]+`, "g");
+              newContent = newContent.replace(regex, `$1${value}`);
+            }
+          });
+          return `:root {${newContent}}`;
+        });
+        requests.push(
+          api("/api/save-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: targets[i].cssPath, content: targetCss }),
+          })
+        );
+      }
+    }
+
     await Promise.all(requests);
     originalCss = css;
     originalContent = JSON.parse(JSON.stringify(currentContent));
