@@ -2306,6 +2306,7 @@ function setupBorderGlow() {
     edgeSensitivity: 0,
     fillOpacity: 0.5,
     animated: true,
+    hoverEnabled: !isCompactNav(),
     sweepFan: false,
     sweepSpeed: 2,
     sweepIntensity: 1,

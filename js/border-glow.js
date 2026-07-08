@@ -220,6 +220,7 @@ function initBorderGlow(cards, options) {
   var sweepColors = options.sweepColors || null;
   var sweepGlowColor = options.sweepGlowColor || null;
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
+  var hoverEnabled = options.hoverEnabled !== false;
 
   var glowVars = buildGlowVars(glowColor, glowIntensity);
   var gradVars = buildGradientVars(colors);
@@ -233,7 +234,7 @@ function initBorderGlow(cards, options) {
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }
 
-    setupPointerTracking(card);
+    if (hoverEnabled) setupPointerTracking(card);
 
     if (animated) {
       var sweepOpts = {};

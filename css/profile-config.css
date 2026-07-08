@@ -87,6 +87,10 @@
   --profile-publication-index-offset-top: -20px;
   --profile-publication-index-offset-left: -16px;
 
+  /* 全部论文按钮 */
+  --profile-view-all-btn-font-size: 1vw;
+  --profile-view-all-btn-font-weight: 600;
+
   /* 手机端 */
   --profile-first-section-gap-mobile: 40px;
   --profile-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
@@ -136,6 +140,8 @@
   --profile-experience-text-font-size-mobile: 0.9rem;
   --profile-experience-time-font-size-mobile: 0.9rem;
   --profile-experience-gap-mobile: 4px;
+  --profile-view-all-btn-font-size-mobile: 1rem;
+  --profile-view-all-btn-font-weight-mobile: 600;
 }
 
 /* 容器 */
@@ -322,7 +328,7 @@
 @media (min-width: 861px) {
   /* 电脑端「全部论文」按钮字体 */
   .profile-view-all-papers .button.secondary {
-    font-size: 1vw;
+    font-size: var(--profile-view-all-btn-font-size);
   }
 
   /* 电脑端代表论文 PDF 按钮上移、文字 1rem */
@@ -526,6 +532,12 @@
   .profile-page #profile-publication-list .pdf-actions {
     margin-top: var(--profile-publication-pdf-gap-mobile) !important;
     margin-right: var(--profile-publication-pdf-offset-right-mobile) !important;
+  }
+
+  /* 手机端「全部论文」按钮字体 */
+  .profile-view-all-papers .button.secondary {
+    font-size: var(--profile-view-all-btn-font-size-mobile) !important;
+    font-weight: var(--profile-view-all-btn-font-weight-mobile) !important;
   }
 
   /* 防止代表论文卡片内容区溢出遮挡下方「全部论文」按钮 */

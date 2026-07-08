@@ -254,6 +254,11 @@ const pageSchemas = {
         rangeField("--profile-publication-pdf-gap", "PDF 距上方内容间距", 0, 100, 1, "px", "--profile-publication-pdf-gap-mobile"),
         rangeField("--profile-publication-pdf-offset-right", "PDF 距右边缘", 0, 60, 1, "px"),
       ]),
+      group("全部论文按钮", [
+        rangeField("--profile-view-all-btn-font-size", "字号", 0.5, 3, 0.05, "vw"),
+        { ...rangeField("--profile-view-all-btn-font-size-mobile", "字号", 0.5, 2, 0.05, "rem"), mobileOnly: true, mobileName: "--profile-view-all-btn-font-size-mobile" },
+        rangeField("--profile-view-all-btn-font-weight", "字重", 400, 900, 100, "", "--profile-view-all-btn-font-weight-mobile"),
+      ]),
     ],
   },
   results: {
