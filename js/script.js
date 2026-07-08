@@ -2306,7 +2306,7 @@ function setupBorderGlow() {
     fillOpacity: 0.5,
     animated: true,
     sweepFan: false,
-    sweepSpeed: 4,
+    sweepSpeed: 2,
     sweepIntensity: 1,
     sweepFadeIn: 100,
     sweepRotate: 500,
