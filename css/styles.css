@@ -54,6 +54,7 @@ html {
   scroll-behavior: smooth;
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
+  background: #000000;
 }
 
 
@@ -119,8 +120,8 @@ html[data-site-loading="pending"]::before {
   height: 100%;
   z-index: 9999;
   background:
-    radial-gradient(circle at center, rgba(41, 151, 255, 0.18), transparent 58%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.35));
+    radial-gradient(circle at center, rgba(41, 151, 255, 0.22), transparent 58%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.20), rgba(0, 0, 0, 0.10));
   content: "";
 }
 
@@ -159,6 +160,7 @@ html[data-site-loading="pending"]::after {
   transition: opacity 800ms ease, transform 800ms ease;
 }
 
+/* 临时注释：overlay 遮罩伪元素
 .site-loading-overlay::before,
 .site-loading-overlay::after {
   position: absolute;
@@ -186,6 +188,7 @@ html[data-site-loading="pending"]::after {
   animation: siteLoadingSweep 16s linear infinite;
   opacity: 0.7;
 }
+*/
 
 .site-loading-overlay.is-hidden {
   opacity: 0 !important;
@@ -330,7 +333,7 @@ html[data-site-loading="pending"]::after {
   font-size: var(--loading-resources-font-size);
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: rgba(170, 176, 190, 0.5);
+  color: rgba(200, 206, 220, 0.8);
   margin-top: var(--loading-resources-margin-top, 16px);
   font-variant-numeric: tabular-nums;
 }
@@ -339,7 +342,7 @@ html[data-site-loading="pending"]::after {
   font-size: var(--loading-hint-font-size);
   font-weight: 400;
   letter-spacing: 0.04em;
-  color: rgba(170, 176, 190, 0.55);
+  color: rgba(200, 206, 220, 0.75);
   opacity: 0;
   transition: opacity 0.6s ease;
   min-height: 1.2em;
@@ -399,6 +402,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+}
+
+@supports (height: 100dvh) {
+  body {
+    min-height: 100dvh;
+  }
 }
 
 img,

@@ -327,8 +327,8 @@ function setupSiteLoadingGate() {
     const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
     const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
     const strokeWidth = parseFloat(shared.strokeWidth) || 2;
-    const brightness = parseFloat(shared.brightness) || 15;
-    const saturation = parseFloat(shared.saturation) || 12;
+    const brightness = parseFloat(shared.brightness) || 30;
+    const saturation = parseFloat(shared.saturation) || 40;
 
     let index = 0;
 

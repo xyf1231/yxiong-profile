@@ -288,8 +288,8 @@ function setupSiteLoadingGate() {
       const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
       const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
       const strokeWidth = parseFloat(shared.strokeWidth) || 2;
-      const brightness = parseFloat(shared.brightness) || 15;
-      const saturation = parseFloat(shared.saturation) || 12;
+      const brightness = parseFloat(shared.brightness) || 30;
+      const saturation = parseFloat(shared.saturation) || 40;
       let index = 0;
       function shuffle(arr) { const copy = arr.slice(); for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
       const shuffledWords = shuffle(words);

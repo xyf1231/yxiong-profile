@@ -406,6 +406,7 @@ const btnReset = document.getElementById("btn-reset");
 const btnReload = document.getElementById("btn-reload-preview");
 const langButtons = document.querySelectorAll("[data-preview-lang]");
 const pageSelect = document.getElementById("page-select");
+const headerModeBtns = document.querySelectorAll("#header-mode-toggles .mode-btn");
 
 function getCurrentPage() {
   return pages.find((p) => p.id === currentPageId) || pages[0];
@@ -855,9 +856,9 @@ function renderForm() {
     btn.textContent = mode === "desktop" ? "桌面端" : "手机端";
     btn.addEventListener("click", () => {
       editorMode = mode;
+      headerModeBtns.forEach((b) => b.classList.toggle("active", b.dataset.mode === mode));
       renderForm();
-      updatePreviewModeClass();
-      updatePreview();
+      reloadPreview();
     });
     modeToggle.appendChild(btn);
   });
@@ -1043,6 +1044,7 @@ function reloadPreview() {
     } catch {
       // ignore
     }
+    updatePreviewModeClass();
     updatePreview();
   };
 }
@@ -1086,6 +1088,14 @@ function init() {
   if (btnReload) btnReload.addEventListener("click", reloadPreview);
   langButtons.forEach((btn) => {
     btn.addEventListener("click", () => switchPreviewLang(btn.dataset.previewLang));
+  });
+  headerModeBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      editorMode = btn.dataset.mode;
+      headerModeBtns.forEach((b) => b.classList.toggle("active", b === btn));
+      renderForm();
+      reloadPreview();
+    });
   });
   if (elPreview) {
     elPreview.onload = () => {
