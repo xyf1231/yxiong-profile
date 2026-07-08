@@ -62,7 +62,7 @@
 /* ═══ 移动端适配：单列简洁布局 ═══ */
 @media (max-width: 860px) {
   .news-detail-layout {
-    width: 100%;
+    padding: 0 16px;
     margin-top: 72px;
   }
   .news-article-card,
