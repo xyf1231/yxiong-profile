@@ -1,0 +1,910 @@
+<!doctype html>
+<!-- docx-converter.html — Word 新闻稿 → 网站风格 HTML 转换工具 -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <title>Word 转换 | 熊毅丰</title>
+    <link rel="stylesheet" href="css/styles.css?v=v1.11.57" />
+    <style>
+      /* ═══════════════════════════════════════════════
+         整体布局
+         ═══════════════════════════════════════════════ */
+      .admin-layout { display: grid; grid-template-columns: 210px 1fr; min-height: 100vh; }
+
+      .admin-sidebar {
+        position: sticky; top: 0; height: 100vh; overflow-y: auto;
+        background: rgba(0,0,0,0.55); backdrop-filter: blur(20px) saturate(1.2);
+        -webkit-backdrop-filter: blur(20px) saturate(1.2);
+        border-right: 1px solid rgba(255,255,255,0.08);
+        padding: 20px 12px 16px; display: flex; flex-direction: column; gap: 20px; z-index: 30;
+      }
+      .sidebar-header { display: flex; align-items: center; gap: 10px; padding: 4px 6px 8px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+      .sidebar-brand {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 0.85rem;
+        text-decoration: none; transition: all 0.2s ease; flex-shrink: 0;
+      }
+      .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
+      .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
+      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+      .sidebar-group-label {
+        padding: 4px 10px 8px; color: rgba(255,255,255,0.42);
+        font-size: 0.68rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+      }
+      .sidebar-group {
+        display: flex; flex-direction: column; gap: 4px; padding: 8px;
+        border: 1px solid rgba(255,255,255,0.06); border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+      }
+      .tab-button {
+        width: 100%; min-height: 40px; border: 1px solid transparent; border-radius: 12px;
+        background: transparent; color: rgba(255,255,255,0.62); font-size: 0.81rem;
+        text-align: left; padding: 8px 12px; cursor: pointer; transition: all 0.15s ease;
+        font-family: inherit; text-decoration: none; display: block; box-sizing: border-box;
+      }
+      .tab-button:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+      .tab-button.active, .tab-button[aria-selected="true"] { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.12); }
+      .sidebar-footer { display: flex; flex-direction: column; gap: 4px; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.06); }
+      .sidebar-status-pill {
+        display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+        border-radius: 8px; font-size: 0.72rem; color: rgba(255,255,255,0.5);
+      }
+      .sidebar-status-pill .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); display: inline-block; flex-shrink: 0; }
+
+      .admin-main { padding: 0; overflow-y: auto; }
+      .admin-shell { max-width: 1400px; margin: 0 auto; padding: 32px clamp(20px,3vw,48px); }
+
+      .admin-hero {
+        display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: start;
+        padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 28px;
+      }
+      .admin-hero .section-kicker { font-size: 0.72rem; letter-spacing: 0.12em; color: rgba(255,255,255,0.42); margin-bottom: 6px; }
+      .admin-hero h1 { font-size: clamp(1.6rem,3vw,2.2rem); font-weight: 800; letter-spacing: -0.025em; margin: 0 0 8px; }
+      .hero-copy { font-size: 0.85rem; color: rgba(255,255,255,0.52); max-width: 640px; line-height: 1.6; }
+      .admin-actions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: end; }
+
+      .admin-button {
+        padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.85);
+        font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease; font-family: inherit;
+        white-space: nowrap; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        font-weight: 500; line-height: 1.4;
+      }
+      .admin-button:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.18); }
+      .admin-button.primary { background: #2997FF; border-color: #2997FF; color: #fff; }
+      .admin-button.primary:hover { background: #40a5ff; }
+      .admin-button.success { background: #30d158; border-color: #30d158; color: #000; }
+      .admin-button.success:hover { background: #44e06a; }
+      .admin-button.danger { background: rgba(255,69,58,0.2); border-color: rgba(255,69,58,0.3); color: #ff453a; }
+      .admin-button.danger:hover { background: rgba(255,69,58,0.3); }
+      .admin-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+      /* ═══════════════════════════════════════════════
+         转换器双栏布局
+         ═══════════════════════════════════════════════ */
+      .converter-grid {
+        display: grid; grid-template-columns: 420px 1fr; gap: 28px; align-items: start;
+      }
+      @media (max-width: 960px) {
+        .converter-grid { grid-template-columns: 1fr; }
+      }
+
+      .converter-panel {
+        border-radius: 18px; padding: clamp(20px, 2.5vw, 32px);
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+        backdrop-filter: blur(16px) saturate(1.2);
+        -webkit-backdrop-filter: blur(16px) saturate(1.2);
+      }
+      .converter-panel h2 { font-size: 1.05rem; font-weight: 700; margin: 0 0 4px; }
+      .converter-panel > p { font-size: 0.8rem; color: rgba(255,255,255,0.48); margin: 0 0 18px; }
+
+      /* ── 拖放区 ── */
+      .drop-zone {
+        border: 2px dashed rgba(255,255,255,0.18); border-radius: 16px;
+        padding: 40px 24px; text-align: center; cursor: pointer;
+        transition: all 0.2s ease; position: relative; margin-bottom: 20px;
+      }
+      .drop-zone:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.03); }
+      .drop-zone.drag-over { border-color: #2997FF; background: rgba(41,151,255,0.08); }
+      .drop-zone.has-file { border-style: solid; border-color: rgba(48,209,88,0.4); background: rgba(48,209,88,0.05); }
+      .drop-zone-icon { font-size: 2.4rem; opacity: 0.5; margin-bottom: 8px; }
+      .drop-zone-text { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+      .drop-zone-hint { font-size: 0.75rem; color: rgba(255,255,255,0.32); margin-top: 6px; }
+      .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+      /* ── 元数据表单 ── */
+      .converter-field {
+        display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px;
+      }
+      .converter-field span { font-size: 0.75rem; color: rgba(255,255,255,0.5); font-weight: 600; letter-spacing: 0.04em; }
+      .converter-field input, .converter-field textarea, .converter-field select {
+        background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 10px; padding: 10px 12px; color: #fff; font-size: 0.85rem;
+        font-family: inherit; outline: none; transition: border-color 0.15s ease; width: 100%; box-sizing: border-box;
+      }
+      .converter-field input:focus, .converter-field textarea:focus { border-color: #2997FF; }
+      .converter-field textarea { resize: vertical; min-height: 48px; }
+
+      /* ── 按钮行 ── */
+      .converter-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+      .converter-actions .admin-button { flex: 1; justify-content: center; }
+
+      /* ── 文档统计 ── */
+      .doc-stats { display: flex; gap: 16px; margin-top: 14px; flex-wrap: wrap; }
+      .doc-stat { padding: 8px 14px; border-radius: 10px; background: rgba(255,255,255,0.04); font-size: 0.76rem; }
+      .doc-stat strong { display: block; font-size: 1.1rem; color: #fff; margin-bottom: 2px; }
+
+      /* ── 输出面板 ── */
+      .output-tabs {
+        display: flex; gap: 2px; margin-bottom: 16px;
+        background: rgba(255,255,255,0.04); border-radius: 12px; padding: 3px; width: fit-content;
+      }
+      .output-tab {
+        padding: 7px 18px; border-radius: 10px; border: none; background: transparent;
+        color: rgba(255,255,255,0.45); font-size: 0.8rem; cursor: pointer; transition: all 0.15s ease;
+        font-family: inherit; font-weight: 500;
+      }
+      .output-tab:hover { color: rgba(255,255,255,0.7); }
+      .output-tab.active { background: rgba(255,255,255,0.1); color: #fff; }
+
+      .output-pane { display: none; }
+      .output-pane.active { display: block; }
+
+      #converter-preview {
+        width: 100%; min-height: 360px; max-height: 70vh;
+        border-radius: 14px; border: none;
+        background: transparent;
+      }
+
+      #converter-source textarea {
+        width: 100%; height: 100%; min-height: 360px; max-height: 70vh;
+        background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; padding: 16px; color: rgba(255,255,255,0.8);
+        font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.78rem;
+        line-height: 1.6; resize: vertical; outline: none; box-sizing: border-box;
+        white-space: pre; tab-size: 2;
+      }
+
+      /* ── 富文本编辑器 ── */
+      .editor-toolbar {
+        display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 8px;
+        padding: 6px 8px; border-radius: 10px;
+        background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+      }
+      .editor-toolbar button {
+        padding: 5px 12px; border-radius: 7px; border: 1px solid transparent;
+        background: transparent; color: rgba(255,255,255,0.6); font-size: 0.8rem;
+        cursor: pointer; transition: all 0.12s ease; font-family: inherit;
+        font-weight: 500; line-height: 1.4;
+      }
+      .editor-toolbar button:hover { background: rgba(255,255,255,0.08); color: #fff; }
+      .editor-toolbar .sep { width: 1px; background: rgba(255,255,255,0.1); margin: 4px 4px; }
+      #editor-body {
+        min-height: 360px; max-height: 65vh; overflow-y: auto;
+        background: rgba(0,0,0,0.35); border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px; padding: clamp(16px,2vw,32px); outline: none;
+        color: rgba(255,255,255,0.85); font-size: clamp(1rem,1.32vw,1.14rem);
+        line-height: 1.9; font-family: inherit;
+      }
+      #editor-body:focus { border-color: rgba(41,151,255,0.4); }
+      #editor-body h2 { font-size: clamp(1.28rem,2.1vw,2.05rem); font-weight: 700; margin: 16px 0 0; line-height: 1.22; }
+      #editor-body h3 { font-size: 1.15rem; font-weight: 600; margin: 8px 0 0; color: #2997FF; }
+      #editor-body p { margin: 0 0 0.6em; }
+      #editor-body ul, #editor-body ol { padding-left: 1.4em; margin: 0 0 0.6em; }
+      #editor-body img { max-width: 100%; border-radius: 12px; display: block; margin: 0.8em 0; }
+
+      .output-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+      .output-actions .admin-button { justify-content: center; }
+
+      .toast {
+        position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+        padding: 12px 24px; border-radius: 12px; background: rgba(0,0,0,0.85);
+        backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1);
+        color: #fff; font-size: 0.85rem; z-index: 1000;
+        opacity: 0; transition: opacity 0.25s ease; pointer-events: none;
+      }
+      .toast.show { opacity: 1; }
+
+      .empty-state {
+        display: grid; place-items: center; min-height: 300px;
+        color: rgba(255,255,255,0.3); text-align: center; gap: 12px;
+      }
+      .empty-state-icon { font-size: 3rem; opacity: 0.4; }
+      .empty-state p { font-size: 0.9rem; margin: 0; }
+
+      /* ── 状态栏 ── */
+      .converter-status {
+        display: none; margin-top: 12px; padding: 10px 14px;
+        border-radius: 10px; font-size: 0.8rem; line-height: 1.5;
+      }
+      .converter-status.info { background: rgba(41,151,255,0.12); color: #5ab3ff; border: 1px solid rgba(41,151,255,0.2); }
+      .converter-status.warn { background: rgba(255,204,0,0.1); color: #ffd60a; border: 1px solid rgba(255,204,0,0.2); }
+      .converter-status.error { background: rgba(255,69,58,0.12); color: #ff453a; border: 1px solid rgba(255,69,58,0.2); }
+      .converter-status.success { background: rgba(48,209,88,0.1); color: #30d158; border: 1px solid rgba(48,209,88,0.2); }
+    </style>
+  </head>
+  <body>
+    <div class="admin-layout">
+
+      <!-- ═══ 侧边栏 ═══ -->
+      <aside class="admin-sidebar" aria-label="导航">
+        <div class="sidebar-header">
+          <a href="index.html" class="sidebar-brand" title="返回首页">YX</a>
+          <div class="sidebar-title">Word 转换</div>
+        </div>
+        <nav class="sidebar-nav">
+          <div class="sidebar-group">
+            <div class="sidebar-group-label">工具</div>
+            <div class="sidebar-group">
+              <a class="tab-button active" href="docx-converter.html">📄 Word 转换</a>
+              <a class="tab-button" href="admin.html">⚙️ 后台管理</a>
+              <a class="tab-button" href="page-editor.html">🎨 首页编辑器</a>
+            </div>
+          </div>
+          <div class="sidebar-group">
+            <div class="sidebar-group-label">页面</div>
+            <div class="sidebar-group">
+              <a class="tab-button" href="index.html">🏠 主页</a>
+              <a class="tab-button" href="profile.html">👤 简介</a>
+              <a class="tab-button" href="results.html">📊 成果</a>
+              <a class="tab-button" href="honors.html">🏆 荣誉</a>
+              <a class="tab-button" href="activities.html">📅 学术活动</a>
+            </div>
+          </div>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="sidebar-status-pill"><span class="dot"></span>docx-converter v1.0</div>
+        </div>
+      </aside>
+
+      <!-- ═══ 主区域 ═══ -->
+      <main class="admin-main">
+        <div class="admin-shell">
+
+          <!-- 标题区 -->
+          <section class="admin-hero">
+            <div>
+              <p class="section-kicker">DOCX → HTML</p>
+              <h1>新闻稿转换器</h1>
+              <p class="hero-copy">将 Word 新闻稿（.docx）直接转换为网站风格的新闻详情 HTML。自动提取标题、正文、图片，支持预览、复制源码或下载为独立页面。</p>
+            </div>
+            <div class="admin-actions">
+              <button class="admin-button" id="btn-reset" type="button">重置</button>
+            </div>
+          </section>
+
+          <!-- 转换器双栏 -->
+          <div class="converter-grid">
+
+            <!-- 左栏：输入 -->
+            <section class="converter-panel">
+              <h2>上传文档</h2>
+              <p>选择或拖入 .docx 文件，系统自动解析为新闻 HTML。</p>
+
+              <div class="drop-zone" id="drop-zone">
+                <div class="drop-zone-icon">📄</div>
+                <div class="drop-zone-text" id="drop-text">点击选择文件，或拖入 .docx</div>
+                <div class="drop-zone-hint">支持 Microsoft Word .docx 格式</div>
+                <input type="file" accept=".docx" id="file-input" />
+              </div>
+
+              <div id="doc-stats" class="doc-stats" style="display:none;"></div>
+
+              <h2 style="margin-top:20px;">元数据</h2>
+              <p>编辑新闻标题、摘要等信息，刷新预览后生效。</p>
+
+              <div class="converter-field">
+                <span>首屏标签 (Eyebrow)</span>
+                <input id="field-eyebrow" value="Research News" />
+              </div>
+              <div class="converter-field">
+                <span>标题</span>
+                <input id="field-title" placeholder="从文档自动提取" />
+              </div>
+              <div class="converter-field">
+                <span>副标题 / 导语</span>
+                <textarea id="field-subtitle" rows="2" placeholder="可选：一句话概括新闻要点"></textarea>
+              </div>
+              <div class="converter-field">
+                <span>日期</span>
+                <input id="field-date" type="date" />
+              </div>
+              <div class="converter-field">
+                <span>封面图片路径</span>
+                <input id="field-image" placeholder="resources/images/news-cover.webp" />
+                <div id="detected-image" style="display:none;margin-top:8px;border-radius:10px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);max-width:200px;">
+                  <img id="detected-image-preview" src="" alt="检测到的图片" style="display:block;width:100%;" />
+                </div>
+              </div>
+
+              <div class="converter-actions">
+                <button class="admin-button primary" id="btn-convert" disabled>转换为新闻页</button>
+                <button class="admin-button" id="btn-refresh-preview" disabled>刷新预览</button>
+              </div>
+            </section>
+
+            <!-- 右栏：输出 -->
+            <section class="converter-panel">
+              <h2>转换结果</h2>
+              <p>预览生成效果，查看或复制 HTML 源码。</p>
+
+              <div class="output-tabs" role="tablist">
+                <button class="output-tab active" data-tab="preview" role="tab">预览 Preview</button>
+                <button class="output-tab" data-tab="edit" role="tab">编辑 Edit</button>
+                <button class="output-tab" data-tab="source" role="tab">源码 Source</button>
+              </div>
+
+              <div class="output-pane active" id="pane-preview" role="tabpanel">
+                <iframe id="converter-preview" title="新闻预览"
+                  srcdoc="<!doctype html><html><head><style>body{background:#000;color:#fff;display:grid;place-items:center;min-height:300px;font-family:system-ui;text-align:center;margin:0;padding:40px 20px;}p{color:rgba(255,255,255,0.4);}</style></head><body><p>上传 .docx 文件并点击「转换为新闻页」<br>预览效果将在这里展示</p></body></html>">
+                </iframe>
+              </div>
+
+              <div class="output-pane" id="pane-edit" role="tabpanel">
+                <div class="editor-toolbar" role="toolbar" aria-label="正文编辑工具">
+                  <button type="button" data-cmd="bold"><b>B</b></button>
+                  <button type="button" data-cmd="italic"><i>I</i></button>
+                  <span class="sep"></span>
+                  <button type="button" data-cmd="formatBlock" data-val="h2">标题 2</button>
+                  <button type="button" data-cmd="formatBlock" data-val="h3">标题 3</button>
+                  <span class="sep"></span>
+                  <button type="button" data-cmd="insertUnorderedList">• 列表</button>
+                  <button type="button" data-cmd="insertOrderedList">1. 编号</button>
+                </div>
+                <div id="editor-body" contenteditable="true" aria-label="新闻正文编辑区"><p style="color:rgba(255,255,255,0.3);text-align:center;padding:80px 0;">点击「转换为新闻页」后，正文会显示在这里<br>可像 Word 一样直接编辑</p></div>
+              </div>
+
+              <div class="output-pane" id="pane-source" role="tabpanel">
+                <div id="converter-source">
+                  <textarea id="source-area" placeholder="点击「转换为新闻页」生成 HTML 源码…可直接编辑修改正文样式，然后点「刷新预览」查看效果" spellcheck="false"></textarea>
+                </div>
+              </div>
+
+              <div id="converter-status" class="converter-status"></div>
+
+              <div class="output-actions">
+                <button class="admin-button" id="btn-copy-html" disabled>📋 复制 HTML</button>
+                <button class="admin-button" id="btn-download" disabled>⬇️ 下载独立页面</button>
+                <button class="admin-button primary" id="btn-send-admin" disabled>📤 发送到后台</button>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="js/mammoth.browser.min.js">
+    </script>
+    <script>
+      (function () {
+        'use strict';
+
+        // ─── DOM 引用 ──────────────────────────────────
+        var dropZone = document.getElementById('drop-zone');
+        var fileInput = document.getElementById('file-input');
+        var dropText = document.getElementById('drop-text');
+        var docStats = document.getElementById('doc-stats');
+        var btnConvert = document.getElementById('btn-convert');
+        var btnRefresh = document.getElementById('btn-refresh-preview');
+        var btnCopy = document.getElementById('btn-copy-html');
+        var btnDownload = document.getElementById('btn-download');
+        var btnSendAdmin = document.getElementById('btn-send-admin');
+        var previewEl = document.getElementById('converter-preview');
+        var sourceArea = document.getElementById('source-area');
+        var toastEl = document.getElementById('toast');
+        var statusEl = document.getElementById('converter-status');
+        var editorBody = document.getElementById('editor-body');
+
+        var fieldEyebrow = document.getElementById('field-eyebrow');
+        var fieldTitle = document.getElementById('field-title');
+        var fieldSubtitle = document.getElementById('field-subtitle');
+        var fieldDate = document.getElementById('field-date');
+        var fieldImage = document.getElementById('field-image');
+        var detectedImageBox = document.getElementById('detected-image');
+        var detectedImagePreview = document.getElementById('detected-image-preview');
+
+        // ─── 状态 ──────────────────────────────────────
+        var rawDocx = null;       // ArrayBuffer
+        var fileName = '';
+        var mammothHtml = '';     // mammoth 原始输出
+        var fullPageHtml = '';    // 完整新闻页 HTML
+        var contentHtml = '';     // 纯内容 HTML（for admin）
+        var docStatsData = { paragraphs: 0, images: 0, headings: 0 };
+        var mammothReady = typeof mammoth !== 'undefined' && mammoth.convertToHtml;
+
+        // ─── 状态显示 ──────────────────────────────────
+        function setStatus(msg, type) {
+          if (!statusEl) return;
+          statusEl.textContent = msg;
+          statusEl.style.display = 'block';
+          statusEl.className = 'converter-status ' + (type || 'info');
+          console.log('[docx-converter] ' + msg);
+        }
+
+        function clearStatus() {
+          if (statusEl) { statusEl.style.display = 'none'; }
+        }
+
+        // ─── Toast ─────────────────────────────────────
+        function showToast(msg) {
+          toastEl.textContent = msg;
+          toastEl.classList.add('show');
+          clearTimeout(toastEl._timer);
+          toastEl._timer = setTimeout(function () { toastEl.classList.remove('show'); }, 3000);
+        }
+
+        function slugify(v) {
+          return String(v).normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+            .replace(/[^a-zA-Z0-9\u4e00-\u9fa5]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90).toLowerCase();
+        }
+
+        function esc(v) {
+          return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function todayStr() {
+          var d = new Date();
+          return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+        }
+
+        // ─── 拖放 / 选择文件 ───────────────────────────
+        function handleFile(file) {
+          if (!file) { showToast('无法读取文件'); return; }
+          var name = file.name || '';
+          if (!name.match(/\.docx$/i)) {
+            showToast('请选择 .docx 格式的 Word 文档（收到: ' + name + '）');
+            return;
+          }
+          fileName = name;
+          dropText.textContent = name;
+          dropZone.classList.add('has-file');
+          setStatus('正在读取文件: ' + name + ' (' + (file.size / 1024).toFixed(1) + ' KB)');
+          var reader = new FileReader();
+          reader.onload = function (e) {
+            rawDocx = e.target.result;
+            if (!rawDocx || rawDocx.byteLength === 0) {
+              setStatus('读取失败：文件内容为空', 'error');
+              return;
+            }
+            btnConvert.disabled = false;
+            if (!fieldDate.value) fieldDate.value = todayStr();
+            setStatus('已加载: ' + name + ' (' + rawDocx.byteLength + ' bytes)，可点击转换');
+            showToast('已加载: ' + name);
+          };
+          reader.onerror = function () {
+            setStatus('读取文件失败: ' + (reader.error ? reader.error.message : '未知错误'), 'error');
+            showToast('文件读取失败');
+          };
+          reader.readAsArrayBuffer(file);
+        }
+
+        fileInput.addEventListener('change', function () {
+          if (fileInput.files[0]) handleFile(fileInput.files[0]);
+        });
+
+        dropZone.addEventListener('dragover', function (e) {
+          e.preventDefault();
+          dropZone.classList.add('drag-over');
+        });
+        dropZone.addEventListener('dragleave', function () {
+          dropZone.classList.remove('drag-over');
+        });
+        dropZone.addEventListener('drop', function (e) {
+          e.preventDefault();
+          dropZone.classList.remove('drag-over');
+          if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+        });
+
+        // ─── 统计 mammoth 输出 ────────────────────────
+        function analyzeHtml(html) {
+          var p = 0, h = 0, img = 0;
+          var div = document.createElement('div');
+          div.innerHTML = html;
+          var ps = div.querySelectorAll('p');
+          var hs = div.querySelectorAll('h1,h2,h3,h4');
+          var imgs = div.querySelectorAll('img');
+          for (var i = 0; i < ps.length; i++) { p++; }
+          for (var i = 0; i < hs.length; i++) { h++; }
+          for (var i = 0; i < imgs.length; i++) { img++; }
+          return { paragraphs: p, headings: h, images: img };
+        }
+
+        // ─── 提取标题 ──────────────────────────────────
+        function extractTitle(html) {
+          var div = document.createElement('div');
+          try { div.innerHTML = html; } catch (e) { return ''; }
+          var h1 = div.querySelector('h1');
+          return h1 ? h1.textContent.trim() : '';
+        }
+
+        // ─── 提取第一张图片 src ─────────────────────────
+        function extractFirstImage(html) {
+          var div = document.createElement('div');
+          try { div.innerHTML = html; } catch (e) { return ''; }
+          var img = div.querySelector('img');
+          return img ? img.getAttribute('src') || '' : '';
+        }
+
+        // ─── 生成 slug ─────────────────────────────────
+        function autoSlug(title) {
+          return slugify(title || fileName.replace(/\.docx$/i, '') || 'news');
+        }
+
+        // ─── 生成内容 HTML（仅标题 + 正文，无 header/hero）─
+        function buildContentHtml(title, body) {
+          return '<h1 style="font-size:clamp(1.6rem,3vw,2.4rem);font-weight:800;letter-spacing:-0.02em;line-height:1.2;margin:0 0 20px;">' + esc(title || '') + '</h1>\n<div class="news-rich-content">' + body + '</div>';
+        }
+
+        // ─── 生成完整页面 HTML ─────────────────────────
+        function buildFullPage(title, contentHtml, slug) {
+          slug = slug || slugify(title || 'news');
+          var safeTitle = esc(title || '新闻详情');
+          return '<!doctype html>\n' +
+            '<html lang="zh-CN">\n' +
+            '<head>\n' +
+            '  <meta charset="utf-8" />\n' +
+            '  <base href="/" />\n' +
+            '  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />\n' +
+            '  <title>' + safeTitle + ' | 熊毅丰</title>\n' +
+            '  <link rel="stylesheet" href="css/styles.css?v=v1.11.57" />\n' +
+            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.11.57" />\n' +
+            '  <link rel="stylesheet" href="css/news.css?v=v1.11.57" />\n' +
+            '</head>\n' +
+            '<body>\n' +
+            '  <header class="site-header" data-elevated="false">\n' +
+            '    <a href="index.html" class="nav-brand" aria-label="首页">YX</a>\n' +
+            '    <button class="nav-menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="菜单">\n' +
+            '      <span class="nav-menu-line"></span><span class="nav-menu-line"></span>\n' +
+            '    </button>\n' +
+            '    <nav class="nav-links" id="site-nav" aria-label="主导航">\n' +
+            '      <div class="nav-desktop-items">\n' +
+            '        <a href="index.html" data-nav="home">主页</a>\n' +
+            '        <a href="profile.html" data-nav="profile">简介</a>\n' +
+            '        <a href="results.html" data-nav="results">成果</a>\n' +
+            '        <a href="honors.html" data-nav="honors">荣誉</a>\n' +
+            '        <a href="activities.html" data-nav="activities">学术活动</a>\n' +
+            '      </div>\n' +
+            '      <button class="nav-menu-close" type="button" aria-label="关闭菜单" aria-controls="site-nav"><span></span><span></span></button>\n' +
+            '      <div class="nav-cards nav-cards-five">\n' +
+            '        <div class="nav-card" style="--delay:0.03s"><div class="nav-card-links"><a href="index.html" data-nav="home" class="nav-major-link">主页 <span class="nav-card-arrow">↗</span></a></div></div>\n' +
+            '        <div class="nav-card" style="--delay:0.06s"><div class="nav-card-links"><a href="profile.html" data-nav="profile" class="nav-major-link">简介 <span class="nav-card-arrow">↗</span></a></div></div>\n' +
+            '        <div class="nav-card" style="--delay:0.09s"><div class="nav-card-links"><a href="results.html" data-nav="results" class="nav-major-link">成果 <span class="nav-card-arrow">↗</span></a></div></div>\n' +
+            '        <div class="nav-card" style="--delay:0.12s"><div class="nav-card-links"><a href="honors.html" data-nav="honors" class="nav-major-link">荣誉 <span class="nav-card-arrow">↗</span></a></div></div>\n' +
+            '        <div class="nav-card" style="--delay:0.15s"><div class="nav-card-links"><a href="activities.html" data-nav="activities" class="nav-major-link">学术活动 <span class="nav-card-arrow">↗</span></a></div></div>\n' +
+            '      </div>\n' +
+            '    </nav>\n' +
+            '  </header>\n' +
+            '  <main>\n' +
+            '    <section class="section-wrap news-detail-layout">\n' +
+            '      <article class="news-article-card reveal">\n' +
+            '        <div id="news-detail-content">\n' +
+            contentHtml +
+            '        </div>\n' +
+            '      </article>\n' +
+            '    </section>\n' +
+            '  </main>\n' +
+            '  <footer class="site-footer contact-footer">\n' +
+            '    <span>© 2026 <span data-profile="nameEn">Yifeng Xiong</span></span>\n' +
+            '    <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>\n' +
+            '    <span class="footer-address">南京大学仙林校区现代工学院A302</span>\n' +
+            '  </footer>\n' +
+            '  <script src="js/data.js?v=v1.11.57" charset="utf-8"><\/script>\n' +
+            '  <script src="js/loading-content.js?v=v1.11.57" charset="utf-8"><\/script>\n' +
+            '  <script src="js/script.js?v=v1.11.57" charset="utf-8"><\/script>\n' +
+            '</body>\n' +
+            '</html>';
+        }
+
+        // ─── 核心转换 ──────────────────────────────────
+        function convert() {
+          try {
+            if (!rawDocx) { showToast('请先选择 .docx 文件'); return; }
+            if (!mammothReady) {
+              setStatus('mammoth.js 尚未加载，请刷新页面重试', 'error');
+              showToast('mammoth.js 未就绪');
+              return;
+            }
+
+            setStatus('正在解析 Word 文档…');
+            btnConvert.textContent = '转换中…';
+            btnConvert.disabled = true;
+
+            mammoth.convertToHtml({ arrayBuffer: rawDocx })
+              .then(function (result) {
+                try {
+                  mammothHtml = result.value || '';
+                  var messages = result.messages || [];
+
+                  if (!mammothHtml) {
+                    setStatus('转换完成，但文档内容为空。请检查 Word 文档是否包含可解析的文本。', 'warn');
+                  }
+
+                  // 分析统计
+                  docStatsData = analyzeHtml(mammothHtml);
+                  docStats.innerHTML =
+                    '<div class="doc-stat"><strong>' + docStatsData.paragraphs + '</strong>段落</div>' +
+                    '<div class="doc-stat"><strong>' + docStatsData.headings + '</strong>标题</div>' +
+                    '<div class="doc-stat"><strong>' + docStatsData.images + '</strong>图片</div>';
+                  docStats.style.display = 'flex';
+
+                  // 自动提取标题
+                  if (!fieldTitle.value) {
+                    var autoTitle = extractTitle(mammothHtml);
+                    if (autoTitle) fieldTitle.value = autoTitle;
+                  }
+
+                  // 自动提取第一张图片
+                  var firstImg = extractFirstImage(mammothHtml);
+                  if (firstImg && !fieldImage.value) {
+                    fieldImage.value = firstImg;
+                    detectedImagePreview.src = firstImg;
+                    detectedImageBox.style.display = 'block';
+                  }
+
+                  // 注入正文到编辑器（去掉 H1 避免与标题冗余）
+                  var bodyOnly = mammothHtml.replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, '');
+                  editorBody.innerHTML = bodyOnly;
+
+                  if (messages.length) {
+                    for (var i = 0; i < messages.length; i++) {
+                      console.log('[mammoth] ' + messages[i].type + ': ' + messages[i].message);
+                    }
+                  }
+
+                  // 更新预览
+                  refreshPreview();
+
+                  btnConvert.textContent = '重新转换';
+                  btnConvert.disabled = false;
+                  btnRefresh.disabled = false;
+                  btnCopy.disabled = false;
+                  btnDownload.disabled = false;
+                  btnSendAdmin.disabled = false;
+
+                  var stats = docStatsData.paragraphs + ' 段落, ' + docStatsData.headings + ' 标题, ' + docStatsData.images + ' 图片';
+                  setStatus('转换完成！' + stats + (messages.length ? ' (' + messages.length + ' 条警告)' : ''));
+                  showToast('转换完成！');
+                } catch (innerErr) {
+                  setStatus('渲染预览时出错: ' + innerErr.message, 'error');
+                  showToast('预览渲染失败: ' + innerErr.message);
+                  btnConvert.textContent = '转换为新闻页';
+                  btnConvert.disabled = false;
+                }
+              })
+              .catch(function (err) {
+                setStatus('mammoth 转换失败: ' + err.message, 'error');
+                showToast('转换失败: ' + err.message);
+                btnConvert.textContent = '转换为新闻页';
+                btnConvert.disabled = false;
+              });
+          } catch (outerErr) {
+            setStatus('转换过程异常: ' + outerErr.message, 'error');
+            showToast('转换异常: ' + outerErr.message);
+            btnConvert.textContent = '转换为新闻页';
+            btnConvert.disabled = false;
+          }
+        }
+
+        // ─── 生成独立预览 HTML（iframe srcdoc 用） ─────
+        function buildPreviewPage(html) {
+          return '<!doctype html>\n' +
+            '<html lang="zh-CN">\n' +
+            '<head>\n' +
+            '  <meta charset="utf-8" />\n' +
+            '  <style>\n' +
+            '    * { box-sizing: border-box; }\n' +
+            '    html, body { background: #000; color: #fff; min-height: 100%; margin: 0; padding: 0; }\n' +
+            '    body { padding: 24px; font-family: -apple-system, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Noto Sans SC", "PingFang SC", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }\n' +
+            '    .news-detail-layout { max-width: 100%; margin-top: 0; }\n' +
+            '    .news-article-card { border: 1.5px solid rgba(255,255,255,0.14); border-radius: 18px; background: rgba(255,255,255,0.055); padding: clamp(24px,4vw,48px); display: grid; gap: clamp(24px,4vw,42px); }\n' +
+            '    .news-article-card h1 { font-size: clamp(1.6rem,3vw,2.4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin: 0 0 20px; }\n' +
+            '    .news-rich-content { display: grid; gap: 22px; }\n' +
+            '    .news-rich-content p { margin: 0; color: rgba(255,255,255,0.65); font-size: clamp(1rem,1.32vw,1.14rem); line-height: 1.9; }\n' +
+            '    .news-rich-content h2 { margin: 16px 0 0; font-size: clamp(1.28rem,2.1vw,2.05rem); line-height: 1.22; font-weight: 700; }\n' +
+            '    .news-rich-content h3 { margin: 8px 0 0; color: #2997FF; font-size: clamp(1rem,1.32vw,1.14rem); font-weight: 600; }\n' +
+            '    .news-rich-content ul, .news-rich-content ol { margin: 0; padding-left: 1.4em; }\n' +
+            '    .news-rich-content li { margin-bottom: 0.3em; color: rgba(255,255,255,0.65); }\n' +
+            '    .news-rich-content figure { overflow: clip; margin: 8px 0; border: 1.5px solid rgba(255,255,255,0.14); border-radius: 16px; background: #f8fbff; }\n' +
+            '    .news-rich-content img { display: block; width: 100%; }\n' +
+            '    .news-rich-content figcaption { padding: 10px 14px 12px; background: rgba(0,0,0,0.92); color: rgba(255,255,255,0.55); font-size: 0.82rem; }\n' +
+            '    .news-rich-content blockquote { margin: 8px 0; border-left: 3px solid #2997FF; padding: 6px 0 6px 18px; color: rgba(255,255,255,0.85); font-size: clamp(1rem,1.32vw,1.14rem); font-weight: 600; line-height: 1.7; }\n' +
+            '  </style>\n' +
+            '</head>\n' +
+            '<body>\n' +
+            '  <section class="news-detail-layout">\n' +
+            '    <article class="news-article-card">\n' +
+            html +
+            '    </article>\n' +
+            '  </section>\n' +
+            '</body>\n' +
+            '</html>';
+        }
+
+        // ─── 刷新预览（从编辑器读取正文） ────────────
+        function refreshPreview() {
+          var bodyHtml = editorBody.innerHTML;
+          if (!bodyHtml || bodyHtml.indexOf('转换为新闻页') > -1) {
+            if (!mammothHtml) { showToast('请先执行转换'); return; }
+            bodyHtml = mammothHtml.replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, '');
+          }
+
+          var title = fieldTitle.value || extractTitle(bodyHtml) || '新闻标题';
+
+          contentHtml = buildContentHtml(title, bodyHtml);
+          fullPageHtml = buildFullPage(title, contentHtml);
+
+          previewEl.srcdoc = buildPreviewPage(contentHtml);
+          sourceArea.value = fullPageHtml;
+          setStatus('预览已更新');
+        }
+
+        // ─── 复制 HTML ─────────────────────────────────
+        function copyHtml() {
+          var text = sourceArea.value;
+          if (!text) { showToast('请先转换文档'); return; }
+          navigator.clipboard.writeText(text).then(function () {
+            showToast('已复制 HTML 到剪贴板');
+          }).catch(function () {
+            // fallback
+            sourceArea.select();
+            document.execCommand('copy');
+            showToast('已复制 HTML 到剪贴板');
+          });
+        }
+
+        // ─── 下载独立页面 ──────────────────────────────
+        function downloadPage() {
+          var text = sourceArea.value;
+          if (!text) { showToast('请先转换文档'); return; }
+          var filename = autoSlug(fieldTitle.value || 'news') + '.html';
+          var blob = new Blob([text], { type: 'text/html;charset=utf-8' });
+          var url = URL.createObjectURL(blob);
+          var a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('已下载: ' + filename);
+        }
+
+        // ─── 发送到后台 ────────────────────────────────
+        function sendToAdmin() {
+          if (!contentHtml) { showToast('请先转换文档'); return; }
+          var title = fieldTitle.value || '';
+
+          // 检查大小：base64 图片可能撑爆 localStorage 5MB 限制
+          var sizeEstimate = (contentHtml.length * 2) + 5000;
+          if (sizeEstimate > 4000000) {
+            setStatus('⚠️ 正文包含大量 base64 图片，超出 localStorage 容量。请先上传图片到 resources/ 目录，再用路径替换正文中的 base64 数据。', 'warn');
+            showToast('内容过大，请先上传图片到 resources/');
+            return;
+          }
+
+          var plainText = mammothHtml ? mammothHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+
+          var payload = {
+            title: title,
+            subtitle: fieldSubtitle.value || '',
+            eyebrow: fieldEyebrow.value || 'Research News',
+            image: fieldImage.value || '',
+            date: fieldDate.value || '',
+            contentHtml: contentHtml,
+            content: plainText,
+            newsTitle: title,
+            newsText: plainText.slice(0, 120),
+            newsDate: fieldDate.value || '',
+            _from: 'docx-converter',
+            _timestamp: Date.now()
+          };
+
+          try {
+            localStorage.setItem('docxConverterOutput', JSON.stringify(payload));
+            showToast('已发送到后台！前往后台管理 → 新闻详情 → 导入转换器内容');
+          } catch (e) {
+            showToast('发送失败: ' + e.message);
+          }
+        }
+
+        // ─── 重置 ──────────────────────────────────────
+        function resetAll() {
+          rawDocx = null;
+          fileName = '';
+          mammothHtml = '';
+          fullPageHtml = '';
+          contentHtml = '';
+          docStatsData = { paragraphs: 0, images: 0, headings: 0 };
+
+          fileInput.value = '';
+          dropText.textContent = '点击选择文件，或拖入 .docx';
+          dropZone.classList.remove('has-file');
+          docStats.style.display = 'none';
+          docStats.innerHTML = '';
+
+          fieldTitle.value = '';
+          fieldSubtitle.value = '';
+          fieldImage.value = '';
+          fieldDate.value = '';
+          fieldEyebrow.value = 'Research News';
+          detectedImageBox.style.display = 'none';
+          detectedImagePreview.src = '';
+
+          previewEl.srcdoc =
+            '<!doctype html><html><head><style>body{background:#000;color:#fff;display:grid;place-items:center;min-height:300px;font-family:system-ui;text-align:center;margin:0;padding:40px 20px;}p{color:rgba(255,255,255,0.4);}</style></head><body><p>上传 .docx 文件并点击「转换为新闻页」<br>预览效果将在这里展示</p></body></html>';
+          sourceArea.value = '';
+          editorBody.innerHTML = '<p style="color:rgba(255,255,255,0.3);text-align:center;padding:80px 0;">点击「转换为新闻页」后，正文会显示在这里<br>可像 Word 一样直接编辑</p>';
+
+          btnConvert.disabled = true;
+          btnConvert.textContent = '转换为新闻页';
+          btnRefresh.disabled = true;
+          btnCopy.disabled = true;
+          btnDownload.disabled = true;
+          btnSendAdmin.disabled = true;
+
+          showToast('已重置');
+        }
+
+        // ─── 标签切换 ──────────────────────────────────
+        document.querySelectorAll('.output-tab').forEach(function (tab) {
+          tab.addEventListener('click', function () {
+            document.querySelectorAll('.output-tab').forEach(function (t) { t.classList.remove('active'); });
+            document.querySelectorAll('.output-pane').forEach(function (p) { p.classList.remove('active'); });
+            tab.classList.add('active');
+            var pane = document.getElementById('pane-' + tab.dataset.tab);
+            if (pane) pane.classList.add('active');
+          });
+        });
+
+        // ─── 事件绑定 ──────────────────────────────────
+        btnConvert.addEventListener('click', convert);
+        btnRefresh.addEventListener('click', refreshPreview);
+        btnCopy.addEventListener('click', copyHtml);
+        btnDownload.addEventListener('click', downloadPage);
+        btnSendAdmin.addEventListener('click', sendToAdmin);
+        document.getElementById('btn-reset').addEventListener('click', resetAll);
+
+        // ─── 富文本编辑器：工具栏 ──────────────────────
+        document.querySelector('.editor-toolbar').addEventListener('click', function (e) {
+          var btn = e.target.closest('[data-cmd]');
+          if (!btn) return;
+          e.preventDefault();
+          editorBody.focus();
+          var cmd = btn.dataset.cmd;
+          var val = btn.dataset.val || null;
+          document.execCommand(cmd, false, val);
+        });
+
+        // ─── 富文本编辑器：同步到预览 ─────────────────
+        editorBody.addEventListener('input', function () {
+          var bodyHtml = editorBody.innerHTML;
+          if (!bodyHtml || bodyHtml.indexOf('转换为新闻页') > -1) return;
+          if (!fieldTitle.value) return;
+          contentHtml = buildContentHtml(fieldTitle.value, bodyHtml);
+          fullPageHtml = buildFullPage(fieldTitle.value, contentHtml);
+          sourceArea.value = fullPageHtml;
+        });
+
+        // ─── iframe 自动高度 ──────────────────────────
+        previewEl.addEventListener('load', function () {
+          try {
+            var doc = previewEl.contentDocument || previewEl.contentWindow.document;
+            var h = doc.documentElement.scrollHeight;
+            if (h > 100) {
+              previewEl.style.height = Math.min(h + 20, window.innerHeight * 0.75) + 'px';
+            }
+          } catch (e) { /* 跨域或空内容时静默 */ }
+        });
+
+        console.log('docx-converter 已就绪');
+      })();
+    </script>
+  </body>
+</html>

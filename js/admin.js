@@ -564,6 +564,72 @@ function buildForm() {
     })
     .join("");
   setupRichTextEditors();
+  injectConverterImportButton();
+}
+
+function injectConverterImportButton() {
+  const existing = form.querySelector('#import-converter-btn');
+  if (existing) existing.remove();
+  if (activeTab !== 'newsDetails') return;
+  let payload = null;
+  try {
+    const stored = localStorage.getItem('docxConverterOutput');
+    if (stored) payload = JSON.parse(stored);
+  } catch (e) { /* ignore */ }
+  if (!payload || payload._from !== 'docx-converter') {
+    const hint = document.createElement('p');
+    hint.id = 'import-converter-btn';
+    hint.style.cssText = 'margin-top:16px;font-size:0.78rem;color:rgba(255,255,255,0.32);';
+    hint.textContent = '💡 在 docx-converter.html 中转换后点击「发送到后台」，数据会自动出现在这里。';
+    form.appendChild(hint);
+    return;
+  }
+  const btn = document.createElement('button');
+  btn.id = 'import-converter-btn';
+  btn.className = 'admin-button primary';
+  btn.type = 'button';
+  btn.textContent = '📤 从转换器导入（' + (payload.title || payload.slug || '') + '）';
+  btn.style.marginTop = '16px';
+  btn.addEventListener('click', function () {
+    const fieldMap = {
+      slug: payload.slug, title: payload.title, subtitle: payload.subtitle,
+      eyebrow: payload.eyebrow, image: payload.image,
+      contentHtml: payload.contentHtml, content: payload.content,
+    };
+    for (const [key, value] of Object.entries(fieldMap)) {
+      const el = form.elements[key];
+      if (el) el.value = value || '';
+    }
+    const editor = form.querySelector('.richtext-editor[data-rich-editor="contentHtml"]');
+    if (editor && payload.contentHtml) editor.innerHTML = payload.contentHtml;
+
+    // 同时写入主页新闻轮播数据（news 数组第一个条目）
+    if (payload.newsTitle) {
+      const news = data.news || (data.news = []);
+      if (news.length > 0) {
+        news[0].title = payload.newsTitle;
+        if (payload.newsText) news[0].text = payload.newsText;
+        if (payload.image) news[0].image = payload.image;
+        if (payload.newsDate) news[0].date = payload.newsDate;
+        if (payload.title) news[0].url = 'resources/news/' + (payload.slug || slugify(payload.title)) + '.html';
+      } else {
+        news.push({
+          date: payload.newsDate || '',
+          title: payload.newsTitle,
+          titleEn: '',
+          text: payload.newsText || '',
+          textEn: '',
+          image: payload.image || '',
+          url: 'resources/news/' + (payload.slug || slugify(payload.title)) + '.html',
+        });
+      }
+    }
+
+    localStorage.removeItem('docxConverterOutput');
+    btn.remove();
+    deployLog('✅ 已从转换器导入内容（含主页新闻轮播），请检查后保存。', 'success');
+  });
+  form.appendChild(btn);
 }
 
 function renderList() {

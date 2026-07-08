@@ -51,24 +51,6 @@
       "textEn": "A fiber-tip heterogeneous device identifies mode, polarization, wavelength, and intensity with one-pixel responses.",
       "image": "resources/images/news-light-fingerprint.webp",
       "url": "resources/news/light-fingerprint.html"
-    },
-    {
-      "date": "2025",
-      "title": "获江苏省通信学会科学技术奖",
-      "titleEn": "Received Science and Technology Award from Jiangsu Institute of Communications",
-      "text": "相关光缆运维关键技术与装备获奖，体现光纤器件与工程应用结合。",
-      "textEn": "Awarded for key technologies and equipment for optical cable operation and maintenance.",
-      "image": "resources/images/2025-获江苏省通信学会科学技术奖-main.jpg",
-      "url": "honors.html#awards"
-    },
-    {
-      "date": "2024",
-      "title": "国家与省部级科研项目持续推进",
-      "titleEn": "National and provincial research projects in progress",
-      "text": "围绕光纤端面集成、异质材料与智能光电探测开展系统研究。",
-      "textEn": "Research projects continue on fiber-tip integration, heterogeneous materials, and intelligent photodetection.",
-      "image": "resources/images/light-fingerprint-main.webp",
-      "url": "results.html#projects"
     }
   ],
   "newsDetails": [
