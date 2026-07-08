@@ -29,7 +29,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.12.5" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.12.6" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.12.6" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -631,6 +632,61 @@
         text-align: right;
       }
 
+      /* ── 语言切换 Tab ── */
+      .lang-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 16px;
+        padding: 4px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+      }
+      .lang-tab {
+        flex: 1;
+        height: 34px;
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: rgba(255,255,255,0.5);
+        font: inherit;
+        font-size: 0.82rem;
+        font-weight: 650;
+        cursor: pointer;
+        transition: all 0.15s ease;
+      }
+      .lang-tab:hover { color: rgba(255,255,255,0.8); }
+      .lang-tab.active {
+        background: rgba(41,151,255,0.2);
+        color: #2997FF;
+        box-shadow: 0 2px 8px rgba(41,151,255,0.12);
+      }
+      .lang-group-header {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.6);
+        padding: 10px 0 8px;
+        margin-top: 4px;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+      }
+      .lang-group { margin-bottom: 8px; }
+      .lang-group + .lang-group { padding-top: 4px; }
+      .missing-badge {
+        display: inline-block;
+        background: rgba(255,69,58,0.15);
+        color: #ff453a;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 1px 8px;
+        border-radius: 999px;
+        margin-left: 8px;
+      }
+      .field-missing input,
+      .field-missing textarea {
+        border-color: rgba(255,69,58,0.35) !important;
+        box-shadow: 0 0 0 1px rgba(255,69,58,0.12) !important;
+      }
+
       /* ── 移动端 ── */
       @media (max-width: 900px) {
         .admin-layout { grid-template-columns: 1fr; }
@@ -810,6 +866,41 @@
 
           </div>
 
+          <!-- ===== 文件管理面板 ===== -->
+          <div class="admin-panel" id="panel-files">
+            <section class="admin-hero" style="grid-template-columns:1fr;">
+              <div>
+                <p class="section-kicker">File Manager</p>
+                <h1>文件管理</h1>
+                <p class="hero-copy">集中管理 resources/ 下的图片、论文、视频、首帧和新闻文件。</p>
+              </div>
+            </section>
+
+            <section class="admin-sync-panel glass-surface glass-surface--fallback" id="files-manager" aria-labelledby="files-manager-title">
+              <div class="admin-sync-copy">
+                <p class="section-kicker">Assets</p>
+                <h2 id="files-manager-title">素材文件</h2>
+                <p>上传、复制路径、删除文件都在这里完成。</p>
+              </div>
+              <div class="storage-manager">
+                <div class="storage-manager-head">
+                  <div>
+                    <h3>文件操作</h3>
+                    <p>先选文件夹，再上传或从列表里复制路径。</p>
+                  </div>
+                  <button class="admin-button" id="files-refresh-files" type="button">刷新文件列表</button>
+                </div>
+                <div class="storage-form">
+                  <label class="field"><span>文件夹</span><select id="files-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
+                  <label class="field"><span>保存路径/文件名</span><input id="files-path" placeholder="留空自动命名；例如 publications/light-fingerprint.pdf" /></label>
+                  <label class="field full"><span>选择文件</span><input id="files-file" type="file" /></label>
+                  <button class="admin-button primary" id="files-upload" type="button">上传到本地文件夹</button>
+                </div>
+                <div class="storage-list" id="files-list" aria-live="polite"></div>
+              </div>
+            </section>
+          </div>
+
           <!-- ===== 版本仪表盘面板 ===== -->
           <div class="admin-panel" id="panel-deploy">
             <section class="admin-hero" style="grid-template-columns:1fr;">
@@ -896,6 +987,11 @@
                         <button data-asset-source="cdn">jsDelivr / CDN</button>
                       </div>
                       <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留同域，最顺手。</p>
+                    </div>
+
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">Git 变更</div>
+                      <div class="deploy-file-list empty" id="git-status-list">点击「刷新 Git 状态」查看变更文件。</div>
                     </div>
 
                     <div class="deploy-action-group">
@@ -1044,7 +1140,7 @@
     </div>
 
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.12.5" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.12.5" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.12.6" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.12.6" charset="utf-8"></script>
   </body>
 </html>

@@ -18,67 +18,71 @@ const schemas = {
     title: "基本资料",
     type: "object",
     fields: [
-      ["nameCn", "中文名"],
-      ["nameEn", "英文名"],
-      ["title", "标题"],
-      ["subtitle", "副标题", "textarea"],
-      ["affiliation", "单位"],
-      ["email", "邮箱"],
-      ["phone", "电话"],
-      ["photo", "人物照片", "image"],
-      ["bio", "个人简介", "textarea"],
-      ["focus", "研究关键词"],
+      ["nameCn", "中文名", "", "zh"],
+      ["nameEn", "英文名", "", "en"],
+      ["title", "头衔", "", "zh"],
+      ["titleEn", "头衔（英）", "", "en"],
+      ["subtitle", "副标题", "textarea", "zh"],
+      ["subtitleEn", "副标题（英）", "textarea", "en"],
+      ["affiliation", "单位", "", "zh"],
+      ["affiliationEn", "单位（英）", "", "en"],
+      ["email", "邮箱", "", "common"],
+      ["phone", "电话", "", "common"],
+      ["photo", "人物照片", "image", "common"],
+      ["bio", "个人简介", "textarea", "zh"],
+      ["bioEn", "个人简介（英）", "textarea", "en"],
+      ["focus", "研究关键词", "", "zh"],
     ],
   },
-  research: { title: "研究内容", fields: [["title", "标题"], ["text", "说明", "textarea"]] },
+  research: { title: "研究内容", fields: [["title", "标题", "", "zh"], ["text", "说明", "textarea", "zh"]] },
   news: {
     title: "新闻",
     fields: [
-      ["date", "日期"],
-      ["slug", "标识"],
-      ["eyebrow", "首屏标签"],
-      ["title", "中文标题", "textarea"],
-      ["titleEn", "英文标题", "textarea"],
-      ["subtitle", "导语/副标题", "textarea"],
-      ["text", "中文摘要（主页轮播）", "textarea"],
-      ["textEn", "英文摘要（主页轮播）", "textarea"],
-      ["image", "封面图片", "image"],
-      ["url", "详情页链接"],
-      ["contentHtml", "正文（富文本）", "richtext"],
-      ["content", "正文纯文本", "textarea"],
-      ["paperTitle", "论文题目", "textarea"],
-      ["journal", "期刊"],
-      ["authors", "作者"],
-      ["correspondingAuthors", "通讯作者"],
-      ["affiliation", "完成单位", "textarea"],
-      ["doi", "DOI"],
-      ["pdf", "PDF/链接", "file"],
+      ["date", "日期", "", "common"],
+      ["slug", "标识", "", "common"],
+      ["eyebrow", "首屏标签", "", "common"],
+      ["title", "中文标题", "textarea", "zh"],
+      ["titleEn", "英文标题", "textarea", "en"],
+      ["subtitle", "导语/副标题", "textarea", "common"],
+      ["text", "中文摘要（主页轮播）", "textarea", "zh"],
+      ["textEn", "英文摘要（主页轮播）", "textarea", "en"],
+      ["image", "封面图片", "image", "common"],
+      ["url", "详情页链接", "", "common"],
+      ["contentHtml", "正文（富文本）", "richtext", "common"],
+      ["content", "正文纯文本", "textarea", "common"],
+      ["paperTitle", "论文题目", "textarea", "common"],
+      ["journal", "期刊", "", "common"],
+      ["authors", "作者", "", "common"],
+      ["correspondingAuthors", "通讯作者", "", "common"],
+      ["affiliation", "完成单位", "textarea", "common"],
+      ["doi", "DOI", "", "common"],
+      ["pdf", "PDF/链接", "file", "common"],
     ],
   },
   publications: {
     title: "论文管理",
     dataKey: "allPublications",
     fields: [
-      ["year", "年份"],
-      ["title", "英文题名", "textarea"],
-      ["titleZh", "中文题名", "textarea"],
-      ["authors", "作者", "textarea"],
-      ["venue", "期刊英文"],
-      ["venueZh", "期刊中文"],
-      ["date", "发表日期"],
-      ["impact", "影响因子"],
-      ["image", "图片/主图", "image"],
-      ["url", "PDF/链接", "file"],
-      ["representative", "代表性论文", "checkbox"],
+      ["year", "年份", "", "common"],
+      ["title", "英文题名", "textarea", "en"],
+      ["titleZh", "中文题名", "textarea", "zh"],
+      ["authors", "作者", "textarea", "common"],
+      ["venue", "期刊英文", "", "en"],
+      ["venueZh", "期刊中文", "", "zh"],
+      ["date", "发表日期", "", "common"],
+      ["impact", "影响因子", "", "common"],
+      ["image", "图片/主图", "image", "common"],
+      ["url", "PDF/链接", "file", "common"],
+      ["representative", "代表性论文", "checkbox", "common"],
     ],
   },
-  projects: { title: "项目", fields: [["title", "标题"], ["text", "说明", "textarea"], ["image", "图片", "image"], ["url", "链接"]] },
+  projects: { title: "项目", fields: [["title", "标题", "", "common"], ["text", "说明", "textarea", "common"], ["image", "图片", "image", "common"], ["url", "链接", "", "common"]] },
   achievements: {
     title: "成果",
-    fields: [["type", "类型"], ["year", "年份"], ["title", "标题"], ["applicant", "申请人/发明人名单"], ["detail", "详情", "textarea"]],
+    fields: [["type", "类型", "", "common"], ["year", "年份", "", "common"], ["title", "标题", "", "common"], ["applicant", "申请人/发明人名单", "", "common"], ["detail", "详情", "textarea", "common"]],
   },
-  experience: { title: "经历", fields: [["period", "时间"], ["title", "标题"], ["text", "说明", "textarea"]] },
-  contacts: { title: "联系方式", fields: [["label", "标签"], ["value", "显示文本"], ["url", "链接"]] },
+  experience: { title: "经历", fields: [["period", "时间", "", "common"], ["title", "标题", "", "common"], ["text", "说明", "textarea", "common"]] },
+  contacts: { title: "联系方式", fields: [["label", "标签", "", "common"], ["value", "显示文本", "", "common"], ["url", "链接", "", "common"]] },
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -91,6 +95,7 @@ let editingIndex = 0;
 let siteDirectoryHandle = null;
 let draggedIndex = null;
 let savedRichTextSelection = null;
+let formLang = "all";
 
 // 版本更新状态
 let deployState = {
@@ -529,29 +534,112 @@ function setupRichTextEditors() {
 //  表单与列表渲染
 // ═══════════════════════════════════════════════════════════════
 
+function localeLabel(loc) {
+  if (loc === "zh") return "中文";
+  if (loc === "en") return "English";
+  return "";
+}
+
+function localeGroupLabel(loc) {
+  if (loc === "zh") return "📖 中文内容";
+  if (loc === "en") return "🌍 English";
+  return "📋 共用字段";
+}
+
 function buildForm() {
   const schema = schemas[activeTab];
   const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
-  form.innerHTML = schema.fields
-    .map(([key, label, kind]) => {
-      const value = source[key];
-      const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
-      if (kind === "richtext") return richTextFieldHtml(key, label, value);
-      if (kind === "textarea") return `<label class="${cls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
-      if (kind === "checkbox") {
-        const checked = value ? " checked" : "";
-        return `<label class="${cls} checkbox-field"><span class="checkbox-label"><input type="checkbox" name="${key}"${checked} /> ${label}</span></label>`;
-      }
-      if (kind === "image" || kind === "file") {
-        const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
-        const bucket = kind === "image" ? "images" : "papers";
-        return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><div class="field-inline-actions"><input name="${key}Upload" type="file" accept="${accept}" /><button class="admin-button" type="button" data-open-file-manager="${bucket}" data-open-field="${key}">打开文件管理</button></div></label>`;
-      }
-      return `<label class="${cls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
-    })
-    .join("");
+
+  // 检测哪些语言有字段
+  const hasZh = schema.fields.some((f) => f[3] === "zh");
+  const hasEn = schema.fields.some((f) => f[3] === "en");
+  const showLangPicker = hasZh || hasEn;
+
+  // 语言切换栏
+  let langBar = "";
+  if (showLangPicker) {
+    const langs = [
+      { id: "all", label: "全部" },
+      ...(hasZh ? [{ id: "zh", label: "中文" }] : []),
+      ...(hasEn ? [{ id: "en", label: "English" }] : []),
+    ];
+    langBar = `<div class="lang-tabs" data-form-lang-bar="1">${langs
+      .map((l) => `<button type="button" class="lang-tab${l.id === formLang ? " active" : ""}" data-lang="${l.id}">${l.label}</button>`)
+      .join("")}</div>`;
+  }
+
+  // 按语言筛选字段
+  let filteredFields = schema.fields;
+  if (formLang !== "all") {
+    filteredFields = schema.fields.filter((f) => f[3] === formLang || f[3] === "common" || !f[3]);
+  }
+
+  // 按 locale 分组
+  const groups = {};
+  const order = [];
+  for (const field of filteredFields) {
+    const loc = field[3] || "common";
+    if (!groups[loc]) {
+      groups[loc] = [];
+      order.push(loc);
+    }
+    groups[loc].push(field);
+  }
+
+  // 统计缺漏
+  function missingCount(fields) {
+    return fields.filter(([key]) => !source[key] && source[key] !== 0).length;
+  }
+
+  // 渲染一组字段
+  function renderGroup(loc, fields) {
+    const missing = missingCount(fields);
+    const label = localeGroupLabel(loc);
+    const warn = missing > 0 ? ` <span class="missing-badge">${missing} 项未填写</span>` : "";
+    const header = showLangPicker ? `<div class="lang-group-header">${label}${warn}</div>` : "";
+    const body = fields
+      .map(([key, label, kind]) => {
+        const value = source[key];
+        const isEmpty = !value && value !== 0;
+        const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
+        const missingCls = isEmpty && formLang !== "all" && loc !== "common" ? " field-missing" : "";
+        if (kind === "richtext") return richTextFieldHtml(key, label, value);
+        if (kind === "textarea")
+          return `<label class="${cls}${missingCls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
+        if (kind === "checkbox") {
+          const checked = value ? " checked" : "";
+          return `<label class="${cls} checkbox-field"><span class="checkbox-label"><input type="checkbox" name="${key}"${checked} /> ${label}</span></label>`;
+        }
+        if (kind === "image" || kind === "file") {
+          const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
+          const bucket = kind === "image" ? "images" : "papers";
+          return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><div class="field-inline-actions"><input name="${key}Upload" type="file" accept="${accept}" /><button class="admin-button" type="button" data-open-file-manager="${bucket}" data-open-field="${key}">打开文件管理</button></div></label>`;
+        }
+        return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
+      })
+      .join("");
+    return `<div class="lang-group${missing > 0 && formLang !== "all" ? " lang-group-incomplete" : ""}">${header}${body}</div>`;
+  }
+
+  form.innerHTML = langBar + order.map((loc) => renderGroup(loc, groups[loc])).join("");
   setupRichTextEditors();
   injectConverterImportButton();
+
+  // 语言切换事件
+  if (showLangPicker) {
+    form.querySelectorAll(".lang-tab").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        formLang = tab.dataset.lang;
+        buildForm();
+        // 同步保存到缓存但不写文件
+        syncAllRichTextSources();
+        for (const [key] of schema.fields) {
+          const el = form.elements[key];
+          if (el) source[key] = el.value || "";
+        }
+      });
+    });
+  }
 }
 
 function injectConverterImportButton() {
@@ -761,17 +849,16 @@ function setActiveTab(tab) {
   // 切换面板
   const isDeploy = tab === "deploy";
   const isFiles = tab === "files";
-  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy);
+  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles);
   document.querySelector("#panel-deploy")?.classList.toggle("active", isDeploy);
+  document.querySelector("#panel-files")?.classList.toggle("active", isFiles);
 
   if (isDeploy) {
-    // 加载版本仪表盘初始数据
     loadDeployData();
     return;
   }
   if (isFiles) {
-    refreshFileManager();
-    document.querySelector("#cms-file-manager")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    loadFilesPanel();
     return;
   }
 
@@ -783,6 +870,73 @@ function setActiveTab(tab) {
   document.querySelector("#editor-title").textContent = "编辑当前条目";
   buildForm();
   renderList();
+}
+
+async function loadFilesPanel() {
+  if (!USE_LOCAL_ADMIN_SERVER) return;
+  const bucket = document.querySelector("#files-bucket")?.value || "images";
+  await listLocalFilesEx(bucket, "files-list", "files-");
+}
+
+async function uploadFileEx() {
+  const file = document.querySelector("#files-file")?.files?.[0];
+  const bucket = document.querySelector("#files-bucket")?.value || "images";
+  if (!file) { setLocalStatus("请先选择一个要上传的文件。", "error"); return; }
+  if (!USE_LOCAL_ADMIN_SERVER) { setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开。", "error"); return; }
+  const pathInput = document.querySelector("#files-path");
+  const manualPath = pathInput?.value ? cleanStoragePath(pathInput.value) : "";
+  try {
+    let uploadPath = manualPath;
+    if (!uploadPath) {
+      const ext = extensionOf(file.name);
+      uploadPath = `${slugify(file.name.replace(/\.[^.]+$/, "")) || "file"}${ext}`;
+    }
+    const result = await localRequest(`/api/upload?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(uploadPath)}`, {
+      method: "POST",
+      headers: { "Content-Type": file.type || "application/octet-stream" },
+      body: file,
+    });
+    if (pathInput) pathInput.value = result.path;
+    setLocalStatus(`上传成功：${result.url}`, "success");
+    await navigator.clipboard?.writeText(result.url).catch(() => {});
+    await listLocalFilesEx(bucket, "files-list", "files-");
+  } catch (error) {
+    setLocalStatus(`上传失败：${error.message}`, "error");
+  }
+}
+
+async function listLocalFilesEx(bucket, listId, prefix) {
+  const container = document.querySelector(`#${listId}`);
+  if (!container) return;
+  container.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
+  try {
+    const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
+    const files = result.files || [];
+    if (!files.length) {
+      container.innerHTML = `<p class="storage-empty">${bucket} 中暂时没有文件。</p>`;
+      return;
+    }
+    container.innerHTML = files.map((file) => {
+      const relativeUrl = `${bucket}/${file.path}`;
+      const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
+      return `
+        <article class="storage-item" data-path="${escapeHtml(file.path)}">
+          <div>
+            <h3>${escapeHtml(file.path)}</h3>
+            <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
+          </div>
+          <div class="item-actions">
+            <button class="icon-button" data-files-action="copy" data-url="${escapeHtml(relativeUrl)}" type="button">复制路径</button>
+            <button class="icon-button danger" data-files-action="delete" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">删除</button>
+          </div>
+        </article>
+      `;
+    }).join("");
+    setLocalStatus(`已读取 ${bucket}：${files.length} 个文件。`, "success");
+  } catch (error) {
+    container.innerHTML = `<p class="storage-empty">读取失败：${escapeHtml(error.message)}</p>`;
+    setLocalStatus(`读取文件失败：${error.message}`, "error");
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1788,9 +1942,6 @@ function init() {
     });
   });
 
-  // ── 旧版部署按钮兼容 ──
-  document.querySelector("#local-deploy")?.addEventListener("click", publishToGitHub);
-  document.querySelector("#local-deploy-top")?.addEventListener("click", publishToGitHub);
   // ── 版本更新事件 ──
   document.querySelectorAll("#version-strategy button").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -1860,6 +2011,37 @@ function init() {
     const bucket = button.dataset.openFileManager || "images";
     const fieldName = button.dataset.openField || "";
     openFileManager(bucket, fieldName);
+  });
+
+  // ── 独立文件面板事件 ──
+  document.querySelector("#files-refresh-files")?.addEventListener("click", () => {
+    const bucket = document.querySelector("#files-bucket")?.value || "images";
+    listLocalFilesEx(bucket, "files-list", "files-");
+  });
+  document.querySelector("#files-upload")?.addEventListener("click", uploadFileEx);
+  document.querySelector("#files-bucket")?.addEventListener("change", () => {
+    const bucket = document.querySelector("#files-bucket")?.value || "images";
+    listLocalFilesEx(bucket, "files-list", "files-");
+  });
+  document.querySelector("#files-list")?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-files-action]");
+    if (!button) return;
+    const action = button.dataset.filesAction;
+    if (action === "copy") {
+      await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+      setLocalStatus("已复制相对路径。", "success");
+    } else if (action === "delete") {
+      const bucket = button.dataset.bucket || "images";
+      const path = button.dataset.path;
+      if (!confirm(`确定删除 ${bucket}/${path}？`)) return;
+      try {
+        await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, { method: "DELETE" });
+        setLocalStatus(`已删除：${bucket}/${path}`, "success");
+        await listLocalFilesEx(bucket, "files-list", "files-");
+      } catch (error) {
+        setLocalStatus(`删除失败：${error.message}`, "error");
+      }
+    }
   });
 
   // ── 状态栏点击刷新 ──
