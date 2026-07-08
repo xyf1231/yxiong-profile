@@ -17,8 +17,8 @@ window.LOADING_CONTENT = {
     "duration": "2",
     "erase": "true",
     "strokeWidth": "2",
-    "brightness": "20",
-    "saturation": "20",
+    "brightness": "10",
+    "saturation": "30",
     "greeting": ""
   }
 };

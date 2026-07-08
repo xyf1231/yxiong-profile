@@ -388,12 +388,6 @@ const pageSchemas = {
         rangeField("--loading-letters-scale", "字母缩放", 0.5, 3, 0.05, ""),
         textField("--loading-letters-margin", "外边距"),
       ]),
-      group("手写动画参数", [
-        rangeField("--loading-anim-stroke-width", "描边宽度", 0.5, 5, 0.1, ""),
-        rangeField("--loading-anim-brightness", "亮度", -50, 50, 1, ""),
-        rangeField("--loading-anim-saturation", "饱和度", -100, 100, 1, ""),
-        rangeField("--loading-anim-duration", "绘制时长", 0.5, 5, 0.1, "s"),
-      ]),
       group("百分比数字", [
         colorField("--loading-percent-color", "颜色"),
         clampField("--loading-percent-font-size", "字号 (vw)", 1, 10, 0.1, "vw", "1.5rem", "8rem", "--loading-percent-font-size-mobile"),

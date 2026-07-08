@@ -26,11 +26,7 @@
   --loading-letters-margin: -50px 0 5px;
   --loading-letters-scale: 1;
 
-  /* 手写动画参数（CSS 变量优先于 JS 配置） */
-  --loading-anim-stroke-width: 2;
-  --loading-anim-brightness: 50;
-  --loading-anim-saturation: 80;
-  --loading-anim-duration: 2;
+  /* 手写动画参数（统一由 loading-content.js 控制，不再用 CSS 变量覆盖） */
 
   /* 百分比数字 */
   --loading-percent-color: rgba(255, 255, 255, 0.92);
