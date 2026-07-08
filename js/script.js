@@ -2244,7 +2244,6 @@ function translateLooseHeadings(dict) {
 
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
-  if (isCompactNav()) return;
   if (typeof initBorderGlow !== "function") return;
 
   var allCards = document.querySelectorAll(
@@ -2279,16 +2278,36 @@ function setupBorderGlow() {
     return !card.classList.contains("news-card") && !card.classList.contains("news-article-card") && !card.classList.contains("news-info-card");
   });
 
-  initBorderGlow(glowCards, {
-    edgeSensitivity: 30,
-    glowColor: "40 80 80",
-    glowRadius: 40,
-    glowIntensity: 1.0,
-    coneSpread: 25,
-    animated: true,
-    colors: ["#c084fc", "#f472b6", "#38bdf8"],
-    fillOpacity: 0.5,
-  });
+  if (glowCards.length === 0) return;
+
+  if (isCompactNav()) {
+    initBorderGlow(glowCards, {
+      colors: ["#000080", "#3377ff", "#99bbff"],
+      glowColor: "220 80 80",
+      glowRadius: 40,
+      glowIntensity: 1.5,
+      edgeSensitivity: 0,
+      fillOpacity: 0.5,
+      animated: true,
+      sweepFan: false,
+      sweepSpeed: 4,
+      sweepIntensity: 0.5,
+      sweepFadeIn: 400,
+      sweepRotate: 1000,
+      sweepFadeOut: 400,
+    });
+  } else {
+    initBorderGlow(glowCards, {
+      edgeSensitivity: 0,
+      glowColor: "28 80 80",
+      glowRadius: 40,
+      glowIntensity: 1.5,
+      coneSpread: 25,
+      animated: true,
+      colors: ["#0d0887", "#f89540", "#ffffff"],
+      fillOpacity: 0.5,
+    });
+  }
 }
 
 // 初始化玻璃拟态表面高光效果

@@ -37,6 +37,17 @@ function buildGradientVars(colors) {
 function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
 function easeInCubic(x) { return x * x * x; }
 
+var _fanStyle = null;
+function setSweepFan(enabled) {
+  if (!_fanStyle) {
+    _fanStyle = document.createElement("style");
+    _fanStyle.id = "glow-fan-mode";
+    document.head.appendChild(_fanStyle);
+  }
+  _fanStyle.textContent = enabled ? "" :
+    ".border-glow-card::before,.border-glow-card>.edge-light{mask-image:none!important;}";
+}
+
 function animateValue(opts) {
   var start = opts.start != null ? opts.start : 0;
   var end = opts.end != null ? opts.end : 100;
@@ -62,9 +73,20 @@ function animateValue(opts) {
   }
 }
 
-function playSweepAnimation(card) {
+function playSweepAnimation(card, opts) {
   if (card.dataset.sweepPlayed === 'true') return;
   card.dataset.sweepPlayed = 'true';
+  opts = opts || {};
+
+  var speed = opts.speed || 1;
+  var fadeIn = (opts.fadeIn != null ? opts.fadeIn : 500) / speed;
+  var rotateHalf = (opts.rotateHalf != null ? opts.rotateHalf : 1500) / speed;
+  var rotateSecond = (opts.rotateSecond != null ? opts.rotateSecond : 2250) / speed;
+  var fadeOut = (opts.fadeOut != null ? opts.fadeOut : 1500) / speed;
+  var rotateDelay = (opts.rotateDelay != null ? opts.rotateDelay : 1500) / speed;
+  var fadeOutDelay = (opts.fadeOutDelay != null ? opts.fadeOutDelay : 2500) / speed;
+  var intensity = opts.intensity != null ? opts.intensity : 1;
+  var peak = 100 * intensity;
 
   var angleStart = 110;
   var angleEnd = 465;
@@ -72,19 +94,19 @@ function playSweepAnimation(card) {
   card.classList.add('sweep-active');
   card.style.setProperty('--cursor-angle', angleStart + 'deg');
 
-  animateValue({ duration: 500, onUpdate: function(v) {
+  animateValue({ duration: fadeIn, end: peak, onUpdate: function(v) {
     card.style.setProperty('--edge-proximity', v);
   }});
 
-  animateValue({ ease: easeInCubic, duration: 1500, end: 50, onUpdate: function(v) {
+  animateValue({ ease: easeInCubic, duration: rotateHalf, end: 50, onUpdate: function(v) {
     card.style.setProperty('--cursor-angle', ((angleEnd - angleStart) * (v / 100) + angleStart) + 'deg');
   }});
 
-  animateValue({ ease: easeOutCubic, delay: 1500, duration: 2250, start: 50, end: 100, onUpdate: function(v) {
+  animateValue({ ease: easeOutCubic, delay: rotateDelay, duration: rotateSecond, start: 50, end: 100, onUpdate: function(v) {
     card.style.setProperty('--cursor-angle', ((angleEnd - angleStart) * (v / 100) + angleStart) + 'deg');
   }});
 
-  animateValue({ ease: easeInCubic, delay: 2500, duration: 1500, start: 100, end: 0,
+  animateValue({ ease: easeInCubic, delay: fadeOutDelay, duration: fadeOut, start: peak, end: 0,
     onUpdate: function(v) { card.style.setProperty('--edge-proximity', v); },
     onEnd: function() { card.classList.remove('sweep-active'); }
   });
@@ -133,6 +155,9 @@ function initBorderGlow(cards, options) {
   var glowIntensity = options.glowIntensity != null ? options.glowIntensity : 1.0;
   var coneSpread = options.coneSpread != null ? options.coneSpread : 25;
   var animated = options.animated || false;
+  var sweepSpeed = options.sweepSpeed != null ? options.sweepSpeed : 1;
+  var sweepIntensity = options.sweepIntensity != null ? options.sweepIntensity : 1;
+  var sweepFan = options.sweepFan !== false;
   var colors = options.colors || ['#c084fc', '#f472b6', '#38bdf8'];
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
 
@@ -151,10 +176,22 @@ function initBorderGlow(cards, options) {
     setupPointerTracking(card);
 
     if (animated) {
+      var sweepOpts = {};
+      sweepOpts.speed = sweepSpeed;
+      sweepOpts.intensity = sweepIntensity;
+      if (options.sweepFadeIn != null) sweepOpts.fadeIn = options.sweepFadeIn;
+      if (options.sweepRotate != null) {
+        sweepOpts.rotateHalf = options.sweepRotate * 0.4;
+        sweepOpts.rotateSecond = options.sweepRotate * 0.6;
+        sweepOpts.rotateDelay = sweepOpts.rotateHalf;
+        sweepOpts.fadeOutDelay = sweepOpts.rotateHalf + sweepOpts.rotateSecond;
+      }
+      if (options.sweepFadeOut != null) sweepOpts.fadeOut = options.sweepFadeOut;
+
       var observer = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
-            playSweepAnimation(card);
+            playSweepAnimation(card, sweepOpts);
             observer.unobserve(card);
           }
         });
@@ -162,4 +199,6 @@ function initBorderGlow(cards, options) {
       observer.observe(card);
     }
   });
+
+  setSweepFan(sweepFan);
 }

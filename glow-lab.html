@@ -392,24 +392,31 @@
 
       /* ── defaults ── */
       var DEFAULTS = {
-        glowColor: deriveGlowColor(PRESET_COLORS.neon),
+        glowColor: "28 80 80",
         glowRadius: 40,
-        glowIntensity: 1.0,
-        edgeSensitivity: 30,
+        glowIntensity: 1.5,
+        edgeSensitivity: 0,
         fillOpacity: 0.5,
         colorBoost: 1.0,
-        animated: false,
-        colors: [PRESET_COLORS.neon[0], PRESET_COLORS.neon[3], PRESET_COLORS.neon[5]],
+        sweepSpeed: 1,
+        sweepIntensity: 0.4,
+        sweepFan: true,
+        sweepFadeIn: 500,
+        sweepRotate: 3750,
+        sweepFadeOut: 1500,
+        animated: true,
+        colors: ["#0d0887", "#f89540", "#ffffff"],
       };
 
       var P = Object.assign({}, DEFAULTS);
-      selectedPreset = "neon";
+      selectedPreset = "plasma";
       var applyTimer = null;
       var loopTimer = null;
       var looping = false;
 
       function qs(s,ctx){return(ctx||document).querySelector(s);}
       function qsa(s,ctx){return Array.from((ctx||document).querySelectorAll(s));}
+      function isTouchDevice(){return "ontouchstart" in window || navigator.maxTouchPoints > 0;}
 
       /* ── render controls ── */
       function renderControls() {
@@ -515,6 +522,23 @@
         trow.appendChild(cb); trow.appendChild(tl);
         gAnim.appendChild(trow);
 
+        var fanRow = document.createElement("div");
+        fanRow.className = "toggle-row";
+        var fanCb = document.createElement("input");
+        fanCb.type = "checkbox";
+        fanCb.checked = P.sweepFan !== false;
+        fanCb.addEventListener("change",function(){P.sweepFan=fanCb.checked;scheduleApply();});
+        var fanLbl = document.createElement("span");
+        fanLbl.textContent = "扇形扫光";
+        fanRow.appendChild(fanCb); fanRow.appendChild(fanLbl);
+        gAnim.appendChild(fanRow);
+
+        gAnim.append(rangeField("整体速度","sweepSpeed",{min:0.25,max:4,step:0.1,val:P.sweepSpeed,desc:"全部 4 段时长的整体缩放倍率"}));
+        gAnim.append(rangeField("扫光强度","sweepIntensity",{min:0,max:1,step:0.05,val:P.sweepIntensity,desc:"扫光时发光的最大强度，0 为无，1 为与鼠标悬停一致"}));
+        gAnim.append(rangeField("淡入时长","sweepFadeIn",{min:100,max:2000,step:50,unit:"ms",val:P.sweepFadeIn,desc:"发光从无到有的淡入时间"}));
+        gAnim.append(rangeField("旋转时长","sweepRotate",{min:500,max:6000,step:100,unit:"ms",val:P.sweepRotate,desc:"扫光绕卡片旋转一圈的总时间"}));
+        gAnim.append(rangeField("淡出时长","sweepFadeOut",{min:200,max:3000,step:50,unit:"ms",val:P.sweepFadeOut,desc:"发光从有到无的淡出时间"}));
+
         var loopBtn = document.createElement("button");
         loopBtn.type = "button";
         loopBtn.id = "loop-btn";
@@ -528,7 +552,9 @@
 
         var animHint = document.createElement("p");
         animHint.style.cssText = "font-size:0.68rem;color:var(--muted);line-height:1.4;margin:6px 0 0;";
-        animHint.textContent = "扫光动画在卡片进入视口时自动播放一次，开启后每个卡片只播放一次。循环播放按钮可反复触发。";
+        animHint.textContent = isTouchDevice()
+          ? "移动端自动启用循环扫光以替代鼠标悬停效果"
+          : "扫光动画在卡片进入视口时自动播放一次，开启后每个卡片只播放一次。循环播放按钮可反复触发。";
         gAnim.appendChild(animHint);
         panel.appendChild(gAnim);
 
@@ -538,7 +564,7 @@
         resetBtn.textContent = "重置为默认值";
         resetBtn.addEventListener("click",function(){
           Object.keys(DEFAULTS).forEach(function(k){P[k]=DEFAULTS[k];});
-          delete P._borderRadius; selectedPreset="neon"; activeCat="apple";
+          delete P._borderRadius; selectedPreset="plasma"; activeCat="classic";
           renderControls(); applyGlow();
         });
         panel.appendChild(resetBtn);
@@ -711,8 +737,22 @@
           fillOpacity:P.fillOpacity,
           colors: boostedColors,
           animated:P.animated,
+          sweepSpeed:P.sweepSpeed,
+          sweepIntensity:P.sweepIntensity,
+          sweepFan:P.sweepFan,
+          sweepFadeIn:P.sweepFadeIn,
+          sweepRotate:P.sweepRotate,
+          sweepFadeOut:P.sweepFadeOut,
         });
 
+        // mobile: auto-loop sweep to replace hover glow
+        if (!isTouchDevice()) { updateCode(); return; }
+        cards.forEach(function(c) {
+          delete c.dataset.sweepPlayed;
+          c.classList.remove("sweep-active");
+          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
+        });
+        if (!looping) startLoop();
         updateCode();
       }
 
@@ -723,9 +763,9 @@
         cards.forEach(function(c) {
           delete c.dataset.sweepPlayed;
           c.classList.remove("sweep-active");
-          playSweepAnimation(c);
+          playSweepAnimation(c, { speed: P.sweepSpeed, intensity: P.sweepIntensity, fadeIn: P.sweepFadeIn, rotateHalf: P.sweepRotate * 0.4, rotateSecond: P.sweepRotate * 0.6, rotateDelay: P.sweepRotate * 0.4 / P.sweepSpeed, fadeOutDelay: (P.sweepRotate * 0.4 + P.sweepRotate * 0.6) / P.sweepSpeed, fadeOut: P.sweepFadeOut });
         });
-        loopTimer = setTimeout(loopSweep, 4500);
+        loopTimer = setTimeout(loopSweep, (P.sweepFadeIn + P.sweepRotate + P.sweepFadeOut) / P.sweepSpeed * 1.1);
       }
 
       function startLoop() {
@@ -747,13 +787,22 @@
         var out=document.getElementById("code-output");
         var lines=[];
         lines.push("initBorderGlow(cards, {");
+        lines.push("  // === 渐变配色 ===");
+        lines.push("  colors: " + JSON.stringify(P.colors) + ",");
+        lines.push("  // === 鼠标悬停 ===");
         lines.push("  glowColor: " + JSON.stringify(P.glowColor) + ",");
         lines.push("  glowRadius: " + P.glowRadius + ",");
         lines.push("  glowIntensity: " + P.glowIntensity + ",");
         lines.push("  edgeSensitivity: " + P.edgeSensitivity + ",");
         lines.push("  fillOpacity: " + P.fillOpacity + ",");
-        lines.push("  colors: " + JSON.stringify(P.colors) + ",");
+        lines.push("  // === 入场扫光动画 ===");
         lines.push("  animated: " + (P.animated ? "true" : "false") + ",");
+        lines.push("  sweepFan: " + (P.sweepFan !== false ? "true" : "false") + ",");
+        lines.push("  sweepSpeed: " + P.sweepSpeed + ",");
+        lines.push("  sweepIntensity: " + P.sweepIntensity + ",");
+        lines.push("  sweepFadeIn: " + P.sweepFadeIn + ",");
+        lines.push("  sweepRotate: " + P.sweepRotate + ",");
+        lines.push("  sweepFadeOut: " + P.sweepFadeOut + ",");
         lines.push("});");
         out.textContent=lines.join("\n");
       }
@@ -771,7 +820,7 @@
       /* ── reset ── */
       document.getElementById("btn-reset").addEventListener("click",function(){
         Object.keys(DEFAULTS).forEach(function(k){P[k]=DEFAULTS[k];});
-        delete P._borderRadius; selectedPreset="neon"; activeCat="apple";
+        delete P._borderRadius; selectedPreset="plasma"; activeCat="classic";
         renderControls(); applyGlow();
       });
 
