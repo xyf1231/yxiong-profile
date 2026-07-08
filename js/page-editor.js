@@ -381,6 +381,7 @@ const pageSchemas = {
         textField("--loading-card-width", "卡片宽度"),
         rangeField("--loading-card-gap", "内容间距", 0, 60, 1, "px", "--loading-card-gap-mobile"),
         textField("--loading-card-padding", "内边距"),
+        rangeField("--loading-card-margin-top", "垂直偏移", -200, 200, 1, "px", "--loading-card-margin-top-mobile"),
       ]),
       group("手写文字", [
         textField("--loading-letters-width", "字母区域宽度"),

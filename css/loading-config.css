@@ -19,6 +19,7 @@
   --loading-card-width: min(92vw, 420px);
   --loading-card-gap: 20px;
   --loading-card-padding: 14px 0 8px;
+  --loading-card-margin-top: 200px;
 
   /* 手写文字动画容器 */
   --loading-letters-width: min(80vw, 500px);
@@ -56,6 +57,7 @@
   --loading-card-gap-mobile: 0px;
   --loading-resources-font-size-mobile: 1rem;
   --loading-hint-font-size-mobile: 0.95rem;
+  --loading-card-margin-top-mobile: 100px;
 }
 
 @media (max-width: 700px) {
@@ -73,4 +75,15 @@
 .site-loading-letters .letters-animation-svg {
   transform: scale(var(--loading-letters-scale)) !important;
   transform-origin: center center !important;
+}
+
+/* 动画卡片整体垂直偏移 */
+.site-loading-card {
+  margin-top: var(--loading-card-margin-top) !important;
+}
+
+@media (max-width: 700px) {
+  .site-loading-card {
+    margin-top: var(--loading-card-margin-top-mobile) !important;
+  }
 }

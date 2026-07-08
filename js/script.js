@@ -2281,7 +2281,7 @@ function setupBorderGlow() {
       card.appendChild(inner);
     }
 
-    var edgeLight = document.createElement("span");
+    var edgeLight = document.createElement("div");
     edgeLight.className = "edge-light";
     card.appendChild(edgeLight);
   });
