@@ -46,7 +46,7 @@
 
 /* ---------- ::before — colored mesh-gradient border ---------- */
 .border-glow-card::before {
-  border: 1px solid transparent;
+  border: 1.5px solid transparent;
   box-shadow: none;
   pointer-events: none;
   background:

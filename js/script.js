@@ -459,13 +459,20 @@ const ctx = canvas ? canvas.getContext("2d") : null;
 let width = 0;
 let height = 0;
 let particles = [];
-let lightStreaks = [];
 let rafId;
 let frame = 0;
 let storyProgress = 0;
 let currentLang = loadLanguagePreference();
 let compactNavClickBlockUntil = 0;
-const lightfallColors = ["#a6c8ff", "#5227ff", "#ff9ffc", "#58d5ff"];
+
+let lightfallGL = null;
+let lightfallProgram = null;
+let lightfallUniforms = {};
+let lightfallRaf = null;
+let lightfallCanvas = null;
+let lightfallMouseTarget = [0, 0];
+let lightfallMouse = [0, 0];
+let lightfallLastTime = 0;
 
 // Clear cached data to force reload from data.js (fixes encoding issues)
 try {
@@ -2366,18 +2373,19 @@ function setupRevealAnimations() {
 }
 
 function resizeCanvas() {
+  if (document.body.classList.contains("home-dark")) {
+    resizeLightfall();
+    return;
+  }
   if (!canvas || !ctx) return;
-  const isHomePage = document.body.classList.contains("home-dark");
-  const dpr = isHomePage ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   width = canvas.offsetWidth;
   height = canvas.offsetHeight;
   canvas.width = Math.floor(width * dpr);
   canvas.height = Math.floor(height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  const count = isHomePage
-    ? Math.max(45, Math.min(90, Math.floor(width / 12)))
-    : Math.max(28, Math.min(78, Math.floor(width / 18)));
+  const count = Math.max(28, Math.min(78, Math.floor(width / 18)));
   particles = Array.from({ length: count }, (_, index) => ({
     x: (index * 97) % width,
     y: (index * 53) % height,
@@ -2385,18 +2393,11 @@ function resizeCanvas() {
     vy: (Math.random() - 0.5) * 0.28,
     r: 1.3 + Math.random() * 2.4,
   }));
-
-  lightStreaks = isHomePage
-    ? Array.from({ length: Math.max(18, Math.min(35, Math.floor(width / 72))) }, () => createLightStreak(true))
-    : Array.from({ length: Math.max(72, Math.min(150, Math.floor(width / 11))) }, () => createLightStreak(true));
 }
 
 function drawNetwork() {
+  if (document.body.classList.contains("home-dark")) return;
   if (!canvas || !ctx) return;
-  if (document.body.classList.contains("home-dark")) {
-    drawFiberSystem();
-    return;
-  }
 
   ctx.clearRect(0, 0, width, height);
   ctx.fillStyle = "rgba(0, 119, 237, 0.48)";
@@ -2439,143 +2440,338 @@ function drawNetwork() {
   rafId = requestAnimationFrame(drawNetwork);
 }
 
-function drawFiberSystem() {
-  ctx.clearRect(0, 0, width, height);
+// ==================== WebGL Lightfall ====================
 
-  const base = ctx.createLinearGradient(0, 0, width, height);
-  base.addColorStop(0, "#010208");
-  base.addColorStop(0.44, "#040a22");
-  base.addColorStop(1, "#010105");
-  ctx.fillStyle = base;
-  ctx.fillRect(0, 0, width, height);
+const LIGHTFALL_VERTEX = `attribute vec2 position;
+attribute vec2 uv;
+varying vec2 vUv;
+void main() {
+  vUv = uv;
+  gl_Position = vec4(position, 0.0, 1.0);
+}`;
 
-  const glowX = width * 0.55;
-  const glowY = height * 0.12;
-  const bgGlow = ctx.createRadialGradient(glowX, glowY, 0, glowX, glowY, Math.max(width, height) * 0.68);
-  bgGlow.addColorStop(0, "rgba(166, 200, 255, 0.26)");
-  bgGlow.addColorStop(0.24, "rgba(82, 39, 255, 0.3)");
-  bgGlow.addColorStop(0.52, "rgba(255, 159, 252, 0.12)");
-  bgGlow.addColorStop(1, "rgba(5, 7, 12, 0)");
-  ctx.fillStyle = bgGlow;
-  ctx.fillRect(0, 0, width, height);
+const LIGHTFALL_FRAGMENT = `
+precision highp float;
 
-  ctx.globalCompositeOperation = "lighter";
+uniform vec3  iResolution;
+uniform vec2  iMouse;
+uniform float iTime;
 
-  drawLightfallStars();
-  drawLightfallStreaks();
+uniform vec3  uColor0;
+uniform vec3  uColor1;
+uniform vec3  uColor2;
+uniform vec3  uColor3;
+uniform vec3  uColor4;
+uniform vec3  uColor5;
+uniform vec3  uColor6;
+uniform vec3  uColor7;
+uniform int   uColorCount;
 
-  ctx.globalCompositeOperation = "source-over";
-  rafId = requestAnimationFrame(drawFiberSystem);
+uniform vec3  uBgColor;
+uniform vec3  uMouseColor;
+uniform float uSpeed;
+uniform int   uStreakCount;
+uniform float uStreakWidth;
+uniform float uStreakLength;
+uniform float uGlow;
+uniform float uDensity;
+uniform float uTwinkle;
+uniform float uZoom;
+uniform float uBgGlow;
+uniform float uOpacity;
+uniform float uMouseEnabled;
+uniform float uMouseStrength;
+uniform float uMouseRadius;
+
+varying vec2 vUv;
+
+vec3 palette(float h) {
+  int count = uColorCount;
+  if (count < 1) count = 1;
+  int idx = int(floor(clamp(h, 0.0, 0.999999) * float(count)));
+  if (idx <= 0) return uColor0;
+  if (idx == 1) return uColor1;
+  if (idx == 2) return uColor2;
+  if (idx == 3) return uColor3;
+  if (idx == 4) return uColor4;
+  if (idx == 5) return uColor5;
+  if (idx == 6) return uColor6;
+  return uColor7;
 }
 
-function createLightStreak(randomY = false) {
-  const centerX = width * 0.5;
-  const angle = (Math.random() - 0.5) * 1.1;
-
-  let color;
-  if (angle < -0.28) color = "#58d5ff";
-  else if (angle < -0.08) color = "#a6c8ff";
-  else if (angle < 0.08) color = "#5227ff";
-  else if (angle < 0.28) color = "#ff9ffc";
-  else color = "#ff6eb4";
-
-  const startY = randomY
-    ? Math.random() * height
-    : -Math.random() * height * 0.25 - 50;
-
-  const depth = 0.4 + Math.random() * 0.6;
-
-  return {
-    originX: centerX + (Math.random() - 0.5) * width * 0.03,
-    y: startY,
-    length: 280 + depth * 600,
-    speed: 0.9 + depth * 2.6,
-    width: 0.3 + depth * 0.85,
-    angle,
-    color,
-    phase: Math.random() * Math.PI * 2,
-    alpha: 0.3 + depth * 0.7,
-  };
+vec3 tanhv(vec3 x) {
+  vec3 e = exp(-2.0 * x);
+  return (1.0 - e) / (1.0 + e);
 }
 
-function drawLightfallStars() {
-  for (let i = 0; i < particles.length; i += 1) {
-    const point = particles[i];
-    point.y -= 0.04 + (i % 5) * 0.006;
-    point.x += 0.015 + (i % 9) * 0.004;
-    if (point.y < -20) point.y = height + 20;
-    if (point.x > width + 20) point.x = -20;
-    const twinkle = 0.3 + Math.sin(point.x * 0.012 + point.y * 0.018) * 0.22;
-    const r = point.r * (0.48 + twinkle * 0.3);
-    const alpha = 0.08 + twinkle * 0.36;
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, r * 2.6, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(82, 39, 255, ${alpha * 0.32})`;
-    ctx.fill();
-    ctx.beginPath();
-    ctx.arc(point.x, point.y, r, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(166, 200, 255, ${alpha})`;
-    ctx.fill();
+vec2 sceneC(vec2 frag, vec2 r) {
+  vec2 P = (frag + frag - r) / r.x;
+  float z = 0.0;
+  float d = 1e3;
+  vec4 O = vec4(0.0);
+  for (int k = 0; k < 39; k++) {
+    if (d <= 1e-4) break;
+    O = z * normalize(vec4(P, uZoom, 0.0)) - vec4(0.0, 4.0, 1.0, 0.0) / 4.5;
+    d = 1.0 - sqrt(length(O * O));
+    z += d;
   }
+  return vec2(O.x, atan(O.z, O.y));
 }
 
-function drawLightfallStreaks() {
-  for (let i = 0; i < lightStreaks.length; i += 1) {
-    const streak = lightStreaks[i];
-    const pulse = 0.9 + Math.sin(streak.phase) * 0.08;
-    const alpha = Math.min(1, streak.alpha * pulse);
-    const sinA = Math.sin(streak.angle);
+void mainImage(out vec4 o, vec2 C) {
+  vec2 r = iResolution.xy;
+  vec2 uv0 = (C + C - r) / r.x;
+  float T = 0.1 * iTime * uSpeed + 9.0;
+  float angRings = max(1.0, floor(6.28318530718 * max(uDensity, 0.05) + 0.5));
+  vec2 Y = vec2(5e-3, 6.28318530718 / angRings);
 
-    const headY = streak.y;
-    const tailY = headY - streak.length;
-    const fallHead = Math.max(0, headY + 60);
-    const fallTail = Math.max(0, tailY + 60);
-    const headX = streak.originX + sinA * fallHead * 0.5;
-    const tailX = streak.originX + sinA * fallTail * 0.5;
-    const midY = (tailY + headY) * 0.5;
-    const bow = sinA * streak.length * 0.10;
-    const cpX = (tailX + headX) * 0.5 + bow;
-    const cpY = midY;
+  vec2 c0 = sceneC(C, r);
+  vec2 cdx = sceneC(C + vec2(1.0, 0.0), r);
+  vec2 cdy = sceneC(C + vec2(0.0, 1.0), r);
+  vec2 dCx = cdx - c0;
+  vec2 dCy = cdy - c0;
+  dCx.y -= 6.28318530718 * floor(dCx.y / 6.28318530718 + 0.5);
+  dCy.y -= 6.28318530718 * floor(dCy.y / 6.28318530718 + 0.5);
+  vec2 fw = abs(dCx) + abs(dCy);
+  C = c0;
 
-    const gradient = ctx.createLinearGradient(tailX, tailY, headX, headY);
-    gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-    gradient.addColorStop(0.38, hexToRgba(streak.color, alpha * 0.10));
-    gradient.addColorStop(0.68, hexToRgba(streak.color, alpha * 0.32));
-    gradient.addColorStop(1, hexToRgba(streak.color, alpha));
+  vec2 P = vec2(2.0, 1.0) * uv0 - (r / r.x) * vec2(0.0, 1.0);
+  vec4 O = vec4(uBgColor * 90.0 * uBgGlow / (1e3 * dot(P, P) + 6.0), 0.0);
 
-    ctx.beginPath();
-    ctx.moveTo(tailX, tailY);
-    ctx.quadraticCurveTo(cpX, cpY, headX, headY);
-    ctx.strokeStyle = hexToRgba(streak.color, alpha * 0.18);
-    ctx.lineWidth = streak.width * 3.5;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.moveTo(tailX, tailY);
-    ctx.quadraticCurveTo(cpX, cpY, headX, headY);
-    ctx.strokeStyle = gradient;
-    ctx.lineWidth = streak.width;
-    ctx.stroke();
-
-    ctx.beginPath();
-    ctx.arc(headX, headY, 1.8 + streak.width * 0.6, 0, Math.PI * 2);
-    ctx.fillStyle = hexToRgba(streak.color, alpha);
-    ctx.fill();
-
-    streak.y += streak.speed;
-
-    if (streak.y - streak.length > height + 60 || tailX < -width * 0.3 || tailX > width * 1.3) {
-      lightStreaks[i] = createLightStreak(false);
-    }
+  float mGlow = 0.0;
+  if (uMouseEnabled > 0.5) {
+    vec2 mN = (iMouse + iMouse - r) / r.x;
+    float md = length(uv0 - mN);
+    mGlow = exp(-md * md / max(uMouseRadius * uMouseRadius, 1e-4)) * uMouseStrength;
+    O.rgb += uMouseColor * mGlow * 0.25;
   }
+
+  float zr = 5e-4 * uStreakWidth;
+  vec2 rr = vec2(max(length(fw), 1e-5));
+  float tail = 19.0 / max(uStreakLength, 0.05);
+
+  for (int m = 0; m < 16; m++) {
+    if (m >= uStreakCount) break;
+    float jf = float(m) + 1.0;
+    float ic = fract(sin(dot(vec2(jf, floor(C.x / Y.x + 0.5)), vec2(7.0, 11.0)) * 73.0));
+    vec2 Pp = C - (T + T * ic) * vec2(0.0, 1.0);
+    Pp -= floor(Pp / Y + 0.5) * Y;
+    float h = fract(8663.0 * ic);
+    vec3 col = palette(h);
+    float weight = mix(1.5, 1.0 + sin(T + 7.0 * h + 4.0), uTwinkle);
+    weight *= (1.0 + mGlow * 2.0);
+    vec2 inner = vec2(length(max(Pp, vec2(-1.0, 0.0))), length(Pp) - zr) - zr;
+    vec2 sm = vec2(1.0) - smoothstep(-rr, rr, inner);
+    O.rgb += dot(sm, vec2(exp(tail * Pp.y), 3.0)) * col * weight;
+    C.x += Y.x / 8.0;
+  }
+
+  vec3 colr = sqrt(tanhv(max(O.rgb * uGlow - vec3(0.04, 0.08, 0.02), 0.0)));
+  o = vec4(colr, uOpacity);
 }
 
-function hexToRgba(hex, alpha) {
-  const clean = hex.replace("#", "").padEnd(6, "0");
-  const r = parseInt(clean.slice(0, 2), 16);
-  const g = parseInt(clean.slice(2, 4), 16);
-  const b = parseInt(clean.slice(4, 6), 16);
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+void main() {
+  vec4 color;
+  mainImage(color, vUv * iResolution.xy);
+  gl_FragColor = color;
+}`;
+
+const LIGHTFALL_PROPS = {
+  colors: ['#A6C8FF', '#5227FF', '#FF9FFC'],
+  backgroundColor: '#0A29FF',
+  speed: 0.5,
+  streakCount: 2,
+  streakWidth: 1,
+  streakLength: 1,
+  glow: 1,
+  density: 0.6,
+  twinkle: 1,
+  zoom: 3,
+  backgroundGlow: 0.5,
+  opacity: 1,
+  mouseInteraction: true,
+  mouseStrength: 0.5,
+  mouseRadius: 1,
+  mouseDampening: 0.15,
+};
+
+function hexToRGB(hex) {
+  const c = hex.replace("#", "").padEnd(6, "0");
+  return [
+    parseInt(c.slice(0, 2), 16) / 255,
+    parseInt(c.slice(2, 4), 16) / 255,
+    parseInt(c.slice(4, 6), 16) / 255,
+  ];
+}
+
+function prepColors(input) {
+  const base = (input && input.length ? input : ['#A6C8FF', '#5227FF', '#FF9FFC']).slice(0, 8);
+  const count = base.length;
+  const arr = [];
+  for (let i = 0; i < 8; i++) arr.push(hexToRGB(base[Math.min(i, base.length - 1)]));
+  const avg = [0, 0, 0];
+  for (let i = 0; i < count; i++) {
+    avg[0] += arr[i][0];
+    avg[1] += arr[i][1];
+    avg[2] += arr[i][2];
+  }
+  avg[0] /= count;
+  avg[1] /= count;
+  avg[2] /= count;
+  return { arr, count, avg };
+}
+
+function compileShader(gl, type, src) {
+  const shader = gl.createShader(type);
+  gl.shaderSource(shader, src);
+  gl.compileShader(shader);
+  if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    console.warn("Shader compile error:", gl.getShaderInfoLog(shader));
+    gl.deleteShader(shader);
+    return null;
+  }
+  return shader;
+}
+
+function createLightfallProgram(gl) {
+  const vert = compileShader(gl, gl.VERTEX_SHADER, LIGHTFALL_VERTEX);
+  const frag = compileShader(gl, gl.FRAGMENT_SHADER, LIGHTFALL_FRAGMENT);
+  if (!vert || !frag) return null;
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vert);
+  gl.attachShader(prog, frag);
+  gl.linkProgram(prog);
+  gl.deleteShader(vert);
+  gl.deleteShader(frag);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.warn("Program link error:", gl.getProgramInfoLog(prog));
+    gl.deleteProgram(prog);
+    return null;
+  }
+  return prog;
+}
+
+function setLightfallUniforms(gl) {
+  const u = lightfallUniforms;
+  const p = LIGHTFALL_PROPS;
+  const { arr, count, avg } = prepColors(p.colors);
+  gl.uniform3fv(u.uColor0, arr[0]);
+  gl.uniform3fv(u.uColor1, arr[1]);
+  gl.uniform3fv(u.uColor2, arr[2]);
+  gl.uniform3fv(u.uColor3, arr[3]);
+  gl.uniform3fv(u.uColor4, arr[4]);
+  gl.uniform3fv(u.uColor5, arr[5]);
+  gl.uniform3fv(u.uColor6, arr[6]);
+  gl.uniform3fv(u.uColor7, arr[7]);
+  gl.uniform1i(u.uColorCount, count);
+  gl.uniform3fv(u.uBgColor, hexToRGB(p.backgroundColor));
+  gl.uniform3fv(u.uMouseColor, avg);
+  gl.uniform1f(u.uSpeed, p.speed);
+  gl.uniform1i(u.uStreakCount, p.streakCount);
+  gl.uniform1f(u.uStreakWidth, p.streakWidth);
+  gl.uniform1f(u.uStreakLength, p.streakLength);
+  gl.uniform1f(u.uGlow, p.glow);
+  gl.uniform1f(u.uDensity, p.density);
+  gl.uniform1f(u.uTwinkle, p.twinkle);
+  gl.uniform1f(u.uZoom, p.zoom);
+  gl.uniform1f(u.uBgGlow, p.backgroundGlow);
+  gl.uniform1f(u.uOpacity, p.opacity);
+  gl.uniform1i(u.uMouseEnabled, p.mouseInteraction ? 1 : 0);
+  gl.uniform1f(u.uMouseStrength, p.mouseStrength);
+  gl.uniform1f(u.uMouseRadius, p.mouseRadius);
+}
+
+function resizeLightfall() {
+  if (!lightfallGL || !lightfallCanvas) return;
+  const rect = lightfallCanvas.parentElement.getBoundingClientRect();
+  const w = Math.floor(rect.width);
+  const h = Math.floor(rect.height);
+  if (w === 0 || h === 0) return;
+  if (lightfallCanvas.width === w && lightfallCanvas.height === h) return;
+  lightfallCanvas.width = w;
+  lightfallCanvas.height = h;
+  lightfallGL.viewport(0, 0, w, h);
+  lightfallGL.uniform3f(lightfallUniforms.iResolution, w, h, 1);
+}
+
+function renderLightfall(timestamp) {
+  lightfallRaf = requestAnimationFrame(renderLightfall);
+  const gl = lightfallGL;
+  if (!gl || !lightfallProgram) return;
+
+  gl.uniform1f(lightfallUniforms.iTime, timestamp * 0.001);
+
+  if (lightfallLastTime === 0) lightfallLastTime = timestamp;
+  const dt = (timestamp - lightfallLastTime) / 1000;
+  lightfallLastTime = timestamp;
+  if (dt > 0 && dt < 1) {
+    const tau = Math.max(1e-4, LIGHTFALL_PROPS.mouseDampening);
+    const factor = Math.min(1, 1 - Math.exp(-dt / tau));
+    lightfallMouse[0] += (lightfallMouseTarget[0] - lightfallMouse[0]) * factor;
+    lightfallMouse[1] += (lightfallMouseTarget[1] - lightfallMouse[1]) * factor;
+  }
+  gl.uniform2fv(lightfallUniforms.iMouse, lightfallMouse);
+  gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
+
+function initLightfallWebGL() {
+  const container = document.querySelector(".lightfall-container");
+  if (!container) return;
+
+  const canvas = document.createElement("canvas");
+  canvas.style.cssText = "width:100%;height:100%;display:block;pointer-events:auto;";
+  container.appendChild(canvas);
+  lightfallCanvas = canvas;
+
+  const gl = canvas.getContext("webgl", { alpha: true, antialias: true, preserveDrawingBuffer: false });
+  if (!gl) { console.warn("WebGL not supported"); return; }
+  lightfallGL = gl;
+
+  const program = createLightfallProgram(gl);
+  if (!program) return;
+  lightfallProgram = program;
+  gl.useProgram(program);
+
+  const uniformNames = [
+    "iResolution", "iMouse", "iTime",
+    "uColor0", "uColor1", "uColor2", "uColor3", "uColor4", "uColor5", "uColor6", "uColor7",
+    "uColorCount", "uBgColor", "uMouseColor", "uSpeed", "uStreakCount",
+    "uStreakWidth", "uStreakLength", "uGlow", "uDensity", "uTwinkle",
+    "uZoom", "uBgGlow", "uOpacity", "uMouseEnabled", "uMouseStrength", "uMouseRadius",
+  ];
+  for (const name of uniformNames) {
+    lightfallUniforms[name] = gl.getUniformLocation(program, name);
+  }
+
+  const quadData = new Float32Array([
+    -1, -1,  0, 0,    1, -1,  1, 0,   -1,  1,  0, 1,
+     1, -1,  1, 0,   -1,  1,  0, 1,    1,  1,  1, 1,
+  ]);
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, quadData, gl.STATIC_DRAW);
+  const posLoc = gl.getAttribLocation(program, "position");
+  const uvLoc = gl.getAttribLocation(program, "uv");
+  gl.enableVertexAttribArray(posLoc);
+  gl.enableVertexAttribArray(uvLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 16, 0);
+  gl.vertexAttribPointer(uvLoc, 2, gl.FLOAT, false, 16, 8);
+
+  setLightfallUniforms(gl);
+  resizeLightfall();
+
+  if (LIGHTFALL_PROPS.mouseInteraction) {
+    canvas.addEventListener("pointermove", function (e) {
+      const rect = lightfallCanvas.getBoundingClientRect();
+      lightfallMouseTarget[0] = (e.clientX - rect.left);
+      lightfallMouseTarget[1] = (rect.bottom - e.clientY);
+    });
+  }
+
+  const el = document.getElementById("research-canvas");
+  if (el) el.style.display = "none";
+
+  lightfallRaf = requestAnimationFrame(renderLightfall);
 }
 
 function cubic(a, b, c, d, t) {
@@ -2720,15 +2916,24 @@ document.addEventListener("click", (event) => {
 
 initSite();
 window.addEventListener("hashchange", setupNavigation);
-resizeCanvas();
+if (document.body.classList.contains("home-dark")) {
+  initLightfallWebGL();
+} else {
+  resizeCanvas();
+  drawNetwork();
+}
 updateStoryProgress();
 updateHeader();
-drawNetwork();
 
 document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     cancelAnimationFrame(rafId);
+    if (lightfallRaf) { cancelAnimationFrame(lightfallRaf); lightfallRaf = null; }
   } else {
-    drawNetwork();
+    if (document.body.classList.contains("home-dark")) {
+      if (!lightfallRaf) { lightfallLastTime = 0; lightfallRaf = requestAnimationFrame(renderLightfall); }
+    } else {
+      drawNetwork();
+    }
   }
 });
