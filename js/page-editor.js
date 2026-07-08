@@ -483,8 +483,12 @@ function buildCss(variables) {
     let newContent = content;
     Object.entries(variables).forEach(([name, value]) => {
       const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const regex = new RegExp(`(${escapedName}\\s*:\\s*)[^;]+`, "g");
-      newContent = newContent.replace(regex, `$1${value}`);
+      if (newContent.indexOf(escapedName) === -1) {
+        newContent += `\n  ${name}: ${value};`;
+      } else {
+        const regex = new RegExp(`(${escapedName}\\s*:\\s*)[^;]+`, "g");
+        newContent = newContent.replace(regex, `$1${value}`);
+      }
     });
     return `:root {${newContent}}`;
   });
