@@ -246,7 +246,7 @@ html .clean-copy p:not(.eyebrow) {
 }
 
 /* 手机端（<= 768px）覆盖 */
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   /* Hero 主标题 */
   html[lang="zh-CN"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1,
   html[lang="zh-CN"] .clean-copy h1 {

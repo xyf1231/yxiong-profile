@@ -35,24 +35,17 @@ const schemas = {
     title: "新闻",
     fields: [
       ["date", "日期"],
-      ["title", "中文标题", "textarea"],
-      ["titleEn", "英文标题", "textarea"],
-      ["text", "中文内容", "textarea"],
-      ["textEn", "英文内容", "textarea"],
-      ["image", "图片", "image"],
-      ["url", "链接"],
-    ],
-  },
-  newsDetails: {
-    title: "新闻详情",
-    fields: [
       ["slug", "标识"],
       ["eyebrow", "首屏标签"],
-      ["title", "标题", "textarea"],
+      ["title", "中文标题", "textarea"],
+      ["titleEn", "英文标题", "textarea"],
       ["subtitle", "导语/副标题", "textarea"],
-      ["image", "主图", "image"],
-      ["contentHtml", "自由排版正文", "richtext"],
-      ["content", "正文（用 ## 小标题分节）", "textarea"],
+      ["text", "中文摘要（主页轮播）", "textarea"],
+      ["textEn", "英文摘要（主页轮播）", "textarea"],
+      ["image", "封面图片", "image"],
+      ["url", "详情页链接"],
+      ["contentHtml", "正文（富文本）", "richtext"],
+      ["content", "正文纯文本", "textarea"],
       ["paperTitle", "论文题目", "textarea"],
       ["journal", "期刊"],
       ["authors", "作者"],
@@ -570,7 +563,7 @@ function buildForm() {
 function injectConverterImportButton() {
   const existing = form.querySelector('#import-converter-btn');
   if (existing) existing.remove();
-  if (activeTab !== 'newsDetails') return;
+  if (activeTab !== 'news') return;
   let payload = null;
   try {
     const stored = localStorage.getItem('docxConverterOutput');
@@ -580,7 +573,7 @@ function injectConverterImportButton() {
     const hint = document.createElement('p');
     hint.id = 'import-converter-btn';
     hint.style.cssText = 'margin-top:16px;font-size:0.78rem;color:rgba(255,255,255,0.32);';
-    hint.textContent = '💡 在 docx-converter.html 中转换后点击「发送到后台」，数据会自动出现在这里。';
+    hint.textContent = '💡 在 docx-converter.html 中转换后点击「提取图片并发送」，数据会自动出现在这里。';
     form.appendChild(hint);
     return;
   }
@@ -588,46 +581,23 @@ function injectConverterImportButton() {
   btn.id = 'import-converter-btn';
   btn.className = 'admin-button primary';
   btn.type = 'button';
-  btn.textContent = '📤 从转换器导入（' + (payload.title || payload.slug || '') + '）';
+  btn.textContent = '📤 导入转换内容（' + (payload.title || '') + '）';
   btn.style.marginTop = '16px';
   btn.addEventListener('click', function () {
-    const fieldMap = {
-      slug: payload.slug, title: payload.title, subtitle: payload.subtitle,
-      eyebrow: payload.eyebrow, image: payload.image,
-      contentHtml: payload.contentHtml, content: payload.content,
-    };
-    for (const [key, value] of Object.entries(fieldMap)) {
+    const allKeys = [
+      'slug','eyebrow','title','titleEn','subtitle','text','textEn',
+      'image','url','contentHtml','content','paperTitle','journal',
+      'authors','correspondingAuthors','affiliation','doi','pdf','date'
+    ];
+    for (const key of allKeys) {
       const el = form.elements[key];
-      if (el) el.value = value || '';
+      if (el && payload[key] !== undefined) el.value = payload[key];
     }
     const editor = form.querySelector('.richtext-editor[data-rich-editor="contentHtml"]');
     if (editor && payload.contentHtml) editor.innerHTML = payload.contentHtml;
-
-    // 同时写入主页新闻轮播数据（news 数组第一个条目）
-    if (payload.newsTitle) {
-      const news = data.news || (data.news = []);
-      if (news.length > 0) {
-        news[0].title = payload.newsTitle;
-        if (payload.newsText) news[0].text = payload.newsText;
-        if (payload.image) news[0].image = payload.image;
-        if (payload.newsDate) news[0].date = payload.newsDate;
-        if (payload.title) news[0].url = 'resources/news/' + (payload.slug || slugify(payload.title)) + '.html';
-      } else {
-        news.push({
-          date: payload.newsDate || '',
-          title: payload.newsTitle,
-          titleEn: '',
-          text: payload.newsText || '',
-          textEn: '',
-          image: payload.image || '',
-          url: 'resources/news/' + (payload.slug || slugify(payload.title)) + '.html',
-        });
-      }
-    }
-
     localStorage.removeItem('docxConverterOutput');
     btn.remove();
-    deployLog('✅ 已从转换器导入内容（含主页新闻轮播），请检查后保存。', 'success');
+    deployLog('✅ 已从转换器导入，请检查后保存。', 'success');
   });
   form.appendChild(btn);
 }

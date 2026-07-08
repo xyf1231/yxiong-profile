@@ -66,8 +66,14 @@
   --lang-toggle-font-size-mobile: 0.82rem;
 
   /* 序号徽标（全局手机端） */
-  --global-index-size-mobile: 54px;
-  --global-index-font-size-mobile: 1.08rem;
+  --global-index-size-mobile: 50px;
+  --global-index-font-size-mobile: 1rem;
+  --mobile-index-size: 48px;
+  --mobile-index-font-size: 0.98rem;
+  --mobile-index-top: 22px;
+  --mobile-index-right: 20px;
+  --mobile-index-left: 20px;
+  --mobile-card-padding-right: 86px;
 }
 
 /* ── 导航栏高度 ── */
@@ -116,7 +122,7 @@ body .site-header .nav-links .nav-cards-five .nav-card .nav-card-links a.nav-sub
 }
 
 /* ── 手机端 ── */
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .site-header {
     height: auto !important;
     min-height: var(--nav-height) !important;

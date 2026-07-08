@@ -419,7 +419,7 @@
   margin-bottom: var(--profile-research-image-gap) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .profile-page .section-wrap {
     padding: var(--profile-section-padding-mobile) 0 !important;
   }

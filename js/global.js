@@ -1732,7 +1732,7 @@ function renderSite(page = "shared") {
   } else if (page === "activities") {
     renderDetailLists(data.achievements || []);
   } else if (page === "news") {
-    renderNewsDetail(data.newsDetails || []);
+    renderNewsDetail(data.news || []);
   } else if (page === "admin") {
     renderMetrics(data.metrics || []);
     renderContacts(data.contacts || []);
@@ -1740,7 +1740,7 @@ function renderSite(page = "shared") {
     renderMetrics(data.metrics || []);
     renderResearch(data.research || []);
     renderNews(data.news || []);
-    renderNewsDetail(data.newsDetails || []);
+    renderNewsDetail(data.news || []);
     renderPublications(data.publications || []);
     renderProfilePublications(data.publications || []);
     renderAllPublications(data.allPublications || data.publications || []);

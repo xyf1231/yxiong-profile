@@ -99,7 +99,7 @@
   margin-left: var(--honors-index-offset-left) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .honors-page .section-wrap {
     padding: var(--honors-section-padding-mobile) 0 !important;
   }

@@ -203,7 +203,7 @@
   gap: var(--results-list-gap) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .results-page .section-wrap {
     padding: var(--results-section-padding-mobile) 0 !important;
   }

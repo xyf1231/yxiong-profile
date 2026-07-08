@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <title>Word 转换 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.11.58" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.11.59" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局
@@ -369,7 +369,7 @@
               <div class="output-actions">
                 <button class="admin-button" id="btn-copy-html" disabled>📋 复制 HTML</button>
                 <button class="admin-button" id="btn-download" disabled>⬇️ 下载独立页面</button>
-                <button class="admin-button primary" id="btn-send-admin" disabled>📤 发送到后台</button>
+                <button class="admin-button primary" id="btn-send-admin" disabled>📤 提取图片并发送</button>
               </div>
             </section>
 
@@ -553,9 +553,9 @@
             '  <base href="/" />\n' +
             '  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />\n' +
             '  <title>' + safeTitle + ' | 熊毅丰</title>\n' +
-            '  <link rel="stylesheet" href="css/styles.css?v=v1.11.58" />\n' +
-            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.11.58" />\n' +
-            '  <link rel="stylesheet" href="css/news.css?v=v1.11.58" />\n' +
+            '  <link rel="stylesheet" href="css/styles.css?v=v1.11.59" />\n' +
+            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.11.59" />\n' +
+            '  <link rel="stylesheet" href="css/news.css?v=v1.11.59" />\n' +
             '</head>\n' +
             '<body>\n' +
             '  <header class="site-header" data-elevated="false">\n' +
@@ -595,9 +595,9 @@
             '    <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>\n' +
             '    <span class="footer-address">南京大学仙林校区现代工学院A302</span>\n' +
             '  </footer>\n' +
-            '  <script src="js/data.js?v=v1.11.58" charset="utf-8"><\/script>\n' +
-            '  <script src="js/loading-content.js?v=v1.11.58" charset="utf-8"><\/script>\n' +
-            '  <script src="js/script.js?v=v1.11.58" charset="utf-8"><\/script>\n' +
+            '  <script src="js/data.js?v=v1.11.59" charset="utf-8"><\/script>\n' +
+            '  <script src="js/loading-content.js?v=v1.11.59" charset="utf-8"><\/script>\n' +
+            '  <script src="js/script.js?v=v1.11.59" charset="utf-8"><\/script>\n' +
             '</body>\n' +
             '</html>';
         }
@@ -776,42 +776,149 @@
           showToast('已下载: ' + filename);
         }
 
-        // ─── 发送到后台 ────────────────────────────────
-        function sendToAdmin() {
-          if (!contentHtml) { showToast('请先转换文档'); return; }
-          var title = fieldTitle.value || '';
+        // ─── 解析 base64 图片列表 ───────────────────────
+        function extractBase64Images(html) {
+          var images = [];
+          var regex = /<img[^>]+src="(data:image\/([a-z]+);base64,([^"]+))"[^>]*>/gi;
+          var match;
+          var index = 0;
+          while ((match = regex.exec(html)) !== null) {
+            images.push({
+              fullMatch: match[0],
+              dataUrl: match[1],
+              ext: match[2] === 'jpeg' ? 'jpg' : match[2],
+              mime: 'image/' + (match[2] === 'jpg' ? 'jpeg' : match[2]),
+              base64: match[3],
+              index: index++
+            });
+          }
+          return images;
+        }
 
-          // 检查大小：base64 图片可能撑爆 localStorage 5MB 限制
-          var sizeEstimate = (contentHtml.length * 2) + 5000;
-          if (sizeEstimate > 4000000) {
-            setStatus('⚠️ 正文包含大量 base64 图片，超出 localStorage 容量。请先上传图片到 resources/ 目录，再用路径替换正文中的 base64 数据。', 'warn');
-            showToast('内容过大，请先上传图片到 resources/');
+        // ─── 上传单张 base64 图片 ────────────────────────
+        async function uploadBase64Image(dataUrl, index, title) {
+          var slug = slugify(title || 'news');
+          var ext = 'webp';
+          var mime = 'image/webp';
+
+          // 从 dataUrl 提取 MIME
+          var mimeMatch = dataUrl.match(/^data:([^;]+);/);
+          if (mimeMatch) mime = mimeMatch[1];
+
+          // 推断扩展名
+          if (mime.indexOf('png') > -1) ext = 'png';
+          else if (mime.indexOf('jpeg') > -1 || mime.indexOf('jpg') > -1) ext = 'jpg';
+          else if (mime.indexOf('gif') > -1) ext = 'gif';
+          else if (mime.indexOf('svg') > -1) ext = 'svg';
+          else if (mime.indexOf('webp') > -1) ext = 'webp';
+
+          var filename = slug + '-img-' + (index + 1) + '.' + ext;
+
+          // base64 → Blob
+          var res = await fetch(dataUrl);
+          var blob = await res.blob();
+
+          // POST /api/upload
+          var response = await fetch('/api/upload?bucket=images&path=' + encodeURIComponent(filename), {
+            method: 'POST',
+            headers: { 'Content-Type': blob.type || 'application/octet-stream' },
+            body: blob,
+          });
+          if (!response.ok) throw new Error('上传失败: HTTP ' + response.status);
+          var result = await response.json();
+          return { filename: filename, url: result.url || ('resources/images/' + filename) };
+        }
+
+        // ─── 提取图片 + 发送到后台 ────────────────────
+        async function replaceImagesAndSend() {
+          if (!contentHtml) { showToast('请先转换文档'); return; }
+
+          var title = fieldTitle.value || '新闻标题';
+          var html = contentHtml;
+          var images = extractBase64Images(html);
+          var uploaded = 0;
+
+          if (images.length === 0) {
+            // 无 base64 图片，直接发送
+            doSendPayload(html);
             return;
           }
 
+          setStatus('🔍 检测到 ' + images.length + ' 张 base64 图片，开始上传…');
+
+          for (var i = 0; i < images.length; i++) {
+            var img = images[i];
+            try {
+              setStatus('⬆️ 上传 ' + (i + 1) + '/' + images.length + ': ' + slugify(title) + '-img-' + (i + 1));
+              var result = await uploadBase64Image(img.dataUrl, i, title);
+              // 替换 HTML 中的 data URL 为资源路径
+              html = html.replace(img.dataUrl, result.url);
+              uploaded++;
+              setStatus('✅ 已上传 ' + uploaded + '/' + images.length + ': ' + result.filename);
+            } catch (err) {
+              setStatus('⚠️ 图片 ' + (i + 1) + ' 上传失败: ' + err.message + '，将保留 base64 数据', 'warn');
+            }
+          }
+
+          // 用替换后的 HTML 更新全局变量
+          contentHtml = html;
+          // 重建完整页面并刷新预览 + 源码
+          var freshTitle = fieldTitle.value || '新闻标题';
+          fullPageHtml = buildFullPage(freshTitle, contentHtml);
+          previewEl.srcdoc = buildPreviewPage(contentHtml);
+          sourceArea.value = fullPageHtml;
+
+          // 发送
+          doSendPayload(html);
+        }
+
+        // ─── 实际写入 localStorage ───────────────────────
+        function doSendPayload(contentHtmlFinal) {
+          var title = fieldTitle.value || '新闻标题';
           var plainText = mammothHtml ? mammothHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+          var slug = slugify(title);
+          var date = fieldDate.value || '';
 
           var payload = {
-            title: title,
-            subtitle: fieldSubtitle.value || '',
+            slug: slug,
             eyebrow: fieldEyebrow.value || 'Research News',
+            title: title,
+            titleEn: '',
+            subtitle: fieldSubtitle.value || '',
+            text: plainText.slice(0, 150),
+            textEn: '',
             image: fieldImage.value || '',
-            date: fieldDate.value || '',
-            contentHtml: contentHtml,
+            url: 'resources/news/' + slug + '.html',
+            contentHtml: contentHtmlFinal,
             content: plainText,
-            newsTitle: title,
-            newsText: plainText.slice(0, 120),
-            newsDate: fieldDate.value || '',
+            paperTitle: '',
+            journal: '',
+            authors: '',
+            correspondingAuthors: '',
+            affiliation: '',
+            doi: '',
+            pdf: '',
+            date: date,
             _from: 'docx-converter',
             _timestamp: Date.now()
           };
 
           try {
             localStorage.setItem('docxConverterOutput', JSON.stringify(payload));
-            showToast('已发送到后台！前往后台管理 → 新闻详情 → 导入转换器内容');
+            setStatus('✅ 已发送到后台！前往后台管理 → 新闻 → 导入转换器内容', 'success');
+            showToast('已发送到后台！');
           } catch (e) {
+            setStatus('❌ localStorage 写入失败: ' + e.message + '。请尝试手动替换图片路径。', 'error');
             showToast('发送失败: ' + e.message);
           }
+        }
+
+        // ─── 保留旧函数名兼容 ────────────────────────────
+        function sendToAdmin() {
+          replaceImagesAndSend().catch(function (err) {
+            setStatus('发送异常: ' + err.message, 'error');
+            showToast('发送异常: ' + err.message);
+          });
         }
 
         // ─── 重置 ──────────────────────────────────────

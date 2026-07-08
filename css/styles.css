@@ -29,9 +29,9 @@
   --duration-fast: 160ms;
   --duration-normal: 280ms;
   --duration-slow: 520ms;
-  --reveal-distance: 20px;
+  --reveal-distance: 40px;
   --reveal-blur: 0px;
-  --reveal-duration: 1000ms;
+  --reveal-duration: 2000ms;
   --reveal-delay-step: 120ms;
 
   --font-hero: clamp(3.2rem, 8vw, 7.4rem);        /* 首页大标题 */
@@ -7021,11 +7021,11 @@ body.nav-mega-open::after {
     top: -22px !important;
     left: 24px !important;
     right: auto !important;
-    width: 54px !important;
-    height: 54px !important;
-    min-width: 54px !important;
+    width: var(--mobile-index-size, 54px) !important;
+    height: var(--mobile-index-size, 54px) !important;
+    min-width: var(--mobile-index-size, 54px) !important;
     border-radius: 999px !important;
-    font-size: 1.08rem !important;
+    font-size: var(--mobile-index-font-size, 1.08rem) !important;
   }
 
   .feature-card h3 {
@@ -7122,9 +7122,9 @@ body.nav-mega-open::after {
   .news-carousel-track .news-card span {
     top: 18px !important;
     left: 18px !important;
-    width: 58px !important;
-    height: 58px !important;
-    min-width: 58px !important;
+    width: var(--mobile-index-size, 58px) !important;
+    height: var(--mobile-index-size, 58px) !important;
+    min-width: var(--mobile-index-size, 58px) !important;
     border-radius: 999px !important;
     z-index: 8;
   }
@@ -7369,8 +7369,8 @@ body.nav-mega-open::after {
 
   .publication-item time,
 .all-publication-list time {
-    top: 30px !important;
-    left: 30px !important;
+    top: var(--mobile-index-top, 30px) !important;
+    left: var(--mobile-index-left, 30px) !important;
     right: auto !important;
     z-index: 8;
   }
@@ -7406,7 +7406,7 @@ body.nav-mega-open::after {
   .all-publication-list > a,
   .achievement-item,
   .timeline li {
-    padding: 24px 86px 24px 22px !important;
+    padding: 24px var(--mobile-card-padding-right, 86px) 24px 22px !important;
   }
 
   .item-index,
@@ -7414,18 +7414,18 @@ body.nav-mega-open::after {
   .all-publication-list time,
   .detail-item time,
   .profile-publication-item > span {
-    top: 22px !important;
-    right: 20px !important;
+    top: var(--mobile-index-top, 22px) !important;
+    right: var(--mobile-index-right, 20px) !important;
     left: auto !important;
-    width: 48px !important;
-    height: 48px !important;
-    min-width: 48px !important;
+    width: var(--mobile-index-size, 48px) !important;
+    height: var(--mobile-index-size, 48px) !important;
+    min-width: var(--mobile-index-size, 48px) !important;
     border-radius: 999px !important;
-    font-size: 0.98rem !important;
+    font-size: var(--mobile-index-font-size, 0.98rem) !important;
   }
 
   .all-publication-list time {
-    left: 20px !important;
+    left: var(--mobile-index-left, 20px) !important;
     right: auto !important;
   }
 

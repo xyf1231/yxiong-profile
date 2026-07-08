@@ -1809,7 +1809,7 @@ function renderSite() {
   renderMetrics(data.metrics || []);
   renderResearch(data.research || []);
   renderNews(data.news || []);
-  renderNewsDetail(data.newsDetails || []);
+  renderNewsDetail(data.news || []);
   renderPublications(data.publications || []);
   renderProfilePublications(data.publications || []);
   renderAllPublications(data.allPublications || data.publications || []);
@@ -2341,7 +2341,7 @@ function setupRevealAnimations() {
   let rafId = 0;
   const revealList = Array.from(targets).map((node, index) => {
     if (node.classList.contains("home-bento-card") || node.classList.contains("publication-item") || node.classList.contains("detail-item") || node.classList.contains("achievement-item") || node.classList.contains("feature-card") || node.classList.contains("news-card") || node.classList.contains("button")) {
-      node.style.setProperty("--reveal-delay", `${Math.min(index * 60, 2000)}ms`);
+      node.style.setProperty("--reveal-delay", `${Math.min(index * 120, 2000)}ms`);
     }
     return node;
   });
@@ -2356,15 +2356,17 @@ function setupRevealAnimations() {
       if (node.classList.contains("is-revealed")) continue;
       const rect = node.getBoundingClientRect();
       if (rect.top < startLine && rect.bottom > endLine) {
+        // defer is-revealed for first-screen cards until loading overlay hides
+        if (document.querySelector(".site-loading-overlay:not(.is-hidden)")) continue;
         node.classList.add("is-revealed");
         // cap reveal delay for scrolled-into-view cards (not first-screen)
         var rDelay = parseInt(node.style.getPropertyValue("--reveal-delay")) || 0;
-        if (rDelay > 200) {
-          rDelay = 200;
+        if (rDelay > 600) {
+          rDelay = 600;
           node.style.setProperty("--reveal-delay", "200ms");
         }
-        // trigger glow sweep in sync with card entrance
-        if (node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
+        // trigger glow sweep in sync with card entrance (only after loading)
+        if (document.documentElement.dataset.siteLoading !== "pending" && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
           var rh = Math.round(500 * 0.4);
           var rs = Math.round(500 * 0.6);
           setTimeout(function() {
@@ -2389,10 +2391,7 @@ function setupRevealAnimations() {
 
   window.addEventListener("scroll", scheduleRevealCheck, { passive: true });
   window.addEventListener("resize", scheduleRevealCheck, { passive: true });
-  if (document.documentElement.dataset.siteLoading === "ready") {
-    revealInView();
-  }
-  window.addEventListener("resize", scheduleRevealCheck, { passive: true });
+  revealInView();
 }
 
 function resizeCanvas() {

@@ -99,7 +99,7 @@
   margin-left: var(--activities-index-offset-left) !important;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 860px) {
   .activities-page .section-wrap {
     padding: var(--activities-section-padding-mobile) 0 !important;
   }
