@@ -260,6 +260,7 @@ function setupSiteLoadingGate() {
       if (displayProgress >= 99.8) {
         setProgress(100);
         root.dataset.siteLoading = "ready";
+        window.dispatchEvent(new Event("scroll", { bubbles: true }));
         const hash = window.location.hash;
         if (hash) {
           const el = document.querySelector(hash);
@@ -2265,9 +2266,9 @@ function setupBorderGlow() {
   allCards.forEach(function(card) {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
-    card.classList.add("border-glow-card");
 
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
+    card.classList.add("border-glow-card");
     card.style.setProperty("--border-radius", borderRadius);
 
     var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media");
@@ -2342,8 +2343,8 @@ function setupRevealAnimations() {
   const revealInView = () => {
     rafId = 0;
     const viewportHeight = (window.visualViewport && window.visualViewport.height) || window.innerHeight || document.documentElement.clientHeight;
-    const startLine = viewportHeight * 0.985;
-    const endLine = viewportHeight * 0.02;
+    const startLine = viewportHeight * 1.25;
+    const endLine = 0;
 
     for (const node of revealList) {
       if (node.classList.contains("is-revealed")) continue;
@@ -2468,33 +2469,48 @@ function drawFiberSystem() {
 }
 
 function createLightStreak(randomY = false) {
-  const color = lightfallColors[Math.floor(Math.random() * lightfallColors.length)];
+  const centerX = width * 0.5;
+  const angle = (Math.random() - 0.5) * 1.1;
+
+  let color;
+  if (angle < -0.28) color = "#58d5ff";
+  else if (angle < -0.08) color = "#a6c8ff";
+  else if (angle < 0.08) color = "#5227ff";
+  else if (angle < 0.28) color = "#ff9ffc";
+  else color = "#ff6eb4";
+
+  const startY = randomY
+    ? Math.random() * height
+    : -Math.random() * height * 0.25 - 50;
+
+  const depth = 0.4 + Math.random() * 0.6;
+
   return {
-    x: Math.random() * width,
-    y: randomY ? Math.random() * height : -Math.random() * height * 0.35 - 80,
-    length: 250 + Math.random() * 520,
-    speed: 1.7 + Math.random() * 2.6,
-    width: 0.65 + Math.random() * 1.15,
-    drift: -0.08 + Math.random() * 0.045,
+    originX: centerX + (Math.random() - 0.5) * width * 0.03,
+    y: startY,
+    length: 280 + depth * 600,
+    speed: 0.9 + depth * 2.6,
+    width: 0.3 + depth * 0.85,
+    angle,
     color,
     phase: Math.random() * Math.PI * 2,
-    alpha: 0.4 + Math.random() * 0.6,
+    alpha: 0.3 + depth * 0.7,
   };
 }
 
 function drawLightfallStars() {
   for (let i = 0; i < particles.length; i += 1) {
     const point = particles[i];
-    point.y += 0.06 + (i % 5) * 0.008;
-    point.x -= 0.03 + (i % 7) * 0.005;
-    if (point.y > height + 20) point.y = -20;
-    if (point.x < -20) point.x = width + 20;
-    const twinkle = 0.32 + Math.sin(point.x * 0.01 + point.y * 0.02) * 0.18;
-    const r = point.r * (0.52 + twinkle * 0.28);
-    const alpha = 0.1 + twinkle * 0.34;
+    point.y -= 0.04 + (i % 5) * 0.006;
+    point.x += 0.015 + (i % 9) * 0.004;
+    if (point.y < -20) point.y = height + 20;
+    if (point.x > width + 20) point.x = -20;
+    const twinkle = 0.3 + Math.sin(point.x * 0.012 + point.y * 0.018) * 0.22;
+    const r = point.r * (0.48 + twinkle * 0.3);
+    const alpha = 0.08 + twinkle * 0.36;
     ctx.beginPath();
-    ctx.arc(point.x, point.y, r * 2.4, 0, Math.PI * 2);
-    ctx.fillStyle = `rgba(82, 39, 255, ${alpha * 0.35})`;
+    ctx.arc(point.x, point.y, r * 2.6, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(82, 39, 255, ${alpha * 0.32})`;
     ctx.fill();
     ctx.beginPath();
     ctx.arc(point.x, point.y, r, 0, Math.PI * 2);
@@ -2508,39 +2524,47 @@ function drawLightfallStreaks() {
     const streak = lightStreaks[i];
     const pulse = 0.9 + Math.sin(streak.phase) * 0.08;
     const alpha = Math.min(1, streak.alpha * pulse);
-    const dx = streak.length * streak.drift;
-    const dy = streak.length;
-    const headX = streak.x;
+    const sinA = Math.sin(streak.angle);
+
     const headY = streak.y;
-    const tailX = headX - dx;
-    const tailY = headY - dy;
+    const tailY = headY - streak.length;
+    const fallHead = Math.max(0, headY + 60);
+    const fallTail = Math.max(0, tailY + 60);
+    const headX = streak.originX + sinA * fallHead * 0.5;
+    const tailX = streak.originX + sinA * fallTail * 0.5;
+    const midY = (tailY + headY) * 0.5;
+    const bow = sinA * streak.length * 0.10;
+    const cpX = (tailX + headX) * 0.5 + bow;
+    const cpY = midY;
+
     const gradient = ctx.createLinearGradient(tailX, tailY, headX, headY);
     gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-    gradient.addColorStop(0.52, hexToRgba(streak.color, alpha * 0.28));
+    gradient.addColorStop(0.38, hexToRgba(streak.color, alpha * 0.10));
+    gradient.addColorStop(0.68, hexToRgba(streak.color, alpha * 0.32));
     gradient.addColorStop(1, hexToRgba(streak.color, alpha));
 
     ctx.beginPath();
     ctx.moveTo(tailX, tailY);
-    ctx.lineTo(headX, headY);
-    ctx.strokeStyle = hexToRgba(streak.color, alpha * 0.22);
-    ctx.lineWidth = streak.width * 3.2;
+    ctx.quadraticCurveTo(cpX, cpY, headX, headY);
+    ctx.strokeStyle = hexToRgba(streak.color, alpha * 0.18);
+    ctx.lineWidth = streak.width * 3.5;
     ctx.stroke();
+
     ctx.beginPath();
     ctx.moveTo(tailX, tailY);
-    ctx.lineTo(headX, headY);
+    ctx.quadraticCurveTo(cpX, cpY, headX, headY);
     ctx.strokeStyle = gradient;
     ctx.lineWidth = streak.width;
     ctx.stroke();
 
     ctx.beginPath();
-    ctx.arc(headX, headY, 1.6, 0, Math.PI * 2);
+    ctx.arc(headX, headY, 1.8 + streak.width * 0.6, 0, Math.PI * 2);
     ctx.fillStyle = hexToRgba(streak.color, alpha);
     ctx.fill();
 
-    streak.y += streak.speed * 0.32;
-    streak.x += streak.drift * 0.28;
+    streak.y += streak.speed;
 
-    if (streak.y - streak.length > height + 80 || streak.x < -width * 0.35 || streak.x > width * 1.25) {
+    if (streak.y - streak.length > height + 60 || tailX < -width * 0.3 || tailX > width * 1.3) {
       lightStreaks[i] = createLightStreak(false);
     }
   }
