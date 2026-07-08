@@ -60,6 +60,15 @@
   --home-card-index-offset-top: 0px;
   --home-card-index-offset-left: 0px;
 
+  /* 新闻卡片 */
+  --news-card-min-height: 240px;
+  --news-card-body-padding: clamp(22px, 3vw, 36px);
+  --news-card-body-align: flex-end;
+  --news-card-title-font-size: 1.28rem;
+  --news-card-title-color: rgba(255, 255, 255, 0.96);
+  --news-card-title-font-weight: 600;
+  --news-card-title-line-height: 1.25;
+
   /* 手机端（<= 768px） */
   --hero-title-font-size-zh-mobile: clamp(3rem, 14vw, 7rem);
   --hero-title-font-size-en-mobile: clamp(2.8rem, 14vw, 6.5rem);
@@ -120,6 +129,11 @@
   /* 研究卡片序号偏移（手机端） */
   --home-card-index-offset-top-mobile: 0px;
   --home-card-index-offset-left-mobile: 0px;
+
+  /* 新闻卡片（手机端） */
+  --news-card-min-height-mobile: 420px;
+  --news-card-body-padding-mobile: 24px;
+  --news-card-title-font-size-mobile: 1.28rem;
 }
 
 /* Hero 区域最小高度 */
@@ -245,6 +259,30 @@ html .clean-copy p:not(.eyebrow) {
   margin-left: var(--home-card-index-offset-left) !important;
 }
 
+/* 新闻卡片 */
+.news-card {
+  min-height: var(--news-card-min-height) !important;
+}
+.news-card-body {
+  padding: var(--news-card-body-padding) !important;
+  justify-content: var(--news-card-body-align) !important;
+}
+.news-card h3 {
+  font-size: var(--news-card-title-font-size) !important;
+  color: var(--news-card-title-color) !important;
+  font-weight: var(--news-card-title-font-weight) !important;
+  line-height: var(--news-card-title-line-height) !important;
+}
+.news-carousel-track .news-card {
+  min-height: var(--news-card-min-height) !important;
+}
+.news-carousel-track .news-card-body {
+  padding: var(--news-card-body-padding) !important;
+}
+.news-carousel-track .news-card h3 {
+  font-size: var(--news-card-title-font-size) !important;
+}
+
 /* 手机端（<= 768px）覆盖 */
 @media (max-width: 860px) {
   /* Hero 主标题 */
@@ -307,5 +345,18 @@ html .clean-copy p:not(.eyebrow) {
   .feature-card .card-index {
     margin-top: var(--home-card-index-offset-top-mobile) !important;
     margin-left: var(--home-card-index-offset-left-mobile) !important;
+  }
+
+  /* 新闻卡片（手机端） */
+  .news-card,
+  .news-card:first-child,
+  .news-card:nth-child(2) {
+    min-height: var(--news-card-min-height-mobile) !important;
+  }
+  .news-card-body {
+    padding: var(--news-card-body-padding-mobile) !important;
+  }
+  .news-card h3 {
+    font-size: var(--news-card-title-font-size-mobile) !important;
   }
 }

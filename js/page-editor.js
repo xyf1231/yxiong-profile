@@ -182,6 +182,19 @@ const pageSchemas = {
         rangeField("--home-card-index-offset-top", "研究卡片序号纵向偏移", -40, 40, 1, "px", "--home-card-index-offset-top-mobile"),
         rangeField("--home-card-index-offset-left", "研究卡片序号横向偏移", -40, 40, 1, "px", "--home-card-index-offset-left-mobile"),
       ]),
+      group("新闻卡片", [
+        rangeField("--news-card-min-height", "卡片最小高度", 200, 800, 10, "px", "--news-card-min-height-mobile"),
+        rangeField("--news-card-body-padding", "文字区域内边距", 10, 80, 1, "px", "--news-card-body-padding-mobile"),
+        selectField("--news-card-body-align", "文字垂直位置", [
+          { value: "flex-start", label: "顶部" },
+          { value: "center", label: "居中" },
+          { value: "flex-end", label: "底部" },
+        ]),
+        rangeField("--news-card-title-font-size", "标题字号", 0.8, 2.5, 0.05, "rem", "--news-card-title-font-size-mobile"),
+        colorField("--news-card-title-color", "标题颜色"),
+        rangeField("--news-card-title-font-weight", "标题字重", 400, 900, 100, ""),
+        rangeField("--news-card-title-line-height", "标题行高", 1, 1.8, 0.01, ""),
+      ]),
     ],
   },
   profile: {

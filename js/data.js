@@ -364,7 +364,7 @@
       "url": "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf",
       "image": "resources/images/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap-main.webp",
       "impact": "",
-      "representative": false
+      "representative": true
     },
     {
       "year": "2020",
@@ -706,5 +706,12 @@
       "value": "GitHub",
       "url": "#"
     }
+  ],
+  "representativeOrder": [
+    "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
+    "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
+    "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array.",
+    "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
+    "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity."
   ]
 };
