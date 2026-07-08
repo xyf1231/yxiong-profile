@@ -52,7 +52,7 @@
   /* 移动端覆盖变量 */
   --loading-percent-font-size-mobile: clamp(1.5rem, 10vw, 8rem);
   --loading-letters-height-mobile: 150px;
-  --loading-track-height-mobile: 12px;
+  --loading-track-height-mobile: 15px;
   --loading-card-gap-mobile: 0px;
   --loading-resources-font-size-mobile: 1rem;
   --loading-hint-font-size-mobile: 0.95rem;

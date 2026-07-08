@@ -16,7 +16,7 @@ window.LOADING_CONTENT = {
     "interval": "3000",
     "duration": "2",
     "erase": "true",
-    "strokeWidth": "2.5",
+    "strokeWidth": "3",
     "brightness": "20",
     "saturation": "0",
     "greeting": ""
