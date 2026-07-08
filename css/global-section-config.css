@@ -5,13 +5,13 @@
 
 :root {
   /* Section 小标签 */
-  --global-section-kicker-font-size: clamp(0.5rem, 1.5vw, 2rem);
+  --global-section-kicker-font-size: clamp(0.5rem, 1.2vw, 2rem);
   --global-section-kicker-letter-spacing: 0.14em;
   --global-section-kicker-color: var(--accent);
   --global-section-kicker-margin-bottom: 14px;
 
   /* Section 标题 */
-  --global-section-title-font-size: clamp(1.5rem, 5vw, 6rem);
+  --global-section-title-font-size: clamp(1.5rem, 4vw, 6rem);
   --global-section-title-line-height: 1.12;
   --global-section-title-letter-spacing: -0.02em;
   --global-section-title-color: rgba(255, 255, 255, 0.96);

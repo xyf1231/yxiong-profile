@@ -16,13 +16,13 @@
   /* 眉标（Eyebrow） */
   --hero-eyebrow-display: block;
   --hero-eyebrow-color: #2997ff;
-  --hero-eyebrow-font-size: clamp(0.6rem, 1.5vw, 2.5rem);
+  --hero-eyebrow-font-size: clamp(0.6rem, 1.2vw, 2.5rem);
   --hero-eyebrow-letter-spacing: 0.18em;
   --hero-eyebrow-margin-bottom: 15px;
 
   /* 主标题 */
-  --hero-title-font-size-zh: clamp(3rem, 8vw, 10rem);
-  --hero-title-font-size-en: clamp(2.8rem, 8vw, 10rem);
+  --hero-title-font-size-zh: clamp(3rem, 6vw, 10rem);
+  --hero-title-font-size-en: clamp(2.8rem, 6vw, 10rem);
   --hero-title-line-height: 1.12;
   --hero-title-letter-spacing: 0em;
   --hero-title-font-weight: 700;
@@ -38,13 +38,13 @@
   /* 副标题 */
   --hero-subtitle-color: rgba(255, 255, 255, 0.6);
   --hero-subtitle-margin-top: 15px;
-  --hero-subtitle-font-size: clamp(0.7rem, 2vw, 2rem);
+  --hero-subtitle-font-size: clamp(0.7rem, 1.5vw, 2rem);
   --hero-subtitle-font-family: inherit;
 
   /* 其他模块标题 */
-  --home-frame-heading-size: clamp(2rem, 6vw, 8rem);
-  --news-heading-size: clamp(2rem, 6vw, 8rem);
-  --home-bento-heading-size: clamp(2rem, 6vw, 8rem);
+  --home-frame-heading-size: clamp(2rem, 4vw, 8rem);
+  --news-heading-size: clamp(2rem, 4vw, 8rem);
+  --home-bento-heading-size: clamp(2rem, 4vw, 8rem);
 
   /* Section 小标签（继承全局） */
   --section-kicker-font-size: var(--global-section-kicker-font-size);
@@ -53,7 +53,7 @@
   --section-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
   /* 快速导航卡片 */
-  --home-bento-card-title-font-size: clamp(2rem, 3vw, 4.25rem);
+  --home-bento-card-title-font-size: clamp(1.5rem, 3vw, 6rem);
   --home-bento-card-text-font-size: clamp(0.7rem, 1.5vw, 1.5rem);
 
   /* 手机端（<= 768px） */

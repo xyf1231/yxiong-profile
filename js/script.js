@@ -2297,39 +2297,21 @@ function setupBorderGlow() {
 
   if (glowCards.length === 0) return;
 
-  if (isCompactNav()) {
-    initBorderGlow(glowCards, {
-      colors: ["#000033", "#0044cc", "#6688ff"],
-      glowColor: "220 80 80",
-      glowRadius: 30,
-      glowIntensity: 1.5,
-      edgeSensitivity: 0,
-      fillOpacity: 0.5,
-      animated: true,
-      sweepFan: false,
-      sweepSpeed: 4,
-      sweepIntensity: 1,
-      sweepFadeIn: 200,
-      sweepRotate: 800,
-      sweepFadeOut: 200,
-    });
-  } else {
-    initBorderGlow(glowCards, {
-      colors: ["#000033", "#0044cc", "#6688ff"],
-      glowColor: "220 80 80",
-      glowRadius: 50,
-      glowIntensity: 2,
-      edgeSensitivity: 0,
-      fillOpacity: 0.5,
-      animated: true,
-      sweepFan: false,
-      sweepSpeed: 3,
-      sweepIntensity: 1,
-      sweepFadeIn: 500,
-      sweepRotate: 2000,
-      sweepFadeOut: 1000,
-    });
-  }
+  initBorderGlow(glowCards, {
+    colors: ["#000033", "#0044cc", "#6688ff"],
+    glowColor: "220 80 80",
+    glowRadius: 30,
+    glowIntensity: 1.5,
+    edgeSensitivity: 0,
+    fillOpacity: 0.5,
+    animated: true,
+    sweepFan: false,
+    sweepSpeed: 4,
+    sweepIntensity: 1,
+    sweepFadeIn: 100,
+    sweepRotate: 500,
+    sweepFadeOut: 200,
+  });
 }
 
 // 初始化玻璃拟态表面高光效果
