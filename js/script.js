@@ -2572,6 +2572,7 @@ function setupHomeFrameSequence() {
   }
 
   let loaded = false;
+  let hasEnded = false;
 
   function loadVideo() {
     if (loaded) return;
@@ -2603,10 +2604,12 @@ function setupHomeFrameSequence() {
   }
 
   video.addEventListener("ended", () => {
+    hasEnded = true;
     pauseVideo();
   });
 
   replayButton.addEventListener("click", () => {
+    hasEnded = false;
     video.currentTime = 0;
     playVideo();
   });
@@ -2615,7 +2618,7 @@ function setupHomeFrameSequence() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
+          if (entry.isIntersecting && !hasEnded) {
             loadVideo();
             playVideo();
           } else {
@@ -2631,7 +2634,7 @@ function setupHomeFrameSequence() {
   }
 
   window.addEventListener("pageshow", () => {
-    if (shouldAutoplay()) {
+    if (!hasEnded && shouldAutoplay()) {
       loadVideo();
       playVideo();
     }
