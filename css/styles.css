@@ -2638,46 +2638,9 @@ html[lang="en"] .subtle-name {
   margin-top: 22px;
 }
 
-.border-glow-card {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  overflow: clip;
-  --border-radius: 8px;
-}
-
-.border-glow-card::before {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--border-radius);
-  content: "";
-  pointer-events: none;
-  z-index: 0;
-}
-
-.border-glow-card::before {
-  border: 1px solid rgba(255,255,255,0.08);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.035), rgba(255,255,255,0.015)),
-    linear-gradient(180deg, rgba(8, 10, 16, 0.88), rgba(8, 10, 16, 0.88));
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.08),
-    inset 0 -1px 0 rgba(255,255,255,0.03),
-    0 12px 28px rgba(0,0,0,0.26);
-  transition: border-color 180ms ease, box-shadow 180ms ease, background 180ms ease;
-}
-
 .border-glow-card > * {
   position: relative;
   z-index: 2;
-}
-
-.border-glow-card:hover::before {
-  border-color: rgba(255, 255, 255, 0.12);
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
-    0 16px 34px rgba(0,0,0,0.28);
 }
 
 @keyframes fiberBreath {
@@ -3359,10 +3322,6 @@ html[lang="en"] .subtle-name {
     display: none;
   }
 
-  .border-glow-card {
-    overflow: hidden;
-  overflow: clip;
-  }
   .intro,
   .profile-combo,
   .split,
