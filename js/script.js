@@ -2389,6 +2389,10 @@ function setupRevealAnimations() {
 
   window.addEventListener("scroll", scheduleRevealCheck, { passive: true });
   window.addEventListener("resize", scheduleRevealCheck, { passive: true });
+  if (document.documentElement.dataset.siteLoading === "ready") {
+    revealInView();
+  }
+  window.addEventListener("resize", scheduleRevealCheck, { passive: true });
 }
 
 function resizeCanvas() {
