@@ -11,9 +11,9 @@ window.LOADING_CONTENT = {
     "greeting": "Welcome"
   },
   "shared": {
-    "words": "welcome, loading, creating, exploring, building, dreaming",
+    "words": "welcome, loading, creating, exploring, building, dreaming, processing",
     "presets": "rainbow, sunrise, rasta, plasma, aurora, ice-fire, cyber, northern, fire, lemonade, bubblegum, neon, sunset-bright, tropical, sunset, candy, ocean-bright",
-    "interval": "3000",
+    "interval": "2000",
     "duration": "2",
     "erase": "true",
     "strokeWidth": "3",

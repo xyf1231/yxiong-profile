@@ -55,6 +55,8 @@ html {
   max-width: 100%;
   -webkit-overflow-scrolling: touch;
   background: #000000;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 
@@ -100,7 +102,8 @@ html[data-site-loading="ready"] {
   overflow: visible;
   touch-action: pan-y;
   height: auto;
-  min-height: auto;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 html[data-site-loading="ready"] body {
@@ -109,7 +112,8 @@ html[data-site-loading="ready"] body {
   touch-action: pan-y;
   width: auto;
   height: auto;
-  min-height: auto;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 /* html[data-site-loading="pending"]::before {
@@ -400,12 +404,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
-}
-
-@supports (height: 100dvh) {
-  body {
-    min-height: calc(var(--vh, 1vh) * 100);
-  }
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 img,
@@ -3229,7 +3229,7 @@ html[lang="en"] .subtle-name {
   }
 
   .nav-links.is-open {
-    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;
@@ -3557,7 +3557,7 @@ html[lang="en"] .subtle-name {
   }
 
   .profile-landing {
-    min-height: 100svh;
+    min-height: 100dvh;
   }
 
   .page-hero-inner {
@@ -6234,14 +6234,14 @@ body.nav-mega-open::after {
   .portal-hero,
   .fiber-hero,
   .clean-hero {
-    min-height: 100svh;
+    min-height: 100dvh;
     overflow: visible;
     touch-action: pan-y;
   }
 
   .fiber-sticky,
   .clean-stage {
-    min-height: 100svh;
+    min-height: 100dvh;
     overflow: visible;
     touch-action: pan-y;
   }
@@ -6268,7 +6268,7 @@ body.nav-mega-open::after {
 
   .lightfall-container,
   #research-canvas {
-    height: 100svh;
+    height: 100dvh;
   }
 
   .news-carousel-track .news-card,
@@ -7980,7 +7980,7 @@ html[lang="en"] .news-card-body {
 
 .home-dark .hero.clean-hero,
 .home-dark .fiber-hero.clean-hero {
-  min-height: clamp(620px, 78vh, 820px) !important;
+  min-height: clamp(620px, 78dvh, 820px) !important;
 }
 
 .home-dark .section-wrap {
@@ -8445,21 +8445,21 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 
 /* v1.5.62b: give the home hero more first-screen presence without over-stretching mobile */
 .home-dark .hero.portal-hero.clean-hero {
-  min-height: 100svh !important;
+  min-height: 100dvh !important;
 }
 
 .home-dark .fiber-sticky.clean-stage {
-  min-height: 100svh;
+  min-height: 100dvh;
 }
 
 @media (max-width: 860px) {
   .home-dark .hero.portal-hero.clean-hero {
-    min-height: 82svh !important;
+    min-height: 82dvh !important;
   }
 
   .home-dark .hero.portal-hero.clean-hero .fiber-sticky.clean-stage {
-    min-height: 82svh !important;
-    height: 82svh !important;
+    min-height: 82dvh !important;
+    height: 82dvh !important;
   }
 }
 
@@ -9038,7 +9038,7 @@ body.home-dark .hero.portal-hero.clean-hero {
   position: relative !important;
   display: grid !important;
   place-items: start center !important;
-  min-height: 100svh !important;
+  min-height: 100dvh !important;
   overflow: hidden !important;
 }
 
@@ -9049,8 +9049,8 @@ body.home-dark .hero.portal-hero.clean-hero .fiber-sticky.clean-stage {
   display: grid !important;
   place-items: start center !important;
   width: 100% !important;
-  min-height: 100svh !important;
-  height: 100svh !important;
+  min-height: 100dvh !important;
+  height: 100dvh !important;
 }
 
 body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy {
@@ -9147,7 +9147,7 @@ body:not(.home-dark) main > .section-wrap#research .feature-card {
 
 @media (max-width: 980px) {
   body.home-dark .hero.portal-hero.clean-hero {
-    min-height: 100svh !important;
+    min-height: 100dvh !important;
   }
 
   body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy {
@@ -9231,7 +9231,7 @@ html[lang="en"] body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-co
 
 @media (max-width: 560px) {
   body.home-dark .hero.portal-hero.clean-hero {
-    min-height: 100svh !important;
+    min-height: 100dvh !important;
   }
 
   body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1 {
@@ -9679,7 +9679,7 @@ body.home-dark .hero.portal-hero.clean-hero {
   background:
     radial-gradient(circle at 50% 14%, rgba(10, 18, 45, 0.38), rgba(0, 0, 0, 0) 54%),
     linear-gradient(180deg, rgba(4, 8, 18, 0.98) 0%, rgba(2, 4, 10, 0.98) 100%) !important;
-  min-height: 100svh !important;
+  min-height: 100dvh !important;
   overflow: hidden !important;
 }
 
@@ -9996,7 +9996,7 @@ body.home-dark .hero.portal-hero.clean-hero {
   position: relative !important;
   display: grid !important;
   place-items: center !important;
-  min-height: 100svh !important;
+  min-height: 100dvh !important;
   overflow: hidden !important;
 }
 
@@ -10042,7 +10042,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy h1 {
 /* v1.7.12: hard restore home hero effect from V1.7.5 backup */
 body.home-dark .hero.portal-hero.fiber-hero.clean-hero {
   position: relative !important;
-  min-height: 100svh !important;
+  min-height: 100dvh !important;
   display: grid !important;
   align-items: center !important;
   overflow: hidden !important;
@@ -10166,7 +10166,7 @@ body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy .h
 
 @media (max-width: 700px) {
   body.home-dark .hero.portal-hero.fiber-hero.clean-hero {
-    min-height: 100svh !important;
+    min-height: 100dvh !important;
   }
 
   body.home-dark .hero.portal-hero.fiber-hero.clean-hero .story-copy.clean-copy {

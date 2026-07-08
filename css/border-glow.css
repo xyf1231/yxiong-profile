@@ -132,4 +132,9 @@
 .news-info-card.border-glow-card > .edge-light {
   opacity: 0 !important;
 }
+
+/* ---------- home-frame-media — overflow fix for glow ---------- */
+.home-frame-media.border-glow-card {
+  overflow: visible !important;
+}
 */

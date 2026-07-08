@@ -1024,7 +1024,7 @@ h3 {
   }
 
   .nav-links.is-open {
-    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
     visibility: visible;
     opacity: 1;
     pointer-events: auto;

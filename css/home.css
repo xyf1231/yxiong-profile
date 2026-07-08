@@ -1,6 +1,6 @@
 /* Home page-specific overrides */
 .home-dark .fiber-hero.clean-hero {
-  min-height: clamp(620px, 78vh, 820px);
+  min-height: clamp(620px, 78dvh, 820px);
 }
 
 .home-dark .section-wrap {

@@ -2259,7 +2259,7 @@ function setupBorderGlow() {
   if (typeof initBorderGlow !== "function") return;
 
   var allCards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a"
+    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary"
   );
 
   allCards.forEach(function(card) {
@@ -2270,7 +2270,7 @@ function setupBorderGlow() {
     var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);
 
-    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo");
+    var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media");
 
     if (!skipWrap) {
       var inner = document.createElement("div");
@@ -2290,41 +2290,21 @@ function setupBorderGlow() {
 
   if (glowCards.length === 0) return;
 
-  if (isCompactNav()) {
-    // mobile
-    initBorderGlow(glowCards, {
-      colors: ["#000080", "#3377ff", "#99bbff"],
-      glowColor: "220 80 80",
-      glowRadius: 40,
-      glowIntensity: 1.5,
-      edgeSensitivity: 0,
-      fillOpacity: 0.5,
-      animated: true,
-      sweepFan: false,
-      sweepSpeed: 4,
-      sweepIntensity: 0.5,
-      sweepFadeIn: 400,
-      sweepRotate: 1000,
-      sweepFadeOut: 400,
-    });
-  } else {
-    // desktop
-    initBorderGlow(glowCards, {
-      colors: ["#000033", "#0044cc", "#6688ff"],
-      glowColor: "220 80 80",
-      glowRadius: 40,
-      glowIntensity: 1.5,
-      edgeSensitivity: 0,
-      fillOpacity: 0.5,
-      animated: true,
-      sweepFan: false,
-      sweepSpeed: 1,
-      sweepIntensity: 0.5,
-      sweepFadeIn: 400,
-      sweepRotate: 1000,
-      sweepFadeOut: 400,
-    });
-  }
+  initBorderGlow(glowCards, {
+    colors: ["#000033", "#0044cc", "#6688ff"],
+    glowColor: "220 80 80",
+    glowRadius: 50,
+    glowIntensity: 2,
+    edgeSensitivity: 0,
+    fillOpacity: 0.5,
+    animated: true,
+    sweepFan: false,
+    sweepSpeed: 3,
+    sweepIntensity: 1,
+    sweepFadeIn: 500,
+    sweepRotate: 2000,
+    sweepFadeOut: 1000,
+  });
 }
 
 // 初始化玻璃拟态表面高光效果
