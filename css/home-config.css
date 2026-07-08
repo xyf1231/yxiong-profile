@@ -134,6 +134,10 @@
   --news-card-min-height-mobile: 420px;
   --news-card-body-padding-mobile: 24px;
   --news-card-title-font-size-mobile: 1.28rem;
+  --news-card-body-align-mobile: flex-end;
+  --news-card-title-color-mobile: rgba(255, 255, 255, 0.96);
+  --news-card-title-font-weight-mobile: 600;
+  --news-card-title-line-height-mobile: 1.25;
 }
 
 /* Hero 区域最小高度 */
@@ -358,5 +362,11 @@ html .clean-copy p:not(.eyebrow) {
   }
   .news-card h3 {
     font-size: var(--news-card-title-font-size-mobile) !important;
+    color: var(--news-card-title-color-mobile) !important;
+    font-weight: var(--news-card-title-font-weight-mobile) !important;
+    line-height: var(--news-card-title-line-height-mobile) !important;
+  }
+  .news-card-body {
+    justify-content: var(--news-card-body-align-mobile) !important;
   }
 }

@@ -189,11 +189,11 @@ const pageSchemas = {
           { value: "flex-start", label: "顶部" },
           { value: "center", label: "居中" },
           { value: "flex-end", label: "底部" },
-        ]),
+        ], "--news-card-body-align-mobile"),
         rangeField("--news-card-title-font-size", "标题字号", 0.8, 2.5, 0.05, "rem", "--news-card-title-font-size-mobile"),
-        colorField("--news-card-title-color", "标题颜色"),
-        rangeField("--news-card-title-font-weight", "标题字重", 400, 900, 100, ""),
-        rangeField("--news-card-title-line-height", "标题行高", 1, 1.8, 0.01, ""),
+        colorField("--news-card-title-color", "标题颜色", "--news-card-title-color-mobile"),
+        rangeField("--news-card-title-font-weight", "标题字重", 400, 900, 100, "", "--news-card-title-font-weight-mobile"),
+        rangeField("--news-card-title-line-height", "标题行高", 1, 1.8, 0.01, "", "--news-card-title-line-height-mobile"),
       ]),
     ],
   },
@@ -793,7 +793,7 @@ function createColorControl(field, value, activeName) {
   input.className = "color-text";
   input.addEventListener("input", () => {
     preview.style.background = input.value;
-    handleCssInput(field.name, input.value, field);
+    handleCssInput(name, input.value, field);
   });
 
   const preview = document.createElement("span");

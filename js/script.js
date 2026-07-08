@@ -2232,6 +2232,7 @@ function translateLooseHeadings(dict) {
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
   if (typeof initBorderGlow !== "function") return;
+  if (isCompactNav()) return;
 
   var allCards = document.querySelectorAll(
     ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more"
