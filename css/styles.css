@@ -1785,7 +1785,7 @@ html[lang="en"] .subtle-name {
 }
 
 .portal-card:hover {
-  border-color: rgba(100, 210, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -1841,9 +1841,9 @@ html[lang="en"] .subtle-name {
 }
 
 .news-card:hover {
-  border-color: rgba(100, 210, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
   background:
-    linear-gradient(145deg, rgba(41, 151, 255, 0.08), rgba(255, 255, 255, 0.03)),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02)),
     rgba(12, 12, 20, 0.8);
   box-shadow:
     inset 0 0 0 1px rgba(0, 0, 0, 0.6),
@@ -2018,7 +2018,7 @@ html[lang="en"] .subtle-name {
 .feature-card:hover,
 .project-card:hover,
 .achievement-item:hover {
-  border-color: rgba(100, 210, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -2089,7 +2089,7 @@ html[lang="en"] .subtle-name {
 .detail-item:hover,
 .profile-publication-item:hover,
 .timeline li:hover {
-  border-color: rgba(100, 210, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
 }
 
 
@@ -2190,7 +2190,7 @@ html[lang="en"] .subtle-name {
 
 .publication-item[data-paper-preview]:hover,
 .all-publication-list .publication-item[data-paper-preview]:hover {
-  border-color: rgba(100, 210, 255, 0.24);
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
 }
 
@@ -2676,12 +2676,11 @@ html[lang="en"] .subtle-name {
   z-index: 2;
 }
 
-.border-glow-card:hover::before,
-.border-glow-card:focus-within::before {
-  border-color: rgba(100, 210, 255, 0.18);
+.border-glow-card:hover::before {
+  border-color: rgba(255, 255, 255, 0.12);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 0 0 1px rgba(100, 210, 255, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06),
     0 16px 34px rgba(0,0,0,0.28);
 }
 
@@ -3531,7 +3530,7 @@ html[lang="en"] .subtle-name {
 }
 
 .profile-timeline .timeline li:hover {
-  border-color: rgba(100, 210, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.12);
   background: rgba(255, 255, 255, 0.082);
 }
 
@@ -4965,9 +4964,9 @@ body.nav-mega-open::after {
 .profile-publication-item:hover,
 .project-card:hover,
 .feature-card:hover {
-  border-color: rgba(100, 210, 255, 0.24) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   background:
-    radial-gradient(circle at 18% 0%, rgba(100, 210, 255, 0.1), transparent 30%),
+    radial-gradient(circle at 18% 0%, rgba(255, 255, 255, 0.06), transparent 30%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.086), rgba(255, 255, 255, 0.03)),
     rgba(18, 22, 30, 0.76) !important;
 }
@@ -7835,7 +7834,7 @@ body.nav-mega-open::after {
 
   .profile-timeline .timeline li:hover {
     background: rgba(255, 255, 255, 0.07) !important;
-    border-color: rgba(41, 151, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.12) !important;
   }
 
   .profile-publication-item .pdf-actions .pdf-download-link,
@@ -8397,8 +8396,8 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
 .home-bento-card { min-height: clamp(220px, 24vw, 330px); border-radius: clamp(22px, 2.2vw, 30px); --border-radius: clamp(22px, 2.2vw, 30px); padding: clamp(24px, 3vw, 42px); color: var(--text); text-decoration: none; border: 1.5px solid rgba(255, 255, 255, 0.14); background: radial-gradient(circle at 18% 12%, rgba(255,255,255,.16), transparent 30%), linear-gradient(135deg, rgba(255,255,255,.105), rgba(255,255,255,.025)); box-shadow: inset 0 1px 0 rgba(255,255,255,.16), 0 24px 70px rgba(0,0,0,.34); display: flex; flex-direction: column; justify-content: flex-end; gap: 12px; transition: border-color .32s var(--ease-apple), background .32s var(--ease-apple), box-shadow .32s var(--ease-apple); position: relative; overflow: hidden;
   overflow: clip; }
 .home-bento-card::before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(41,151,255,0.12), transparent 60%); opacity: 0; transition: opacity .4s var(--ease-apple); pointer-events: none; }
-.home-bento-card:hover, .home-bento-card:focus-visible { border-color: rgba(99,210,255,.45); background: radial-gradient(circle at 18% 12%, rgba(99,210,255,.18), transparent 32%), linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.035)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 28px 80px rgba(0,0,0,.4); }
-.home-bento-card:hover::before, .home-bento-card:focus-visible::before { opacity: 1; }
+.home-bento-card:hover { border-color: rgba(255,255,255,.12); background: radial-gradient(circle at 18% 12%, rgba(255,255,255,.12), transparent 32%), linear-gradient(135deg, rgba(255,255,255,.13), rgba(255,255,255,.035)); box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 28px 80px rgba(0,0,0,.4); }
+.home-bento-card:hover::before { opacity: 0; }
 .home-bento-card span { color: var(--accent); font-weight: 900; letter-spacing: .18em; text-transform: uppercase; font-size: var(--font-small); transition: letter-spacing .3s var(--ease-apple); position: relative; z-index: 2; }
 .home-bento-card:hover span { letter-spacing: .22em; }
 .home-bento-card strong { font-size: var(--font-h2); line-height: 1; letter-spacing: 0; position: relative; z-index: 2; }
@@ -8492,11 +8491,10 @@ main > .profile-combo.section-wrap:first-child { margin-top: clamp(74px, 8vh, 11
     box-shadow var(--duration-normal) var(--ease-apple);
 }
 
-.profile-timeline .timeline li.glass-surface:hover,
-.profile-timeline .timeline li.glass-surface:focus-within {
-  border-color: rgba(100, 210, 255, 0.34);
+.profile-timeline .timeline li.glass-surface:hover {
+  border-color: rgba(255, 255, 255, 0.12);
   background:
-    radial-gradient(circle at 18% 12%, rgba(100, 210, 255, 0.08), transparent 34%),
+    radial-gradient(circle at 18% 12%, rgba(255, 255, 255, 0.06), transparent 34%),
     linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
     rgba(20, 20, 30, 0.42);
   box-shadow:
@@ -8758,7 +8756,7 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
 .detail-item:hover,
 .timeline li:hover,
 .profile-photo:hover {
-  border-color: rgba(100, 210, 255, 0.28) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.16),
     0 22px 62px rgba(0, 0, 0, 0.34) !important;
@@ -8926,10 +8924,9 @@ main > .profile-combo.section-wrap:first-child .profile-bio-text {
   transform: none !important;
 }
 
-.section-wrap#research .feature-card:hover,
-.section-wrap#research .feature-card:focus-within {
+.section-wrap#research .feature-card:hover {
   transform: none !important;
-  border-color: rgba(100, 210, 255, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
   background:
     radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.09), transparent 32%),
     linear-gradient(145deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.04)),

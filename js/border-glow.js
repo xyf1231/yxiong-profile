@@ -30,7 +30,7 @@ function buildGradientVars(colors) {
     var c = colors[Math.min(COLOR_MAP[i], colors.length - 1)];
     vars[GRADIENT_KEYS[i]] = 'radial-gradient(at ' + GRADIENT_POSITIONS[i] + ', ' + c + ' 0px, transparent 50%)';
   }
-  vars['--gradient-base'] = 'linear-gradient(' + colors[0] + ' 0 100%)';
+  vars['--gradient-base'] = 'linear-gradient(var(--card-bg, #101218) 0 100%)';
   return vars;
 }
 
@@ -153,35 +153,50 @@ function playSweepAnimation(card, opts) {
   });
 }
 
+var _lastX = 0, _lastY = 0;
+document.addEventListener('pointermove', function(e) {
+  _lastX = e.clientX;
+  _lastY = e.clientY;
+}, { passive: true });
+
+function updateCardGlow(card, clientX, clientY) {
+  var rect = card.getBoundingClientRect();
+  var x = clientX - rect.left;
+  var y = clientY - rect.top;
+  var cx = rect.width / 2;
+  var cy = rect.height / 2;
+  var dx = x - cx;
+  var dy = y - cy;
+
+  var kx = Infinity;
+  var ky = Infinity;
+  if (dx !== 0) kx = cx / Math.abs(dx);
+  if (dy !== 0) ky = cy / Math.abs(dy);
+  var edge = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
+
+  var angle = 0;
+  if (dx !== 0 || dy !== 0) {
+    var radians = Math.atan2(dy, dx);
+    angle = radians * (180 / Math.PI) + 90;
+    if (angle < 0) angle += 360;
+  }
+
+  card.style.setProperty('--edge-proximity', (edge * 100).toFixed(3));
+  card.style.setProperty('--cursor-angle', angle.toFixed(3) + 'deg');
+}
+
 function setupPointerTracking(card) {
   if (card.dataset.glowPointer === 'true') return;
   card.dataset.glowPointer = 'true';
 
+  card.addEventListener('pointerenter', function(e) {
+    if (card.dataset.glowSweeping) return;
+    updateCardGlow(card, e.clientX, e.clientY);
+  });
+
   card.addEventListener('pointermove', function(e) {
     if (card.dataset.glowSweeping) return;
-    var rect = card.getBoundingClientRect();
-    var x = e.clientX - rect.left;
-    var y = e.clientY - rect.top;
-    var cx = rect.width / 2;
-    var cy = rect.height / 2;
-    var dx = x - cx;
-    var dy = y - cy;
-
-    var kx = Infinity;
-    var ky = Infinity;
-    if (dx !== 0) kx = cx / Math.abs(dx);
-    if (dy !== 0) ky = cy / Math.abs(dy);
-    var edge = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-
-    var angle = 0;
-    if (dx !== 0 || dy !== 0) {
-      var radians = Math.atan2(dy, dx);
-      angle = radians * (180 / Math.PI) + 90;
-      if (angle < 0) angle += 360;
-    }
-
-    card.style.setProperty('--edge-proximity', (edge * 100).toFixed(3));
-    card.style.setProperty('--cursor-angle', angle.toFixed(3) + 'deg');
+    updateCardGlow(card, e.clientX, e.clientY);
   });
 
   card.addEventListener('pointerleave', function() {
@@ -250,3 +265,17 @@ function initBorderGlow(cards, options) {
 
   setSweepFan(sweepFan);
 }
+
+var _scrollTimer = null;
+window.addEventListener('scroll', function() {
+  clearTimeout(_scrollTimer);
+  _scrollTimer = setTimeout(function() {
+    var cards = document.querySelectorAll('.border-glow-card');
+    for (var i = 0; i < cards.length; i++) {
+      var rect = cards[i].getBoundingClientRect();
+      if (_lastX >= rect.left && _lastX <= rect.right && _lastY >= rect.top && _lastY <= rect.bottom) {
+        updateCardGlow(cards[i], _lastX, _lastY);
+      }
+    }
+  }, 50);
+}, { passive: true });

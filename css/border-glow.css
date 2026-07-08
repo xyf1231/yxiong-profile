@@ -123,7 +123,7 @@
   display: contents;
 }
 
-/* ---------- news cards — glow disabled ---------- */
+/* ---------- news cards — glow disabled (overridden for desktop) ----------
 .news-card.border-glow-card::before,
 .news-article-card.border-glow-card::before,
 .news-info-card.border-glow-card::before,
@@ -132,3 +132,4 @@
 .news-info-card.border-glow-card > .edge-light {
   opacity: 0 !important;
 }
+*/

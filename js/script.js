@@ -2259,24 +2259,22 @@ function setupBorderGlow() {
     card.style.setProperty("--border-radius", borderRadius);
 
     var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item");
-    if (skipWrap) return;
 
-    var inner = document.createElement("div");
-    inner.className = "border-glow-inner";
-    while (card.firstChild) {
-      inner.appendChild(card.firstChild);
+    if (!skipWrap) {
+      var inner = document.createElement("div");
+      inner.className = "border-glow-inner";
+      while (card.firstChild) {
+        inner.appendChild(card.firstChild);
+      }
+      card.appendChild(inner);
     }
 
     var edgeLight = document.createElement("span");
     edgeLight.className = "edge-light";
-
     card.appendChild(edgeLight);
-    card.appendChild(inner);
   });
 
-  var glowCards = Array.from(allCards).filter(function(card) {
-    return !card.classList.contains("news-card") && !card.classList.contains("news-article-card") && !card.classList.contains("news-info-card");
-  });
+  var glowCards = Array.from(allCards);
 
   if (glowCards.length === 0) return;
 
@@ -2298,16 +2296,21 @@ function setupBorderGlow() {
       sweepFadeOut: 400,
     });
   } else {
-    // desktop — fan on hover only, no sweep animation
+    // desktop
     initBorderGlow(glowCards, {
-      colors: ["#0d0887", "#f89540", "#ffffff"],
-      glowColor: "28 80 80",
+      colors: ["#000033", "#0044cc", "#6688ff"],
+      glowColor: "220 80 80",
       glowRadius: 40,
       glowIntensity: 1.5,
       edgeSensitivity: 0,
       fillOpacity: 0.5,
-      animated: false,
-      sweepFan: true,
+      animated: true,
+      sweepFan: false,
+      sweepSpeed: 1,
+      sweepIntensity: 0.5,
+      sweepFadeIn: 400,
+      sweepRotate: 1000,
+      sweepFadeOut: 400,
     });
   }
 }
