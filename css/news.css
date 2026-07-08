@@ -1,23 +1,8 @@
 /* news.css — 新闻详情页专有样式覆盖 */
 /* News page-specific overrides */
-/* 新闻详情布局：正文 + 侧边信息 */
-.news-detail-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 860px) minmax(280px, 340px);
-  justify-content: center;
-  gap: clamp(22px, 4vw, 42px);
-  align-items: start;
-  width: min(100% - 64px, 1320px);
-  margin-top: 104px;
-}
-
-.news-detail-layout {
-  /* retained for specificity if the shared sheet still sets defaults */
-}
 
 /* 文章卡片与信息卡片：统一圆角和内边距 */
 .news-article-card,
-/* 信息卡片：粘性定位、毛玻璃 */
 .news-info-card {
   border-radius: 18px;
   padding: clamp(24px, 4vw, 48px);
@@ -49,4 +34,55 @@
 .news-carousel-track .news-card:nth-child(n + 3) {
   flex-basis: min(78vw, 1080px);
   overflow: hidden;
+}
+
+/* ═══ 桌面端：全屏宽度居中 ═══ */
+.news-detail-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 960px;
+  margin: 104px auto 0;
+  padding: 0 32px;
+}
+
+.news-article-card {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 如果存在侧边信息栏，单独处理 */
+.news-info-card {
+  width: 100%;
+  max-width: 100%;
+  margin-top: 24px;
+}
+
+/* ═══ 移动端适配：单列简洁布局 ═══ */
+@media (max-width: 860px) {
+  .news-detail-layout {
+    width: 100%;
+    margin-top: 72px;
+  }
+  .news-article-card,
+  .news-info-card {
+    padding: 18px;
+    border-radius: 14px;
+  }
+  .news-article-card h1 {
+    font-size: var(--font-h3, clamp(1.28rem, 4vw, 1.6rem));
+    line-height: 1.25;
+  }
+  .news-rich-content {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+  .news-rich-content img {
+    border-radius: 10px;
+  }
+  .news-rich-content figure {
+    margin: 6px 0;
+    border-radius: 12px;
+  }
 }

@@ -388,10 +388,12 @@ async function persistAndWrite() {
         body: JSON.stringify({ data }),
       });
       report(`已保存到本地：${result.path}。现在可以预览或发布。`, "success");
+      triggerSaveFlash();
       return;
     }
     if (await writeDataJsToSiteFolder()) {
       report("已保存：data.js 已同步更新。", "success");
+      triggerSaveFlash();
       return;
     }
     report("未连接本地后台：请双击「站点维护.command」，并从 http://localhost:8787/admin.html 打开。", "error");
@@ -403,6 +405,11 @@ async function persistAndWrite() {
       button.textContent = button.dataset.originalText || "保存到本地";
     });
   }
+}
+
+function triggerSaveFlash() {
+  const el = document.querySelector("#folder-status") || document.querySelector(".folder-status");
+  if (el) { el.classList.remove("flash-save"); void el.offsetWidth; el.classList.add("flash-save"); }
 }
 
 function setLocalStatus(message, type = "info") {
