@@ -83,6 +83,17 @@ const schemas = {
   },
   experience: { title: "经历", fields: [["period", "时间", "", "common"], ["title", "标题", "", "common"], ["text", "说明", "textarea", "common"]] },
   contacts: { title: "联系方式", fields: [["label", "标签", "", "common"], ["value", "显示文本", "", "common"], ["url", "链接", "", "common"]] },
+  metrics: { title: "统计数据", fields: [["label", "标签", "", "common"], ["value", "数值", "", "common"]] },
+  footer: {
+    title: "页脚信息",
+    type: "object",
+    fields: [
+      ["year", "版权年份", "", "common"],
+      ["email", "邮箱", "", "common"],
+      ["address", "通讯地址", "", "common"],
+      ["version", "版本号文本", "", "common"],
+    ],
+  },
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -96,6 +107,7 @@ let siteDirectoryHandle = null;
 let draggedIndex = null;
 let savedRichTextSelection = null;
 let formLang = "all";
+let undoStack = null; // { deletedItem, collection, index, timeout }
 
 // 版本更新状态
 let deployState = {
@@ -110,6 +122,7 @@ let deployState = {
 const form = document.querySelector("#content-form");
 const list = document.querySelector("#item-list");
 const addButton = document.querySelector("#add-item");
+let listFilterValue = "";
 const jsonBuffer = document.querySelector("#json-buffer");
 const folderStatus = document.querySelector("#folder-status");
 const localStatus = document.querySelector("#local-status") || folderStatus;
@@ -283,6 +296,33 @@ function openFileManager(bucket = "images", fieldName = "") {
   if (storageBucket && bucket) storageBucket.value = bucket;
   refreshFileManager();
   document.querySelector("#cms-file-manager")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  撤销 Toast
+// ═══════════════════════════════════════════════════════════════
+
+function showUndoToast(message, onUndo) {
+  if (undoStack) { clearTimeout(undoStack.timeout); }
+  const toast = document.querySelector("#undo-toast");
+  const msgEl = document.querySelector("#undo-message");
+  const btnEl = document.querySelector("#undo-btn");
+  if (!toast || !msgEl || !btnEl) return;
+  msgEl.textContent = message;
+  toast.style.display = "flex";
+  const handleUndo = () => {
+    toast.style.display = "none";
+    if (undoStack) clearTimeout(undoStack.timeout);
+    onUndo();
+    undoStack = null;
+  };
+  btnEl.onclick = handleUndo;
+  undoStack = {
+    timeout: setTimeout(() => {
+      toast.style.display = "none";
+      undoStack = null;
+    }, 6000),
+  };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -708,7 +748,16 @@ function renderList() {
       </article>`;
     return;
   }
-  const items = currentCollection();
+  let items = currentCollection();
+
+  // 搜索筛选
+  const filterVal = listFilterValue.trim().toLowerCase();
+  if (filterVal) {
+    items = items.filter((item) =>
+      Object.values(item).some((v) => String(v || "").toLowerCase().includes(filterVal))
+    );
+  }
+
   let repHtml = "";
   if (activeTab === "publications") {
     const order = data.representativeOrder || [];
@@ -856,7 +905,7 @@ function setActiveTab(tab) {
   // 切换面板
   const isDeploy = tab === "deploy";
   const isFiles = tab === "files";
-  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles);
+  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles && tab !== "translations");
   document.querySelector("#panel-deploy")?.classList.toggle("active", isDeploy);
   document.querySelector("#panel-files")?.classList.toggle("active", isFiles);
 
@@ -869,6 +918,12 @@ function setActiveTab(tab) {
     return;
   }
 
+  // 翻译管理（自定义面板）
+  if (tab === "translations") {
+    renderTranslationsPanel();
+    return;
+  }
+
   // CMS 模式
   const schema = schemas[tab];
   document.querySelector("#active-kicker").textContent = tab;
@@ -877,6 +932,56 @@ function setActiveTab(tab) {
   document.querySelector("#editor-title").textContent = "编辑当前条目";
   buildForm();
   renderList();
+}
+
+function renderTranslationsPanel() {
+  const panel = document.querySelector("#panel-cms");
+  panel.classList.add("active");
+  document.querySelector("#active-kicker").textContent = "translations";
+  document.querySelector("#active-title").textContent = "翻译管理";
+  const editorPanel = document.querySelector("#panel-cms .editor-panel");
+  const listCol = document.querySelector("#panel-cms .cms-list-col");
+  if (editorPanel) {
+    if (!data.translations) data.translations = {};
+    const json = JSON.stringify(data.translations, null, 2);
+    editorPanel.innerHTML = `
+      <div class="section-heading inline">
+        <div>
+          <p class="section-kicker">Translations</p>
+          <h2>翻译管理</h2>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:0.82rem;line-height:1.5;margin:0 0 12px;">
+        编辑中英文翻译对照。左侧为中文原文，右侧为英文翻译。修改后点击「保存翻译」。
+      </p>
+      <textarea id="translations-editor" spellcheck="false" style="width:100%;min-height:500px;background:rgba(0,0,0,0.25);border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:16px;color:rgba(255,255,255,0.7);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:0.78rem;line-height:1.6;resize:vertical;">${escapeHtml(json)}</textarea>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <button class="admin-button primary" id="btn-save-translations" type="button">保存翻译</button>
+        <button class="admin-button" id="btn-format-translations" type="button">格式化</button>
+      </div>
+    `;
+    document.querySelector("#btn-save-translations")?.addEventListener("click", async () => {
+      try {
+        const raw = document.querySelector("#translations-editor")?.value || "{}";
+        data.translations = JSON.parse(raw);
+        await persistAndWrite();
+        setLocalStatus("翻译已保存到 data.js", "success");
+        triggerSaveFlash();
+      } catch (e) {
+        setLocalStatus(`JSON 格式错误：${e.message}`, "error");
+      }
+    });
+    document.querySelector("#btn-format-translations")?.addEventListener("click", () => {
+      try {
+        const raw = document.querySelector("#translations-editor")?.value || "{}";
+        const formatted = JSON.stringify(JSON.parse(raw), null, 2);
+        document.querySelector("#translations-editor").value = formatted;
+      } catch (e) {
+        setLocalStatus(`格式化失败：${e.message}`, "error");
+      }
+    });
+  }
+  if (listCol) listCol.style.display = "none";
 }
 
 async function loadFilesPanel() {
@@ -1692,7 +1797,7 @@ async function restoreSite() {
 async function deleteBackup(backupName) {
   if (!USE_LOCAL_ADMIN_SERVER) return;
   if (!backupName) return;
-  if (!confirm(`确定删除备份「${backupName}」吗？此操作无法撤销。`)) return;
+  if (!confirm(`确定删除备份「${backupName}」？删除后无法恢复。`)) return;
   try {
     setLocalStatus("正在删除备份…", "info");
     const result = await localRequest("/api/backups", {
@@ -1857,6 +1962,16 @@ function init() {
     }
   });
 
+  // ── 条目搜索筛选 ──
+  const listFilter = document.querySelector("#list-filter");
+  listFilter?.addEventListener("input", (e) => {
+    listFilterValue = e.target.value;
+    renderList();
+  });
+  listFilter?.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") { listFilter.value = ""; listFilterValue = ""; renderList(); }
+  });
+
   // ── 条目列表事件 ──
   list?.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-action]");
@@ -1889,11 +2004,21 @@ function init() {
       buildForm();
       renderList();
     } else {
-      currentCollection().splice(index, 1);
+      // 删除确认 + 撤销
+      const item = currentCollection()[index];
+      const label = item?.title || item?.label || `条目 ${index + 1}`;
+      if (!confirm(`确定删除「${label}」？删除后可通过「撤销」恢复。`)) return;
+      const deleted = currentCollection().splice(index, 1)[0];
       editingIndex = 0;
       await persistAndWrite();
       buildForm();
       renderList();
+      showUndoToast(`已删除「${label}」`, () => {
+        currentCollection().splice(index, 0, deleted);
+        persistAndWrite();
+        buildForm();
+        renderList();
+      });
     }
   });
 

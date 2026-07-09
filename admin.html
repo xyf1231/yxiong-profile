@@ -361,6 +361,9 @@
               <button class="tab-button" data-tab="achievements" type="button">成果</button>
               <button class="tab-button" data-tab="experience" type="button">经历</button>
               <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
+              <button class="tab-button" data-tab="metrics" type="button">📊 统计数据</button>
+              <button class="tab-button" data-tab="footer" type="button">📝 页脚信息</button>
+              <button class="tab-button" data-tab="translations" type="button">🌐 翻译管理</button>
             </div>
           </div>
           <div class="sidebar-group">
@@ -484,10 +487,11 @@
               </div>
 
               <div class="cms-list-col">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
                   <h3 style="font-size:0.95rem;font-weight:700;margin:0;color:rgba(255,255,255,0.75);">条目列表</h3>
                   <button class="admin-button" id="add-item" type="button">+ 新增</button>
                 </div>
+                <input id="list-filter" type="text" placeholder="搜索条目…" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#fff;font:inherit;font-size:0.8rem;outline:none;box-sizing:border-box;" />
                 <section class="item-list" id="item-list"></section>
               </div>
             </div>
@@ -767,6 +771,10 @@
       </main>
     </div>
 
+    <div id="undo-toast" style="position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(30,30,50,0.95);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px 20px;font-size:0.85rem;color:#fff;display:none;align-items:center;gap:16px;box-shadow:0 16px 48px rgba(0,0,0,0.4);">
+      <span id="undo-message">已删除</span>
+      <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
+    </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
     <script src="js/data.js?v=v1.12.12" charset="utf-8"></script>
     <script src="js/admin.js?v=v1.12.12" charset="utf-8"></script>

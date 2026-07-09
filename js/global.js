@@ -557,7 +557,7 @@ const translations = {
   },
 };
 
-const profileEnglish = {
+const profileEnglish = (window.DEFAULT_SITE_DATA?.translations?.profileEnglish) || {
   nameCn: "Yifeng Xiong",
   title: "Researcher in Fiber-Integrated Intelligent Optoelectronic Devices",
   subtitle:
@@ -568,7 +568,7 @@ const profileEnglish = {
   focus: "Optical Fiber Devices · Heterogeneous Integration · Intelligent Optoelectronics · Sensing & Imaging",
 };
 
-const researchEnglish = [
+const researchEnglish = (window.DEFAULT_SITE_DATA?.translations?.researchEnglish) || [
   {
     title: "Fiber-Integrated Optoelectronic Devices",
     text: "Developing compact, high-performance fiber devices through localized micro/nano fabrication and heterogeneous material integration.",
@@ -583,7 +583,7 @@ const researchEnglish = [
   },
 ];
 
-const publicationChineseTitles = {
+const publicationChineseTitles = (window.DEFAULT_SITE_DATA?.translations?.publicationChineseTitles) || {
   "One-pixel, one-shot identification of light fingerprints in fiber.": "光纤中光指纹的单像素、单次识别",
   "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.": "基于铌酸锂驱动器的兆赫兹速率宽调谐光纤滤波器",
   "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.":
@@ -601,7 +601,7 @@ const zoneChinese = {
   Other: "其他论文",
 };
 
-const venueChinese = {
+const venueChinese = (window.DEFAULT_SITE_DATA?.translations?.venueChinese) || {
   "Nature Electronics": "《自然·电子学》",
   "Laser & Photonics Reviews": "《激光与光子学评论》",
   "ACS Photonics": "《ACS 光子学》",
@@ -610,7 +610,7 @@ const venueChinese = {
   "Advanced Materials": "《先进材料》",
 };
 
-const textEnglish = {
+const textEnglish = (window.DEFAULT_SITE_DATA?.translations?.textEnglish) || {
   "长期": "Ongoing",
   "一作论文": "First-author Papers",
   "发明专利": "Patents",
@@ -783,7 +783,7 @@ const textEnglish = {
     "Address: A302, School of Modern Engineering and Applied Sciences, Xianlin Campus, Nanjing University",
 };
 
-const newsDetailEnglish = {
+const newsDetailEnglish = (window.DEFAULT_SITE_DATA?.translations?.newsDetailEnglish) || {
   title: "Fiber-Tip Integration: Reading Light Fingerprints In Situ",
   subtitle: "A three-dimensional single-pixel device on an optical fiber tip enables one-shot in-fiber four-dimensional light-state identification",
   contentHtml:

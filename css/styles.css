@@ -2457,7 +2457,7 @@ html[lang="en"] .subtle-name {
   align-items: center;
   gap: 20px;
   padding: 26px clamp(20px, 4vw, 48px) max(26px, env(safe-area-inset-bottom));
-  color: var(--muted);
+  color: #999;
   font-size: var(--font-small);
   font-weight: 500;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
@@ -2467,18 +2467,8 @@ html[lang="en"] .subtle-name {
   text-align: right;
 }
 
-.footer-version {
-  color: rgba(255, 255, 255, 0.35);
-  font-size: var(--font-tiny);
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-}
-
+.footer-version,
 .footer-visitors {
-  color: rgba(255, 255, 255, 0.35);
-  font-size: var(--font-tiny);
   letter-spacing: 0.02em;
   white-space: nowrap;
   font-weight: 500;
