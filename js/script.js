@@ -2954,6 +2954,15 @@ document.addEventListener("click", (event) => {
 });
 
 
+function initVisitorCounter() {
+  const el = document.getElementById('visitor-count');
+  if (!el) return;
+  fetch('/api/counter', { method: 'POST' })
+    .then(r => r.json())
+    .then(d => { el.textContent = d.count.toLocaleString(); })
+    .catch(() => { el.textContent = '--'; });
+}
+
 initSite();
 window.addEventListener("hashchange", setupNavigation);
 if (document.body.classList.contains("home-dark")) {
@@ -2977,3 +2986,5 @@ document.addEventListener("visibilitychange", () => {
     }
   }
 });
+
+initVisitorCounter();

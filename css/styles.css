@@ -2476,6 +2476,15 @@ html[lang="en"] .subtle-name {
   font-variant-numeric: tabular-nums;
 }
 
+.footer-visitors {
+  color: rgba(255, 255, 255, 0.35);
+  font-size: var(--font-tiny);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
 .split-char {
   display: inline-block;
 }
