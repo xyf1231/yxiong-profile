@@ -1,10 +1,2 @@
-/ /index.html 200
-/profile /profile.html 200
-/profile/ /profile.html 200
-/results /results.html 200
-/results/ /results.html 200
-/honors /honors.html 200
-/honors/ /honors.html 200
-/activities /activities.html 200
-/activities/ /activities.html 200
-/admin /admin.html 200
+# Explicit .html routes only.
+# 保留文件以便 Cloudflare Pages 构建，但不再做无扩展路径重写，避免 /profile 这类循环。

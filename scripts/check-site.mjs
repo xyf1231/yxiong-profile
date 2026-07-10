@@ -33,6 +33,7 @@ const requiredFiles = [
   "js/activities-content.js",
   "css/loading-config.css",
   "js/loading-content.js",
+  "js/resource-manifest.js",
 ];
 
 // 收集检查错误与警告
@@ -93,6 +94,11 @@ for (const filePath of htmlFiles) {
     }
     if (!content.includes("js/loading-content.js")) {
       errors.push(`${file}: missing js/loading-content.js`);
+    }
+    if (!content.includes("js/resource-manifest.js")) {
+      errors.push(`${file}: missing js/resource-manifest.js`);
+    } else if (content.indexOf("js/resource-manifest.js") > content.indexOf("js/script.js")) {
+      errors.push(`${file}: js/resource-manifest.js must be loaded before js/script.js`);
     }
   }
 }
