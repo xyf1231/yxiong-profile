@@ -521,6 +521,53 @@
       .editor-panel .lang-group .checkbox-field {
         grid-column: 1 / -1;
       }
+      .editor-panel .richtext-field {
+        display: grid;
+        gap: 10px;
+      }
+      .editor-panel .richtext-editor {
+        min-height: 280px;
+        max-height: 46vh;
+        overflow: auto;
+        scrollbar-gutter: stable;
+      }
+      .news-form-tip {
+        display: grid;
+        gap: 6px;
+        margin-bottom: 2px;
+        color: rgba(255,255,255,0.56);
+        font-size: 0.8rem;
+        line-height: 1.6;
+      }
+      .news-form-tip p {
+        margin: 0;
+      }
+      .news-core-group {
+        margin-bottom: 10px;
+      }
+      .news-optional-group {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+        padding: 14px 16px;
+      }
+      .news-optional-group > summary {
+        cursor: pointer;
+        color: rgba(255,255,255,0.84);
+        font-size: 0.88rem;
+        font-weight: 700;
+        list-style: none;
+      }
+      .news-optional-group > summary::-webkit-details-marker { display: none; }
+      .news-optional-grid {
+        display: grid;
+        gap: 12px;
+        margin-top: 14px;
+      }
+      .news-optional-grid .field,
+      .news-optional-grid .richtext-field {
+        grid-column: 1 / -1;
+      }
       .editor-panel .upload-note {
         margin-top: 0;
         color: rgba(255,255,255,0.54);
