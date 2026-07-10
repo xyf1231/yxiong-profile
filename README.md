@@ -146,9 +146,11 @@ git push origin main          # 通过 SSH 推送并触发线上部署
 ## Cloudflare Pages 配置
 
 - 公开站点使用 Cloudflare Pages，根域和 `www` 都在 Cloudflare 里配置。
+- 根域和 `www` 不能互相跳转，只保留一个主域，另一个只做别名或直接不绑跳转规则。
 - 路由重写使用仓库根目录的 `_redirects`。
 - 首页访客统计使用 `functions/api/counter.js`，需要绑定一个 Cloudflare D1 数据库，绑定名建议用 `VISITOR_COUNTER_DB`。
 - 计数表结构为单行计数器：`visitor_counter(id, count)`。
+- 收口检查清单见 [`docs/CLOUDFLARE_PAGES_CHECKLIST.md`](./docs/CLOUDFLARE_PAGES_CHECKLIST.md)。
 
 ## 内容维护规则
 
