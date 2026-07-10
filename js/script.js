@@ -109,6 +109,102 @@ function formatTransferRate(bytesPerSecond) {
   return `${mibPerSecond.toFixed(mibPerSecond >= 10 ? 0 : 1)} MB/s`;
 }
 
+const RESOURCE_SIZE_CACHE_KEY = "academicSiteResourceSizeCache";
+const RESOURCE_SIZE_GUESSES = {
+  css: 140 * 1024,
+  js: 180 * 1024,
+  html: 80 * 1024,
+  htm: 80 * 1024,
+  json: 64 * 1024,
+  webp: 220 * 1024,
+  png: 240 * 1024,
+  jpg: 220 * 1024,
+  jpeg: 220 * 1024,
+  gif: 180 * 1024,
+  svg: 36 * 1024,
+  mp4: 2.6 * 1024 * 1024,
+  pdf: 1.2 * 1024 * 1024,
+  ico: 24 * 1024,
+  woff2: 160 * 1024,
+};
+
+function loadResourceSizeCache() {
+  try {
+    const raw = localStorage.getItem(RESOURCE_SIZE_CACHE_KEY);
+    const parsed = raw ? JSON.parse(raw) : {};
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+const resourceSizeCache = loadResourceSizeCache();
+
+function normalizeResourceKey(value = "") {
+  try {
+    return new URL(String(value || ""), window.location.href).pathname.replace(/^\/+/, "");
+  } catch {
+    return String(value || "").split("?")[0].replace(/^\/+/, "");
+  }
+}
+
+function persistResourceSize(key, size) {
+  if (!key || !Number.isFinite(size) || size <= 0) return;
+  const current = Number(resourceSizeCache[key]) || 0;
+  if (size <= current) return;
+  resourceSizeCache[key] = size;
+  try {
+    localStorage.setItem(RESOURCE_SIZE_CACHE_KEY, JSON.stringify(resourceSizeCache));
+  } catch {
+    // Ignore storage failures in restricted browsing contexts.
+  }
+}
+
+function guessResourceSize(key = "") {
+  const ext = (key.split(".").pop() || "").toLowerCase();
+  return RESOURCE_SIZE_GUESSES[ext] || 96 * 1024;
+}
+
+function estimateResourceSize(value) {
+  const key = normalizeResourceKey(value);
+  const cached = Number(resourceSizeCache[key]);
+  if (Number.isFinite(cached) && cached > 0) return cached;
+  return guessResourceSize(key);
+}
+
+function collectExpectedResourceKeys() {
+  const keys = new Set();
+  const add = (value) => {
+    const key = normalizeResourceKey(value);
+    if (!key) return;
+    if (key.startsWith("data:")) return;
+    keys.add(key);
+  };
+
+  document.querySelectorAll('script[src], img[src], source[src], video[poster], audio[src], iframe[src], object[data], embed[src]').forEach((node) => {
+    if (node.hasAttribute("src")) add(node.getAttribute("src"));
+    if (node.hasAttribute("poster")) add(node.getAttribute("poster"));
+    if (node.hasAttribute("data")) add(node.getAttribute("data"));
+  });
+
+  document.querySelectorAll('link[href]').forEach((node) => {
+    const rel = String(node.getAttribute("rel") || "").toLowerCase();
+    if (!/(stylesheet|preload|modulepreload|icon|apple-touch-icon|mask-icon)/.test(rel)) return;
+    add(node.getAttribute("href"));
+  });
+
+  return keys;
+}
+
+function syncResourceCacheFromPerformance() {
+  const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
+  for (const entry of entries) {
+    const size = entry.transferSize || entry.encodedBodySize || entry.decodedBodySize || 0;
+    if (!size) continue;
+    persistResourceSize(normalizeResourceKey(entry.name), size);
+  }
+}
+
 // ==================== 站点加载动画 ====================
 function setupSiteLoadingGate() {
   const root = document.documentElement;
@@ -187,14 +283,24 @@ function setupSiteLoadingGate() {
 
   const updateRealProgress = () => {
     if (finished) return;
+    syncResourceCacheFromPerformance();
     const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
     let totalBytes = 0;
     let loadedBytes = 0;
+    const expectedKeys = collectExpectedResourceKeys();
+    for (const key of expectedKeys) {
+      totalBytes += estimateResourceSize(key);
+    }
     for (const entry of entries) {
       const size = entry.transferSize || entry.encodedBodySize || entry.decodedBodySize || 0;
       if (!size) continue;
-      totalBytes += size;
       if (entry.responseEnd > 0) loadedBytes += size;
+    }
+    const navigationEntry = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
+    const navigationBytes = navigationEntry?.transferSize || navigationEntry?.encodedBodySize || navigationEntry?.decodedBodySize || 0;
+    if (navigationBytes > 0) {
+      loadedBytes += navigationBytes;
+      totalBytes += navigationBytes;
     }
     const rawReal = totalBytes > 0 ? (loadedBytes / totalBytes) * 100 : 0;
     const elapsed = (performance.now() - animStartTime) / 1000;
