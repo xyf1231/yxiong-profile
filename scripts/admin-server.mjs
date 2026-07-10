@@ -561,20 +561,43 @@ async function gitAddCommitPush(req, res) {
 }
 
 // 预览服务器（不依赖外部 serve 包）
+async function resolvePreviewFilePath(baseDir, pathname) {
+  const candidates = [];
+  const cleanPath = pathname.endsWith("/") ? pathname.slice(0, -1) : pathname;
+  candidates.push(cleanPath);
+
+  const ext = extname(cleanPath);
+  if (!ext) {
+    candidates.push(`${cleanPath}.html`);
+    candidates.push(join(cleanPath, "index.html"));
+  }
+
+  for (const candidate of candidates) {
+    const filePath = normalize(join(baseDir, candidate));
+    if (!filePath.startsWith(baseDir)) continue;
+    try {
+      const info = await stat(filePath);
+      if (info.isFile()) return filePath;
+    } catch {
+      // continue searching
+    }
+  }
+
+  return null;
+}
+
 function createPreviewServer() {
   return createServer(async (req, res) => {
     try {
       const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
       let pathname = decodeURIComponent(url.pathname);
       if (pathname === "/") pathname = "/index.html";
-      const filePath = normalize(join(rootDir, pathname));
-      if (!filePath.startsWith(rootDir)) {
-        res.writeHead(403);
-        res.end("Forbidden");
+      const filePath = await resolvePreviewFilePath(rootDir, pathname);
+      if (!filePath) {
+        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Not found");
         return;
       }
-      const info = await stat(filePath);
-      if (!info.isFile()) throw new Error("not a file");
       const body = await readFile(filePath);
       res.writeHead(200, {
         "Content-Type": mimeTypes[extname(filePath).toLowerCase()] || "application/octet-stream",
@@ -645,14 +668,12 @@ function createBackupPreviewServer(backupPath) {
       const url = new URL(req.url || "/", `http://${req.headers.host || "localhost"}`);
       let pathname = decodeURIComponent(url.pathname);
       if (pathname === "/") pathname = "/index.html";
-      const filePath = normalize(join(backupPath, pathname));
-      if (!filePath.startsWith(backupPath)) {
-        res.writeHead(403);
-        res.end("Forbidden");
+      const filePath = await resolvePreviewFilePath(backupPath, pathname);
+      if (!filePath) {
+        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Not found");
         return;
       }
-      const info = await stat(filePath);
-      if (!info.isFile()) throw new Error("not a file");
       const body = await readFile(filePath);
       res.writeHead(200, {
         "Content-Type": mimeTypes[extname(filePath).toLowerCase()] || "application/octet-stream",

@@ -80,8 +80,8 @@
   --home-frame-heading-size-mobile: clamp(3rem, 6vw, 5.7rem);
   --news-heading-size-mobile: clamp(3rem, 6vw, 5.7rem);
   --home-bento-heading-size-mobile: clamp(3rem, 6vw, 5.7rem);
-  --home-bento-card-title-font-size-mobile: clamp(2rem, 1vw, 4.25rem);
-  --home-bento-card-text-font-size-mobile: clamp(0.8rem, 0.8vw, 1.1rem);
+  --home-bento-card-title-font-size-mobile: clamp(1.6rem, 0.8vw, 2.8rem);
+  --home-bento-card-text-font-size-mobile: clamp(0.75rem, 0.5vw, 1rem);
   --section-kicker-font-size-mobile: var(--global-section-kicker-font-size-mobile);
   --section-kicker-letter-spacing-mobile: var(--global-section-kicker-letter-spacing-mobile);
   --section-kicker-margin-bottom-mobile: var(--global-section-kicker-margin-bottom-mobile);

@@ -31,7 +31,7 @@
 
   /* 百分比数字 */
   --loading-percent-color: rgba(255, 255, 255, 0.92);
-  --loading-percent-font-size: clamp(1.5rem, 3vw, 8rem);
+  --loading-percent-font-size: clamp(1.5rem, 4vw, 8rem);
   --loading-percent-margin-top: 30px;
   --loading-percent-text-shadow: 0 0 20px rgba(41, 151, 255, 0.25), 0 0 40px rgba(124, 58, 237, 0.15);
 
@@ -51,7 +51,7 @@
   --loading-hint-margin-top: 8px;
 
   /* 移动端覆盖变量 */
-  --loading-percent-font-size-mobile: clamp(1.5rem, 10vw, 8rem);
+  --loading-percent-font-size-mobile: 2rem;
   --loading-letters-height-mobile: 150px;
   --loading-track-height-mobile: 15px;
   --loading-card-gap-mobile: 0px;
