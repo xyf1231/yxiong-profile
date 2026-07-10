@@ -23,7 +23,8 @@
   "metrics": [
     {
       "label": "一作论文",
-      "value": "10"
+      "value": "10",
+      "labelEn": "a thesis"
     },
     {
       "label": "发明专利",
@@ -60,7 +61,7 @@
       "date": "2026.06.16",
       "slug": "light-fingerprint",
       "eyebrow": "Nature Electronics",
-      "title": "",
+      "title": "《自然 电子学》 | 光纤端面集成：原位读懂纤内光“指纹”",
       "titleEn": "Nature Electronics | Fiber end-face integration: in-situ reading of optical \"fingerprints\" within the fiber",
       "subtitle": "光纤端面三维集成单像素器件，实现纤内四维光信息单拍原位识别",
       "text": "",
@@ -90,7 +91,7 @@
       "date": "2026-07-09",
       "slug": "《激光与光子学评论》｜光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源",
       "eyebrow": "Research News",
-      "title": "",
+      "title": "《激光与光子学评论》｜光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源",
       "titleEn": "Laser and Photonics Review｜Optical fiber-lithium niobate integration-submicrosecond broadband tunable fiber integrated filter and swept light source",
       "subtitle": "",
       "text": "",

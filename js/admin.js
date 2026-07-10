@@ -1147,6 +1147,60 @@ function richTextFieldHtml(key, label, value) {
     </section>`;
 }
 
+function renderFieldControl([key, label, kind], source, { full = false, missing = false } = {}) {
+  const value = source[key];
+  const isEmpty = !value && value !== 0;
+  const cls = full || kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
+  const missingCls = isEmpty && missing ? " field-missing" : "";
+  if (kind === "richtext") return richTextFieldHtml(key, label, value);
+  if (kind === "textarea") return `<label class="${cls}${missingCls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
+  if (kind === "checkbox") {
+    const checked = value ? " checked" : "";
+    return `<label class="${cls} checkbox-field"><span class="checkbox-label"><input type="checkbox" name="${key}"${checked} /> ${label}</span></label>`;
+  }
+  if (kind === "image" || kind === "file") {
+    const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
+    const bucket = kind === "image" ? "images" : "papers";
+    return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><div class="field-inline-actions"><input name="${key}Upload" type="file" accept="${accept}" /><button class="admin-button" type="button" data-open-file-manager="${bucket}" data-open-field="${key}">打开文件管理</button></div></label>`;
+  }
+  return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
+}
+
+function renderNewsForm(source) {
+  const coreFields = [
+    ["date", "发布日期", "", "common"],
+    ["slug", "页面标识（用于链接/文件名）", "", "common"],
+    ["title", "标题", "textarea", "common"],
+    ["subtitle", "导语 / 副标题", "textarea", "common"],
+    ["text", "首页摘要", "textarea", "common"],
+    ["image", "封面图", "image", "common"],
+    ["url", "详情页链接", "", "common"],
+    ["contentHtml", "正文（富文本）", "richtext", "common"],
+  ];
+  const englishFields = [
+    ["titleEn", "标题（英文）", "textarea", "en"],
+    ["subtitleEn", "导语 / 副标题（英文）", "textarea", "en"],
+    ["textEn", "首页摘要（英文）", "textarea", "en"],
+    ["contentHtmlEn", "正文（英文，富文本）", "richtext", "en"],
+  ];
+  return `
+    <div class="news-form-tip">
+      <p>这里先填最常用的内容：发布日期、页面标识、标题、摘要、封面图、详情链接和正文。</p>
+      <p>英文内容收在下方的可折叠区域里，论文信息模块已从默认界面移除。</p>
+    </div>
+    <section class="lang-group news-core-group">
+      <div class="lang-group-header">📋 基础信息</div>
+      ${coreFields.map((field) => renderFieldControl(field, source, { full: true })).join("")}
+    </section>
+    <details class="news-optional-group">
+      <summary>🌍 英文内容（可选）</summary>
+      <div class="news-optional-grid">
+        ${englishFields.map((field) => renderFieldControl(field, source, { full: true })).join("")}
+      </div>
+    </details>
+  `;
+}
+
 function setupRichTextEditors() {
   form.querySelectorAll(".richtext-editor").forEach((editor) => {
     editor.addEventListener("keyup", () => syncRichTextSource(editor));
@@ -1199,6 +1253,13 @@ function buildForm() {
   const schema = schemas[activeTab];
   const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
 
+  if (activeTab === "news") {
+    form.innerHTML = renderNewsForm(source);
+    setupRichTextEditors();
+    injectConverterImportButton();
+    return;
+  }
+
   // 检测哪些语言有字段
   const hasZh = schema.fields.some((f) => f[3] === "zh");
   const hasEn = schema.fields.some((f) => f[3] === "en");
@@ -1247,25 +1308,10 @@ function buildForm() {
     const warn = missing > 0 ? ` <span class="missing-badge">${missing} 项未填写</span>` : "";
     const header = showLangPicker ? `<div class="lang-group-header">${label}${warn}</div>` : "";
     const body = fields
-      .map(([key, label, kind]) => {
-        const value = source[key];
-        const isEmpty = !value && value !== 0;
-        const cls = kind === "textarea" || kind === "image" || kind === "file" || kind === "richtext" ? "field full" : "field";
-        const missingCls = isEmpty && formLang !== "all" && loc !== "common" ? " field-missing" : "";
-        if (kind === "richtext") return richTextFieldHtml(key, label, value);
-        if (kind === "textarea")
-          return `<label class="${cls}${missingCls}"><span>${label}</span><textarea name="${key}">${escapeHtml(value)}</textarea></label>`;
-        if (kind === "checkbox") {
-          const checked = value ? " checked" : "";
-          return `<label class="${cls} checkbox-field"><span class="checkbox-label"><input type="checkbox" name="${key}"${checked} /> ${label}</span></label>`;
-        }
-        if (kind === "image" || kind === "file") {
-          const accept = kind === "image" ? "image/*" : ".pdf,.doc,.docx,image/*";
-          const bucket = kind === "image" ? "images" : "papers";
-          return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" placeholder="可粘贴路径/URL，或选择文件上传" /><div class="field-inline-actions"><input name="${key}Upload" type="file" accept="${accept}" /><button class="admin-button" type="button" data-open-file-manager="${bucket}" data-open-field="${key}">打开文件管理</button></div></label>`;
-        }
-        return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
-      })
+      .map((field) => renderFieldControl(field, source, {
+        full: field[2] === "textarea" || field[2] === "image" || field[2] === "file" || field[2] === "richtext",
+        missing: formLang !== "all" && loc !== "common",
+      }))
       .join("");
     return `<div class="lang-group${missing > 0 && formLang !== "all" ? " lang-group-incomplete" : ""}">${header}${body}</div>`;
   }
@@ -1494,6 +1540,7 @@ async function saveCurrent() {
   const target = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
   for (const [key, , kind] of schema.fields) {
     const el = form.elements[key];
+    if (!el) continue;
     if (kind === "checkbox" && el) {
       target[key] = el.checked ? true : false;
     } else {
@@ -1503,6 +1550,7 @@ async function saveCurrent() {
   for (const [key, , kind] of schema.fields) {
     if (kind !== "image" && kind !== "file") continue;
     const upload = form.elements[`${key}Upload`];
+    if (!upload) continue;
     const file = upload?.files?.[0];
     if (!file) continue;
     const savedPath = await saveFileToSiteFolder(file, key, kind, target);
