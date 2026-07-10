@@ -65,7 +65,7 @@
       "subtitle": "光纤端面三维集成单像素器件，实现纤内四维光信息单拍原位识别",
       "text": "提出在光纤端面集成异质材料器件，用单像素响应快速识别光的模式、偏振、波长与强度。",
       "textEn": "A fiber-tip heterogeneous device identifies mode, polarization, wavelength, and intensity with one-pixel responses.",
-      "image": "resources/images/2026-07-09-nature-electronics-光纤端面集成-原位读懂纤内光-指纹-main.png",
+      "image": "resources/images/2026-07-09-nature-electronics-光纤端面集成-原位读懂纤内光-指纹-main.webp",
       "url": "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html",
       "contentHtml": "（点击编辑后在下方填写富文本正文）",
       "content": "（点击编辑后在下方填写纯文本正文）",
@@ -83,7 +83,8 @@
       "journalEn": "Nature Electronics",
       "authorsEn": "Xiong Yifeng, Fang Shaochen, Xu Yining, etc.",
       "correspondingAuthorsEn": "Lu Yanqing, Yuan Hongtao, Xu Fei",
-      "affiliationEn": "Nanjing University National Laboratory of Solid Microstructure, School of Modern Engineering and Applied Sciences, etc."
+      "affiliationEn": "Nanjing University National Laboratory of Solid Microstructure, School of Modern Engineering and Applied Sciences, etc.",
+      "contentHtmlEn": "<p>在这里输入新闻正文。可以像 Word 一样分段、插入标题和图片。</p>"
     },
     {
       "date": "2026-07-09",

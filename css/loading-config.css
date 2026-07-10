@@ -47,8 +47,13 @@
   /* 资源计数与提示 */
   --loading-resources-font-size: 1.2rem;
   --loading-resources-margin-top: 18px;
+  --loading-resources-color: rgba(210, 218, 230, 0.76);
   --loading-hint-font-size: 1.1rem;
   --loading-hint-margin-top: 8px;
+  --loading-hint-color: rgba(198, 206, 218, 0.70);
+  --loading-version-font-size: 0.92rem;
+  --loading-version-margin-top: 8px;
+  --loading-version-color: rgba(178, 186, 198, 0.58);
 
   /* 移动端覆盖变量 */
   --loading-percent-font-size-mobile: 2rem;

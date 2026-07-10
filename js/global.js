@@ -133,6 +133,12 @@ function getLoadingTextPack() {
   };
 }
 
+function getLoadingVersionText() {
+  const version = String(ASSET_CACHE_BUSTER || "").replace(/^v/i, "").trim();
+  if (!version) return "";
+  return loadLanguagePreference() === "en" ? `Version ${version}` : `版本 ${version}`;
+}
+
 function formatTransferRate(bytesPerSecond) {
   if (!Number.isFinite(bytesPerSecond) || bytesPerSecond <= 0) return "--";
   const kibPerSecond = bytesPerSecond / 1024;
@@ -196,6 +202,7 @@ function setupSiteLoadingGate() {
   let percentEl = null;
   let resourcesEl = null;
   let hintEl = null;
+  let versionEl = null;
   let hintTimer = null;
   let hintFadeTimer = null;
   let hintIndex = 0;
@@ -391,6 +398,7 @@ function setupSiteLoadingGate() {
           <div class="site-loading-percent" aria-label="加载进度">0%</div>
           <div class="site-loading-resources" aria-label="加载资源数"></div>
           <div class="site-loading-hint" aria-live="off"></div>
+          <div class="site-loading-version" aria-label="版本号"></div>
         </div>
       `;
       (document.body || document.documentElement).appendChild(overlay);
@@ -399,6 +407,8 @@ function setupSiteLoadingGate() {
     percentEl = overlay.querySelector(".site-loading-percent");
     resourcesEl = overlay.querySelector(".site-loading-resources");
     hintEl = overlay.querySelector(".site-loading-hint");
+    versionEl = overlay.querySelector(".site-loading-version");
+    if (versionEl) versionEl.textContent = getLoadingVersionText();
 
     // 加载并播放 Letters 手写文字动画
     const lettersEl = document.getElementById("site-loading-letters");
@@ -540,6 +550,7 @@ const translations = {
     explore: "探索",
     manageContent: "维护内容",
     langButton: "EN",
+    footerVisitorsLabel: "访客",
     selectedWork: "代表成果",
     representativePublications: "代表性论文",
     papersKicker: "Papers",
@@ -622,6 +633,7 @@ const translations = {
     explore: "Explore",
     manageContent: "Manage Content",
     langButton: "中文",
+    footerVisitorsLabel: "Visitors",
     selectedWork: "Selected Work",
     representativePublications: "Selected Publications",
     papersKicker: "代表性论文",
