@@ -17,7 +17,8 @@
     "titleEn": "",
     "subtitleEn": "",
     "affiliationEn": "College of Engineering and Applied Sciences, Nanjing University",
-    "bioEn": "Tenure-track Assistant Professor and Doctoral Supervisor at the College of Engineering and Applied Sciences, Nanjing University. His research focuses on integrated intelligent optoelectronic devices, particularly heterogeneous material integration enabled by multi-process fabrication, with systematic and innovative work in precision spectroscopy, multidimensional optical-field analysis, and intelligent photodetection and imaging. He has published over 10 first-author papers in journals including Nature Electronics, Science Advances, Advanced Photonics, Advanced Materials, and Laser & Photonics Reviews, including two cover papers and one ESI Highly Cited Paper. He has led projects funded by the National Natural Science Foundation of China and the Jiangsu Provincial Natural Science Foundation, and participated in national and provincial key research programs. His honors include the Second Prize of the Science and Technology Award of the Chinese Society for Optical Engineering, the Outstanding Young Talent Award in Optical Fiber Sensing from the Chinese Society for Optical Engineering, and the Wang Daheng Optical Student Award from the Chinese Optical Society."
+    "bioEn": "Tenure-track Assistant Professor and Doctoral Supervisor at the College of Engineering and Applied Sciences, Nanjing University. His research focuses on integrated intelligent optoelectronic devices, particularly heterogeneous material integration enabled by multi-process fabrication, with systematic and innovative work in precision spectroscopy, multidimensional optical-field analysis, and intelligent photodetection and imaging. He has published over 10 first-author papers in journals including Nature Electronics, Science Advances, Advanced Photonics, Advanced Materials, and Laser & Photonics Reviews, including two cover papers and one ESI Highly Cited Paper. He has led projects funded by the National Natural Science Foundation of China and the Jiangsu Provincial Natural Science Foundation, and participated in national and provincial key research programs. His honors include the Second Prize of the Science and Technology Award of the Chinese Society for Optical Engineering, the Outstanding Young Talent Award in Optical Fiber Sensing from the Chinese Society for Optical Engineering, and the Wang Daheng Optical Student Award from the Chinese Optical Society.",
+    "focusEn": ""
   },
   "metrics": [
     {
@@ -36,7 +37,9 @@
   "research": [
     {
       "title": "多功能光纤集成器件",
-      "text": "聚焦多工艺融合的光纤内外表面局域化增减材加工与异质材料集成，构建紧凑、高性能、多功能的新型光纤器件。"
+      "text": "聚焦多工艺融合的光纤内外表面局域化增减材加工与异质材料集成，构建紧凑、高性能、多功能的新型光纤器件。",
+      "titleEn": "Multifunctional optical fiber integrated device",
+      "textEn": "Focusing on the multi-process integration of localized additive and subtractive processing of optical fiber inner and outer surfaces and the integration of heterogeneous materials, we build compact, high-performance, multi-functional new optical fiber devices."
     },
     {
       "title": "智能光电子集成芯片",
@@ -67,11 +70,19 @@
       "correspondingAuthors": "陆延青、袁洪涛、徐飞",
       "affiliation": "南京大学固体微结构国家实验室、现代工程与应用科学学院等",
       "doi": "10.1038/s41928-026-01660-x",
-      "pdf": "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html"
+      "pdf": "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html",
+      "eyebrowEn": "Nature Electronics",
+      "subtitleEn": "Three-dimensional integrated single-pixel device on the fiber end face enables single-shot in-situ recognition of four-dimensional optical information within the fiber",
+      "contentEn": "(Click edit and fill in the plain text below)",
+      "paperTitleEn": "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip",
+      "journalEn": "Nature Electronics",
+      "authorsEn": "Xiong Yifeng, Fang Shaochen, Xu Yining, etc.",
+      "correspondingAuthorsEn": "Lu Yanqing, Yuan Hongtao, Xu Fei",
+      "affiliationEn": "Nanjing University National Laboratory of Solid Microstructure, School of Modern Engineering and Applied Sciences, etc."
     },
     {
       "date": "2026-07-09",
-      "slug": "光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源",
+      "slug": "《激光与光子学评论》｜光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源",
       "eyebrow": "Research News",
       "title": "光纤-铌酸锂集成： 亚微秒宽带可调谐光纤集成滤波器和扫频光源",
       "titleEn": "LPR | Fiber–Lithium Niobate Integration: Sub-Microsecond Broadband Tunable Fiber-Integrated Filters and Swept Sources",
@@ -88,7 +99,16 @@
       "correspondingAuthors": "",
       "affiliation": "",
       "doi": "",
-      "pdf": ""
+      "pdf": "",
+      "eyebrowEn": "",
+      "subtitleEn": "",
+      "contentHtmlEn": "<p>在这里输入新闻正文。可以像 Word 一样分段、插入标题和图片。</p>",
+      "contentEn": "",
+      "paperTitleEn": "",
+      "journalEn": "",
+      "authorsEn": "",
+      "correspondingAuthorsEn": "",
+      "affiliationEn": ""
     }
   ],
   "allPublications": [
@@ -396,49 +416,65 @@
       "title": "光纤端面集成的超紧凑模式解复用器",
       "text": "国家自然科学基金青年科学基金项目，62305153，2024.01-2025.12，20万元，主持，结题。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Fiber end-face integrated ultra-compact mode demultiplexer",
+      "textEn": "National Natural Science Foundation of China Youth Science Fund Project, 62305153, 2024.01-2025.12, 200,000 yuan, host, project completion."
     },
     {
       "title": "光纤端面微纳光电集成的多功能器件研究",
       "text": "江苏省基础研究计划自然科学基金青年基金项目，BK20230769，2023.09-2026.08，20万元，主持，在研。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Research on multi-functional devices for micro-nano optoelectronic integration on optical fiber end faces",
+      "textEn": "Jiangsu Province Basic Research Program Natural Science Foundation Youth Fund Project, BK20230769, 2023.09-2026.08, 200,000 yuan, host, under research."
     },
     {
       "title": "光电集成的多功能光纤端面器件研究",
       "text": "广东省自然科学基金面上项目，2025A1515012111，2025.01-2027.12，10万元，主持，在研。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Research on optoelectronically integrated multi-functional optical fiber end-face devices",
+      "textEn": "Guangdong Provincial Natural Science Foundation General Project, 2025A1515012111, 2025.01-2027.12, 100,000 yuan, host, under research."
     },
     {
       "title": "面向涡轮发动机非接触式内窥测量的光纤阵列集成器件及系统",
       "text": "中央高校基本科研业务费融合创新项目，2024300439，2024-2025年度，60万元，主持，结题。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Fiber array integrated devices and systems for non-contact endoscopic measurement of turbine engines",
+      "textEn": "Fundamental Research Funds for Central Universities Integrated Innovation Project, 2024300439, 2024-2025, 600,000 yuan, chaired and finalized."
     },
     {
       "title": "多功能集成的光纤端面光电器件",
       "text": "中国博士后科学基金面上项目，2023M731586，2023.06-2023.12，8万元，主持，结题。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Multifunctional integrated optical fiber end-face optoelectronic device",
+      "textEn": "China Postdoctoral Science Foundation General Project, 2023M731586, 2023.06-2023.12, 80,000 yuan, chaired and finalized."
     },
     {
       "title": "光纤端面微纳光电集成的多功能器件研究",
       "text": "江苏省卓越博士后计划，2023ZB826，2022.07-2023.12，20万元，主持，结题。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Research on multi-functional devices for micro-nano optoelectronic integration on optical fiber end faces",
+      "textEn": "Jiangsu Province Excellent Postdoctoral Program, 2023ZB826, 2022.07-2023.12, 200,000 yuan, chaired, project completion."
     },
     {
       "title": "面向高重频飞秒激光器的功能集成微光纤谐振器",
       "text": "国家自然科学基金重点项目，Z32502，2021.12-2026.12，249.6万元，参与，在研。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Functionally integrated microfiber resonator for high repetition frequency femtosecond lasers",
+      "textEn": "National Natural Science Foundation of China Key Project, Z32502, 2021.12-2026.12, 2.496 million yuan, participating, under research."
     },
     {
       "title": "面向下一代通信技术的人工微结构物态调控及智能器件",
       "text": "国家重点研发计划，Z07251、Z07256，2022.01-2026.12，548.65万元，参与，在研。",
       "image": "",
-      "url": ""
+      "url": "",
+      "titleEn": "Artificial microstructure physical state control and smart devices for next-generation communication technology",
+      "textEn": "National Key R&D Program, Z07251, Z07256, 2022.01-2026.12, 5.4865 million yuan, participating, under research."
     }
   ],
   "achievements": [

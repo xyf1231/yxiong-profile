@@ -27,6 +27,12 @@ const storageBuckets = {
 // 本地备份根目录
 const backupRoot = resolve(process.env.ADMIN_BACKUP_DIR || "/Users/xiongyifeng/Documents/02-个人/01-个人网站/备份");
 const allowedBuckets = new Set(Object.keys(storageBuckets));
+function gitSpawn(args, opts = {}) {
+  return spawn("git", args, {
+    ...opts,
+    env: { ...process.env, GIT_SSH_COMMAND: "ssh -o StrictHostKeyChecking=accept-new", ...opts.env },
+  });
+}
 const pythonCandidates = [
   process.env.PYTHON_BIN,
   "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
@@ -95,7 +101,7 @@ async function writeVersionFile(version) {
 }
 
 async function syncVersionArtifacts(version) {
-  const child = spawn("node", ["scripts/bump-version.mjs", version], { cwd: rootDir });
+  const child = spawn(process.execPath, ["scripts/bump-version.mjs", version], { cwd: rootDir });
   let stdout = "";
   let stderr = "";
   child.stdout.on("data", (chunk) => (stdout += chunk));
@@ -149,6 +155,29 @@ function bucketFilePath(bucket, rawPath) {
     throw new Error("文件路径超出允许目录。");
   }
   return { relativePath, fullPath };
+}
+
+async function openPathInFinder(targetPath) {
+  if (!existsSync(targetPath)) {
+    throw new Error("目标路径不存在。");
+  }
+  const platform = process.platform;
+  if (platform === "darwin") {
+    const child = spawn("open", [targetPath], { detached: true, stdio: "ignore" });
+    child.unref();
+    return true;
+  }
+  if (platform === "linux") {
+    const child = spawn("xdg-open", [targetPath], { detached: true, stdio: "ignore" });
+    child.unref();
+    return true;
+  }
+  if (platform === "win32") {
+    const child = spawn("cmd", ["/c", "start", "", targetPath], { detached: true, stdio: "ignore" });
+    child.unref();
+    return true;
+  }
+  throw new Error("当前系统不支持打开文件夹。");
 }
 
 async function listFilesInBucket(bucket) {
@@ -380,7 +409,7 @@ async function updateVersion(req, res) {
 
 async function getGitStatus(res) {
   try {
-    const child = spawn("git", ["status", "--short"], { cwd: rootDir });
+    const child = gitSpawn(["status", "--short"], { cwd: rootDir });
     let stdout = "";
     let stderr = "";
     child.stdout.on("data", (chunk) => (stdout += chunk));
@@ -400,7 +429,7 @@ async function getGitStatus(res) {
 async function testGitHubConnection(res) {
   try {
     // Step 1: check if git repo exists and has remote
-    const remoteChild = spawn("git", ["remote", "get-url", "origin"], { cwd: rootDir });
+    const remoteChild = gitSpawn(["remote", "get-url", "origin"], { cwd: rootDir });
     let remoteUrl = "";
     let remoteErr = "";
     remoteChild.stdout.on("data", (c) => (remoteUrl += c));
@@ -412,7 +441,7 @@ async function testGitHubConnection(res) {
     }
 
     // Step 2: test connectivity with git ls-remote
-    const testChild = spawn("git", ["ls-remote", "--heads", "origin"], { cwd: rootDir });
+    const testChild = gitSpawn(["ls-remote", "--heads", "origin"], { cwd: rootDir });
     let testOut = "";
     let testErr = "";
     testChild.stdout.on("data", (c) => (testOut += c));
@@ -440,7 +469,7 @@ async function testGitHubConnection(res) {
 
 async function pullAndCopyToDownloads(res) {
   try {
-    const pullChild = spawn("git", ["pull", "origin", "main"], { cwd: rootDir });
+    const pullChild = gitSpawn(["pull", "origin", "main"], { cwd: rootDir });
     let pullOut = "";
     let pullErr = "";
     pullChild.stdout.on("data", (chunk) => (pullOut += chunk));
@@ -486,7 +515,7 @@ async function gitAddCommitPush(req, res) {
     const message = payload.message || "Deploy - update content";
 
     // Step 1: git add -A
-    const addChild = spawn("git", ["add", "-A"], { cwd: rootDir });
+    const addChild = gitSpawn(["add", "-A"], { cwd: rootDir });
     let addOut = "";
     addChild.stdout.on("data", (c) => (addOut += c));
     addChild.stderr.on("data", (c) => (addOut += c));
@@ -494,7 +523,7 @@ async function gitAddCommitPush(req, res) {
     await new Promise((resolve) => addChild.on("close", resolve));
 
     // Step 2: check if there's anything to commit
-    const diffChild = spawn("git", ["diff", "--cached", "--quiet"], { cwd: rootDir });
+    const diffChild = gitSpawn(["diff", "--cached", "--quiet"], { cwd: rootDir });
     let hasChanges = true;
     await new Promise((resolve) => diffChild.on("close", (code) => {
       hasChanges = code !== 0; // exit 0 means no changes
@@ -507,14 +536,14 @@ async function gitAddCommitPush(req, res) {
     }
 
     // Step 3: git commit
-    const commitChild = spawn("git", ["commit", "-m", message], { cwd: rootDir });
+    const commitChild = gitSpawn(["commit", "-m", message], { cwd: rootDir });
     let commitOut = "";
     commitChild.stdout.on("data", (c) => (commitOut += c));
     commitChild.stderr.on("data", (c) => (commitOut += c));
     await new Promise((resolve) => commitChild.on("close", resolve));
 
     // Step 4: git push
-    const pushChild = spawn("git", ["push", "origin", "main"], { cwd: rootDir });
+    const pushChild = gitSpawn(["push", "origin", "main"], { cwd: rootDir });
     let pushOut = "";
     pushChild.stdout.on("data", (c) => (pushOut += c));
     pushChild.stderr.on("data", (c) => (pushOut += c));
@@ -731,7 +760,7 @@ async function getAllStatus(res) {
     let version = "v0.0.0";
     if (existsSync(versionPath)) version = (await readFile(versionPath, "utf8")).trim();
 
-    const gitChild = spawn("git", ["status", "--short"], { cwd: rootDir });
+    const gitChild = gitSpawn(["status", "--short"], { cwd: rootDir });
     let gitStdout = "";
     gitChild.stdout.on("data", (c) => (gitStdout += c));
     await new Promise((resolve) => gitChild.on("close", resolve));
@@ -804,6 +833,18 @@ const server = createServer(async (req, res) => {
     }
     if (url.pathname === "/api/files" && req.method === "DELETE") {
       await deleteFile(res, url);
+      return;
+    }
+    if (url.pathname === "/api/files/open-folder" && req.method === "POST") {
+      const body = await readRequestBody(req);
+      const payload = body.length ? JSON.parse(body.toString("utf8") || "{}") : {};
+      const bucket = safeBucket(payload.bucket || url.searchParams.get("bucket"));
+      const { fullPath } = bucketFilePath(bucket, payload.path || url.searchParams.get("path") || "");
+      const folderPath = existsSync(fullPath) && (await stat(fullPath)).isDirectory()
+        ? fullPath
+        : resolve(fullPath, "..");
+      await openPathInFinder(folderPath);
+      sendJson(res, 200, { ok: true, bucket, path: folderPath });
       return;
     }
     if (url.pathname === "/api/images/optimize" && req.method === "POST") {
@@ -918,7 +959,7 @@ server.listen(port, "127.0.0.1", () => {
   console.log(`║  本地预览:  http://localhost:${port}/index.html              ║`);
   console.log(`║  项目目录:  ${rootDir.padEnd(47)}║`);
   console.log(`╚══════════════════════════════════════════════════════════════╝`);
-  console.log("内容写入 data.js；文件写入 resources/images、resources/papers、resources/videos、resources/frames、resources/news；发布使用 GitHub + 自动部署。");
+  console.log("内容写入 data.js；文件写入 resources/images、resources/papers、resources/videos、resources/frames、resources/news；发布使用 GitHub + Vercel 自动部署。");
   if (process.env.ADMIN_OPEN_BROWSER !== "0") {
     const opener = process.platform === "darwin" ? "open" : process.platform === "win32" ? "cmd" : "xdg-open";
     const args = process.platform === "win32" ? ["/c", "start", openUrl] : [openUrl];

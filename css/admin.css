@@ -5,7 +5,7 @@
 
 :root {
   --admin-radius-sm: 8px;
-  --admin-radius-md: 10px;
+  --admin-radius-md: 12px;
   --admin-radius-lg: 16px;
   --admin-radius-xl: 20px;
   --admin-radius-2xl: 24px;
@@ -17,14 +17,15 @@
   --admin-gap-2xl: 24px;
   --admin-text-dim: rgba(255,255,255,0.4);
   --admin-text-muted: var(--muted, rgba(255,255,255,0.55));
-  --admin-bg-card: rgba(0,0,0,0.18);
-  --admin-bg-inset: rgba(255,255,255,0.03);
+  --admin-bg-card: rgba(255,255,255,0.04);
+  --admin-bg-inset: rgba(255,255,255,0.025);
   --admin-border: rgba(255,255,255,0.08);
-  --admin-border-strong: rgba(255,255,255,0.12);
+  --admin-border-strong: rgba(255,255,255,0.14);
   --admin-accent: #2997FF;
   --admin-success: #30d158;
   --admin-danger: #ff453a;
   --admin-warn: #ff9f0a;
+  --admin-shadow: 0 24px 60px rgba(0,0,0,0.24);
 }
 
 .deploy-dashboard { display: grid; gap: var(--admin-gap-xl); }
@@ -32,12 +33,12 @@
   display: grid;
   gap: var(--admin-gap-lg);
   padding: var(--admin-gap-xl);
-  border: 1.5px solid var(--admin-border-strong);
+  border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-2xl);
   background:
     radial-gradient(circle at top left, rgba(41,151,255,0.10), transparent 34%),
     linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  box-shadow: 0 20px 54px rgba(0,0,0,0.22);
+  box-shadow: var(--admin-shadow);
 }
 .deploy-status-chip {
   display: grid;
@@ -74,6 +75,7 @@
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-xl);
   background: var(--admin-bg-card);
+  box-shadow: var(--admin-shadow);
 }
 .deploy-console-pane { display: grid; gap: var(--admin-gap-lg); }
 .deploy-console-head {
@@ -237,6 +239,7 @@ select.deploy-input option { background: #1a1a2e; color: #fff; }
   border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-xl);
   background: var(--admin-bg-card);
+  box-shadow: var(--admin-shadow);
 }
 .deploy-side-panel .deploy-link-grid { margin-top: 0; }
 
@@ -254,11 +257,11 @@ select.deploy-input option { background: #1a1a2e; color: #fff; }
 .backup-console {
   display: grid; gap: var(--admin-gap-lg);
   padding: var(--admin-gap-xl);
-  border: 1.5px solid var(--admin-border-strong);
+  border: 1px solid var(--admin-border);
   border-radius: var(--admin-radius-2xl);
   background: radial-gradient(circle at top left, rgba(96,165,250,0.10), transparent 34%),
     linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-  box-shadow: 0 20px 54px rgba(0,0,0,0.22);
+  box-shadow: var(--admin-shadow);
 }
 .backup-action-group { display: grid; gap: var(--admin-gap-md); }
 .backup-action-group + .backup-action-group { padding-top: var(--admin-gap-lg); border-top: 1px solid var(--admin-border); }

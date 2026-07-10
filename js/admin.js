@@ -32,29 +32,47 @@ const schemas = {
       ["bio", "个人简介", "textarea", "zh"],
       ["bioEn", "个人简介（英）", "textarea", "en"],
       ["focus", "研究关键词", "", "zh"],
+      ["focusEn", "研究关键词（英）", "", "en"],
     ],
   },
-  research: { title: "研究内容", fields: [["title", "标题", "", "zh"], ["text", "说明", "textarea", "zh"]] },
+  research: {
+    title: "研究内容",
+    fields: [
+      ["title", "中文标题", "", "zh"],
+      ["titleEn", "英文标题", "", "en"],
+      ["text", "中文说明", "textarea", "zh"],
+      ["textEn", "英文说明", "textarea", "en"],
+    ],
+  },
   news: {
     title: "新闻",
     fields: [
       ["date", "日期", "", "common"],
       ["slug", "标识", "", "common"],
       ["eyebrow", "首屏标签", "", "common"],
+      ["eyebrowEn", "首屏标签（英）", "", "en"],
       ["title", "中文标题", "textarea", "zh"],
       ["titleEn", "英文标题", "textarea", "en"],
       ["subtitle", "导语/副标题", "textarea", "common"],
+      ["subtitleEn", "导语/副标题（英）", "textarea", "en"],
       ["text", "中文摘要（主页轮播）", "textarea", "zh"],
       ["textEn", "英文摘要（主页轮播）", "textarea", "en"],
       ["image", "封面图片", "image", "common"],
       ["url", "详情页链接", "", "common"],
       ["contentHtml", "正文（富文本）", "richtext", "common"],
+      ["contentHtmlEn", "正文（英，富文本）", "richtext", "en"],
       ["content", "正文纯文本", "textarea", "common"],
+      ["contentEn", "正文纯文本（英）", "textarea", "en"],
       ["paperTitle", "论文题目", "textarea", "common"],
+      ["paperTitleEn", "论文题目（英）", "textarea", "en"],
       ["journal", "期刊", "", "common"],
+      ["journalEn", "期刊（英）", "", "en"],
       ["authors", "作者", "", "common"],
+      ["authorsEn", "作者（英）", "", "en"],
       ["correspondingAuthors", "通讯作者", "", "common"],
+      ["correspondingAuthorsEn", "通讯作者（英）", "", "en"],
       ["affiliation", "完成单位", "textarea", "common"],
+      ["affiliationEn", "完成单位（英）", "textarea", "en"],
       ["doi", "DOI", "", "common"],
       ["pdf", "PDF/链接", "file", "common"],
     ],
@@ -76,14 +94,60 @@ const schemas = {
       ["representative", "代表性论文", "checkbox", "common"],
     ],
   },
-  projects: { title: "项目", fields: [["title", "标题", "", "common"], ["text", "说明", "textarea", "common"], ["image", "图片", "image", "common"], ["url", "链接", "", "common"]] },
+  projects: {
+    title: "项目",
+    fields: [
+      ["title", "中文标题", "", "common"],
+      ["titleEn", "英文标题", "", "en"],
+      ["text", "中文说明", "textarea", "common"],
+      ["textEn", "英文说明", "textarea", "en"],
+      ["image", "图片", "image", "common"],
+      ["url", "链接", "", "common"],
+    ],
+  },
   achievements: {
     title: "成果",
-    fields: [["type", "类型", "", "common"], ["year", "年份", "", "common"], ["title", "标题", "", "common"], ["applicant", "申请人/发明人名单", "", "common"], ["detail", "详情", "textarea", "common"]],
+    fields: [
+      ["type", "中文类型", "", "common"],
+      ["typeEn", "英文类型", "", "en"],
+      ["year", "年份", "", "common"],
+      ["title", "中文标题", "", "common"],
+      ["titleEn", "英文标题", "", "en"],
+      ["applicant", "申请人/发明人名单", "", "common"],
+      ["applicantEn", "申请人/发明人名单（英）", "", "en"],
+      ["detail", "中文详情", "textarea", "common"],
+      ["detailEn", "英文详情", "textarea", "en"],
+    ],
   },
-  experience: { title: "经历", fields: [["period", "时间", "", "common"], ["title", "标题", "", "common"], ["text", "说明", "textarea", "common"]] },
-  contacts: { title: "联系方式", fields: [["label", "标签", "", "common"], ["value", "显示文本", "", "common"], ["url", "链接", "", "common"]] },
-  metrics: { title: "统计数据", fields: [["label", "标签", "", "common"], ["value", "数值", "", "common"]] },
+  experience: {
+    title: "经历",
+    fields: [
+      ["period", "中文时间", "", "common"],
+      ["periodEn", "英文时间", "", "en"],
+      ["title", "中文标题", "", "common"],
+      ["titleEn", "英文标题", "", "en"],
+      ["text", "中文说明", "textarea", "common"],
+      ["textEn", "英文说明", "textarea", "en"],
+    ],
+  },
+  contacts: {
+    title: "联系方式",
+    fields: [
+      ["label", "中文标签", "", "common"],
+      ["labelEn", "英文标签", "", "en"],
+      ["value", "显示文本", "", "common"],
+      ["valueEn", "显示文本（英）", "", "en"],
+      ["url", "链接", "", "common"],
+    ],
+  },
+  metrics: {
+    title: "统计数据",
+    fields: [
+      ["label", "中文标签", "", "common"],
+      ["labelEn", "英文标签", "", "en"],
+      ["value", "数值", "", "common"],
+    ],
+  },
   footer: {
     title: "页脚信息",
     type: "object",
@@ -91,6 +155,7 @@ const schemas = {
       ["year", "版权年份", "", "common"],
       ["email", "邮箱", "", "common"],
       ["address", "通讯地址", "", "common"],
+      ["addressEn", "通讯地址（英）", "", "en"],
       ["version", "版本号文本", "", "common"],
     ],
   },
@@ -127,14 +192,102 @@ const jsonBuffer = document.querySelector("#json-buffer");
 const folderStatus = document.querySelector("#folder-status");
 const localStatus = document.querySelector("#local-status") || folderStatus;
 const storageList = document.querySelector("#storage-list");
+const storageRecent = document.querySelector("#storage-recent");
+const storageSearch = document.querySelector("#storage-search");
+const storageCurrentTarget = document.querySelector("#storage-current-target");
 const storageBucket = document.querySelector("#storage-bucket");
 const storagePath = document.querySelector("#storage-path");
 const storageFile = document.querySelector("#storage-file");
+const filesList = document.querySelector("#files-list");
+const filesRecent = document.querySelector("#files-recent");
+const filesSearch = document.querySelector("#files-search");
+const filesCurrentTarget = document.querySelector("#files-current-target");
 const restoreBackupSelect = document.querySelector("#restore-backup");
 const backupList = document.querySelector("#backup-list");
 const backupCountBadge = document.querySelector("#backup-count-badge");
 let pendingStorageFieldName = "";
 let pendingStorageBucket = "images";
+let storageSearchValue = "";
+let filesSearchValue = "";
+const RECENT_FILES_KEY = "academicSiteRecentFiles";
+let recentFilesMap = loadRecentFilesMap();
+
+const AUTO_TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
+const autoTranslateCache = new Map();
+const autoTranslateGlossary = [
+  ["南京大学现代工程与应用科学学院", "School of Modern Engineering and Applied Sciences, Nanjing University"],
+  ["南京大学固体微结构国家实验室", "National Laboratory of Solid State Microstructures, Nanjing University"],
+  ["南京大学", "Nanjing University"],
+  ["现代工程与应用科学学院", "School of Modern Engineering and Applied Sciences"],
+  ["固体微结构国家实验室", "National Laboratory of Solid State Microstructures"],
+  ["准聘助理教授", "tenure-track assistant professor"],
+  ["助理教授", "assistant professor"],
+  ["博士生导师", "PhD supervisor"],
+  ["研究方向", "research directions"],
+  ["光纤集成", "fiber integration"],
+  ["光纤端面", "fiber tip"],
+  ["光纤", "optical fibre"],
+  ["异质材料", "heterogeneous materials"],
+  ["智能感知", "intelligent sensing"],
+  ["智能光电探测", "intelligent optoelectronic detection"],
+  ["智能光电子器件", "intelligent optoelectronic devices"],
+  ["光电子器件", "optoelectronic devices"],
+  ["光学", "optics"],
+  ["模式", "mode"],
+  ["偏振", "polarization"],
+  ["波长", "wavelength"],
+  ["强度", "intensity"],
+  ["单像素", "one-pixel"],
+  ["图像加密通信", "image encryption communication"],
+  ["图像", "image"],
+  ["论文管理", "publications"],
+  ["研究内容", "research"],
+  ["学习工作经历", "education and work experience"],
+  ["代表论文", "selected publications"],
+  ["学术任职", "appointments"],
+  ["联系方式", "contacts"],
+  ["统计数据", "metrics"],
+  ["页脚信息", "footer information"],
+  ["成果", "achievements"],
+  ["经历", "experience"],
+  ["项目", "projects"],
+  ["新闻", "news"],
+  ["个人简介", "profile"],
+  ["页面标题", "page title"],
+  ["首屏标签", "eyebrow"],
+  ["副标题", "subtitle"],
+  ["中文标题", "Chinese title"],
+  ["英文标题", "English title"],
+  ["中文说明", "Chinese description"],
+  ["英文说明", "English description"],
+  ["中文内容", "Chinese content"],
+  ["英文内容", "English content"],
+  ["中文摘要", "Chinese abstract"],
+  ["英文摘要", "English abstract"],
+  ["论文题目", "paper title"],
+  ["期刊", "journal"],
+  ["作者", "authors"],
+  ["通讯作者", "corresponding authors"],
+  ["完成单位", "affiliation"],
+  ["研究关键词", "research keywords"],
+  ["邮箱", "email"],
+  ["通讯地址", "mailing address"],
+  ["标题", "title"],
+  ["时间", "period"],
+  ["标签", "label"],
+  ["内容", "content"],
+  ["分类", "type"],
+  ["主页", "home"],
+  ["本地后台", "local admin"],
+  ["文件管理", "file manager"],
+  ["版本控制台", "deploy console"],
+  ["一键翻译英文", "translate to English"],
+  ["自动翻译", "auto translate"],
+  ["保存到本地", "save locally"],
+  ["清空", "clear"],
+  ["翻译中", "translating"],
+  ["记得保存", "remember to save"],
+].sort((a, b) => b[0].length - a[0].length);
 
 // 版本更新 DOM
 const deployLogEl = document.querySelector("#deploy-log");
@@ -188,9 +341,9 @@ function updateAssetSourceUI(source = currentAssetSource()) {
     btn.classList.toggle("active", btn.dataset.assetSource === source);
   });
   if (sbAssetSourceInline) {
-    sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+    sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel";
   }
-  if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+  if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel";
 }
 
 function assetUrlForDiagnostics(src = "") {
@@ -208,7 +361,7 @@ async function setAssetSource(source) {
   data.assetSource = next;
   updateAssetSourceUI(next);
   await persistAndWrite();
-  deployLog(`资源源已切换为: ${next === "cdn" ? "jsDelivr/CDN" : "Vercel/同域"}`, "success");
+  deployLog(`资源源已切换为: ${next === "cdn" ? "jsDelivr/CDN" : "Vercel"}`, "success");
 }
 
 function loadData() {
@@ -252,6 +405,437 @@ function currentCollection() {
   return schema.type === "object" ? data[dataKey] : data[dataKey] || [];
 }
 
+function currentContentTarget() {
+  const schema = schemas[activeTab];
+  if (!schema) return null;
+  return schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || null;
+}
+
+function syncCurrentFormToTarget(target = currentContentTarget()) {
+  const schema = schemas[activeTab];
+  if (!schema || !target) return;
+  syncAllRichTextSources();
+  for (const [key, , kind] of schema.fields) {
+    const el = form.elements[key];
+    if (!el) continue;
+    if (kind === "checkbox") target[key] = Boolean(el.checked);
+    else target[key] = el.value || "";
+  }
+}
+
+function loadRecentFilesMap() {
+  try {
+    const raw = localStorage.getItem(RECENT_FILES_KEY);
+    return raw ? JSON.parse(raw) || {} : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistRecentFilesMap() {
+  try {
+    localStorage.setItem(RECENT_FILES_KEY, JSON.stringify(recentFilesMap));
+  } catch {
+    /* ignore */
+  }
+}
+
+function touchRecentFile(bucket = "images", path = "") {
+  const cleanBucket = String(bucket || "images");
+  const cleanPath = String(path || "").trim();
+  if (!cleanPath) return;
+  const next = [cleanPath, ...((recentFilesMap[cleanBucket] || []).filter((item) => item !== cleanPath))].slice(0, 6);
+  recentFilesMap[cleanBucket] = next;
+  persistRecentFilesMap();
+  renderRecentFiles("storage");
+  renderRecentFiles("files");
+}
+
+function recentFilesForBucket(bucket = "images") {
+  return Array.isArray(recentFilesMap[bucket]) ? recentFilesMap[bucket] : [];
+}
+
+function fileUrlForBucket(bucket = "images", path = "") {
+  return `${storageFolderPath(bucket)}/${path}`;
+}
+
+async function openLocalFileFolder(bucket = "images", path = "") {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再打开文件夹。", "error");
+    return false;
+  }
+  try {
+    const payload = { bucket, path };
+    const result = await localRequest("/api/files/open-folder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    setLocalStatus(`已打开文件夹：${result.path}`, "success");
+    return true;
+  } catch (error) {
+    setLocalStatus(`打开文件夹失败：${error.message}`, "error");
+    return false;
+  }
+}
+
+function normalizeFileSearch(value = "") {
+  return String(value || "").trim().toLowerCase();
+}
+
+function matchesFileSearch(file, bucket, query = "") {
+  const needle = normalizeFileSearch(query);
+  if (!needle) return true;
+  const haystack = [
+    bucket,
+    file.path,
+    file.size ? String(Math.round(file.size / 1024)) : "",
+    file.mtime || "",
+  ].join(" ").toLowerCase();
+  return haystack.includes(needle);
+}
+
+function currentFileTargetLabel() {
+  if (pendingStorageFieldName) return pendingStorageFieldName;
+  const schema = schemas[activeTab];
+  if (!schema) return "—";
+  return activeFileFieldName();
+}
+
+function updateCurrentFileTargetLabels() {
+  const label = currentFileTargetLabel();
+  if (storageCurrentTarget) storageCurrentTarget.textContent = label || "—";
+  const filesBucket = document.querySelector("#files-bucket")?.value || "images";
+  if (filesCurrentTarget) filesCurrentTarget.textContent = `resources/${filesBucket}`;
+}
+
+function fillCurrentFileField(url = "", bucket = "images", path = "") {
+  const fieldName = activeFileFieldName();
+  const field = form.elements[fieldName];
+  if (!field) {
+    setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
+    return false;
+  }
+  field.value = url;
+  if (bucket && path) touchRecentFile(bucket, path);
+  setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success");
+  return true;
+}
+
+function hasChineseText(value = "") {
+  return /[\u3400-\u9fff]/.test(String(value));
+}
+
+function tidyEnglishText(value = "") {
+  return String(value)
+    .replace(/\u00a0/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/\s+([,.;:!?])/g, "$1")
+    .replace(/([([\{])\s+/g, "$1")
+    .replace(/\s+([)\]}\u3001])/g, "$1")
+    .replace(/\s+([’'])/g, "$1")
+    .replace(/\s*([·•])\s*/g, " $1 ")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function applyLocalTranslationGlossary(value = "") {
+  let text = String(value);
+  for (const [zh, en] of autoTranslateGlossary) {
+    text = text.split(zh).join(en);
+  }
+  return tidyEnglishText(
+    text
+      .replace(/，/g, ", ")
+      .replace(/。/g, ". ")
+      .replace(/：/g, ": ")
+      .replace(/；/g, "; ")
+      .replace(/（/g, "(")
+      .replace(/）/g, ")")
+      .replace(/“|”/g, "\"")
+      .replace(/‘|’/g, "'"),
+  );
+}
+
+async function remoteTranslateText(value = "") {
+  const text = String(value || "").trim();
+  if (!text) return "";
+  if (!hasChineseText(text)) return text;
+  const cacheKey = `remote:${text}`;
+  if (autoTranslateCache.has(cacheKey)) return autoTranslateCache.get(cacheKey);
+  const params = new URLSearchParams({
+    client: "gtx",
+    sl: "zh-CN",
+    tl: "en",
+    dt: "t",
+    q: text,
+  });
+  const response = await fetch(`${AUTO_TRANSLATE_ENDPOINT}?${params.toString()}`, { cache: "no-store" });
+  if (!response.ok) throw new Error(`HTTP ${response.status}`);
+  const payload = await response.json();
+  const translated = Array.isArray(payload?.[0]) ? payload[0].map((part) => part?.[0] || "").join("") : "";
+  const cleaned = tidyEnglishText(translated);
+  if (!cleaned || hasChineseText(cleaned)) throw new Error("translation returned empty text");
+  autoTranslateCache.set(cacheKey, cleaned);
+  return cleaned;
+}
+
+async function translateText(value = "") {
+  const text = String(value || "");
+  const trimmed = text.trim();
+  if (!trimmed) return "";
+  const cacheKey = `text:${trimmed}`;
+  if (autoTranslateCache.has(cacheKey)) return autoTranslateCache.get(cacheKey);
+  if (!hasChineseText(trimmed)) {
+    autoTranslateCache.set(cacheKey, text);
+    return text;
+  }
+  try {
+    const remote = await remoteTranslateText(trimmed);
+    autoTranslateCache.set(cacheKey, remote);
+    return remote;
+  } catch {
+    const local = applyLocalTranslationGlossary(trimmed);
+    autoTranslateCache.set(cacheKey, local);
+    return local;
+  }
+}
+
+async function translateHtmlContent(html = "") {
+  const markup = String(html || "");
+  if (!markup.trim()) return "";
+  const template = document.createElement("template");
+  template.innerHTML = markup;
+  const nodeFilter = window.NodeFilter || { SHOW_TEXT: 4, FILTER_ACCEPT: 1, FILTER_REJECT: 0 };
+  const nodes = [];
+  const walker = document.createTreeWalker(
+    template.content,
+    nodeFilter.SHOW_TEXT,
+    {
+      acceptNode(node) {
+        const parent = node.parentElement;
+        if (!parent) return nodeFilter.FILTER_REJECT;
+        if (["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA"].includes(parent.tagName)) return nodeFilter.FILTER_REJECT;
+        if (!String(node.nodeValue || "").trim()) return nodeFilter.FILTER_REJECT;
+        return hasChineseText(node.nodeValue) ? nodeFilter.FILTER_ACCEPT : nodeFilter.FILTER_REJECT;
+      },
+    },
+  );
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  if (nodes.length === 0) return markup;
+  const translated = await Promise.all(nodes.map((node) => translateText(node.nodeValue)));
+  nodes.forEach((node, index) => {
+    node.nodeValue = translated[index];
+  });
+  return template.innerHTML;
+}
+
+function autoTranslatePairsForSchema(schemaId) {
+  const pairs = {
+    profile: [
+      ["title", "titleEn"],
+      ["subtitle", "subtitleEn"],
+      ["affiliation", "affiliationEn"],
+      ["bio", "bioEn"],
+      ["focus", "focusEn"],
+    ],
+    research: [
+      ["title", "titleEn"],
+      ["text", "textEn"],
+    ],
+    news: [
+      ["eyebrow", "eyebrowEn"],
+      ["title", "titleEn"],
+      ["subtitle", "subtitleEn"],
+      ["text", "textEn"],
+      ["contentHtml", "contentHtmlEn"],
+      ["content", "contentEn"],
+      ["paperTitle", "paperTitleEn"],
+      ["journal", "journalEn"],
+      ["authors", "authorsEn"],
+      ["correspondingAuthors", "correspondingAuthorsEn"],
+      ["affiliation", "affiliationEn"],
+    ],
+    publications: [
+      ["titleZh", "title"],
+      ["venueZh", "venue"],
+    ],
+    projects: [
+      ["title", "titleEn"],
+      ["text", "textEn"],
+    ],
+    achievements: [
+      ["type", "typeEn"],
+      ["title", "titleEn"],
+      ["applicant", "applicantEn"],
+      ["detail", "detailEn"],
+    ],
+    experience: [
+      ["period", "periodEn"],
+      ["title", "titleEn"],
+      ["text", "textEn"],
+    ],
+    contacts: [
+      ["label", "labelEn"],
+      ["value", "valueEn"],
+    ],
+    metrics: [
+      ["label", "labelEn"],
+    ],
+    footer: [
+      ["address", "addressEn"],
+    ],
+  };
+  const schema = schemas[schemaId];
+  if (!schema) return [];
+  const allowed = new Set(schema.fields.map(([key]) => key));
+  return (pairs[schemaId] || []).filter(([fromKey, toKey]) => allowed.has(fromKey) && allowed.has(toKey));
+}
+
+async function autoTranslateCurrentEntry(forceOverwrite = false) {
+  const schema = schemas[activeTab];
+  if (!schema) return;
+  const pairs = autoTranslatePairsForSchema(activeTab);
+  if (!pairs.length) {
+    setLocalStatus("当前栏目没有可自动翻译的中英字段。", "info");
+    return;
+  }
+  syncAllRichTextSources();
+  const translateButton = document.querySelector("#translate-current");
+  const previousText = translateButton?.textContent || "一键翻译英文";
+  if (translateButton) {
+    translateButton.disabled = true;
+    translateButton.textContent = "翻译中…";
+  }
+  try {
+    const liveTarget = currentContentTarget();
+    let pending = [];
+    const overwriteTargets = [];
+    for (const [sourceKey, targetKey] of pairs) {
+      const sourceField = form.elements[sourceKey];
+      const sourceValue = sourceField ? sourceField.value : "";
+      if (sourceValue === undefined || sourceValue === null || String(sourceValue).trim() === "") continue;
+      const targetField = form.elements[targetKey];
+      const targetValue = targetField ? targetField.value : "";
+      const targetHasValue = String(targetValue || "").trim() !== "";
+      if (targetHasValue && !forceOverwrite) {
+        overwriteTargets.push(targetKey);
+        continue;
+      }
+      pending.push({ sourceKey, targetKey, sourceValue });
+    }
+
+    if (pending.length === 0 && overwriteTargets.length === 0) {
+      setLocalStatus("没有找到可翻译的空字段。", "info");
+      return;
+    }
+
+    if (overwriteTargets.length > 0 && !forceOverwrite) {
+      const confirmed = window.confirm(`有 ${overwriteTargets.length} 个英文字段已经有内容。确定后会覆盖这些字段；取消则只填空缺字段。`);
+      if (confirmed) {
+        if (translateButton) translateButton.textContent = "覆盖翻译中…";
+        pending = pairs
+          .map(([sourceKey, targetKey]) => ({
+            sourceKey,
+            targetKey,
+            sourceValue: form.elements[sourceKey]?.value || "",
+          }))
+          .filter((item) => item.sourceValue !== undefined && item.sourceValue !== null && String(item.sourceValue).trim() !== "");
+      }
+    }
+
+    const translatedCount = [];
+    for (const item of pending) {
+      const schemaField = schema.fields.find(([key]) => key === item.targetKey) || [];
+      const kind = schemaField[2];
+      const sourceValue = item.sourceValue;
+      let translatedValue = "";
+      if (kind === "richtext") translatedValue = await translateHtmlContent(sourceValue);
+      else translatedValue = await translateText(sourceValue);
+      if (!translatedValue) continue;
+      const input = form.elements[item.targetKey];
+      if (input) input.value = translatedValue;
+      const editor = form.querySelector(`.richtext-editor[data-rich-editor="${item.targetKey}"]`);
+      if (editor) editor.innerHTML = translatedValue;
+      if (liveTarget) liveTarget[item.targetKey] = translatedValue;
+      translatedCount.push(item.targetKey);
+    }
+    if (translatedCount.length === 0) {
+      setLocalStatus("翻译没有产生新的英文内容。", "info");
+      return;
+    }
+    if (liveTarget) buildForm();
+    persist();
+    setLocalStatus(`已生成 ${translatedCount.length} 个英文草稿，记得保存。`, "success");
+  } catch (error) {
+    setLocalStatus(`自动翻译失败：${error.message}`, "error");
+  } finally {
+    if (translateButton) {
+      translateButton.disabled = false;
+      translateButton.textContent = previousText;
+    }
+  }
+}
+
+async function autoTranslateCurrentSection(forceOverwrite = false) {
+  const schema = schemas[activeTab];
+  if (!schema) return;
+  const pairs = autoTranslatePairsForSchema(activeTab);
+  if (!pairs.length) {
+    setLocalStatus("当前板块没有可自动翻译的中英字段。", "info");
+    return;
+  }
+  syncCurrentFormToTarget();
+  const translateButton = document.querySelector("#translate-section");
+  const previousText = translateButton?.textContent || "当前板块批量翻译";
+  if (translateButton) {
+    translateButton.disabled = true;
+    translateButton.textContent = "翻译中…";
+  }
+  try {
+    const collection = schema.type === "object" ? [data[activeTab]] : currentCollection();
+    let translatedCount = 0;
+    let skippedCount = 0;
+    for (const item of collection) {
+      if (!item) continue;
+      for (const [sourceKey, targetKey] of pairs) {
+        const sourceValue = String(item[sourceKey] || "").trim();
+        if (!sourceValue) continue;
+        const targetValue = String(item[targetKey] || "").trim();
+        if (targetValue && !forceOverwrite) {
+          skippedCount += 1;
+          continue;
+        }
+        const schemaField = schema.fields.find(([key]) => key === targetKey) || [];
+        const kind = schemaField[2];
+        const translatedValue = kind === "richtext" ? await translateHtmlContent(sourceValue) : await translateText(sourceValue);
+        if (!translatedValue) continue;
+        item[targetKey] = translatedValue;
+        translatedCount += 1;
+      }
+    }
+    if (translatedCount === 0) {
+      setLocalStatus("没有找到可批量翻译的空英文内容。", "info");
+      return;
+    }
+    buildForm();
+    renderList();
+    persist();
+    if (skippedCount > 0 && !forceOverwrite) {
+      setLocalStatus(`已批量生成 ${translatedCount} 个英文草稿，跳过 ${skippedCount} 个已存在内容；记得保存。`, "success");
+    } else {
+      setLocalStatus(`已批量生成 ${translatedCount} 个英文草稿，记得保存。`, "success");
+    }
+  } catch (error) {
+    setLocalStatus(`批量翻译失败：${error.message}`, "error");
+  } finally {
+    if (translateButton) {
+      translateButton.disabled = false;
+      translateButton.textContent = previousText;
+    }
+  }
+}
+
 function readFile(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -283,6 +867,7 @@ function fileFieldForBucket(bucket = "images") {
 function activeFileFieldName() {
   if (pendingStorageFieldName) return pendingStorageFieldName;
   const schema = schemas[activeTab];
+  if (!schema) return fileFieldForBucket(storageBucket?.value || "images") === "file" ? "url" : "image";
   const imageField = schema.fields.find(([, , kind]) => kind === "image")?.[0];
   const fileField = schema.fields.find(([, , kind]) => kind === "file")?.[0];
   return fileFieldForBucket(storageBucket?.value) === "file" ? fileField || "url" : imageField || "image";
@@ -294,6 +879,7 @@ function openFileManager(bucket = "images", fieldName = "") {
   const tab = schemas[activeTab] ? activeTab : "profile";
   setActiveTab(tab);
   if (storageBucket && bucket) storageBucket.value = bucket;
+  updateCurrentFileTargetLabels();
   refreshFileManager();
   document.querySelector("#cms-file-manager")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -406,7 +992,7 @@ async function writeDataJsToSiteFolder() {
 
 async function persistAndWrite() {
   persist();
-  const saveButtons = [document.querySelector("#save-all")].filter(Boolean);
+  const saveButtons = [document.querySelector("#save-all"), document.querySelector("#save-top")].filter(Boolean);
   saveButtons.forEach((button) => {
     button.disabled = true;
     button.dataset.originalText = button.dataset.originalText || button.textContent;
@@ -693,6 +1279,7 @@ function injectConverterImportButton() {
   const existing = form.querySelector('#import-converter-btn');
   if (existing) existing.remove();
   if (activeTab !== 'news') return;
+  const schema = schemas[activeTab];
   let payload = null;
   try {
     const stored = localStorage.getItem('docxConverterOutput');
@@ -713,17 +1300,14 @@ function injectConverterImportButton() {
   btn.textContent = '📤 导入转换内容（' + (payload.title || '') + '）';
   btn.style.marginTop = '16px';
   btn.addEventListener('click', function () {
-    const allKeys = [
-      'slug','eyebrow','title','titleEn','subtitle','text','textEn',
-      'image','url','contentHtml','content','paperTitle','journal',
-      'authors','correspondingAuthors','affiliation','doi','pdf','date'
-    ];
-    for (const key of allKeys) {
+    for (const [key, , kind] of schema.fields) {
       const el = form.elements[key];
       if (el && payload[key] !== undefined) el.value = payload[key];
+      if (kind === 'richtext' && payload[key]) {
+        const editor = form.querySelector(`.richtext-editor[data-rich-editor="${key}"]`);
+        if (editor) editor.innerHTML = payload[key];
+      }
     }
-    const editor = form.querySelector('.richtext-editor[data-rich-editor="contentHtml"]');
-    if (editor && payload.contentHtml) editor.innerHTML = payload.contentHtml;
     localStorage.removeItem('docxConverterOutput');
     btn.remove();
     deployLog('✅ 已从转换器导入，请检查后保存。', 'success');
@@ -894,8 +1478,12 @@ function clearForm() {
 // ═══════════════════════════════════════════════════════════════
 
 function setActiveTab(tab) {
+  const previousTab = activeTab;
   activeTab = tab;
   editingIndex = 0;
+  if (tab !== previousTab) {
+    pendingStorageFieldName = "";
+  }
 
   // 更新按钮状态
   document.querySelectorAll(".tab-button").forEach((btn) => {
@@ -932,6 +1520,7 @@ function setActiveTab(tab) {
   document.querySelector("#editor-title").textContent = "编辑当前条目";
   buildForm();
   renderList();
+  updateCurrentFileTargetLabels();
 }
 
 function renderTranslationsPanel() {
@@ -987,7 +1576,15 @@ function renderTranslationsPanel() {
 async function loadFilesPanel() {
   if (!USE_LOCAL_ADMIN_SERVER) return;
   const bucket = document.querySelector("#files-bucket")?.value || "images";
-  await listLocalFilesEx(bucket, "files-list", "files-");
+  updateCurrentFileTargetLabels();
+  await loadLocalFiles(bucket, {
+    container: filesList,
+    search: filesSearch?.value || filesSearchValue,
+    allowFill: false,
+    listType: "files",
+    recentTarget: "files",
+    status: false,
+  });
 }
 
 async function uploadFileEx() {
@@ -1009,45 +1606,19 @@ async function uploadFileEx() {
       body: file,
     });
     if (pathInput) pathInput.value = result.path;
+    touchRecentFile(bucket, result.path);
     setLocalStatus(`上传成功：${result.url}`, "success");
     await navigator.clipboard?.writeText(result.url).catch(() => {});
-    await listLocalFilesEx(bucket, "files-list", "files-");
+    await loadLocalFiles(bucket, {
+      container: filesList,
+      search: filesSearch?.value || filesSearchValue,
+      allowFill: false,
+      listType: "files",
+      recentTarget: "files",
+      status: false,
+    });
   } catch (error) {
     setLocalStatus(`上传失败：${error.message}`, "error");
-  }
-}
-
-async function listLocalFilesEx(bucket, listId, prefix) {
-  const container = document.querySelector(`#${listId}`);
-  if (!container) return;
-  container.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
-  try {
-    const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
-    const files = result.files || [];
-    if (!files.length) {
-      container.innerHTML = `<p class="storage-empty">${bucket} 中暂时没有文件。</p>`;
-      return;
-    }
-    container.innerHTML = files.map((file) => {
-      const relativeUrl = `${bucket}/${file.path}`;
-      const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
-      return `
-        <article class="storage-item" data-path="${escapeHtml(file.path)}">
-          <div>
-            <h3>${escapeHtml(file.path)}</h3>
-            <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
-          </div>
-          <div class="item-actions">
-            <button class="icon-button" data-files-action="copy" data-url="${escapeHtml(relativeUrl)}" type="button">复制路径</button>
-            <button class="icon-button danger" data-files-action="delete" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">删除</button>
-          </div>
-        </article>
-      `;
-    }).join("");
-    setLocalStatus(`已读取 ${bucket}：${files.length} 个文件。`, "success");
-  } catch (error) {
-    container.innerHTML = `<p class="storage-empty">读取失败：${escapeHtml(error.message)}</p>`;
-    setLocalStatus(`读取文件失败：${error.message}`, "error");
   }
 }
 
@@ -1166,7 +1737,7 @@ async function runNetworkDiagnostics() {
   const pagePath = `${window.location.pathname}${window.location.search || ""}`;
   const scriptSrc = document.querySelector('script[src*="js/admin.js"]')?.src || "js/admin.js";
   const resourceProbe = assetUrlForDiagnostics("resources/images/profile.webp");
-  const assetModeLabel = currentAssetSource() === "cdn" ? "jsDelivr/CDN" : "Vercel/同域";
+  const assetModeLabel = currentAssetSource() === "cdn" ? "jsDelivr/CDN" : "Vercel";
   networkDiagLog(`资源分发模式：${assetModeLabel}`, "info");
   const tasks = [
     ["后台 HTML", pagePath, { readBody: true, timeoutMs: 12000 }],
@@ -1345,6 +1916,7 @@ async function testGitHubConnection() {
       if (result.remote) deployLog(`远程仓库: ${result.remote}`, "info");
     } else {
       deployLog(`❌ GitHub 连接失败: ${result.message}`, "error");
+      if (result.detail) deployLog(`  详情: ${result.detail}`, "error");
     }
   } catch (err) {
     deployLog(`❌ 测试失败: ${err.message}`, "error");
@@ -1607,39 +2179,120 @@ function buildStoragePath(file, bucket) {
   return `${stem || slugify(file.name.replace(/\.[^.]+$/, "")) || "file"}${extensionOf(file.name)}`;
 }
 
-async function listLocalFiles(bucket = storageBucket?.value || "images") {
-  if (!storageList) return;
-  storageList.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
-  try {
-    const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
-    const files = result.files || [];
-    if (!files.length) {
-      storageList.innerHTML = `<p class="storage-empty">${bucket} 中暂时没有文件。</p>`;
-      return;
-    }
-    storageList.innerHTML = files.map((file) => {
-      const relativeUrl = `${storageFolderPath(bucket)}/${file.path}`;
-      const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
+function renderRecentFiles(view = "storage", search = "") {
+  const container = view === "files" ? filesRecent : storageRecent;
+  if (!container) return;
+  const bucket = view === "files" ? document.querySelector("#files-bucket")?.value || "images" : storageBucket?.value || "images";
+  const recentPaths = recentFilesForBucket(bucket);
+  if (!recentPaths.length) {
+    container.innerHTML = `<p class="storage-empty">暂无最近使用的文件。</p>`;
+    return;
+  }
+  const filtered = recentPaths
+    .map((path) => ({ path, file: { path } }))
+    .filter(({ path }) => matchesFileSearch({ path }, bucket, search));
+  if (!filtered.length) {
+    container.innerHTML = `<p class="storage-empty">最近使用中没有符合 “${escapeHtml(search || "全部")}” 的文件。</p>`;
+    return;
+  }
+  container.innerHTML = filtered
+    .map((path) => {
+      const relativeUrl = fileUrlForBucket(bucket, path.path);
+      const actionButtons = view === "storage"
+        ? `
+            <button class="icon-button primary" data-storage-action="use" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(path.path)}" data-bucket="${escapeHtml(bucket)}" type="button">填入当前字段</button>
+            <button class="icon-button" data-storage-action="copy" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(path.path)}" data-bucket="${escapeHtml(bucket)}" type="button">复制路径</button>
+          `
+        : `
+            <button class="icon-button" data-files-action="copy" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(path.path)}" data-bucket="${escapeHtml(bucket)}" type="button">复制路径</button>
+          `;
       return `
-        <article class="storage-item" data-path="${escapeHtml(file.path)}">
-          <div>
-            <h3>${escapeHtml(file.path)}</h3>
-            <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
+        <article class="storage-recent-item" data-path="${escapeHtml(path.path)}">
+          <div class="storage-recent-copy">
+            <strong>${escapeHtml(path.path)}</strong>
+            <span>${escapeHtml(relativeUrl)}</span>
           </div>
-          <div class="item-actions">
-            <button class="icon-button" data-storage-action="folder" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">打开文件夹</button>
-            <button class="icon-button" data-storage-action="copy" data-url="${escapeHtml(relativeUrl)}" type="button">复制路径</button>
-            <button class="icon-button" data-storage-action="use" data-url="${escapeHtml(relativeUrl)}" type="button">填入当前项</button>
-            <button class="icon-button danger" data-storage-action="delete" data-path="${escapeHtml(file.path)}" type="button">删除</button>
+          <div class="storage-recent-actions">
+            ${actionButtons}
           </div>
         </article>
       `;
-    }).join("");
-    setLocalStatus(`已读取 ${bucket}：${files.length} 个文件。`, "success");
-  } catch (error) {
-    storageList.innerHTML = `<p class="storage-empty">读取失败：${escapeHtml(error.message)}</p>`;
-    setLocalStatus(`读取文件失败：${error.message}`, "error");
+    })
+    .join("");
+}
+
+function renderFileList(container, bucket, files, { search = "", allowFill = false, listType = "storage" } = {}) {
+  if (!container) return;
+  const filtered = files.filter((file) => matchesFileSearch(file, bucket, search));
+  const renderCard = (file, isRecent = false) => {
+    const relativeUrl = fileUrlForBucket(bucket, file.path);
+    const size = file.size ? `${Math.round(file.size / 1024)} KB` : "";
+    const actions = listType === "storage"
+      ? `
+          <button class="icon-button" data-storage-action="folder" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">打开文件夹</button>
+          <button class="icon-button" data-storage-action="copy" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(file.path)}" data-bucket="${escapeHtml(bucket)}" type="button">复制路径</button>
+          ${allowFill ? `<button class="icon-button primary" data-storage-action="use" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(file.path)}" data-bucket="${escapeHtml(bucket)}" type="button">填入当前字段</button>` : ""}
+          <button class="icon-button danger" data-storage-action="delete" data-path="${escapeHtml(file.path)}" data-bucket="${escapeHtml(bucket)}" type="button">删除</button>
+        `
+      : `
+          <button class="icon-button" data-files-action="folder" data-bucket="${escapeHtml(bucket)}" data-path="${escapeHtml(file.path)}" type="button">打开文件夹</button>
+          <button class="icon-button" data-files-action="copy" data-url="${escapeHtml(relativeUrl)}" data-path="${escapeHtml(file.path)}" data-bucket="${escapeHtml(bucket)}" type="button">复制路径</button>
+          <button class="icon-button danger" data-files-action="delete" data-path="${escapeHtml(file.path)}" data-bucket="${escapeHtml(bucket)}" type="button">删除</button>
+        `;
+    return `
+      <article class="storage-item${isRecent ? " is-recent" : ""}" data-path="${escapeHtml(file.path)}">
+        <div>
+          <h3>${escapeHtml(file.path)}</h3>
+          <p>${escapeHtml([bucket, size, file.mtime || ""].filter(Boolean).join(" · "))}</p>
+        </div>
+        <div class="item-actions">
+          ${actions}
+        </div>
+      </article>
+    `;
+  };
+  if (!filtered.length) {
+    container.innerHTML = `<p class="storage-empty">未找到符合 “${escapeHtml(search || "全部")}” 的文件。</p>`;
+    return;
   }
+  container.innerHTML = filtered
+    .map((file) => renderCard(file, false))
+    .join("");
+}
+
+async function loadLocalFiles(bucket = storageBucket?.value || "images", options = {}) {
+  const container = options.container || storageList;
+  const search = options.search ?? storageSearch?.value ?? storageSearchValue;
+  const allowFill = options.allowFill ?? true;
+  const listType = options.listType || "storage";
+  const recentTarget = options.recentTarget || listType;
+  if (!container) return;
+  container.innerHTML = `<p class="storage-empty">正在读取 ${bucket}…</p>`;
+  try {
+    const result = await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}`);
+    const files = result.files || [];
+    renderFileList(container, bucket, files, { search, allowFill, listType });
+    renderRecentFiles(recentTarget, search);
+    if (options.status !== false) {
+      setLocalStatus(`已读取 ${bucket}：${files.length} 个文件。`, "success");
+    }
+    return files;
+  } catch (error) {
+    container.innerHTML = `<p class="storage-empty">读取失败：${escapeHtml(error.message)}</p>`;
+    setLocalStatus(`读取文件失败：${error.message}`, "error");
+    return [];
+  }
+}
+
+async function listLocalFiles(bucket = storageBucket?.value || "images") {
+  updateCurrentFileTargetLabels();
+  return loadLocalFiles(bucket, {
+    container: storageList,
+    search: storageSearch?.value || storageSearchValue,
+    allowFill: true,
+    listType: "storage",
+    recentTarget: "storage",
+  });
 }
 
 async function uploadLocalFile() {
@@ -1655,6 +2308,7 @@ async function uploadLocalFile() {
       body: file,
     });
     storagePath.value = result.path;
+    touchRecentFile(bucket, result.path);
     setLocalStatus(`上传成功：${result.url}`, "success");
     await navigator.clipboard?.writeText(result.url).catch(() => {});
     await listLocalFiles(bucket);
@@ -1667,6 +2321,8 @@ async function deleteLocalFile(bucket, path) {
   if (!confirm(`确定删除 ${bucket}/${path}？`)) return;
   try {
     await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, { method: "DELETE" });
+    recentFilesMap[bucket] = recentFilesForBucket(bucket).filter((item) => item !== path);
+    persistRecentFilesMap();
     setLocalStatus(`已删除：${bucket}/${path}`, "success");
     await listLocalFiles(bucket);
   } catch (error) {
@@ -1914,7 +2570,14 @@ function init() {
 
   // ── CMS 编辑器事件 ──
   addButton?.addEventListener("click", clearForm);
+  document.querySelector("#translate-current")?.addEventListener("click", async (event) => {
+    await autoTranslateCurrentEntry(Boolean(event.shiftKey || event.altKey || event.metaKey));
+  });
+  document.querySelector("#translate-section")?.addEventListener("click", async (event) => {
+    await autoTranslateCurrentSection(Boolean(event.shiftKey || event.altKey || event.metaKey));
+  });
   document.querySelector("#clear-form")?.addEventListener("click", clearForm);
+  document.querySelector("#save-top")?.addEventListener("click", saveCurrent);
   document.querySelector("#save-all")?.addEventListener("click", saveCurrent);
   document.querySelector("#reset-data")?.addEventListener("click", async () => {
     if (!confirm("确定恢复默认数据？")) return;
@@ -2111,29 +2774,56 @@ function init() {
   // ── 文件管理面板 ──
   document.querySelector("#local-refresh-files")?.addEventListener("click", refreshFileManager);
   document.querySelector("#storage-upload")?.addEventListener("click", uploadLocalFile);
-  storageBucket?.addEventListener("change", () => listLocalFiles(storageBucket.value));
+  storageBucket?.addEventListener("change", () => {
+    updateCurrentFileTargetLabels();
+    listLocalFiles(storageBucket.value);
+  });
+  storageSearch?.addEventListener("input", (event) => {
+    storageSearchValue = event.target.value;
+    listLocalFiles(storageBucket?.value || "images");
+  });
+  storageSearch?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    storageSearch.value = "";
+    storageSearchValue = "";
+    listLocalFiles(storageBucket?.value || "images");
+  });
   storageList?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-storage-action]");
+    if (button) {
+      const action = button.dataset.storageAction;
+      if (action === "folder") {
+        await openLocalFileFolder(button.dataset.bucket || storageBucket?.value || "images", button.dataset.path || "");
+        return;
+      }
+      if (action === "copy") {
+        await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+        setLocalStatus("已复制相对路径。", "success");
+      } else if (action === "use") {
+        fillCurrentFileField(button.dataset.url || "", button.dataset.bucket || storageBucket?.value || "images", button.dataset.path || "");
+      } else if (action === "delete") {
+        await deleteLocalFile(button.dataset.bucket || storageBucket?.value || "images", button.dataset.path || "");
+      }
+      return;
+    }
+    const item = event.target.closest(".storage-item[data-path]");
+    if (!item || event.target.closest(".item-actions")) return;
+    const bucket = storageBucket?.value || "images";
+    const url = fileUrlForBucket(bucket, item.dataset.path || "");
+    fillCurrentFileField(url, bucket, item.dataset.path || "");
+    await listLocalFiles(bucket);
+  });
+  storageRecent?.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-storage-action]");
     if (!button) return;
     const action = button.dataset.storageAction;
-    if (action === "folder") {
-      const bucket = button.dataset.bucket || storageBucket?.value || "images";
-      if (storageBucket) storageBucket.value = bucket;
-      pendingStorageBucket = bucket;
-      pendingStorageFieldName = "";
-      await listLocalFiles(bucket);
-      return;
-    }
     if (action === "copy") {
       await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
       setLocalStatus("已复制相对路径。", "success");
     } else if (action === "use") {
-      const fieldName = activeFileFieldName();
-      const field = form.elements[fieldName];
-      if (field) { field.value = button.dataset.url; setLocalStatus(`已填入当前条目的 ${fieldName} 字段。记得保存当前条目。`, "success"); }
-      else setLocalStatus("当前栏目没有可填入的文件/图片字段。", "error");
+      fillCurrentFileField(button.dataset.url || "", button.dataset.bucket || storageBucket?.value || "images", button.dataset.path || "");
     } else if (action === "delete") {
-      await deleteLocalFile(storageBucket?.value || "images", button.dataset.path);
+      await deleteLocalFile(button.dataset.bucket || storageBucket?.value || "images", button.dataset.path || "");
     }
   });
 
@@ -2148,14 +2838,86 @@ function init() {
   // ── 独立文件面板事件 ──
   document.querySelector("#files-refresh-files")?.addEventListener("click", () => {
     const bucket = document.querySelector("#files-bucket")?.value || "images";
-    listLocalFilesEx(bucket, "files-list", "files-");
+    loadLocalFiles(bucket, {
+      container: filesList,
+      search: filesSearch?.value || filesSearchValue,
+      allowFill: false,
+      listType: "files",
+      recentTarget: "files",
+      status: false,
+    });
   });
   document.querySelector("#files-upload")?.addEventListener("click", uploadFileEx);
   document.querySelector("#files-bucket")?.addEventListener("change", () => {
     const bucket = document.querySelector("#files-bucket")?.value || "images";
-    listLocalFilesEx(bucket, "files-list", "files-");
+    updateCurrentFileTargetLabels();
+    loadLocalFiles(bucket, {
+      container: filesList,
+      search: filesSearch?.value || filesSearchValue,
+      allowFill: false,
+      listType: "files",
+      recentTarget: "files",
+      status: false,
+    });
   });
-  document.querySelector("#files-list")?.addEventListener("click", async (event) => {
+  filesSearch?.addEventListener("input", (event) => {
+    filesSearchValue = event.target.value;
+    loadLocalFiles(document.querySelector("#files-bucket")?.value || "images", {
+      container: filesList,
+      search: filesSearchValue,
+      allowFill: false,
+      listType: "files",
+      recentTarget: "files",
+      status: false,
+    });
+  });
+  filesSearch?.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape") return;
+    filesSearch.value = "";
+    filesSearchValue = "";
+    loadLocalFiles(document.querySelector("#files-bucket")?.value || "images", {
+      container: filesList,
+      search: "",
+      allowFill: false,
+      listType: "files",
+      recentTarget: "files",
+      status: false,
+    });
+  });
+  filesList?.addEventListener("click", async (event) => {
+    const button = event.target.closest("button[data-files-action]");
+    if (!button) return;
+    const action = button.dataset.filesAction;
+    if (action === "folder") {
+      await openLocalFileFolder(button.dataset.bucket || document.querySelector("#files-bucket")?.value || "images", button.dataset.path || "");
+      return;
+    }
+    if (action === "copy") {
+      await navigator.clipboard?.writeText(button.dataset.url).catch(() => {});
+      setLocalStatus("已复制相对路径。", "success");
+    } else if (action === "delete") {
+      const bucket = button.dataset.bucket || "images";
+      const path = button.dataset.path;
+      if (!confirm(`确定删除 ${bucket}/${path}？`)) return;
+      try {
+        await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, { method: "DELETE" });
+        recentFilesMap[bucket] = recentFilesForBucket(bucket).filter((item) => item !== path);
+        persistRecentFilesMap();
+        setLocalStatus(`已删除：${bucket}/${path}`, "success");
+        await loadLocalFiles(bucket, {
+          container: filesList,
+          search: filesSearch?.value || filesSearchValue,
+          allowFill: false,
+          listType: "files",
+          recentTarget: "files",
+          status: false,
+        });
+      } catch (error) {
+        setLocalStatus(`删除失败：${error.message}`, "error");
+      }
+    }
+  });
+  filesRecent?.addEventListener("click", async (event) => {
     const button = event.target.closest("button[data-files-action]");
     if (!button) return;
     const action = button.dataset.filesAction;
@@ -2168,8 +2930,17 @@ function init() {
       if (!confirm(`确定删除 ${bucket}/${path}？`)) return;
       try {
         await localRequest(`/api/files?bucket=${encodeURIComponent(bucket)}&path=${encodeURIComponent(path)}`, { method: "DELETE" });
+        recentFilesMap[bucket] = recentFilesForBucket(bucket).filter((item) => item !== path);
+        persistRecentFilesMap();
         setLocalStatus(`已删除：${bucket}/${path}`, "success");
-        await listLocalFilesEx(bucket, "files-list", "files-");
+        await loadLocalFiles(bucket, {
+          container: filesList,
+          search: filesSearch?.value || filesSearchValue,
+          allowFill: false,
+          listType: "files",
+          recentTarget: "files",
+          status: false,
+        });
       } catch (error) {
         setLocalStatus(`删除失败：${error.message}`, "error");
       }

@@ -29,85 +29,106 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.12.12" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.12.12" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.12.15" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.12.15" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
          ═══════════════════════════════════════════════ */
+      body.admin-body {
+        color: #fff;
+        background:
+          radial-gradient(circle at top left, rgba(41,151,255,0.16), transparent 28%),
+          radial-gradient(circle at top right, rgba(48,209,88,0.08), transparent 22%),
+          linear-gradient(180deg, #05070d 0%, #090d16 48%, #070a12 100%);
+        overflow-x: hidden;
+      }
       .admin-layout {
         display: grid;
-        grid-template-columns: 210px 1fr;
-        min-height: 100vh;
+        grid-template-columns: 248px minmax(0, 1fr);
+        min-height: 100dvh;
       }
 
       /* ── 左侧边栏 ── */
       .admin-sidebar {
         position: sticky;
         top: 0;
-        height: 100vh;
-        overflow-y: auto;
-        background: rgba(0,0,0,0.55);
-        backdrop-filter: blur(20px) saturate(1.2);
-        -webkit-backdrop-filter: blur(20px) saturate(1.2);
+        height: 100dvh;
+        overflow: hidden;
+        background:
+          linear-gradient(180deg, rgba(10,14,22,0.94), rgba(6,8,14,0.82));
+        backdrop-filter: blur(22px) saturate(1.2);
+        -webkit-backdrop-filter: blur(22px) saturate(1.2);
         border-right: 1px solid rgba(255,255,255,0.08);
-        padding: 20px 12px 16px;
+        padding: 22px 14px 16px;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 18px;
         z-index: 30;
       }
       .sidebar-header {
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 4px 6px 8px;
-        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: 4px 8px 14px;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
       }
       .sidebar-brand {
-        width: 36px; height: 36px; border-radius: 10px;
-        background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+        width: 40px; height: 40px; border-radius: 12px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.06)),
+          rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.14);
         display: grid; place-items: center;
-        color: #fff; font-weight: 800; font-size: 0.85rem;
+        color: #fff; font-weight: 800; font-size: 0.82rem;
         text-decoration: none; transition: all 0.2s ease;
         flex-shrink: 0;
       }
-      .sidebar-brand:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.2); }
-      .sidebar-title { font-size: 0.95rem; font-weight: 700; color: rgba(255,255,255,0.85); }
-      .sidebar-nav { flex: 1; display: flex; flex-direction: column; gap: 14px; }
+      .sidebar-brand:hover { transform: translateY(-1px); background: rgba(255,255,255,0.16); border-color: rgba(255,255,255,0.22); }
+      .sidebar-title { font-size: 0.95rem; font-weight: 750; color: rgba(255,255,255,0.9); letter-spacing: 0.01em; }
+      .sidebar-nav {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        min-height: 0;
+        overflow-y: auto;
+        padding-right: 6px;
+        scrollbar-gutter: stable;
+      }
       .sidebar-group-label {
-        padding: 4px 10px 8px;
+        padding: 4px 10px 10px;
         color: rgba(255,255,255,0.42);
-        font-size: 0.68rem;
+        font-size: 0.66rem;
         font-weight: 800;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.16em;
         text-transform: uppercase;
       }
       .sidebar-group {
         display: flex;
         flex-direction: column;
-        gap: 4px;
-        padding: 8px;
+        gap: 5px;
+        padding: 10px;
         border: 1px solid rgba(255,255,255,0.06);
-        border-radius: 18px;
+        border-radius: 20px;
         background: rgba(255,255,255,0.03);
       }
       .tab-button {
         width: 100%;
-        min-height: 40px;
+        min-height: 42px;
         border: 1px solid transparent;
         border-radius: 12px;
         background: transparent;
         color: rgba(255,255,255,0.62);
         font: inherit;
-        font-weight: 750;
+        font-weight: 720;
         text-align: left;
         cursor: pointer;
-        padding: 0 12px;
+        padding: 0 14px;
         transition: all 0.16s ease;
       }
       .tab-button:hover {
-        background: rgba(255,255,255,0.06);
+        background: rgba(255,255,255,0.07);
         color: #fff;
         border-color: rgba(255,255,255,0.08);
       }
@@ -121,15 +142,15 @@
       .tab-button[data-tab="deploy"][aria-selected="true"] { background: #2997FF; color: #fff; border-color: #2997FF; }
       .tab-link { display: flex; align-items: center; text-decoration: none; }
       .sidebar-footer {
-        padding: 12px 6px 0;
+        padding: 12px 8px 0;
         border-top: 1px solid rgba(255,255,255,0.06);
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
       }
       .sidebar-status-pill {
         display: flex; align-items: center; gap: 6px;
-        font-size: 0.72rem; color: rgba(255,255,255,0.45);
+        font-size: 0.72rem; color: rgba(255,255,255,0.48);
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-weight: 600;
         cursor: default;
@@ -153,9 +174,9 @@
 
       /* ── 右侧主区域 ── */
       .admin-main {
-        padding: 28px 28px 40px;
+        padding: 28px 28px 42px;
         overflow-y: auto;
-        max-height: 100vh;
+        max-height: 100dvh;
       }
       .admin-shell { padding-top: 0 !important; }
 
@@ -169,25 +190,25 @@
         grid-template-columns: minmax(300px, 1fr) auto;
         gap: 24px;
         align-items: end;
-        margin-bottom: 28px;
+        margin-bottom: 24px;
       }
       .folder-status {
         grid-column: 1 / -1;
-        margin: -6px 0 0;
-        border: 1px solid rgba(41,151,255,0.15);
-        border-radius: 10px;
-        background: rgba(41,151,255,0.05);
-        color: rgba(255,255,255,0.65);
+        margin: -4px 0 0;
+        border: 1px solid rgba(41,151,255,0.16);
+        border-radius: 12px;
+        background: rgba(41,151,255,0.08);
+        color: rgba(255,255,255,0.72);
         font-size: 0.9rem;
-        padding: 10px 12px;
+        padding: 12px 14px;
       }
 
       /* ── CMS 主工作区：编辑表单 + 条目列表 ── */
       .cms-primary {
         display: grid;
-        grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.95fr);
-        gap: 16px;
-        margin-bottom: 18px;
+        grid-template-columns: minmax(0, 1.48fr) minmax(340px, 0.92fr);
+        gap: 18px;
+        margin-bottom: 20px;
         align-items: start;
       }
       .cms-editor-col { display: flex; flex-direction: column; gap: 14px; align-self: start; min-width: 0; }
@@ -197,37 +218,72 @@
         flex-direction: column;
         overflow: hidden;
         min-width: 0;
+        gap: 10px;
+      }
+      .cms-list-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .cms-list-head h3 {
+        font-size: 0.95rem;
+        font-weight: 750;
+        margin: 0;
+        color: rgba(255,255,255,0.82);
+      }
+      .cms-list-filter {
+        width: 100%;
+        margin-bottom: 0 !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255,255,255,0.12) !important;
+        background: rgba(255,255,255,0.05) !important;
+        color: #fff !important;
+        font: inherit;
+        font-size: 0.82rem !important;
+        box-sizing: border-box;
+        transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      }
+      .cms-list-filter:focus {
+        outline: none;
+        border-color: rgba(41,151,255,0.35) !important;
+        box-shadow: 0 0 0 3px rgba(41,151,255,0.12);
+        background: rgba(41,151,255,0.06) !important;
       }
       .cms-list-col .item-list {
         flex: 1;
-        max-height: 70vh;
+        max-height: 72vh;
         overflow-y: auto;
-        gap: 0;
+        gap: 1px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.02);
       }
       .cms-list-col .managed-item {
-        background: rgba(255,255,255,0.09);
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-        padding: 10px 14px;
+        background: rgba(255,255,255,0.05);
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        padding: 14px 16px;
         align-items: start;
         grid-template-columns: auto 1fr auto;
-        gap: 10px;
+        gap: 12px;
       }
       .cms-list-col .managed-item:last-child { border-bottom: none; }
-      .cms-list-col .managed-item:hover { background: rgba(255,255,255,0.12); }
-      .cms-list-col .managed-item h3 { font-size: 0.95rem; margin-bottom: 2px; }
-      .cms-list-col .managed-item p { font-size: 0.82rem; color: var(--muted); margin-bottom: 0; }
+      .cms-list-col .managed-item:hover { background: rgba(255,255,255,0.09); }
+      .cms-list-col .managed-item h3 { font-size: 0.95rem; margin-bottom: 4px; }
+      .cms-list-col .managed-item p { font-size: 0.82rem; color: rgba(255,255,255,0.56); margin-bottom: 0; }
       .cms-list-col .drag-handle {
-        width: 32px; height: 38px; border-radius: 8px;
-        border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+        width: 34px; height: 40px; border-radius: 10px;
+        border: 1.5px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
         color: rgba(255,255,255,0.45); cursor: grab; font: inherit; font-size: 0.9rem;
         font-weight: 700; letter-spacing: -0.15em; padding-right: 0.15em;
         display: grid; place-items: center; flex-shrink: 0;
       }
-      .cms-list-col .drag-handle:hover { border-color: rgba(41,151,255,0.25); background: rgba(41,151,255,0.08); color: #2997FF; }
-      .cms-list-col .item-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+      .cms-list-col .drag-handle:hover { border-color: rgba(41,151,255,0.25); background: rgba(41,151,255,0.1); color: #2997FF; }
+      .cms-list-col .item-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
       .cms-list-col .icon-button {
         min-height: 30px; padding: 0 10px; border-radius: 8px;
-        border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05);
         color: rgba(255,255,255,0.6); font: inherit; font-size: 0.75rem; font-weight: 600;
         cursor: pointer; transition: all 0.15s ease;
       }
@@ -263,9 +319,9 @@
         justify-content: center;
         width: 22px;
         height: 22px;
-        border-radius: 6px;
+        border-radius: 7px;
         background: rgba(41,151,255,0.12);
-        color: #2997FF;
+        color: #8dc5ff;
         font-size: 0.7rem;
         font-weight: 800;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -277,12 +333,15 @@
       .profile-summary {
         display: flex !important;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
         padding: 20px !important;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.04);
       }
       .profile-avatar {
         width: 44px; height: 44px; border-radius: 12px;
-        background: rgba(41,151,255,0.1); border: 1px solid rgba(41,151,255,0.15);
+        background: rgba(41,151,255,0.12); border: 1px solid rgba(41,151,255,0.18);
         display: grid; place-items: center; font-size: 1.3rem; flex-shrink: 0;
       }
 
@@ -292,11 +351,404 @@
       .managed-item:hover .item-actions { opacity: 1; }
       .managed-item.drag-over-before { box-shadow: inset 0 3px 0 var(--accent) !important; }
       .managed-item.drag-over-after { box-shadow: inset 0 -3px 0 var(--accent) !important; }
-      .storage-item { transition: background 0.15s ease, border-color 0.15s ease; }
-      .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); }
+      .storage-item { transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease; }
+      .storage-item:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.12); transform: translateY(-1px); }
       .storage-item.is-targeted {
         border-color: rgba(41,151,255,0.45);
         box-shadow: 0 0 0 1px rgba(41,151,255,0.18), 0 10px 30px rgba(41,151,255,0.08);
+      }
+
+      /* ── 桌面工作台视觉重构 ── */
+      .admin-shell {
+        width: min(100% - 40px, 1560px);
+        margin: 0 auto;
+        padding-top: 0 !important;
+        display: grid;
+        gap: 20px;
+      }
+      .admin-main {
+        padding: 28px 28px 42px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+      }
+      .admin-panel.active {
+        display: grid;
+        gap: 24px;
+      }
+      .admin-hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+        gap: 20px;
+        align-items: start;
+        padding: 24px;
+        margin-bottom: 0;
+        border-radius: 24px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background:
+          radial-gradient(circle at top left, rgba(41,151,255,0.10), transparent 32%),
+          linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.025));
+        box-shadow: 0 24px 64px rgba(0,0,0,0.28);
+      }
+      .admin-hero > div:first-child {
+        max-width: 760px;
+      }
+      .admin-hero .hero-copy {
+        max-width: 66ch;
+        color: rgba(255,255,255,0.7);
+      }
+      .admin-actions {
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        min-width: 220px;
+      }
+      .admin-button {
+        border-radius: 12px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 16px !important;
+        font-size: 0.82rem !important;
+        font-weight: 650 !important;
+      }
+      .admin-button.primary {
+        background: linear-gradient(180deg, #3aa0ff, #2486f0) !important;
+        border-color: rgba(58,160,255,0.95) !important;
+        color: #fff !important;
+      }
+      .admin-button.primary:hover {
+        box-shadow: 0 14px 28px rgba(36,134,240,0.24);
+      }
+      .admin-button.danger {
+        color: #ff7b73 !important;
+      }
+      .coverage-panel {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        padding: 0;
+        border: none;
+        background: transparent;
+      }
+      .coverage-item {
+        min-height: 108px;
+        padding: 16px 16px 14px;
+        border-radius: 18px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.025));
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+      }
+      .coverage-item span {
+        color: rgba(255,255,255,0.46);
+        font-size: 0.66rem;
+        letter-spacing: 0.14em;
+      }
+      .coverage-item strong {
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      .coverage-item small {
+        color: rgba(255,255,255,0.58);
+        font-size: 0.76rem;
+        line-height: 1.45;
+      }
+      .cms-editor-col .editor-panel,
+      .cms-editor-col .json-panel,
+      .cms-editor-col .admin-sync-panel {
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+        box-shadow: 0 24px 60px rgba(0,0,0,0.24);
+      }
+      .editor-panel {
+        padding: 20px 20px 18px;
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+      .editor-panel .section-heading.inline {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 0;
+      }
+      .section-inline-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+      }
+      .section-inline-actions .admin-button {
+        white-space: nowrap;
+      }
+      .editor-panel .form-grid {
+        margin-top: 0;
+        gap: 12px;
+        grid-template-columns: 1fr;
+      }
+      .editor-panel .form-grid > .lang-tabs,
+      .editor-panel .form-grid > .lang-group {
+        grid-column: 1 / -1;
+      }
+      .editor-panel .lang-tabs {
+        margin-bottom: 0;
+      }
+      .editor-panel .lang-group {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px 14px;
+        align-items: start;
+        padding: 16px 16px 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 18px;
+        background: rgba(255,255,255,0.03);
+      }
+      .editor-panel .lang-group-header {
+        grid-column: 1 / -1;
+      }
+      .editor-panel .lang-group .field {
+        min-width: 0;
+      }
+      .editor-panel .lang-group .field.full,
+      .editor-panel .lang-group .richtext-field,
+      .editor-panel .lang-group .checkbox-field {
+        grid-column: 1 / -1;
+      }
+      .editor-panel .upload-note {
+        margin-top: 0;
+        color: rgba(255,255,255,0.54);
+      }
+      .editor-actions {
+        margin-top: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .editor-actions .admin-button.primary {
+        min-width: 148px;
+      }
+      .json-panel {
+        padding: 16px;
+      }
+      .json-panel textarea {
+        min-height: 220px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(0,0,0,0.18);
+        color: #eef4ff;
+      }
+      .admin-sync-panel {
+        padding: 20px;
+      }
+      .admin-sync-copy h2 {
+        margin-top: 2px;
+      }
+      .storage-manager {
+        grid-column: 1 / -1;
+        display: grid;
+        gap: 16px;
+        border-top: 1px solid rgba(255,255,255,0.08);
+        padding-top: 18px;
+      }
+      .storage-manager-head-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .storage-manager-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+      }
+      .storage-manager-head h3 {
+        margin: 0;
+        font-size: 0.96rem;
+        color: rgba(255,255,255,0.86);
+      }
+      .storage-manager-head p {
+        margin: 4px 0 0;
+        color: rgba(255,255,255,0.56);
+      }
+      .storage-target-chip {
+        display: grid;
+        gap: 2px;
+        min-width: 140px;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.04);
+      }
+      .storage-target-chip span {
+        font-size: 0.66rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,0.44);
+      }
+      .storage-target-chip strong {
+        font-size: 0.84rem;
+        color: #fff;
+        word-break: break-all;
+      }
+      .storage-toolbar {
+        display: grid;
+        grid-template-columns: minmax(220px, 0.42fr) minmax(0, 1fr);
+        gap: 14px;
+        align-items: start;
+      }
+      .storage-search-field {
+        margin: 0 !important;
+      }
+      .storage-search-field input {
+        width: 100%;
+      }
+      .storage-recent-panel {
+        display: grid;
+        gap: 10px;
+        min-width: 0;
+      }
+      .storage-recent-head {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .storage-recent-head span {
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: rgba(255,255,255,0.72);
+      }
+      .storage-recent-head small {
+        color: rgba(255,255,255,0.42);
+      }
+      .storage-recent-list {
+        display: grid;
+        gap: 8px;
+      }
+      .storage-recent-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid rgba(255,255,255,0.08);
+        background: rgba(255,255,255,0.035);
+      }
+      .storage-recent-copy {
+        min-width: 0;
+        display: grid;
+        gap: 2px;
+      }
+      .storage-recent-copy strong {
+        font-size: 0.84rem;
+        color: #fff;
+        word-break: break-all;
+      }
+      .storage-recent-copy span {
+        font-size: 0.72rem;
+        color: rgba(255,255,255,0.45);
+      }
+      .storage-recent-actions {
+        display: flex;
+        gap: 8px;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+      }
+      .storage-form {
+        display: grid;
+        grid-template-columns: minmax(180px, 0.34fr) minmax(240px, 1fr) auto;
+        gap: 14px;
+        align-items: end;
+      }
+      .storage-form .field span {
+        color: rgba(255,255,255,0.6);
+      }
+      .storage-form input,
+      .storage-form select,
+      .storage-form textarea {
+        border-radius: 12px;
+      }
+      .storage-list {
+        max-height: 420px;
+        display: grid;
+        gap: 10px;
+        overflow-y: auto;
+        padding-right: 2px;
+      }
+      .storage-item {
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255,255,255,0.045);
+        display: flex;
+        align-items: start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .storage-item h3 {
+        color: #fff;
+      }
+      .storage-item p,
+      .storage-empty {
+        color: rgba(255,255,255,0.56);
+      }
+      .storage-item .item-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+      .storage-item .item-actions .icon-button {
+        min-width: 82px;
+      }
+      .storage-item .item-actions .icon-button.primary {
+        background: rgba(41,151,255,0.16);
+        color: #8dc5ff;
+        border-color: rgba(41,151,255,0.22);
+      }
+      .storage-item .item-actions .icon-button.primary:hover {
+        background: rgba(41,151,255,0.22);
+        border-color: rgba(41,151,255,0.35);
+      }
+      .item-list {
+        background: transparent;
+        border-radius: 18px;
+      }
+      .managed-item {
+        background: rgba(255,255,255,0.05);
+      }
+      .managed-item p {
+        color: rgba(255,255,255,0.56);
+      }
+      #list-filter {
+        width: 100% !important;
+        padding: 10px 12px !important;
+        border-radius: 12px !important;
+        border: 1px solid rgba(255,255,255,0.12) !important;
+        background: rgba(255,255,255,0.05) !important;
+        color: #fff !important;
+      }
+      #list-filter::placeholder {
+        color: rgba(255,255,255,0.34);
+      }
+      #list-filter:focus {
+        outline: none;
+        border-color: rgba(41,151,255,0.35) !important;
+        box-shadow: 0 0 0 3px rgba(41,151,255,0.12);
+        background: rgba(41,151,255,0.06) !important;
+      }
+      #undo-toast {
+        border-radius: 14px !important;
+        border-color: rgba(255,255,255,0.12) !important;
+        background: rgba(12,16,26,0.95) !important;
+      }
+      #undo-btn {
+        border-radius: 10px !important;
+        color: #8dc5ff !important;
       }
 
       /* ── Hero 字号覆盖（后台用，缩小）── */
@@ -326,15 +778,18 @@
       /* ── 移动端 ── */
       @media (max-width: 900px) {
         .admin-layout { grid-template-columns: 1fr; }
-        .admin-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 8px; overflow-y: visible; }
+        .admin-sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; padding: 12px; gap: 8px; overflow: visible; }
         .sidebar-header { width: auto; padding: 0; border-bottom: none; }
-        .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .sidebar-nav { flex-direction: row; flex-wrap: wrap; gap: 8px; flex: 1; overflow: visible; padding-right: 0; }
         .sidebar-group { flex: 1; min-width: 140px; }
         .sidebar-footer { width: 100%; border-top: none; border-bottom: 1px solid rgba(255,255,255,0.08); flex-direction: row; flex-wrap: wrap; gap: 8px; padding: 6px 0; }
         .admin-main { padding: 16px; max-height: none; }
         .admin-hero { grid-template-columns: 1fr; gap: 16px; }
         .coverage-panel { grid-template-columns: 1fr 1fr; }
         .cms-primary { grid-template-columns: 1fr; }
+        .storage-toolbar { grid-template-columns: 1fr; }
+        .storage-manager-head { align-items: start; flex-direction: column; }
+        .storage-manager-head-actions { justify-content: flex-start; }
       }
     </style>
   </head>
@@ -363,7 +818,6 @@
               <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
               <button class="tab-button" data-tab="metrics" type="button">📊 统计数据</button>
               <button class="tab-button" data-tab="footer" type="button">📝 页脚信息</button>
-              <button class="tab-button" data-tab="translations" type="button">🌐 翻译管理</button>
             </div>
           </div>
           <div class="sidebar-group">
@@ -411,7 +865,7 @@
                 <p class="hero-copy">编辑下方内容，点击“保存到本地”即可把当前条目写回 data.js。文件、图片、PDF 和版本发布都在同一套后台里完成。</p>
               </div>
               <div class="admin-actions">
-                <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
+                <button class="admin-button primary" id="save-top" type="button">保存到本地</button>
                 <button class="admin-button" id="export-json" type="button">导出 JSON</button>
                 <button class="admin-button danger" id="reset-data" type="button">恢复默认</button>
               </div>
@@ -449,10 +903,15 @@
                       <p class="section-kicker" id="editor-kicker">编辑</p>
                       <h2 id="editor-title">编辑当前条目</h2>
                     </div>
+                    <div class="section-inline-actions">
+                      <button class="admin-button" id="translate-section" type="button" title="默认只补空；按住 Shift/Alt/⌘ 点击可覆盖已有英文">当前板块批量翻译</button>
+                    </div>
                   </div>
                   <form class="form-grid" id="content-form"></form>
                   <p class="upload-note">上传 PDF 会自动保存到 resources/，图片会自动保存到 resources/；“保存到本地”会同步当前条目并更新 data.js。</p>
                   <div class="editor-actions">
+                    <button class="admin-button primary" id="save-all" type="button">保存到本地</button>
+                    <button class="admin-button primary" id="translate-current" type="button" title="默认只补空；按住 Shift/Alt 点击可覆盖已有英文">一键翻译英文</button>
                     <button class="admin-button" id="clear-form" type="button">清空</button>
                   </div>
                 </section>
@@ -473,7 +932,23 @@
                         <h3>文件操作</h3>
                         <p>先选文件夹，再上传或从列表里反向填入当前条目。</p>
                       </div>
-                      <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
+                      <div class="storage-manager-head-actions">
+                        <div class="storage-target-chip">
+                          <span>当前回填字段</span>
+                          <strong id="storage-current-target">--</strong>
+                        </div>
+                        <button class="admin-button" id="local-refresh-files" type="button">刷新文件列表</button>
+                      </div>
+                    </div>
+                    <div class="storage-toolbar">
+                      <label class="field storage-search-field"><span>搜索文件</span><input id="storage-search" placeholder="输入文件名、后缀或路径片段…" /></label>
+                      <div class="storage-recent-panel">
+                        <div class="storage-recent-head">
+                          <span>最近使用</span>
+                          <small>点击即可快速回填</small>
+                        </div>
+                        <div class="storage-recent-list" id="storage-recent" aria-live="polite"></div>
+                      </div>
                     </div>
                     <div class="storage-form">
                       <label class="field"><span>文件夹</span><select id="storage-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
@@ -487,11 +962,11 @@
               </div>
 
               <div class="cms-list-col">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-                  <h3 style="font-size:0.95rem;font-weight:700;margin:0;color:rgba(255,255,255,0.75);">条目列表</h3>
+                <div class="cms-list-head">
+                  <h3>条目列表</h3>
                   <button class="admin-button" id="add-item" type="button">+ 新增</button>
                 </div>
-                <input id="list-filter" type="text" placeholder="搜索条目…" style="width:100%;margin-bottom:10px;padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.04);color:#fff;font:inherit;font-size:0.8rem;outline:none;box-sizing:border-box;" />
+                <input id="list-filter" class="cms-list-filter" type="text" placeholder="搜索条目…" />
                 <section class="item-list" id="item-list"></section>
               </div>
             </div>
@@ -520,7 +995,23 @@
                     <h3>文件操作</h3>
                     <p>先选文件夹，再上传或从列表里复制路径。</p>
                   </div>
-                  <button class="admin-button" id="files-refresh-files" type="button">刷新文件列表</button>
+                  <div class="storage-manager-head-actions">
+                    <div class="storage-target-chip">
+                      <span>当前文件夹</span>
+                      <strong id="files-current-target">--</strong>
+                    </div>
+                    <button class="admin-button" id="files-refresh-files" type="button">刷新文件列表</button>
+                  </div>
+                </div>
+                <div class="storage-toolbar">
+                  <label class="field storage-search-field"><span>搜索文件</span><input id="files-search" placeholder="输入文件名、后缀或路径片段…" /></label>
+                  <div class="storage-recent-panel">
+                    <div class="storage-recent-head">
+                      <span>最近使用</span>
+                      <small>点击可快速复制</small>
+                    </div>
+                    <div class="storage-recent-list" id="files-recent" aria-live="polite"></div>
+                  </div>
                 </div>
                 <div class="storage-form">
                   <label class="field"><span>文件夹</span><select id="files-bucket"><option value="images">resources/images 图片</option><option value="papers">resources/papers 论文</option><option value="videos">resources/videos 视频</option><option value="frames">resources/frames 首帧</option><option value="news">resources/news 新闻</option></select></label>
@@ -615,10 +1106,10 @@
                     <div class="deploy-action-group">
                       <div class="deploy-action-label">资源分发</div>
                       <div class="deploy-segmented" id="asset-source-switch">
-                        <button class="active" data-asset-source="vercel">Vercel / 同域</button>
+                        <button class="active" data-asset-source="vercel">Vercel</button>
                         <button data-asset-source="cdn">jsDelivr / CDN</button>
                       </div>
-                      <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留同域，最顺手。</p>
+                      <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留在 Vercel 上，最顺手。</p>
                     </div>
 
                     <div class="deploy-action-group">
@@ -674,7 +1165,7 @@
                     </div>
                     <div class="deploy-link-grid">
                       <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
-                      <a class="deploy-link-btn" href="https://yxiong-profile.pages.dev" target="_blank" rel="noopener">👁️ Pages 预览</a>
+                      <a class="deploy-link-btn" href="https://vercel.com/dashboard" target="_blank" rel="noopener">👁️ Vercel 控制台</a>
                     </div>
                   </section>
 
@@ -776,7 +1267,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.12.12" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.12.12" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.12.15" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.12.15" charset="utf-8"></script>
   </body>
 </html>
