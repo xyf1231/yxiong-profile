@@ -38,6 +38,7 @@ const schemas = {
   research: {
     title: "研究内容",
     fields: [
+      ["image", "配图", "image", "common"],
       ["title", "中文标题", "", "zh"],
       ["titleEn", "英文标题", "", "en"],
       ["text", "中文说明", "textarea", "zh"],
@@ -170,6 +171,7 @@ let activeTab = "profile";
 let editingIndex = 0;
 let siteDirectoryHandle = null;
 let draggedIndex = null;
+let draggedRepIndex = null;
 let savedRichTextSelection = null;
 let formLang = "all";
 let undoStack = null; // { deletedItem, collection, index, timeout }
@@ -325,6 +327,13 @@ function mergeWithDefaultData(source) {
   const merged = { ...base, ...source };
   merged.profile = { ...base.profile, ...(source.profile || {}) };
   merged.assetSource = normalizeAssetSource(source.assetSource || base.assetSource);
+  if (Array.isArray(base.research) || Array.isArray(source.research)) {
+    const fallbackImages = ["resources/images/research-fiber-devices.webp", "resources/images/research-opto-chip.webp", "resources/images/research-fabrication.webp"];
+    merged.research = (Array.isArray(merged.research) ? merged.research : []).map((item, index) => ({
+      ...item,
+      image: item?.image || base.research?.[index]?.image || fallbackImages[index % fallbackImages.length],
+    }));
+  }
   Object.keys(base).forEach((key) => {
     if (Array.isArray(base[key])) {
       if (!Array.isArray(merged[key]) || merged[key].length === 0) merged[key] = base[key];
@@ -1282,6 +1291,15 @@ function buildForm() {
   }
 }
 
+function openItemEditor(index) {
+  const schema = schemas[activeTab];
+  if (!schema || schema.type === "object") return;
+  const collection = currentCollection();
+  if (!Number.isInteger(index) || index < 0 || index >= collection.length) return;
+  editingIndex = index;
+  buildForm();
+}
+
 function injectConverterImportButton() {
   const existing = form.querySelector('#import-converter-btn');
   if (existing) existing.remove();
@@ -1339,27 +1357,28 @@ function renderList() {
       </article>`;
     return;
   }
-  let items = currentCollection();
+  const sourceItems = currentCollection().map((item, sourceIndex) => ({ item, sourceIndex }));
+  let items = sourceItems;
 
   // 搜索筛选
   const filterVal = listFilterValue.trim().toLowerCase();
   if (filterVal) {
-    items = items.filter((item) =>
+    items = items.filter(({ item }) =>
       Object.values(item).some((v) => String(v || "").toLowerCase().includes(filterVal))
     );
   }
 
   let repHtml = "";
   if (activeTab === "publications") {
-    const order = data.representativeOrder || [];
+    const order = currentRepresentativeTitles();
     const repItems = [];
     for (const title of order) {
-      const found = items.findIndex(p => p.title === title);
-      if (found >= 0) repItems.push(found);
+      const found = items.find(({ item }) => item.title === title);
+      if (found) repItems.push(found.sourceIndex);
     }
     // Add any representative items not in order
-    items.forEach((item, idx) => {
-      if (item.representative && !repItems.includes(idx)) repItems.push(idx);
+    items.forEach(({ item, sourceIndex }) => {
+      if (item.representative && !repItems.includes(sourceIndex)) repItems.push(sourceIndex);
     });
     const repCount = repItems.length;
     repHtml = `
@@ -1371,11 +1390,11 @@ function renderList() {
         ${repItems.length === 0
           ? `<div class="managed-item empty-item"><div style="text-align:center;width:100%;padding:20px;color:rgba(255,255,255,0.35);font-size:0.85rem;">暂无代表作，请在下方论文列表中勾选「代表性论文」</div></div>`
           : repItems.map((dataIdx, displayIdx) => {
-              const item = items[dataIdx];
+              const item = currentCollection()[dataIdx] || {};
               const title = item.title || "";
               const venue = item.venue || "";
               return `
-                <article class="managed-item" draggable="false" data-rep-index="${displayIdx}" data-array-index="${dataIdx}">
+                <article class="managed-item" draggable="false" data-rep-index="${displayIdx}" data-array-index="${dataIdx}" data-source-index="${dataIdx}" tabindex="0" role="button" aria-label="编辑代表性论文第 ${displayIdx + 1} 条">
                   <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
                   <div class="managed-copy">
                     <h3><span class="item-number">${String(displayIdx + 1).padStart(2, "0")}</span>${escapeHtml(title)}</h3>
@@ -1401,8 +1420,8 @@ function renderList() {
   }
   list.innerHTML = repHtml + items
     .map(
-      (item, index) => `
-        <article class="managed-item" draggable="false" data-index="${index}">
+      ({ item, sourceIndex }, index) => `
+        <article class="managed-item" draggable="false" data-index="${index}" data-source-index="${sourceIndex}" tabindex="0" role="button" aria-label="编辑第 ${index + 1} 条">
           <button class="drag-handle" type="button" aria-label="拖动排序" title="拖动排序">⋮⋮</button>
           <div class="managed-copy">
             <h3><span class="item-number">${String(index + 1).padStart(2, "0")}</span>${escapeHtml(item.title || item.label || item.nameCn || `条目 ${index + 1}`)}</h3>
@@ -1440,6 +1459,31 @@ async function reorderCurrentCollection(fromIndex, toIndex) {
   if (editingIndex === fromIndex) editingIndex = toIndex;
   else if (fromIndex < editingIndex && toIndex >= editingIndex) editingIndex -= 1;
   else if (fromIndex > editingIndex && toIndex <= editingIndex) editingIndex += 1;
+  await persistAndWrite();
+  buildForm();
+  renderList();
+}
+
+function currentRepresentativeTitles() {
+  const items = currentCollection();
+  const order = data.representativeOrder || [];
+  const titles = [];
+  for (const title of order) {
+    if (items.find((item) => item.representative && item.title === title)) titles.push(title);
+  }
+  items.forEach((item) => {
+    if (item.representative && item.title && !titles.includes(item.title)) titles.push(item.title);
+  });
+  return titles;
+}
+
+async function reorderRepresentativeCollection(fromIndex, toIndex) {
+  const repTitles = currentRepresentativeTitles();
+  if (!Array.isArray(repTitles) || fromIndex === toIndex || fromIndex < 0 || toIndex < 0) return;
+  if (fromIndex >= repTitles.length || toIndex >= repTitles.length) return;
+  const [moved] = repTitles.splice(fromIndex, 1);
+  repTitles.splice(toIndex, 0, moved);
+  data.representativeOrder = repTitles.slice(0, 5);
   await persistAndWrite();
   buildForm();
   renderList();
@@ -2647,13 +2691,13 @@ function init() {
     const button = event.target.closest("button[data-action]");
     if (!button) return;
     const index = Number(button.dataset.index);
+    const sourceIndex = Number(button.closest(".managed-item")?.dataset.sourceIndex ?? index);
     if (button.dataset.action === "edit") {
-      editingIndex = index;
-      buildForm();
+      openItemEditor(sourceIndex);
     } else if (button.dataset.action === "up") {
-      await reorderCurrentCollection(index, Math.max(0, index - 1));
+      await reorderCurrentCollection(sourceIndex, Math.max(0, sourceIndex - 1));
     } else if (button.dataset.action === "down") {
-      await reorderCurrentCollection(index, Math.min(currentCollection().length - 1, index + 1));
+      await reorderCurrentCollection(sourceIndex, Math.min(currentCollection().length - 1, sourceIndex + 1));
     } else if (button.dataset.action === "rep-up" || button.dataset.action === "rep-down") {
       const order = data.representativeOrder || [];
       const items = currentCollection();
@@ -2675,25 +2719,48 @@ function init() {
       renderList();
     } else {
       // 删除确认 + 撤销
-      const item = currentCollection()[index];
+      const item = currentCollection()[sourceIndex];
       const label = item?.title || item?.label || `条目 ${index + 1}`;
       if (!confirm(`确定删除「${label}」？删除后可通过「撤销」恢复。`)) return;
-      const deleted = currentCollection().splice(index, 1)[0];
+      const deleted = currentCollection().splice(sourceIndex, 1)[0];
       editingIndex = 0;
       await persistAndWrite();
       buildForm();
       renderList();
       showUndoToast(`已删除「${label}」`, () => {
-        currentCollection().splice(index, 0, deleted);
+        currentCollection().splice(sourceIndex, 0, deleted);
         persistAndWrite();
         buildForm();
         renderList();
       });
     }
   });
+  list?.addEventListener("click", (event) => {
+    if (event.target.closest("button")) return;
+    const item = event.target.closest(".managed-item[data-index], .managed-item[data-array-index]");
+    if (!item || item.classList.contains("empty-item")) return;
+    if (event.target.closest(".item-actions") || event.target.closest(".drag-handle")) return;
+    const sourceIndex = Number(item.dataset.sourceIndex ?? item.dataset.arrayIndex ?? item.dataset.index);
+    if (Number.isFinite(sourceIndex)) openItemEditor(sourceIndex);
+  });
+  list?.addEventListener("keydown", (event) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    const item = event.target.closest(".managed-item[data-index], .managed-item[data-array-index]");
+    if (!item || item.classList.contains("empty-item")) return;
+    if (event.target.closest("button")) return;
+    event.preventDefault();
+    const sourceIndex = Number(item.dataset.sourceIndex ?? item.dataset.arrayIndex ?? item.dataset.index);
+    if (Number.isFinite(sourceIndex)) openItemEditor(sourceIndex);
+  });
 
   // ── 拖拽排序 ──
   list?.addEventListener("pointerdown", (event) => {
+    const repHandle = event.target.closest("#rep-order-list .drag-handle");
+    if (repHandle) {
+      const item = repHandle.closest(".managed-item[data-rep-index]");
+      if (item) { item.draggable = true; item.classList.add("drag-ready"); }
+      return;
+    }
     const handle = event.target.closest(".drag-handle");
     if (!handle || list.dataset.sortable !== "true") return;
     list.querySelectorAll(".managed-item").forEach((node) => (node.draggable = false));
@@ -2701,36 +2768,67 @@ function init() {
     if (item) { item.draggable = true; item.classList.add("drag-ready"); }
   });
   list?.addEventListener("pointerup", () => {
-    if (draggedIndex !== null) return;
+    if (draggedIndex !== null || draggedRepIndex !== null) return;
     list.querySelectorAll(".managed-item").forEach((node) => { node.draggable = false; node.classList.remove("drag-ready"); });
   });
   list?.addEventListener("dragstart", (event) => {
+    const repItem = event.target.closest("#rep-order-list .managed-item[data-rep-index]");
+    if (repItem) {
+      if (repItem.draggable !== true) { event.preventDefault(); return; }
+      draggedRepIndex = Number(repItem.dataset.repIndex);
+      repItem.classList.add("is-dragging");
+      event.dataTransfer.effectAllowed = "move";
+      event.dataTransfer.setData("text/plain", String(draggedRepIndex));
+      return;
+    }
     const item = event.target.closest(".managed-item[data-index]");
     if (!item || item.draggable !== true) { event.preventDefault(); return; }
-    draggedIndex = Number(item.dataset.index);
+    draggedIndex = Number(item.dataset.sourceIndex ?? item.dataset.index);
     item.classList.add("is-dragging");
     event.dataTransfer.effectAllowed = "move";
     event.dataTransfer.setData("text/plain", String(draggedIndex));
   });
   list?.addEventListener("dragover", (event) => {
+    if (draggedRepIndex !== null) {
+      const item = event.target.closest("#rep-order-list .managed-item[data-rep-index]");
+      if (!item) return;
+      event.preventDefault();
+      const targetIndex = Number(item.dataset.repIndex);
+      list.querySelectorAll("#rep-order-list .managed-item").forEach((node) => node.classList.remove("drag-over-before", "drag-over-after"));
+      item.classList.add(targetIndex > draggedRepIndex ? "drag-over-after" : "drag-over-before");
+      return;
+    }
     if (draggedIndex === null || list.dataset.sortable !== "true") return;
     const item = event.target.closest(".managed-item[data-index]");
     if (!item) return;
     event.preventDefault();
-    const targetIndex = Number(item.dataset.index);
+    const targetIndex = Number(item.dataset.sourceIndex ?? item.dataset.index);
     list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("drag-over-before", "drag-over-after"));
     item.classList.add(targetIndex > draggedIndex ? "drag-over-after" : "drag-over-before");
   });
   list?.addEventListener("dragleave", (event) => {
+    const repItem = event.target.closest("#rep-order-list .managed-item[data-rep-index]");
+    if (repItem && !repItem.contains(event.relatedTarget)) repItem.classList.remove("drag-over-before", "drag-over-after");
     const item = event.target.closest(".managed-item[data-index]");
     if (item && !item.contains(event.relatedTarget)) item.classList.remove("drag-over-before", "drag-over-after");
   });
   list?.addEventListener("drop", async (event) => {
+    if (draggedRepIndex !== null) {
+      const item = event.target.closest("#rep-order-list .managed-item[data-rep-index]");
+      if (!item) return;
+      event.preventDefault();
+      const targetIndex = Number(item.dataset.repIndex);
+      list.querySelectorAll("#rep-order-list .managed-item").forEach((node) => node.classList.remove("is-dragging", "drag-over-before", "drag-over-after"));
+      const fromIndex = draggedRepIndex;
+      draggedRepIndex = null;
+      await reorderRepresentativeCollection(fromIndex, targetIndex);
+      return;
+    }
     if (draggedIndex === null || list.dataset.sortable !== "true") return;
     const item = event.target.closest(".managed-item[data-index]");
     if (!item) return;
     event.preventDefault();
-    const targetIndex = Number(item.dataset.index);
+    const targetIndex = Number(item.dataset.sourceIndex ?? item.dataset.index);
     list.querySelectorAll(".managed-item").forEach((node) => node.classList.remove("is-dragging", "drag-over-before", "drag-over-after"));
     const fromIndex = draggedIndex;
     draggedIndex = null;
@@ -2738,6 +2836,7 @@ function init() {
   });
   list?.addEventListener("dragend", () => {
     draggedIndex = null;
+    draggedRepIndex = null;
     list.querySelectorAll(".managed-item").forEach((node) => {
       node.draggable = false;
       node.classList.remove("drag-ready", "is-dragging", "drag-over-before", "drag-over-after");

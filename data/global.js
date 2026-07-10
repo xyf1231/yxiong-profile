@@ -39,15 +39,18 @@ window.DEFAULT_SITE_DATA = {
   "research": [
     {
       "title": "多功能光纤集成器件",
-      "text": "聚焦多工艺融合的光纤内外表面局域化增减材加工与异质材料集成，构建紧凑、高性能、多功能的新型光纤器件。"
+      "text": "聚焦多工艺融合的光纤内外表面局域化增减材加工与异质材料集成，构建紧凑、高性能、多功能的新型光纤器件。",
+      "image": "resources/images/research-fiber-devices.webp"
     },
     {
       "title": "智能光电子集成芯片",
-      "text": "面向多维光场识别、偏振光谱分析、高速可调滤波等问题，探索智能探测、传感与成像应用。"
+      "text": "面向多维光场识别、偏振光谱分析、高速可调滤波等问题，探索智能探测、传感与成像应用。",
+      "image": "resources/images/research-opto-chip.webp"
     },
     {
       "title": "光纤集成工艺与装备",
-      "text": "针对光纤体系特殊的材质与结构，发展多种微纳加工与材料集成工艺，研制光纤—光纤、光纤—芯片的自动化加工与在线检测装备。"
+      "text": "针对光纤体系特殊的材质与结构，发展多种微纳加工与材料集成工艺，研制光纤—光纤、光纤—芯片的自动化加工与在线检测装备。",
+      "image": "resources/images/research-fabrication.webp"
     }
   ],
   "news": [
@@ -702,9 +705,9 @@ window.DEFAULT_SITE_DATA = {
   ],
   "representativeOrder": [
     "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
-    "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
-    "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity.",
     "Twisted black phosphorus-based van der Waals stacks for fiber-integrated polarimeters.",
-    "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array."
+    "Ultracompact multicore fiber de-multiplexer using an endface-integrating graphene photodetector array.",
+    "Megahertz-Rate Widely Tunable Fiber Filters Enabled by LiNbO3 Actuators.",
+    "Lithium Niobate Piezoelectric Actuator-Integrated Fiber Fabry-Perot Tunable Filter with Ultrahigh Speed and Linearity."
   ]
 };

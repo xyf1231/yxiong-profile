@@ -65,13 +65,72 @@ function publicationImageMarkup(item, title, priority = false) {
 }
 
 function getLoadingGreeting() {
+  const lang = loadLanguagePreference();
   const path = window.location.pathname;
-  if (path.endsWith("profile.html")) return "欢迎访问 — 简介";
-  if (path.endsWith("results.html")) return "欢迎访问 — 成果";
-  if (path.endsWith("honors.html")) return "欢迎访问 — 荣誉";
-  if (path.endsWith("activities.html")) return "欢迎访问 — 学术活动";
-  if (path.includes("/resources/")) return "欢迎访问 — 资源页";
-  return "欢迎访问 — 主页";
+  if (lang === "en") {
+    if (path.endsWith("profile.html")) return "Welcome — Profile";
+    if (path.endsWith("results.html")) return "Welcome — Results";
+    if (path.endsWith("honors.html")) return "Welcome — Achievements";
+    if (path.endsWith("activities.html")) return "Welcome — Activities";
+    if (path.includes("/resources/")) return "Welcome — Resources";
+    return "Welcome — Home";
+  }
+  if (path.endsWith("profile.html")) return "欢迎 — 简介";
+  if (path.endsWith("results.html")) return "欢迎 — 成果";
+  if (path.endsWith("honors.html")) return "欢迎 — 荣誉";
+  if (path.endsWith("activities.html")) return "欢迎 — 学术活动";
+  if (path.includes("/resources/")) return "欢迎 — 资源页";
+  return "欢迎 — 主页";
+}
+
+function getLoadingTextPack() {
+  const lang = loadLanguagePreference();
+  if (lang === "en") {
+    return {
+      stageLabel: "Stage",
+      stages: [
+        { label: "Connecting", target: 12 },
+        { label: "Preparing layout", target: 22 },
+        { label: "Loading fonts", target: 34 },
+        { label: "Loading media", target: 46 },
+        { label: "Fetching assets", target: 58 },
+        { label: "Polishing interface", target: 70 },
+        { label: "Almost ready", target: 82 },
+        { label: "Final checks", target: 92 },
+      ],
+      hints: [
+        "Establishing a secure connection...",
+        "Preparing the page layout...",
+        "Loading font files...",
+        "Loading media resources...",
+        "Fetching scripts and styles...",
+        "Polishing the interface...",
+        "Almost ready...",
+      ],
+    };
+  }
+  return {
+    stageLabel: "阶段",
+    stages: [
+      { label: "连接中", target: 12 },
+      { label: "整理结构", target: 22 },
+      { label: "读取字体", target: 34 },
+      { label: "载入媒体", target: 46 },
+      { label: "预载资源", target: 58 },
+      { label: "整理界面", target: 70 },
+      { label: "即将完成", target: 82 },
+      { label: "收尾缓冲", target: 92 },
+    ],
+    hints: [
+      "正在建立安全连接...",
+      "正在整理页面结构...",
+      "正在读取字体文件...",
+      "正在载入媒体资源...",
+      "正在准备脚本与样式...",
+      "正在优化显示效果...",
+      "马上就绪...",
+    ],
+  };
 }
 
 function formatTransferRate(bytesPerSecond) {
@@ -142,15 +201,8 @@ function setupSiteLoadingGate() {
   let hintIndex = 0;
   let hintInit = false;
 
-  const loadingHints = [
-    "正在建立安全连接...",
-    "正在加载页面样式...",
-    "正在加载字体文件...",
-    "正在加载媒体资源...",
-    "正在加载脚本文件...",
-    "正在优化显示效果...",
-    "即将准备就绪...",
-  ];
+  const loadingPack = getLoadingTextPack();
+  const loadingHints = loadingPack.hints;
 
   let finished = false;
   let intervalId = null;
@@ -163,16 +215,7 @@ function setupSiteLoadingGate() {
   let stageTimers = [];
   let finishing = false;
   let finishStartTime = 0;
-  const loadingStages = [
-    { label: "建立连接", target: 12 },
-    { label: "加载结构", target: 22 },
-    { label: "加载字体", target: 34 },
-    { label: "加载媒体", target: 46 },
-    { label: "预载资源", target: 58 },
-    { label: "准备界面", target: 70 },
-    { label: "即将完成", target: 82 },
-    { label: "收尾缓冲", target: 92 },
-  ];
+  const loadingStages = loadingPack.stages;
 
   const setProgress = (next) => {
     const current = Math.max(0, Math.min(100, next));
@@ -188,8 +231,8 @@ function setupSiteLoadingGate() {
     const stageCount = loadingStages.length;
     const stage = loadingStages[Math.max(0, Math.min(currentStageIndex, stageCount - 1))] || loadingStages[0];
     resourcesEl.textContent = currentStageIndex >= 0
-      ? `阶段 ${Math.min(currentStageIndex + 1, stageCount)}/${stageCount} · ${stage.label}`
-      : `阶段 1/${stageCount} · ${loadingStages[0].label}`;
+      ? `${loadingPack.stageLabel} ${Math.min(currentStageIndex + 1, stageCount)}/${stageCount} · ${stage.label}`
+      : `${loadingPack.stageLabel} 1/${stageCount} · ${loadingStages[0].label}`;
   };
 
   const animateProgress = () => {
@@ -975,9 +1018,10 @@ function renderResearch(items) {
   const target = document.querySelector("#research-list");
   if (!target) return;
   const fallbackImages = ["resources/images/research-fiber-devices.webp", "resources/images/research-opto-chip.webp", "resources/images/research-fabrication.webp"];
-  const list = currentLang === "en" ? researchEnglish : items;
-  target.innerHTML = list
+  target.innerHTML = items
     .map((item, index) => {
+      const title = currentLang === "en" ? item.titleEn || item.title : item.title;
+      const text = currentLang === "en" ? item.textEn || item.text : item.text;
       const image = withAssetCacheBuster(item.image || fallbackImages[index % fallbackImages.length]);
       return `
         <article class="feature-card">
@@ -986,8 +1030,8 @@ function renderResearch(items) {
             <img src="${escapeHtml(image)}" alt="" loading="lazy" draggable="false">
           </div>
           <div class="feature-card-copy">
-            <h3>${escapeHtml(item.title)}</h3>
-            <p>${escapeHtml(item.text)}</p>
+            <h3>${escapeHtml(title)}</h3>
+            <p>${escapeHtml(text)}</p>
           </div>
         </article>
       `;
@@ -1538,7 +1582,12 @@ function getRepresentativePublications(items, limit = 5) {
   const order = (getSiteData()?.representativeOrder) || [];
   const reps = items.filter(p => p.representative);
   if (order.length > 0) {
-    reps.sort((a, b) => order.indexOf(a.title) - order.indexOf(b.title));
+    const orderIndex = new Map(order.map((title, index) => [title, index]));
+    reps.sort((a, b) => {
+      const ai = orderIndex.has(a.title) ? orderIndex.get(a.title) : Number.MAX_SAFE_INTEGER;
+      const bi = orderIndex.has(b.title) ? orderIndex.get(b.title) : Number.MAX_SAFE_INTEGER;
+      return ai - bi;
+    });
   }
   return reps.slice(0, limit);
 }
