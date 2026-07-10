@@ -38,6 +38,9 @@ const pythonCandidates = [
   "/Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3",
   "python3",
 ].filter(Boolean);
+const imageSourceSuffixes = new Set([".png", ".jpg", ".jpeg"]);
+const textReferenceSuffixes = new Set([".html", ".css", ".js", ".json", ".mjs", ".md", ".txt"]);
+const referenceRepairIgnores = new Set([".git", ".agents", "node_modules", "vercel-archive", "备份"]);
 
 // ── 本地预览服务器状态 ──
 let previewServer = null;
@@ -235,6 +238,73 @@ async function deleteFile(res, url) {
   sendJson(res, 200, { ok: true, bucket, path: relativePath });
 }
 
+async function collectOptimizableImagePaths(targetDir, normalizedTarget) {
+  const entries = await readdir(targetDir, { withFileTypes: true });
+  return entries
+    .filter((entry) => entry.isFile() && imageSourceSuffixes.has(extname(entry.name).toLowerCase()))
+    .map((entry) => {
+      const oldRelativePath = `${normalizedTarget}/${entry.name}`;
+      const newRelativePath = `${normalizedTarget}/${entry.name.replace(/\.[^.]+$/, ".webp")}`;
+      return { oldRelativePath, newRelativePath };
+    });
+}
+
+async function collectTextReferenceFiles() {
+  const results = [];
+  async function walk(dir) {
+    const entries = await readdir(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      if (entry.name.startsWith(".")) continue;
+      const fullPath = join(dir, entry.name);
+      const relativePath = relative(rootDir, fullPath).replace(/\\/g, "/");
+      if (relativePath.split("/").some((part) => referenceRepairIgnores.has(part))) continue;
+      if (entry.isDirectory()) {
+        await walk(fullPath);
+        continue;
+      }
+      if (!entry.isFile()) continue;
+      if (!textReferenceSuffixes.has(extname(entry.name).toLowerCase())) continue;
+      results.push(fullPath);
+    }
+  }
+  await walk(rootDir);
+  return results;
+}
+
+async function repairImageReferences(renamePairs) {
+  if (!renamePairs.length) return { files: 0, replacements: 0 };
+  const textFiles = await collectTextReferenceFiles();
+  let touchedFiles = 0;
+  let replacementCount = 0;
+  for (const filePath of textFiles) {
+    const before = await readFile(filePath, "utf8");
+    let after = before;
+    let fileReplacements = 0;
+    for (const { oldRelativePath, newRelativePath } of renamePairs) {
+      if (!after.includes(oldRelativePath)) continue;
+      const occurrences = after.split(oldRelativePath).length - 1;
+      after = after.replaceAll(oldRelativePath, newRelativePath);
+      fileReplacements += occurrences;
+    }
+    if (after !== before) {
+      await writeFile(filePath, after, "utf8");
+      touchedFiles += 1;
+      replacementCount += fileReplacements;
+    }
+  }
+  return { files: touchedFiles, replacements: replacementCount };
+}
+
+async function regenerateResourceManifest() {
+  const child = spawn(process.execPath, ["scripts/generate-resource-manifest.mjs"], { cwd: rootDir });
+  let stdout = "";
+  let stderr = "";
+  child.stdout.on("data", (chunk) => (stdout += chunk));
+  child.stderr.on("data", (chunk) => (stderr += chunk));
+  const code = await new Promise((resolve) => child.on("close", resolve));
+  return { code, output: `${stdout}\n${stderr}`.trim() };
+}
+
 async function runOptimizeImages(req, res) {
   try {
     const body = req.method === "POST" ? await readRequestBody(req) : Buffer.from("");
@@ -245,6 +315,7 @@ async function runOptimizeImages(req, res) {
     if (!targetDir.startsWith(resolve(rootDir, "resources") + "/") && targetDir !== resolve(rootDir, "resources")) {
       throw new Error("只允许压缩 resources/ 下的图片目录。");
     }
+    const renamePairs = existsSync(targetDir) ? await collectOptimizableImagePaths(targetDir, normalizedTarget) : [];
     const python = pythonCandidates.find((candidate) => candidate === "python3" || existsSync(candidate));
     if (!python) {
       throw new Error("没有找到可用的 Python 3。");
@@ -252,12 +323,35 @@ async function runOptimizeImages(req, res) {
 
     const result = await runCommand(python, ["scripts/optimize-images.py", normalizedTarget]);
     const output = `${result.stdout}\n${result.stderr}`.trim();
-    sendJson(res, result.code === 0 ? 200 : 500, {
-      ok: result.code === 0,
-      code: result.code,
+    if (result.code !== 0) {
+      sendJson(res, 500, {
+        ok: false,
+        code: result.code,
+        target: normalizedTarget,
+        output,
+        message: "图片压缩失败",
+      });
+      return;
+    }
+
+    const repairResult = await repairImageReferences(renamePairs);
+    const manifestResult = await regenerateResourceManifest();
+    if (manifestResult.code !== 0) {
+      throw new Error(`资源清单刷新失败：${manifestResult.output || "未知错误"}`);
+    }
+
+    const lines = [output, repairResult.files || repairResult.replacements ? `引用修复: ${repairResult.files} 个文件, ${repairResult.replacements} 处替换` : "引用修复: 无需修改", manifestResult.output]
+      .filter(Boolean)
+      .join("\n")
+      .trim();
+    sendJson(res, 200, {
+      ok: true,
+      code: 0,
       target: normalizedTarget,
-      output,
-      message: result.code === 0 ? "图片压缩完成" : "图片压缩失败",
+      output: lines,
+      repairedFiles: repairResult.files,
+      repairedReferences: repairResult.replacements,
+      message: "图片压缩完成，引用已修复",
     });
   } catch (error) {
     sendJson(res, 500, { ok: false, message: error.message });

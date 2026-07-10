@@ -1301,30 +1301,28 @@ function openItemEditor(index) {
 }
 
 function injectConverterImportButton() {
-  const existing = form.querySelector('#import-converter-btn');
-  if (existing) existing.remove();
   if (activeTab !== 'news') return;
   const schema = schemas[activeTab];
+  const actions = document.querySelector(".editor-panel .section-inline-actions");
+  actions?.querySelector("#import-converter-btn")?.remove();
   let payload = null;
   try {
     const stored = localStorage.getItem('docxConverterOutput');
     if (stored) payload = JSON.parse(stored);
   } catch (e) { /* ignore */ }
-  if (!payload || payload._from !== 'docx-converter') {
-    const hint = document.createElement('p');
-    hint.id = 'import-converter-btn';
-    hint.style.cssText = 'margin-top:16px;font-size:0.78rem;color:rgba(255,255,255,0.32);';
-    hint.textContent = '💡 在 docx-converter.html 中转换后点击「提取图片并发送」，数据会自动出现在这里。';
-    form.appendChild(hint);
-    return;
-  }
   const btn = document.createElement('button');
   btn.id = 'import-converter-btn';
   btn.className = 'admin-button primary';
   btn.type = 'button';
-  btn.textContent = '📤 导入转换内容（' + (payload.title || '') + '）';
-  btn.style.marginTop = '16px';
+  btn.textContent = payload && payload._from === 'docx-converter'
+    ? '📤 导入转换内容（' + (payload.title || '') + '）'
+    : '📥 导入转换内容';
+  btn.disabled = !payload || payload._from !== 'docx-converter';
+  btn.title = btn.disabled
+    ? '先在 docx-converter.html 中转换并点击「提取图片并发送」，数据会出现在这里。'
+    : '把转换器的内容导入到当前新闻条目';
   btn.addEventListener('click', function () {
+    if (btn.disabled) return;
     for (const [key, , kind] of schema.fields) {
       const el = form.elements[key];
       if (el && payload[key] !== undefined) el.value = payload[key];
@@ -1337,7 +1335,8 @@ function injectConverterImportButton() {
     btn.remove();
     deployLog('✅ 已从转换器导入，请检查后保存。', 'success');
   });
-  form.appendChild(btn);
+  if (actions) actions.appendChild(btn);
+  else form.parentNode.insertBefore(btn, form);
 }
 
 function renderList() {
@@ -2191,10 +2190,9 @@ async function loadDeployData() {
   deployLog("版本仪表盘数据加载完成", "success");
 }
 
-async function optimizeImages() {
-  const btn = document.querySelector("#btn-optimize-images");
+async function optimizeImages(target = (optimizeTargetEl?.value || "resources/images").trim() || "resources/images", button = document.querySelector("#btn-optimize-images")) {
+  const btn = button;
   if (!btn) return;
-  const target = (optimizeTargetEl?.value || "resources/images").trim() || "resources/images";
   btn.disabled = true;
   setOptimizeRunning(true, "正在压缩...");
   optimizeLog(`开始压缩目录: ${target}`, "cmd");
@@ -2203,7 +2201,11 @@ async function optimizeImages() {
     if (result.ok) {
       optimizeLog(`✅ ${result.message}`, "success");
       if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) optimizeLog(line, "info"); });
+      optimizeLog(`引用修复: ${result.repairedFiles || 0} 个文件, ${result.repairedReferences || 0} 处替换`, "success");
       setOptimizeRunning(false, "压缩完成");
+      if (target.includes("resources/images")) {
+        await listLocalFiles("images").catch(() => {});
+      }
     } else {
       optimizeLog(`❌ ${result.message || "压缩失败"}`, "error");
       if (result.output) result.output.split("\n").forEach((line) => { if (line.trim()) optimizeLog(line, "info"); });
@@ -2867,7 +2869,8 @@ function init() {
   document.querySelector("#btn-refresh-git")?.addEventListener("click", () => refreshGitStatus());
   document.querySelector("#btn-test-git")?.addEventListener("click", testGitHubConnection);
   document.querySelector("#btn-network-diagnostics")?.addEventListener("click", runNetworkDiagnostics);
-  document.querySelector("#btn-optimize-images")?.addEventListener("click", optimizeImages);
+  document.querySelector("#btn-optimize-images")?.addEventListener("click", () => optimizeImages());
+  document.querySelector("#files-optimize-images")?.addEventListener("click", () => optimizeImages("resources/images", document.querySelector("#files-optimize-images")));
   document.querySelector("#btn-deploy")?.addEventListener("click", deployToGitHub);
   document.querySelector("#btn-pull-to-downloads")?.addEventListener("click", pullToDownloads);
   document.querySelector("#btn-preview-start")?.addEventListener("click", startPreview);

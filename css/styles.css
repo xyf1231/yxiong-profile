@@ -9786,24 +9786,24 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 
 .home-frame-section {
   margin-top: clamp(8px, 1.4vw, 20px);
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
+  padding-top: clamp(12px, 1.5vw, 20px) !important;
+  padding-bottom: clamp(18px, 2vw, 28px) !important;
 }
 
 .home-frame-stage {
-  position: sticky;
-  top: 0;
-  min-height: calc(var(--vh, 1vh) * 100);
+  position: relative;
+  top: auto;
+  min-height: auto;
   width: 100%;
-  display: grid;
-  place-items: start center;
-  padding: clamp(20px, 2.5vw, 32px) 0;
+  display: block;
+  padding: 0;
 }
 
 .home-frame-media {
   position: relative;
   width: 100%;
   margin-inline: auto;
+  max-width: 100%;
   overflow: hidden;
   overflow: clip;
   padding: 0;
@@ -9819,7 +9819,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 }
 
 .home-frame-media {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: auto;
 }
 
 .home-frame-media:hover {
@@ -9841,13 +9841,11 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 }
 
 .home-frame-video {
-  position: absolute;
-  inset: 0;
   width: 100%;
-  height: 100%;
+  height: auto;
   object-fit: contain;
+  object-position: center center;
   border-radius: inherit;
-  z-index: 2;
   display: block;
   transition: opacity 180ms ease-out;
 }
@@ -9909,12 +9907,23 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
 }
 
 .home-frame-caption {
-  margin: 14px 0 0;
-  text-align: center;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: clamp(0.75rem, 1.6vw, 0.92rem);
+  position: absolute;
+  left: clamp(14px, 1.8vw, 22px);
+  bottom: clamp(14px, 1.8vw, 22px);
+  z-index: 9;
+  margin: 0;
+  padding: 0.42em 0.72em;
+  max-width: calc(100% - clamp(28px, 3.6vw, 44px));
+  border-radius: 999px;
+  color: rgba(255, 255, 255, 0.42);
+  font-size: clamp(0.72rem, 1.35vw, 0.88rem);
   font-weight: 500;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.03em;
+  line-height: 1.2;
+  background: rgba(6, 8, 14, 0.14);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
 }
 
 .home-frame-media::before {
@@ -9947,7 +9956,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
   .home-frame-section {
     margin-top: 0;
     padding-top: 0 !important;
-    padding-bottom: 0 !important;
+    padding-bottom: 16px !important;
   }
 
   .home-frame-stage {
@@ -9966,7 +9975,7 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
     overflow: hidden;
   overflow: clip;
     border: none;
-    aspect-ratio: 1244 / 1660;
+    aspect-ratio: auto;
   }
 
   .home-frame-video {
@@ -9980,6 +9989,14 @@ body.home-dark .hero.portal-hero.clean-hero .story-copy.clean-copy p:not(.eyebro
     height: 44px;
     right: 10px;
     bottom: 10px;
+  }
+
+  .home-frame-caption {
+    left: 12px;
+    bottom: 12px;
+    padding: 0.34em 0.62em;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.38);
   }
 
   .home-frame-replay-icon {

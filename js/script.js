@@ -13,6 +13,8 @@ function resetHomeScrollIfNeeded() {
   if (isHomePage && !window.location.hash && window.scrollY < 10) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
 
+const HOME_RETURN_SCROLL_KEY = "academicSiteHomeReturnScroll";
+
 function restorePdfScrollPosition() {
   try {
     const saved = sessionStorage.getItem("pdfReturnScroll");
@@ -24,11 +26,26 @@ function restorePdfScrollPosition() {
     }
   } catch {}
 }
+
+function restoreHomeScrollPosition() {
+  try {
+    const saved = sessionStorage.getItem(HOME_RETURN_SCROLL_KEY);
+    if (saved === null) return;
+    const y = parseFloat(saved);
+    sessionStorage.removeItem(HOME_RETURN_SCROLL_KEY);
+    if (Number.isFinite(y) && y > 0) {
+      window.requestAnimationFrame(() => window.scrollTo({ top: y, left: 0, behavior: "auto" }));
+    }
+  } catch {}
+}
+
 window.addEventListener('pageshow', () => {
+  restoreHomeScrollPosition();
   restorePdfScrollPosition();
   resetHomeScrollIfNeeded();
 });
 window.addEventListener('load', () => {
+  restoreHomeScrollPosition();
   restorePdfScrollPosition();
   resetHomeScrollIfNeeded();
 });
@@ -1302,7 +1319,12 @@ function setupNewsCarousel(root) {
   dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index, "smooth", false, true); }));
   cards.forEach((card, index) => {
     card.addEventListener("click", (event) => {
-      if (index === activeIndex) return;
+      if (index === activeIndex) {
+        try {
+          sessionStorage.setItem(HOME_RETURN_SCROLL_KEY, String(window.scrollY));
+        } catch {}
+        return;
+      }
       event.preventDefault();
       goTo(index, "smooth", false, true);
     });

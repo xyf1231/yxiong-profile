@@ -12,8 +12,28 @@ if ('scrollRestoration' in window.history) window.history.scrollRestoration = 'm
 function resetHomeScrollIfNeeded() {
   if (isHomePage && !window.location.hash && window.scrollY < 10) window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 }
-window.addEventListener('pageshow', resetHomeScrollIfNeeded);
-window.addEventListener('load', resetHomeScrollIfNeeded);
+const HOME_RETURN_SCROLL_KEY = "academicSiteHomeReturnScroll";
+
+function restoreHomeScrollPosition() {
+  try {
+    const saved = sessionStorage.getItem(HOME_RETURN_SCROLL_KEY);
+    if (saved === null) return;
+    const y = parseFloat(saved);
+    sessionStorage.removeItem(HOME_RETURN_SCROLL_KEY);
+    if (Number.isFinite(y) && y > 0) {
+      window.requestAnimationFrame(() => window.scrollTo({ top: y, left: 0, behavior: "auto" }));
+    }
+  } catch {}
+}
+
+window.addEventListener('pageshow', () => {
+  restoreHomeScrollPosition();
+  resetHomeScrollIfNeeded();
+});
+window.addEventListener('load', () => {
+  restoreHomeScrollPosition();
+  resetHomeScrollIfNeeded();
+});
 const NAV_INDICATOR_KEY = "academicSiteNavIndicator";
 const ASSET_CACHE_BUSTER = (() => {
   try {
@@ -1215,7 +1235,12 @@ function setupNewsCarousel(root) {
   dots.forEach((dot, index) => dot.addEventListener("click", () => { goTo(index, "smooth", false, true); }));
   cards.forEach((card, index) => {
     card.addEventListener("click", (event) => {
-      if (index === activeIndex) return;
+      if (index === activeIndex) {
+        try {
+          sessionStorage.setItem(HOME_RETURN_SCROLL_KEY, String(window.scrollY));
+        } catch {}
+        return;
+      }
       event.preventDefault();
       goTo(index, "smooth", false, true);
     });
