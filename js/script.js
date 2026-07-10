@@ -130,7 +130,16 @@ function collectExpectedResourceKeys() {
     keys.add(key);
   };
 
+  const shouldCountNode = (node) => {
+    const tag = node.tagName;
+    if (tag === "IMG" && String(node.getAttribute("loading") || "").toLowerCase() === "lazy") return false;
+    if (tag === "VIDEO" && String(node.getAttribute("preload") || "").toLowerCase() === "none") return false;
+    if (tag === "SOURCE" && String(node.closest("video")?.getAttribute("preload") || "").toLowerCase() === "none") return false;
+    return true;
+  };
+
   document.querySelectorAll('script[src], img[src], source[src], video[poster], audio[src], iframe[src], object[data], embed[src]').forEach((node) => {
+    if (!shouldCountNode(node)) return;
     if (node.hasAttribute("src")) add(node.getAttribute("src"));
     if (node.hasAttribute("poster")) add(node.getAttribute("poster"));
     if (node.hasAttribute("data")) add(node.getAttribute("data"));
@@ -171,86 +180,75 @@ function setupSiteLoadingGate() {
   ];
 
   let finished = false;
-  let current = 0;
   let intervalId = null;
-  let rafId = null;
-  let targetProgress = 0;
-  let displayProgress = 0;
-  let maxTargetSeen = 0;
-  let animStartTime = 0;
   let readyTimerId = null;
   let lettersTimer = null;
+  let progressFrameId = null;
+  let displayProgress = 0;
+  let targetProgress = 0;
+  let currentStageIndex = -1;
+  let stageTimers = [];
+  let finishing = false;
+  let finishStartTime = 0;
+  const loadingStages = [
+    { label: "建立连接", target: 12 },
+    { label: "加载结构", target: 22 },
+    { label: "加载字体", target: 34 },
+    { label: "加载媒体", target: 46 },
+    { label: "预载资源", target: 58 },
+    { label: "准备界面", target: 70 },
+    { label: "即将完成", target: 82 },
+    { label: "收尾缓冲", target: 92 },
+  ];
 
   const setProgress = (next) => {
-    current = Math.max(0, Math.min(100, next));
+    const current = Math.max(0, Math.min(100, next));
     if (percentEl) percentEl.textContent = `${Math.round(current)}%`;
-    if (barEl) barEl.style.width = `${current}%`;
+    if (barEl) {
+      barEl.style.width = "100%";
+      barEl.style.transform = `scaleX(${current / 100})`;
+    }
   };
 
-  const lerp = (start, end, factor) => start + (end - start) * factor;
+  const updateStageLabel = () => {
+    if (!resourcesEl) return;
+    const stageCount = loadingStages.length;
+    const stage = loadingStages[Math.max(0, Math.min(currentStageIndex, stageCount - 1))] || loadingStages[0];
+    resourcesEl.textContent = currentStageIndex >= 0
+      ? `阶段 ${Math.min(currentStageIndex + 1, stageCount)}/${stageCount} · ${stage.label}`
+      : `阶段 1/${stageCount} · ${loadingStages[0].label}`;
+  };
+
+  const advanceStage = (stageIndex) => {
+    if (finished) return;
+    const nextIndex = Math.max(currentStageIndex, Math.min(stageIndex, loadingStages.length - 1));
+    if (nextIndex === currentStageIndex && targetProgress > 0) return;
+    currentStageIndex = nextIndex;
+    const stage = loadingStages[nextIndex] || loadingStages[0];
+    targetProgress = stage.target;
+    updateStageLabel();
+    if (!progressFrameId) {
+      progressFrameId = requestAnimationFrame(animateProgress);
+    }
+  };
 
   const animateProgress = () => {
-    const diff = targetProgress - displayProgress;
-    const absDiff = Math.abs(diff);
-    if (finished) {
-      if (displayProgress < 100) {
-        const factor = Math.min(0.15 + Math.max(0, (displayProgress - 85) / 15) * 0.35, 0.5);
-        displayProgress = lerp(displayProgress, targetProgress, factor);
-        setProgress(displayProgress);
-        rafId = requestAnimationFrame(animateProgress);
-      }
-      return;
-    }
-    if (absDiff < 0.2) {
+    progressFrameId = null;
+    if (finished) return;
+    const delta = targetProgress - displayProgress;
+    if (Math.abs(delta) < 0.03) {
       displayProgress = targetProgress;
     } else {
-      const dist = absDiff / 100;
-      const nearEnd = Math.max(0, (displayProgress - 70) / 30);
-      const factor = Math.min(0.07 + dist * dist * 0.40 + nearEnd * 0.06, 0.45);
-      displayProgress = lerp(displayProgress, targetProgress, factor);
+      const factor = finishing
+        ? Math.min(0.05, 0.02 + Math.abs(delta) / 1600)
+        : Math.min(0.08, 0.03 + Math.abs(delta) / 900);
+      displayProgress += delta * factor;
     }
     setProgress(displayProgress);
-    if (displayProgress < 100) {
-      rafId = requestAnimationFrame(animateProgress);
-    }
-  };
-
-  const formatBytes = (bytes) => {
-    if (bytes < 1024) return `${bytes}B`;
-    if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)}KB`;
-    return `${(bytes / 1048576).toFixed(2)}MB`;
-  };
-
-  const updateRealProgress = () => {
-    if (finished) return;
-    const entries = performance.getEntriesByType ? performance.getEntriesByType("resource") : [];
-    let totalBytes = 0;
-    let loadedBytes = 0;
-    const expectedKeys = collectExpectedResourceKeys();
-    for (const key of expectedKeys) {
-      totalBytes += Number(RESOURCE_SIZE_MANIFEST[key]) || 0;
-    }
-    for (const entry of entries) {
-      if (normalizeResourceKey(entry.name) === "js/resource-manifest.js") continue;
-      const size = entry.transferSize || entry.encodedBodySize || entry.decodedBodySize || 0;
-      if (!size) continue;
-      if (entry.responseEnd > 0) loadedBytes += size;
-    }
-    const navigationEntry = performance.getEntriesByType ? performance.getEntriesByType("navigation")[0] : null;
-    const navigationBytes = navigationEntry?.transferSize || navigationEntry?.encodedBodySize || navigationEntry?.decodedBodySize || 0;
-    if (navigationBytes > 0) loadedBytes += navigationBytes;
-    if (!totalBytes && RESOURCE_SIZE_MANIFEST_TOTAL > 0) totalBytes = RESOURCE_SIZE_MANIFEST_TOTAL;
-    const rawReal = totalBytes > 0 ? (loadedBytes / totalBytes) * 100 : 0;
-    const elapsed = (performance.now() - animStartTime) / 1000;
-    const t = Math.min(elapsed / 15, 1);
-    const timeBaseline = 95 * (1 - Math.pow(1 - t, 5));
-    const phaseIn = Math.min(elapsed / 4, 1);
-    const scaledReal = rawReal * phaseIn;
-    const blended = Math.max(timeBaseline, Math.min(scaledReal, 100));
-    if (blended > maxTargetSeen) maxTargetSeen = blended;
-    targetProgress = maxTargetSeen;
-    if (resourcesEl) {
-      resourcesEl.textContent = totalBytes > 0 ? `${formatBytes(loadedBytes)} / ${formatBytes(totalBytes)}` : "";
+    if (Math.abs(targetProgress - displayProgress) >= 0.03) {
+      progressFrameId = requestAnimationFrame(animateProgress);
+    } else if (finishing) {
+      maybeRevealWhenReady();
     }
   };
 
@@ -279,32 +277,49 @@ function setupSiteLoadingGate() {
     hintTimer = window.setInterval(rotateHint, 3000);
   };
 
-  const startProgress = () => {
-    if (rafId) return;
-    animStartTime = performance.now();
-    startHintRotation();
-    updateRealProgress();
-    rafId = requestAnimationFrame(animateProgress);
-    intervalId = window.setInterval(updateRealProgress, 100);
+  const clearStageTimers = () => {
+    while (stageTimers.length) {
+      window.clearTimeout(stageTimers.pop());
+    }
   };
 
-  const finish = () => {
+  const scheduleStageRun = () => {
+    clearStageTimers();
+    stageTimers.push(window.setTimeout(() => advanceStage(1), 360));
+    stageTimers.push(window.setTimeout(() => advanceStage(2), 700));
+    stageTimers.push(window.setTimeout(() => advanceStage(3), 1040));
+    stageTimers.push(window.setTimeout(() => advanceStage(4), 1380));
+    stageTimers.push(window.setTimeout(() => advanceStage(5), 1720));
+    stageTimers.push(window.setTimeout(() => advanceStage(6), 2060));
+    stageTimers.push(window.setTimeout(() => advanceStage(7), 2400));
+    stageTimers.push(window.setTimeout(() => finish(), 3600));
+  };
+
+  const maybeRevealWhenReady = () => {
+    if (finished || !finishing) return;
+    const elapsed = performance.now() - finishStartTime;
+    if (displayProgress >= 99.8 || elapsed >= 1900) {
+      revealNow();
+      return;
+    }
+    progressFrameId = requestAnimationFrame(maybeRevealWhenReady);
+  };
+
+  const revealNow = () => {
     if (finished) return;
-    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
-    if (!overlay) ensureOverlay();
-    if (!overlay) return;
     finished = true;
     if (intervalId) window.clearInterval(intervalId);
     if (lettersTimer) window.clearInterval(lettersTimer);
     if (hintTimer) window.clearInterval(hintTimer);
     if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
     if (readyTimerId) window.clearTimeout(readyTimerId);
-    targetProgress = 100;
+    clearStageTimers();
+    if (progressFrameId) {
+      cancelAnimationFrame(progressFrameId);
+      progressFrameId = null;
+    }
     const tryReveal = () => {
-      if (displayProgress < 100) {
-        displayProgress = 100;
-        setProgress(100);
-      }
+      setProgress(100);
       root.dataset.siteLoading = "ready";
       window.dispatchEvent(new Event("scroll", { bubbles: true }));
       const hash = window.location.hash;
@@ -318,6 +333,33 @@ function setupSiteLoadingGate() {
       }
     };
     requestAnimationFrame(tryReveal);
+  };
+
+  const startProgress = () => {
+    if (finished) return;
+    startHintRotation();
+    displayProgress = 0;
+    targetProgress = 0;
+    currentStageIndex = -1;
+    updateStageLabel();
+    advanceStage(0);
+    scheduleStageRun();
+  };
+
+  const finish = () => {
+    if (finished) return;
+    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
+    if (!overlay) ensureOverlay();
+    if (!overlay) return;
+    if (finishing) return;
+    finishing = true;
+    finishStartTime = performance.now();
+    clearStageTimers();
+    targetProgress = 100;
+    if (!progressFrameId) {
+      progressFrameId = requestAnimationFrame(animateProgress);
+    }
+    maybeRevealWhenReady();
   };
 
   const ensureOverlay = () => {
@@ -420,13 +462,15 @@ function setupSiteLoadingGate() {
   window.showLoadingPreview = () => {
     window.__EDITOR_KEEP_LOADING_OVERLAY = true;
     finished = false;
-    targetProgress = 0;
-    displayProgress = 0;
-    maxTargetSeen = 0;
+    finishing = false;
+    finishStartTime = 0;
     if (lettersTimer) window.clearInterval(lettersTimer);
-    if (rafId) cancelAnimationFrame(rafId);
     if (intervalId) window.clearInterval(intervalId);
     if (readyTimerId) window.clearTimeout(readyTimerId);
+    if (resourceObserver) {
+      resourceObserver.disconnect();
+      resourceObserver = null;
+    }
     if (hintTimer) window.clearInterval(hintTimer);
     if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
     hintInit = false;
@@ -442,47 +486,15 @@ function setupSiteLoadingGate() {
     startProgress();
   };
 
-  const waitForReady = async () => {
+  const waitForReady = () => {
     // 兜底：最多 20 秒必须解除加载门
-    window.setTimeout(() => {
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    readyTimerId = window.setTimeout(() => {
       if (!finished) finish();
     }, 20000);
-    try {
-      ensureOverlay();
-      setProgress(0);
-      startProgress();
-      const loadPromise = document.readyState === "complete"
-        ? Promise.resolve()
-        : new Promise((resolve) => window.addEventListener("load", resolve, { once: true }));
-      await Promise.race([
-        Promise.all([
-          document.fonts?.ready || Promise.resolve(),
-          loadPromise,
-        ]),
-        new Promise((resolve) => window.setTimeout(resolve, 15000)),
-      ]);
-      const mediaTasks = [...document.images]
-        .filter((img) => !img.complete)
-        .map((img) => new Promise((resolve) => {
-          img.addEventListener("load", resolve, { once: true });
-          img.addEventListener("error", resolve, { once: true });
-        }));
-      const videoEl = document.querySelector("video");
-      const videoTasks = videoEl
-        ? [new Promise((resolve) => {
-            if (videoEl.readyState >= 3) return resolve();
-            videoEl.addEventListener("loadeddata", resolve, { once: true });
-            videoEl.addEventListener("canplay", resolve, { once: true });
-            videoEl.addEventListener("error", resolve, { once: true });
-          })]
-        : [];
-      await Promise.race([
-        Promise.allSettled([...mediaTasks, ...videoTasks]),
-        new Promise((resolve) => window.setTimeout(resolve, 10000)),
-      ]);
-    } finally {
-      finish();
-    }
+    ensureOverlay();
+    setProgress(0);
+    startProgress();
   };
 
   if (document.readyState === "complete") {

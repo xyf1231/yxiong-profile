@@ -25,7 +25,7 @@
   --loading-letters-width: min(80vw, 500px);
   --loading-letters-height: 240px;
   --loading-letters-margin: -50px 0 5px;
-  --loading-letters-scale: 1.5;
+  --loading-letters-scale: 1.3;
 
   /* 手写动画参数（统一由 loading-content.js 控制，不再用 CSS 变量覆盖） */
 
