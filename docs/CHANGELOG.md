@@ -2,8 +2,9 @@
 
 ## v1.12.15 - 2026-07-10
 - 类型：调整
-- 变更：将维护手册与后台入口统一切回 Vercel，删除 README 中的 Cloudflare Pages 说明，避免发布流程继续指向旧平台。
-- 变更：后台「快捷入口」中的 Pages 预览链接改为 Vercel 控制台，资源分发文案统一为「Vercel」。
+- 变更：将公开站点的发布说明、后台入口、启动提示和资源源默认值统一切换为 Cloudflare Pages，删除 `vercel.json`，并新增 Cloudflare Pages 的 `_redirects` 路由文件。
+- 变更：访问量统计从 Upstash/Node 版本迁移为 Cloudflare Pages Function `functions/api/counter.js`，保留 `/api/counter` 接口不变。
+- 变更：后台里的资源分发标签从 `Vercel` 改为 `Cloudflare`，同域资源默认值也同步迁移到 `cloudflare`。
 - 检查：未运行
 - 部署：未部署
 

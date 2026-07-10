@@ -324,6 +324,7 @@ function mergeWithDefaultData(source) {
   const base = clone(window.DEFAULT_SITE_DATA);
   const merged = { ...base, ...source };
   merged.profile = { ...base.profile, ...(source.profile || {}) };
+  merged.assetSource = normalizeAssetSource(source.assetSource || base.assetSource);
   Object.keys(base).forEach((key) => {
     if (Array.isArray(base[key])) {
       if (!Array.isArray(merged[key]) || merged[key].length === 0) merged[key] = base[key];
@@ -332,8 +333,13 @@ function mergeWithDefaultData(source) {
   return merged;
 }
 
+function normalizeAssetSource(source) {
+  const value = String(source || "cloudflare").toLowerCase();
+  return value === "cdn" ? "cdn" : "cloudflare";
+}
+
 function currentAssetSource() {
-  return String(data.assetSource || window.DEFAULT_SITE_DATA.assetSource || "vercel").toLowerCase();
+  return normalizeAssetSource(data.assetSource || window.DEFAULT_SITE_DATA.assetSource || "cloudflare");
 }
 
 function updateAssetSourceUI(source = currentAssetSource()) {
@@ -341,9 +347,9 @@ function updateAssetSourceUI(source = currentAssetSource()) {
     btn.classList.toggle("active", btn.dataset.assetSource === source);
   });
   if (sbAssetSourceInline) {
-    sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel";
+    sbAssetSourceInline.textContent = source === "cdn" ? "jsDelivr/CDN" : "Cloudflare";
   }
-  if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Vercel";
+  if (deployMiniSource) deployMiniSource.textContent = source === "cdn" ? "jsDelivr/CDN" : "Cloudflare";
 }
 
 function assetUrlForDiagnostics(src = "") {
@@ -356,12 +362,12 @@ function assetUrlForDiagnostics(src = "") {
 }
 
 async function setAssetSource(source) {
-  const next = source === "cdn" ? "cdn" : "vercel";
+  const next = source === "cdn" ? "cdn" : "cloudflare";
   if (currentAssetSource() === next) return;
   data.assetSource = next;
   updateAssetSourceUI(next);
   await persistAndWrite();
-  deployLog(`资源源已切换为: ${next === "cdn" ? "jsDelivr/CDN" : "Vercel"}`, "success");
+  deployLog(`资源源已切换为: ${next === "cdn" ? "jsDelivr/CDN" : "Cloudflare"}`, "success");
 }
 
 function loadData() {
@@ -369,6 +375,7 @@ function loadData() {
   if (!saved) return clone(window.DEFAULT_SITE_DATA);
   try {
     const parsed = JSON.parse(saved);
+    parsed.assetSource = normalizeAssetSource(parsed.assetSource);
     return parsed.version === window.DEFAULT_SITE_DATA.version ? mergeWithDefaultData(parsed) : clone(window.DEFAULT_SITE_DATA);
   } catch { return clone(window.DEFAULT_SITE_DATA); }
 }
@@ -1737,7 +1744,7 @@ async function runNetworkDiagnostics() {
   const pagePath = `${window.location.pathname}${window.location.search || ""}`;
   const scriptSrc = document.querySelector('script[src*="js/admin.js"]')?.src || "js/admin.js";
   const resourceProbe = assetUrlForDiagnostics("resources/images/profile.webp");
-  const assetModeLabel = currentAssetSource() === "cdn" ? "jsDelivr/CDN" : "Vercel";
+  const assetModeLabel = currentAssetSource() === "cdn" ? "jsDelivr/CDN" : "Cloudflare";
   networkDiagLog(`资源分发模式：${assetModeLabel}`, "info");
   const tasks = [
     ["后台 HTML", pagePath, { readBody: true, timeoutMs: 12000 }],

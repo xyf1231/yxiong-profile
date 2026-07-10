@@ -1,6 +1,6 @@
 window.DEFAULT_SITE_DATA = {
   "version": "20260625-8",
-  "assetSource": "vercel",
+  "assetSource": "cloudflare",
   "translations": {},
   "profile": {
     "nameCn": "熊毅丰",

@@ -29,8 +29,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.12.15" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.12.15" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.12.17" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.12.17" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -1106,10 +1106,10 @@
                     <div class="deploy-action-group">
                       <div class="deploy-action-label">资源分发</div>
                       <div class="deploy-segmented" id="asset-source-switch">
-                        <button class="active" data-asset-source="vercel">Vercel</button>
+                        <button class="active" data-asset-source="cloudflare">Cloudflare</button>
                         <button data-asset-source="cdn">jsDelivr / CDN</button>
                       </div>
-                      <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留在 Vercel 上，最顺手。</p>
+                      <p class="deploy-note">切换后记得保存并发布，前台会按这个设置选择图片源。把大图放 CDN，小图和常用素材保留在 Cloudflare 上，最顺手。</p>
                     </div>
 
                     <div class="deploy-action-group">
@@ -1165,7 +1165,7 @@
                     </div>
                     <div class="deploy-link-grid">
                       <a class="deploy-link-btn" href="https://xyfoptics.xyz" target="_blank" rel="noopener">🌐 正式域名</a>
-                      <a class="deploy-link-btn" href="https://vercel.com/dashboard" target="_blank" rel="noopener">👁️ Vercel 控制台</a>
+                      <a class="deploy-link-btn" href="https://dash.cloudflare.com/" target="_blank" rel="noopener">👁️ Cloudflare 控制台</a>
                     </div>
                   </section>
 
@@ -1267,7 +1267,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.12.15" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.12.15" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.12.17" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.12.17" charset="utf-8"></script>
   </body>
 </html>

@@ -16,6 +16,6 @@ fi
 echo "正在启动本地后台..."
 echo "浏览器会自动打开：http://localhost:8787/admin.html"
 echo "内容会写入 js/data.js，文件会写入 resources/images/、resources/papers/、resources/videos/ 和 resources/frames/。"
-echo "发布流程使用 GitHub + Vercel 自动部署。"
+echo "发布流程使用 GitHub + Cloudflare Pages 自动部署。"
 echo "保持这个窗口打开；维护结束后按 Ctrl+C 关闭。"
 "$NODE_BIN" scripts/admin-server.mjs

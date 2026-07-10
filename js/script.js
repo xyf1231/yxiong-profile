@@ -42,7 +42,7 @@ const ASSET_CACHE_BUSTER = (() => {
   }
 })();
 const ASSET_BASE_URL = (window.ASSET_BASE_URL || "").replace(/\/+$/, "");
-const ASSET_SOURCE = (window.DEFAULT_SITE_DATA?.assetSource || "vercel").toLowerCase();
+const ASSET_SOURCE = String(window.DEFAULT_SITE_DATA?.assetSource || "cloudflare").toLowerCase();
 const SITE_LOADING_KEY = "academicSiteLoading";
 
 // 资源路径处理：本地资源、CDN 资源、缓存戳
@@ -2231,8 +2231,7 @@ function translateLooseHeadings(dict) {
 
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
-  if (typeof initBorderGlow !== "function") return;
-  if (isCompactNav()) return;
+  return;
 
   var allCards = document.querySelectorAll(
     ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more"

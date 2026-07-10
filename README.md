@@ -1,6 +1,6 @@
 # xyfoptics 个人学术网站维护手册
 
-熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + GitHub 作为源站 + Vercel 自动部署公开页面和公开素材**。
+熊毅丰（Yifeng Xiong）个人学术网站。当前稳定方案是：**纯静态网站 + 本地后台维护 + GitHub 作为源站 + Cloudflare Pages 自动部署公开页面和公开素材**。
 
 - 线上地址：https://xyfoptics.xyz
 - 项目目录：`/Users/xiongyifeng/Documents/02-个人/01-个人网站/个人简历网站`
@@ -124,7 +124,7 @@ npm run bump -- 1.7.9
 7. 预览页面。
 8. 运行 `npm run check`。
 9. 更新版本号：在后台改 `VERSION`，或执行 `echo "vX.Y.Z" > VERSION && npm run bump -- X.Y.Z`。
-10. 用户要求发布时，在后台点“推送到 GitHub”触发 Vercel 自动部署。
+10. 用户要求发布时，在后台点“推送到 GitHub”触发 Cloudflare Pages 自动部署。
 
 ## 常用命令
 
@@ -142,6 +142,13 @@ git push origin main          # 通过 SSH 推送并触发线上部署
 ```bash
 /Users/xiongyifeng/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node scripts/check-site.mjs
 ```
+
+## Cloudflare Pages 配置
+
+- 公开站点使用 Cloudflare Pages，根域和 `www` 都在 Cloudflare 里配置。
+- 路由重写使用仓库根目录的 `_redirects`。
+- 首页访客统计使用 `functions/api/counter.js`，需要绑定一个 Cloudflare D1 数据库，绑定名建议用 `VISITOR_COUNTER_DB`。
+- 计数表结构为单行计数器：`visitor_counter(id, count)`。
 
 ## 内容维护规则
 
@@ -250,7 +257,7 @@ Intelligence
 先阅读 README.md、docs/WORKFLOW.md、docs/CHANGELOG.md。
 这是原生 HTML/CSS/JS 项目，不是 React/Next。
 内容主要在 js/data.js，样式在 css/styles.css，交互在 js/script.js，本地后台在 admin.html/js/admin.js/scripts/admin-server.mjs。
-当前稳定流程是本地维护 `data.js`、`resources/`，再通过 GitHub 推送触发 Vercel 自动部署。
+当前稳定流程是本地维护 `data.js`、`resources/`，再通过 GitHub 推送触发 Cloudflare Pages 自动部署。
 每次迭代必须更新版本号（修改 `VERSION` 后运行 `npm run bump -- X.Y.Z` 或后台保存版本号）、写 `docs/CHANGELOG.md`、运行 `npm run check`。
 只有用户明确要求发布时才部署。
 ```
