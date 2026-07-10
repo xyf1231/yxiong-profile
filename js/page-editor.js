@@ -456,10 +456,10 @@ const pageSchemas = {
         rangeField("--loading-card-margin-top", "垂直偏移", -200, 200, 1, "px", "--loading-card-margin-top-mobile"),
       ]),
       group("手写文字", [
-        textField("--loading-letters-width", "字母区域宽度"),
+        textField("--loading-letters-width", "字母区域宽度", "--loading-letters-width-mobile"),
         rangeField("--loading-letters-height", "字母区域高度", 40, 240, 1, "px", "--loading-letters-height-mobile"),
-        rangeField("--loading-letters-scale", "字母缩放", 0.5, 3, 0.05, ""),
-        textField("--loading-letters-margin", "外边距"),
+        rangeField("--loading-letters-scale", "字母缩放", 0.5, 3, 0.05, "", "--loading-letters-scale-mobile"),
+        textField("--loading-letters-margin", "外边距", "--loading-letters-margin-mobile"),
       ]),
       group("百分比数字", [
         colorField("--loading-percent-color", "颜色"),

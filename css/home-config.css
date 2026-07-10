@@ -53,7 +53,7 @@
   --section-kicker-margin-bottom: var(--global-section-kicker-margin-bottom);
 
   /* 快速导航卡片 */
-  --home-bento-card-title-font-size: clamp(1.5rem, 3vw, 6rem);
+  --home-bento-card-title-font-size: clamp(1.5rem, 2vw, 6rem);
   --home-bento-card-text-font-size: clamp(0.7rem, 1.5vw, 1.5rem);
 
   /* 研究卡片序号偏移 */

@@ -9,7 +9,7 @@ window.RESOURCE_SIZE_MANIFEST = {
   "css/home.css": 2201,
   "css/honors-config.css": 4937,
   "css/honors.css": 850,
-  "css/loading-config.css": 3196,
+  "css/loading-config.css": 3198,
   "css/news.css": 1919,
   "css/profile-config.css": 22062,
   "css/profile.css": 1407,
@@ -230,17 +230,11 @@ window.RESOURCE_SIZE_MANIFEST = {
   "resources/images/LPR-main.webp": 33384,
   "resources/images/light-fingerprint-main 2.webp": 74526,
   "resources/images/light-fingerprint-main.webp": 74526,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-1.png": 157304,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-1.webp": 80362,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-2.png": 248820,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-2.webp": 43838,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-3.png": 2987807,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-3.webp": 297336,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-4.png": 3010854,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-4.webp": 358874,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-5.png": 1425138,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-5.webp": 267290,
-  "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-6.png": 2631112,
   "resources/images/nature-electronics-光纤端面集成-原位读懂纤内光-指纹-img-6.webp": 532606,
   "resources/images/news-light-fingerprint.webp": 34592,
   "resources/images/profile.webp": 606656,
@@ -251,8 +245,8 @@ window.RESOURCE_SIZE_MANIFEST = {
   "resources/images/光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源-img-2.webp": 150528,
   "resources/images/光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源-img-3.webp": 25636,
   "resources/images/光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源-img-4.webp": 610382,
-  "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html": 12173,
-  "resources/news/光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源.html": 10030,
+  "resources/news/nature-electronics-光纤端面集成-原位读懂纤内光-指纹.html": 12249,
+  "resources/news/光纤-铌酸锂集成-亚微秒宽带可调谐光纤集成滤波器和扫频光源.html": 10106,
   "resources/papers/2019-broadband-optical-fiber-compatible-photodetector-based-on-a-graphene-mos2-ws2-heterostruct.pdf": 2551974,
   "resources/papers/2020-multifunctional-integration-on-optical-fiber-tips-challenges-and-opportunities.pdf": 7406733,
   "resources/papers/2020-ultrahigh-responsivity-photodetectors-of-2d-covalent-organic-frameworks-integrated-on-grap.pdf": 4307710,
@@ -283,4 +277,4 @@ window.RESOURCE_SIZE_MANIFEST = {
   "honors.html": 8279,
   "activities.html": 8774
 };
-window.RESOURCE_SIZE_MANIFEST_TOTAL = 143760946;
+window.RESOURCE_SIZE_MANIFEST_TOTAL = 133300065;
