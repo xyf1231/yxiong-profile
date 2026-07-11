@@ -1,5 +1,12 @@
 # 更新日志
 
+# v1.14.27 - 2026-07-12
+- 类型：调整
+- 变更：将手机端 glow 默认强度调整为 `1`，淡出调整为 `500ms`，并同步前台站点与 `glow-lab.html` 的默认参数。
+- 变更：将前台静态资源版本戳统一升到 `v1.14.27`，避免 Cloudflare Pages 继续命中旧缓存。
+- 检查：`node scripts/check-site.mjs` 待复跑
+- 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
+
 # v1.14.26 - 2026-07-12
 - 类型：修复
 - 变更：修正手机端点击 glow 仍会压黑卡片背景的问题。手机端现在只动画独立的 `--touch-glow-opacity`，不再驱动 `--edge-proximity`，因此不会再把 `::before` 面层一起点亮或压暗。

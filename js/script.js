@@ -2503,7 +2503,7 @@ function setupBorderGlow() {
     sweepIntensity: 1,
     sweepFadeIn: 200,
     sweepRotate: 500,
-    sweepFadeOut: 1000,
+    sweepFadeOut: 500,
     hoverEnabled: !isCompactNav(),
   });
 }
