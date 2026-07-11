@@ -2460,16 +2460,22 @@ function translateLooseHeadings(dict) {
 function setupBorderGlow() {
   var touchLike = isTouchLikeDevice();
   var selector = touchLike
-    ? ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more"
+    ? ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more"
     : ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more";
   var allCards = document.querySelectorAll(selector);
 
   allCards.forEach(function(card) {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
+    var computedStyle = window.getComputedStyle(card);
     card.classList.add("border-glow-card");
+    if (touchLike && card.classList.contains("detail-item")) {
+      card.classList.add("border-glow-native-bg");
+      card.style.setProperty("--native-card-background", computedStyle.background);
+      card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
+    }
 
-    var borderRadius = window.getComputedStyle(card).borderRadius || "clamp(22px, 2.4vw, 32px)";
+    var borderRadius = computedStyle.borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);
 
     var skipWrap = card.classList.contains("publication-item") || card.classList.contains("profile-publication-item") || card.classList.contains("profile-combo") || card.classList.contains("home-frame-media") || (card.parentElement && card.parentElement.classList.contains("timeline")) || card.classList.contains("detail-item");
@@ -2562,7 +2568,7 @@ function setupRevealAnimations() {
           node.style.setProperty("--reveal-delay", "200ms");
         }
         // trigger glow sweep in sync with card entrance (only after loading)
-        if (!isCompactNav() && document.documentElement.dataset.siteLoading !== "pending" && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
+        if (!isCompactNav() && document.documentElement.dataset.siteLoading !== "pending" && !isTouchLikeDevice() && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
           var rh = Math.round(500 * 0.4);
           var rs = Math.round(500 * 0.6);
           setTimeout(function() {

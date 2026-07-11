@@ -2438,15 +2438,21 @@ function translateLooseHeadings(dict) {
 function setupBorderGlow() {
   const touchLike = isTouchLikeDevice();
   const selector = touchLike
-    ? ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner"
+    ? ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner"
     : ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner";
   const cards = document.querySelectorAll(selector);
   cards.forEach((card, index) => {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";
+    const computedStyle = window.getComputedStyle(card);
     card.classList.add("border-glow-card");
+    if (touchLike && card.classList.contains("detail-item")) {
+      card.classList.add("border-glow-native-bg");
+      card.style.setProperty("--native-card-background", computedStyle.background);
+      card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
+    }
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
-    card.style.setProperty("--border-radius", window.getComputedStyle(card).borderRadius || "18px");
+    card.style.setProperty("--border-radius", computedStyle.borderRadius || "18px");
   });
 
   if (!cards.length || typeof initBorderGlow !== "function") return;
