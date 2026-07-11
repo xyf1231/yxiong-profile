@@ -150,6 +150,14 @@ const schemas = {
   },
 };
 
+const footerContactFields = [
+  ["label", "中文标签"],
+  ["labelEn", "英文标签"],
+  ["value", "显示文本"],
+  ["valueEn", "显示文本（英）"],
+  ["url", "链接"],
+];
+
 // ═══════════════════════════════════════════════════════════════
 //  状态
 // ═══════════════════════════════════════════════════════════════
@@ -385,8 +393,9 @@ function persist() {
 function loadSavedTab() {
   try {
     const tab = localStorage.getItem(ACTIVE_TAB_KEY);
-    if (schemas[tab] || tab === "deploy" || tab === "files" || tab === "translations") {
-      return tab;
+    const normalized = tab === "contacts" ? "footer" : tab;
+    if (schemas[normalized] || normalized === "deploy" || normalized === "files" || normalized === "translations") {
+      return normalized;
     }
     return null;
   } catch {
@@ -443,6 +452,15 @@ function currentCollection() {
   const schema = schemas[activeTab];
   const dataKey = schema.dataKey || activeTab;
   return schema.type === "object" ? data[dataKey] : data[dataKey] || [];
+}
+
+function footerContactsCollection() {
+  if (!Array.isArray(data.contacts)) data.contacts = [];
+  return data.contacts;
+}
+
+function normalizeTab(tab) {
+  return tab === "contacts" ? "footer" : tab;
 }
 
 function currentContentTarget() {
@@ -715,10 +733,6 @@ function autoTranslatePairsForSchema(schemaId) {
       ["title", "titleEn"],
       ["text", "textEn"],
     ],
-    contacts: [
-      ["label", "labelEn"],
-      ["value", "valueEn"],
-    ],
     metrics: [
       ["label", "labelEn"],
     ],
@@ -736,11 +750,16 @@ async function autoTranslateCurrentEntry(forceOverwrite = false) {
   const schema = schemas[activeTab];
   if (!schema) return;
   const pairs = autoTranslatePairsForSchema(activeTab);
-  if (!pairs.length) {
+  const shouldTranslateContacts = activeTab === "footer";
+  if (!pairs.length && !shouldTranslateContacts) {
     setLocalStatus("当前栏目没有可自动翻译的中英字段。", "info");
     return;
   }
   syncAllRichTextSources();
+  if (shouldTranslateContacts) {
+    syncCurrentFormToTarget(data.footer || {});
+    readFooterContactsFromForm();
+  }
   const translateButton = document.querySelector("#translate-current");
   const previousText = translateButton?.textContent || "一键翻译英文";
   if (translateButton) {
@@ -764,8 +783,15 @@ async function autoTranslateCurrentEntry(forceOverwrite = false) {
       }
       pending.push({ sourceKey, targetKey, sourceValue });
     }
-
-    if (pending.length === 0 && overwriteTargets.length === 0) {
+    const hasFooterContactWork = shouldTranslateContacts && footerContactsCollection().some((item) =>
+      [["label", "labelEn"], ["value", "valueEn"]].some(([sourceKey, targetKey]) => {
+        const sourceValue = String(item?.[sourceKey] || "").trim();
+        if (!sourceValue) return false;
+        const targetValue = String(item?.[targetKey] || "").trim();
+        return forceOverwrite || !targetValue;
+      })
+    );
+    if (pending.length === 0 && overwriteTargets.length === 0 && !hasFooterContactWork) {
       setLocalStatus("没有找到可翻译的空字段。", "info");
       return;
     }
@@ -800,6 +826,25 @@ async function autoTranslateCurrentEntry(forceOverwrite = false) {
       if (liveTarget) liveTarget[item.targetKey] = translatedValue;
       translatedCount.push(item.targetKey);
     }
+    if (shouldTranslateContacts) {
+      const contacts = footerContactsCollection();
+      for (const item of contacts) {
+        if (!item) continue;
+        for (const [sourceKey, targetKey] of [["label", "labelEn"], ["value", "valueEn"]]) {
+          const sourceValue = String(item[sourceKey] || "").trim();
+          if (!sourceValue) continue;
+          const targetValue = String(item[targetKey] || "").trim();
+          if (targetValue && !forceOverwrite) {
+            overwriteTargets.push(targetKey);
+            continue;
+          }
+          const translatedValue = await translateText(sourceValue);
+          if (!translatedValue) continue;
+          item[targetKey] = translatedValue;
+          translatedCount.push(targetKey);
+        }
+      }
+    }
     if (translatedCount.length === 0) {
       setLocalStatus("翻译没有产生新的英文内容。", "info");
       return;
@@ -821,7 +866,8 @@ async function autoTranslateCurrentSection(forceOverwrite = false) {
   const schema = schemas[activeTab];
   if (!schema) return;
   const pairs = autoTranslatePairsForSchema(activeTab);
-  if (!pairs.length) {
+  const shouldTranslateContacts = activeTab === "footer";
+  if (!pairs.length && !shouldTranslateContacts) {
     setLocalStatus("当前板块没有可自动翻译的中英字段。", "info");
     return;
   }
@@ -852,6 +898,29 @@ async function autoTranslateCurrentSection(forceOverwrite = false) {
         if (!translatedValue) continue;
         item[targetKey] = translatedValue;
         translatedCount += 1;
+      }
+    }
+    if (shouldTranslateContacts) {
+      const contacts = footerContactsCollection();
+      const contactPairs = [
+        ["label", "labelEn"],
+        ["value", "valueEn"],
+      ];
+      for (const item of contacts) {
+        if (!item) continue;
+        for (const [sourceKey, targetKey] of contactPairs) {
+          const sourceValue = String(item[sourceKey] || "").trim();
+          if (!sourceValue) continue;
+          const targetValue = String(item[targetKey] || "").trim();
+          if (targetValue && !forceOverwrite) {
+            skippedCount += 1;
+            continue;
+          }
+          const translatedValue = await translateText(sourceValue);
+          if (!translatedValue) continue;
+          item[targetKey] = translatedValue;
+          translatedCount += 1;
+        }
       }
     }
     if (translatedCount === 0) {
@@ -1190,6 +1259,124 @@ function renderFieldControl([key, label, kind], source, { full = false, missing 
   return `<label class="${cls}${missingCls}"><span>${label}</span><input name="${key}" value="${escapeHtml(value)}" /></label>`;
 }
 
+function renderFooterContactCard(item = {}, index = 0) {
+  const fields = footerContactFields
+    .map(([key, label]) => {
+      const value = item[key] || "";
+      return `
+        <label class="field footer-contact-field">
+          <span>${label}</span>
+          <input
+            value="${escapeHtml(value)}"
+            data-footer-contact-field="${key}"
+            data-footer-contact-index="${index}"
+            placeholder="${key === "url" ? "https://..." : ""}"
+          />
+        </label>`;
+    })
+    .join("");
+  return `
+    <article class="footer-contact-card" data-footer-contact-index="${index}">
+      <div class="footer-contact-card-head">
+        <strong>联系方式 ${index + 1}</strong>
+        <div class="footer-contact-card-actions">
+          <button class="icon-button" type="button" data-footer-contact-action="up" data-index="${index}" title="上移">▲</button>
+          <button class="icon-button" type="button" data-footer-contact-action="down" data-index="${index}" title="下移">▼</button>
+          <button class="icon-button danger" type="button" data-footer-contact-action="delete" data-index="${index}" title="删除">🗑</button>
+        </div>
+      </div>
+      <div class="footer-contact-grid">${fields}</div>
+    </article>`;
+}
+
+function renderFooterContactsEditor() {
+  const contacts = footerContactsCollection();
+  const count = contacts.length;
+  return `
+    <section class="lang-group footer-contacts-group">
+      <div class="lang-group-header">📇 联系方式 <span class="footer-contacts-hint">${count > 0 ? `${count} 条` : "用于页脚展示的联系入口"}</span></div>
+      <div class="footer-contacts-toolbar">
+        <p class="footer-contacts-note">这里编辑的是页脚下方的联系方式，保存后会同步到前台。</p>
+        <button class="admin-button primary" type="button" data-footer-contact-action="add">+ 新增联系方式</button>
+      </div>
+      <div class="footer-contact-list">
+        ${count === 0
+          ? `<div class="footer-contact-empty">暂无联系方式，点击右上角新增一条。</div>`
+          : contacts.map((item, index) => renderFooterContactCard(item, index)).join("")}
+      </div>
+    </section>`;
+}
+
+function readFooterContactsFromForm() {
+  const cards = Array.from(form.querySelectorAll(".footer-contact-card"));
+  const next = cards
+    .map((card) => {
+      const item = {};
+      for (const [key] of footerContactFields) {
+        item[key] = card.querySelector(`[data-footer-contact-field="${key}"]`)?.value || "";
+      }
+      return item;
+    })
+    .filter((item) => footerContactFields.some(([key]) => String(item[key] || "").trim() !== ""));
+  data.contacts = next;
+  return next;
+}
+
+function renderFooterPanel(source) {
+  const footer = source || {};
+  const schema = schemas.footer;
+  const hasZh = schema.fields.some((f) => f[3] === "zh");
+  const hasEn = schema.fields.some((f) => f[3] === "en");
+  const showLangPicker = hasZh || hasEn;
+  let langBar = "";
+  if (showLangPicker) {
+    const langs = [
+      { id: "all", label: "全部" },
+      ...(hasZh ? [{ id: "zh", label: "中文" }] : []),
+      ...(hasEn ? [{ id: "en", label: "English" }] : []),
+    ];
+    langBar = `<div class="lang-tabs" data-form-lang-bar="1">${langs
+      .map((l) => `<button type="button" class="lang-tab${l.id === formLang ? " active" : ""}" data-lang="${l.id}">${l.label}</button>`)
+      .join("")}</div>`;
+  }
+  let filteredFields = schema.fields;
+  if (formLang !== "all") {
+    filteredFields = schema.fields.filter((f) => f[3] === formLang || f[3] === "common" || !f[3]);
+  }
+  const groups = {};
+  const order = [];
+  for (const field of filteredFields) {
+    const loc = field[3] || "common";
+    if (!groups[loc]) {
+      groups[loc] = [];
+      order.push(loc);
+    }
+    groups[loc].push(field);
+  }
+  function missingCount(fields) {
+    return fields.filter(([key]) => !footer[key] && footer[key] !== 0).length;
+  }
+  function renderGroup(loc, fields) {
+    const missing = missingCount(fields);
+    const label = localeGroupLabel(loc);
+    const warn = missing > 0 ? ` <span class="missing-badge">${missing} 项未填写</span>` : "";
+    const header = showLangPicker ? `<div class="lang-group-header">${label}${warn}</div>` : "";
+    const body = fields
+      .map((field) => renderFieldControl(field, footer, {
+        full: field[2] === "textarea" || field[2] === "image" || field[2] === "file" || field[2] === "richtext",
+        missing: formLang !== "all" && loc !== "common",
+      }))
+      .join("");
+    return `<div class="lang-group${missing > 0 && formLang !== "all" ? " lang-group-incomplete" : ""}">${header}${body}</div>`;
+  }
+  return `
+    <div class="footer-editor-note">页脚信息和联系方式已合并在这里。联系方式会继续同步到前台的联系入口。</div>
+    ${langBar}
+    ${order.map((loc) => renderGroup(loc, groups[loc])).join("")}
+    ${renderFooterContactsEditor()}
+  `;
+}
+
 function renderNewsForm(source) {
   const coreFields = [
     ["date", "发布日期", "", "common"],
@@ -1277,6 +1464,21 @@ function localeGroupLabel(loc) {
 function buildForm() {
   const schema = schemas[activeTab];
   const source = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
+
+  if (activeTab === "footer") {
+    form.innerHTML = renderFooterPanel(source);
+    setupRichTextEditors();
+    injectConverterImportButton();
+    if (schema.fields.some((f) => f[3] === "zh" || f[3] === "en")) {
+      form.querySelectorAll(".lang-tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          formLang = tab.dataset.lang;
+          buildForm();
+        });
+      });
+    }
+    return;
+  }
 
   if (activeTab === "news") {
     form.innerHTML = renderNewsForm(source);
@@ -1415,6 +1617,20 @@ function renderList() {
   addButton.style.display = schema.type === "object" ? "none" : "inline-flex";
   if (schema.type === "object") {
     list.dataset.sortable = "false";
+    if (activeTab === "footer") {
+      const footer = data.footer || {};
+      const contacts = footerContactsCollection();
+      list.innerHTML = `
+        <article class="managed-item footer-summary">
+          <div class="profile-avatar">📝</div>
+          <div class="managed-copy">
+            <h3>${escapeHtml(footer.version || "页脚信息")}</h3>
+            <p>${escapeHtml(footer.address || footer.addressEn || "页脚与联系方式合并管理")}</p>
+            <p style="margin-top:2px;font-size:0.78rem;color:rgba(255,255,255,0.4);">联系方式 ${contacts.length} 条 · ${escapeHtml(footer.email || "未设置邮箱")}</p>
+          </div>
+        </article>`;
+      return;
+    }
     const p = data.profile || {};
     list.innerHTML = `
       <article class="managed-item profile-summary">
@@ -1562,6 +1778,23 @@ async function reorderRepresentativeCollection(fromIndex, toIndex) {
 async function saveCurrent() {
   syncAllRichTextSources();
   const schema = schemas[activeTab];
+  if (activeTab === "footer") {
+    const target = data.footer || {};
+    for (const [key, , kind] of schema.fields) {
+      const el = form.elements[key];
+      if (!el) continue;
+      if (kind === "checkbox" && el) {
+        target[key] = el.checked ? true : false;
+      } else {
+        target[key] = el?.value || "";
+      }
+    }
+    readFooterContactsFromForm();
+    await persistAndWrite();
+    buildForm();
+    renderList();
+    return;
+  }
   const target = schema.type === "object" ? data[activeTab] : currentCollection()[editingIndex] || {};
   for (const [key, , kind] of schema.fields) {
     const el = form.elements[key];
@@ -1603,24 +1836,24 @@ function clearForm() {
 function setActiveTab(tab, options = {}) {
   const { persist = true } = options;
   const previousTab = activeTab;
-  activeTab = tab;
+  activeTab = normalizeTab(tab);
   editingIndex = 0;
-  if (tab !== previousTab) {
+  if (activeTab !== previousTab) {
     pendingStorageFieldName = "";
   }
   if (persist) {
-    persistActiveTab(tab);
+    persistActiveTab(activeTab);
   }
 
   // 更新按钮状态
   document.querySelectorAll(".tab-button").forEach((btn) => {
-    btn.setAttribute("aria-selected", String(btn.dataset.tab === tab));
+    btn.setAttribute("aria-selected", String(normalizeTab(btn.dataset.tab) === activeTab));
   });
 
   // 切换面板
-  const isDeploy = tab === "deploy";
-  const isFiles = tab === "files";
-  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles && tab !== "translations");
+  const isDeploy = activeTab === "deploy";
+  const isFiles = activeTab === "files";
+  document.querySelector("#panel-cms")?.classList.toggle("active", !isDeploy && !isFiles && activeTab !== "translations");
   document.querySelector("#panel-deploy")?.classList.toggle("active", isDeploy);
   document.querySelector("#panel-files")?.classList.toggle("active", isFiles);
 
@@ -1634,14 +1867,14 @@ function setActiveTab(tab, options = {}) {
   }
 
   // 翻译管理（自定义面板）
-  if (tab === "translations") {
+  if (activeTab === "translations") {
     renderTranslationsPanel();
     return;
   }
 
   // CMS 模式
-  const schema = schemas[tab];
-  document.querySelector("#active-kicker").textContent = tab;
+  const schema = schemas[activeTab];
+  document.querySelector("#active-kicker").textContent = activeTab;
   document.querySelector("#active-title").textContent = schema.title;
   document.querySelector("#editor-kicker").textContent = "编辑";
   document.querySelector("#editor-title").textContent = "编辑当前条目";
@@ -3074,6 +3307,39 @@ function init() {
   });
 
   form?.addEventListener("click", async (event) => {
+    const footerAction = event.target.closest("button[data-footer-contact-action]");
+    if (footerAction && activeTab === "footer") {
+      syncCurrentFormToTarget(data.footer || {});
+      readFooterContactsFromForm();
+      const action = footerAction.dataset.footerContactAction;
+      const contacts = footerContactsCollection();
+      const index = Number(footerAction.dataset.index);
+      if (action === "add") {
+        contacts.push({ label: "", labelEn: "", value: "", valueEn: "", url: "" });
+        buildForm();
+        return;
+      }
+      if (!Number.isInteger(index) || index < 0 || index >= contacts.length) return;
+      if (action === "up" && index > 0) {
+        const [moved] = contacts.splice(index, 1);
+        contacts.splice(index - 1, 0, moved);
+        buildForm();
+        return;
+      }
+      if (action === "down" && index < contacts.length - 1) {
+        const [moved] = contacts.splice(index, 1);
+        contacts.splice(index + 1, 0, moved);
+        buildForm();
+        return;
+      }
+      if (action === "delete") {
+        const label = contacts[index]?.label || contacts[index]?.labelEn || `联系方式 ${index + 1}`;
+        if (!confirm(`确定删除「${label}」？`)) return;
+        contacts.splice(index, 1);
+        buildForm();
+        return;
+      }
+    }
     const button = event.target.closest("button[data-open-file-manager]");
     if (!button) return;
     const bucket = button.dataset.openFileManager || "images";

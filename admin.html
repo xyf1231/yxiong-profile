@@ -42,8 +42,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.9" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.14.9" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.10" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.14.10" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -559,6 +559,83 @@
         overflow: auto;
         scrollbar-gutter: stable;
       }
+      .footer-editor-note {
+        padding: 12px 14px;
+        border: 1px solid rgba(41,151,255,0.16);
+        border-radius: 14px;
+        background: rgba(41,151,255,0.08);
+        color: rgba(255,255,255,0.72);
+        font-size: 0.82rem;
+        line-height: 1.65;
+      }
+      .footer-contacts-group {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      .footer-contacts-hint {
+        color: rgba(255,255,255,0.42);
+        font-weight: 600;
+        font-size: 0.8rem;
+      }
+      .footer-contacts-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      .footer-contacts-note {
+        margin: 0;
+        color: rgba(255,255,255,0.56);
+        font-size: 0.8rem;
+        line-height: 1.6;
+      }
+      .footer-contact-list {
+        display: grid;
+        gap: 12px;
+      }
+      .footer-contact-empty {
+        border: 1px dashed rgba(255,255,255,0.14);
+        border-radius: 14px;
+        padding: 16px;
+        color: rgba(255,255,255,0.42);
+        font-size: 0.82rem;
+        text-align: center;
+        background: rgba(255,255,255,0.02);
+      }
+      .footer-contact-card {
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 14px;
+        background: rgba(255,255,255,0.03);
+        display: grid;
+        gap: 12px;
+      }
+      .footer-contact-card-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .footer-contact-card-head strong {
+        font-size: 0.88rem;
+        color: rgba(255,255,255,0.86);
+      }
+      .footer-contact-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .footer-contact-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .footer-contact-field {
+        margin: 0;
+      }
       .news-form-tip {
         display: grid;
         gap: 6px;
@@ -904,7 +981,6 @@
               <button class="tab-button" data-tab="projects" type="button">项目</button>
               <button class="tab-button" data-tab="achievements" type="button">成果</button>
               <button class="tab-button" data-tab="experience" type="button">经历</button>
-              <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
               <button class="tab-button" data-tab="metrics" type="button">📊 统计数据</button>
               <button class="tab-button" data-tab="footer" type="button">📝 页脚信息</button>
             </div>
@@ -1370,7 +1446,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.14.9" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.14.9" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.14.10" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.14.10" charset="utf-8"></script>
   </body>
 </html>

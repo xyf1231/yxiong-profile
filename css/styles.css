@@ -167,11 +167,10 @@ html[data-site-loading="pending"]::after {
    站点加载遮罩：Lottie 欢迎动画、百分比、进度条、速度显示
    -------------------------------------------------------------------------- */
 .site-loading-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 10000;
   isolation: isolate;
   display: grid;
