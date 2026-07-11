@@ -64,7 +64,7 @@
 }
 
 .border-glow-card.touch-glow-playing::before {
-  opacity: 0 !important;
+  opacity: var(--touch-base-opacity, 0.18) !important;
 }
 
 .border-glow-card.touch-glow-playing > .edge-light {

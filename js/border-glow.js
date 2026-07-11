@@ -185,6 +185,7 @@ function playTouchGlowAnimation(card, opts) {
 
   card.style.setProperty('--cursor-angle', angle + 'deg');
   card.style.setProperty('--touch-glow-opacity', '0');
+  card.style.setProperty('--touch-base-opacity', '0.18');
 
   controllers.push(animateValue({
     duration: fadeIn,
@@ -205,6 +206,7 @@ function playTouchGlowAnimation(card, opts) {
       onEnd: function() {
         card.classList.remove('touch-glow-playing');
         card.style.setProperty('--touch-glow-opacity', '0');
+        card.style.removeProperty('--touch-base-opacity');
         if (card.__touchGlowAnim) delete card.__touchGlowAnim;
       }
     }));
@@ -215,6 +217,7 @@ function playTouchGlowAnimation(card, opts) {
     delete card.__touchGlowAnim;
     card.classList.remove('touch-glow-playing');
     card.style.setProperty('--touch-glow-opacity', '0');
+    card.style.removeProperty('--touch-base-opacity');
   }, fadeIn + hold + fadeOut + 32));
 
   card.__touchGlowAnim = { controllers: controllers, timeouts: timeouts };
