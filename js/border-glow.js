@@ -55,21 +55,33 @@ function animateValue(opts) {
   var ease = opts.ease || function(t) { return t; };
   var onUpdate = opts.onUpdate;
   var onEnd = opts.onEnd;
+  var rafId = null;
+  var timeoutId = null;
+  var cancelled = false;
+
+  function cancel() {
+    cancelled = true;
+    if (rafId != null) cancelAnimationFrame(rafId);
+    if (timeoutId != null) clearTimeout(timeoutId);
+  }
 
   function tick() {
+    if (cancelled) return;
     var elapsed = performance.now() - t0;
     var t = Math.min(elapsed / duration, 1);
     onUpdate(start + (end - start) * ease(t));
-    if (t < 1) requestAnimationFrame(tick);
+    if (t < 1) rafId = requestAnimationFrame(tick);
     else if (onEnd) onEnd();
   }
 
   var t0 = performance.now() + delay;
   if (delay > 0) {
-    setTimeout(function() { requestAnimationFrame(tick); }, delay);
+    timeoutId = setTimeout(function() { rafId = requestAnimationFrame(tick); }, delay);
   } else {
-    requestAnimationFrame(tick);
+    rafId = requestAnimationFrame(tick);
   }
+
+  return { cancel: cancel };
 }
 
 function playSweepAnimation(card, opts) {
@@ -118,6 +130,91 @@ function restartSweepAnimation(card, opts) {
   requestAnimationFrame(function() {
     playSweepAnimation(card, opts);
   });
+}
+
+function cancelTouchGlowAnimation(card) {
+  if (!card || !card.__touchGlowAnim) return;
+  if (card.__touchGlowAnim.controllers) {
+    card.__touchGlowAnim.controllers.forEach(function(controller) {
+      if (controller && controller.cancel) controller.cancel();
+    });
+  }
+  if (card.__touchGlowAnim.timeouts) {
+    card.__touchGlowAnim.timeouts.forEach(function(timeoutId) {
+      clearTimeout(timeoutId);
+    });
+  }
+  delete card.__touchGlowAnim;
+  card.classList.remove('touch-glow-playing');
+}
+
+function getPointerAngle(card, event, fallbackAngle) {
+  if (!card || !event || typeof event.clientX !== 'number' || typeof event.clientY !== 'number') {
+    return fallbackAngle != null ? fallbackAngle : 110;
+  }
+  var rect = card.getBoundingClientRect();
+  var x = event.clientX - rect.left;
+  var y = event.clientY - rect.top;
+  var cx = rect.width / 2;
+  var cy = rect.height / 2;
+  var dx = x - cx;
+  var dy = y - cy;
+  if (dx === 0 && dy === 0) return fallbackAngle != null ? fallbackAngle : 110;
+  var angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+  if (angle < 0) angle += 360;
+  return angle;
+}
+
+function playTouchGlowAnimation(card, opts) {
+  if (!card) return;
+  opts = opts || {};
+
+  // Touch taps need a separate timeline; the CSS hover transition would blur the timing.
+  cancelTouchGlowAnimation(card);
+  delete card.dataset.sweepPlayed;
+  card.classList.add('sweep-active', 'touch-glow-playing');
+
+  var angle = opts.angle != null ? opts.angle : 110;
+  var fadeIn = opts.fadeIn != null ? opts.fadeIn : 500;
+  var hold = opts.hold != null ? opts.hold : 180;
+  var fadeOut = opts.fadeOut != null ? opts.fadeOut : 1500;
+  var intensity = opts.intensity != null ? opts.intensity : 1;
+  var peak = 100 * Math.max(1, intensity);
+  var controllers = [];
+  var timeouts = [];
+
+  card.style.setProperty('--cursor-angle', angle + 'deg');
+
+  controllers.push(animateValue({
+    duration: fadeIn,
+    end: peak,
+    onUpdate: function(v) {
+      card.style.setProperty('--edge-proximity', v);
+    },
+  }));
+
+  timeouts.push(setTimeout(function() {
+    controllers.push(animateValue({
+      duration: fadeOut,
+      start: peak,
+      end: 0,
+      onUpdate: function(v) {
+        card.style.setProperty('--edge-proximity', v);
+      },
+      onEnd: function() {
+        card.classList.remove('sweep-active', 'touch-glow-playing');
+        if (card.__touchGlowAnim) delete card.__touchGlowAnim;
+      }
+    }));
+  }, fadeIn + hold));
+
+  timeouts.push(setTimeout(function() {
+    if (!card.__touchGlowAnim) return;
+    delete card.__touchGlowAnim;
+    card.classList.remove('sweep-active', 'touch-glow-playing');
+  }, fadeIn + hold + fadeOut + 32));
+
+  card.__touchGlowAnim = { controllers: controllers, timeouts: timeouts };
 }
 
 function setupPointerTracking(card) {
@@ -230,14 +327,10 @@ function initBorderGlow(cards, options) {
       card.dataset.glowTapReady = 'true';
       card.addEventListener('pointerdown', function(event) {
         if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-        restartSweepAnimation(card, {
-          speed: 1,
+        playTouchGlowAnimation(card, {
+          angle: getPointerAngle(card, event, 110),
           intensity: touchGlowIntensity,
           fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
-          rotateHalf: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
-          rotateSecond: options.sweepRotate != null ? options.sweepRotate * 0.6 : 2250,
-          rotateDelay: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
-          fadeOutDelay: options.sweepRotate != null ? options.sweepRotate : 2500,
           fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1500,
         });
       }, { passive: true });

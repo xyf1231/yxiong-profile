@@ -58,6 +58,11 @@
   transition-duration: var(--hover-fade-out, 0.75s);
 }
 
+.border-glow-card.touch-glow-playing::before,
+.border-glow-card.touch-glow-playing > .edge-light {
+  transition-duration: 0ms !important;
+}
+
 /* ---------- ::before — colored mesh-gradient border ---------- */
 .border-glow-card::before {
   border: 1px solid transparent;
