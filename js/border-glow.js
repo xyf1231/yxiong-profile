@@ -231,7 +231,7 @@ function initBorderGlow(cards, options) {
       card.addEventListener('pointerdown', function(event) {
         if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
         restartSweepAnimation(card, {
-          speed: sweepSpeed,
+          speed: 1,
           intensity: touchGlowIntensity,
           fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
           rotateHalf: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
