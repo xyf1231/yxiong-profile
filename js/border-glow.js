@@ -284,7 +284,7 @@ function initBorderGlow(cards, options) {
 
   var effectiveGlowIntensity = touchLike ? touchGlowIntensity : glowIntensity;
   var effectiveHoverFadeIn = touchLike ? (options.sweepFadeIn != null ? options.sweepFadeIn : 500) : hoverFadeIn;
-  var effectiveHoverFadeOut = touchLike ? (options.sweepFadeOut != null ? options.sweepFadeOut : 1500) : hoverFadeOut;
+  var effectiveHoverFadeOut = touchLike ? (options.sweepFadeOut != null ? options.sweepFadeOut : 5000) : hoverFadeOut;
   var glowVars = buildGlowVars(glowColor, effectiveGlowIntensity);
   var gradVars = buildGradientVars(colors);
   var sweepOpts = {
@@ -295,7 +295,7 @@ function initBorderGlow(cards, options) {
     rotateSecond: options.sweepRotate != null ? options.sweepRotate * 0.6 : 2250,
     rotateDelay: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
     fadeOutDelay: options.sweepRotate != null ? options.sweepRotate : 2500,
-    fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1500,
+    fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 5000,
   };
 
   cards.forEach(function(card) {
@@ -331,7 +331,7 @@ function initBorderGlow(cards, options) {
           angle: getPointerAngle(card, event, 110),
           intensity: touchGlowIntensity,
           fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
-          fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1500,
+          fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 5000,
         });
       }, { passive: true });
     }
