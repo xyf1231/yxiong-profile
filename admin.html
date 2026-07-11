@@ -42,8 +42,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.7" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.14.7" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.8" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.14.8" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -153,7 +153,22 @@
       }
       .tab-button[data-tab="deploy"] { border-color: rgba(41,151,255,0.2); }
       .tab-button[data-tab="deploy"][aria-selected="true"] { background: #2997FF; color: #fff; border-color: #2997FF; }
-      .tab-link { display: flex; align-items: center; text-decoration: none; }
+      .tab-link {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        background: rgba(255,255,255,0.035);
+        color: rgba(255,255,255,0.62);
+        border-color: rgba(255,255,255,0.08);
+      }
+      .tab-link:hover {
+        background: rgba(255,255,255,0.08);
+        color: #fff;
+        border-color: rgba(255,255,255,0.14);
+      }
+      .tab-link:visited {
+        color: rgba(255,255,255,0.62);
+      }
       .sidebar-footer {
         padding: 12px 8px 0;
         border-top: 1px solid rgba(255,255,255,0.06);
@@ -873,6 +888,13 @@
 
         <nav class="sidebar-nav">
           <div class="sidebar-group">
+            <div class="sidebar-group-label">版本更新</div>
+            <div class="sidebar-group">
+              <button class="tab-button" data-tab="deploy" type="button">🚀 版本仪表盘</button>
+            </div>
+          </div>
+
+          <div class="sidebar-group">
             <div class="sidebar-group-label">内容管理</div>
             <div class="sidebar-group" id="cms-tabs">
               <button class="tab-button" data-tab="profile" aria-selected="true" type="button">基本资料</button>
@@ -885,12 +907,6 @@
               <button class="tab-button" data-tab="contacts" type="button">联系方式</button>
               <button class="tab-button" data-tab="metrics" type="button">📊 统计数据</button>
               <button class="tab-button" data-tab="footer" type="button">📝 页脚信息</button>
-            </div>
-          </div>
-          <div class="sidebar-group">
-            <div class="sidebar-group-label">版本更新</div>
-            <div class="sidebar-group">
-              <button class="tab-button" data-tab="deploy" type="button">🚀 版本仪表盘</button>
             </div>
           </div>
 
@@ -1354,7 +1370,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.14.7" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.14.7" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.14.8" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.14.8" charset="utf-8"></script>
   </body>
 </html>

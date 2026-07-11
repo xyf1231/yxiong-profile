@@ -6,6 +6,8 @@
  */
 
 const STORAGE_KEY = "academicSiteData";
+const ACTIVE_TAB_KEY = "academicSiteActiveTab";
+const ADMIN_SESSION_KEY = "academicSiteAdminSeen";
 // 是否使用本地后台服务（仅 localhost:8787）
 const USE_LOCAL_ADMIN_SERVER = ["localhost", "127.0.0.1"].includes(window.location.hostname) && window.location.port === "8787";
 
@@ -378,6 +380,42 @@ function loadData() {
 function persist() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   jsonBuffer.value = JSON.stringify(data, null, 2);
+}
+
+function loadSavedTab() {
+  try {
+    const tab = localStorage.getItem(ACTIVE_TAB_KEY);
+    if (schemas[tab] || tab === "deploy" || tab === "files" || tab === "translations") {
+      return tab;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function persistActiveTab(tab) {
+  try {
+    localStorage.setItem(ACTIVE_TAB_KEY, tab);
+  } catch {
+    // 忽略浏览器存储受限的情况
+  }
+}
+
+function hasSeenAdminSession() {
+  try {
+    return sessionStorage.getItem(ADMIN_SESSION_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function markAdminSessionSeen() {
+  try {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, "1");
+  } catch {
+    // 忽略浏览器存储受限的情况
+  }
 }
 
 function escapeHtml(value = "") {
@@ -1562,12 +1600,16 @@ function clearForm() {
 //  标签切换（CMS + Deploy）
 // ═══════════════════════════════════════════════════════════════
 
-function setActiveTab(tab) {
+function setActiveTab(tab, options = {}) {
+  const { persist = true } = options;
   const previousTab = activeTab;
   activeTab = tab;
   editingIndex = 0;
   if (tab !== previousTab) {
     pendingStorageFieldName = "";
+  }
+  if (persist) {
+    persistActiveTab(tab);
   }
 
   // 更新按钮状态
@@ -2705,8 +2747,11 @@ async function checkLocalServer() {
 
 function init() {
   const isFilesPage = document.body.dataset.page === "files";
+  const seenAdminSession = hasSeenAdminSession();
+  const initialTab = isFilesPage ? "files" : (seenAdminSession ? loadSavedTab() || "deploy" : "deploy");
   // ── 标签切换 ──
   document.querySelectorAll(".tab-button").forEach((btn) => {
+    if (!btn.dataset.tab) return;
     btn.addEventListener("click", () => setActiveTab(btn.dataset.tab));
   });
 
@@ -3154,7 +3199,10 @@ function init() {
   // ── 初始化 ──
   jsonBuffer.value = JSON.stringify(data, null, 2);
   updateAssetSourceUI();
-  setActiveTab(isFilesPage ? "files" : activeTab);
+  if (!isFilesPage) {
+    markAdminSessionSeen();
+  }
+  setActiveTab(initialTab, { persist: false });
   clearNetworkDiagLog();
   checkLocalServer();
 
