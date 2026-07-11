@@ -42,8 +42,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.6" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.14.6" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.7" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.14.7" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -1181,11 +1181,6 @@
                     </div>
 
                     <div class="deploy-action-group">
-                      <div class="deploy-action-label">Git 变更</div>
-                      <div class="deploy-file-list empty" id="git-status-list">点击「刷新 Git 状态」查看变更文件。</div>
-                    </div>
-
-                    <div class="deploy-action-group">
                       <div class="deploy-action-label">发布与预览</div>
                       <div class="deploy-btn-row">
                         <button class="deploy-btn success" id="btn-deploy">
@@ -1319,24 +1314,34 @@
                       </div>
                     </div>
                   </section>
+
+                  <section class="deploy-side-panel">
+                    <div class="deploy-console-head">
+                      <div>
+                        <h2>Git 变更</h2>
+                        <p>刷新 Git 状态后，这里会显示当前未提交的文件列表。</p>
+                      </div>
+                    </div>
+                    <div class="deploy-file-list empty" id="git-status-list">点击「刷新 Git 状态」查看变更文件。</div>
+                  </section>
+
+                  <section class="deploy-log-panel">
+                    <div class="deploy-console-head">
+                      <div>
+                        <h2>操作日志</h2>
+                        <p>所有版本更新、推送、预览和诊断结果都集中在这里。出了问题先看这里最快。</p>
+                      </div>
+                      <button class="deploy-btn" id="btn-clear-log">清空日志</button>
+                    </div>
+                    <div class="deploy-log" id="deploy-log">
+                      <div class="deploy-log-entry info">版本控制台已就绪。</div>
+                    </div>
+                    <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px;">
+                      <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
+                    </div>
+                  </section>
                 </aside>
               </div>
-
-              <section class="deploy-log-panel">
-                <div class="deploy-console-head">
-                  <div>
-                    <h2>操作日志</h2>
-                    <p>所有版本更新、推送、预览和诊断结果都集中在这里。出了问题先看这里最快。</p>
-                  </div>
-                  <button class="deploy-btn" id="btn-clear-log">清空日志</button>
-                </div>
-                <div class="deploy-log" id="deploy-log">
-                  <div class="deploy-log-entry info">版本控制台已就绪。</div>
-                </div>
-                <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
-                  <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
-                </div>
-              </section>
             </div>
           </div>
 
@@ -1349,7 +1354,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.14.6" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.14.6" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.14.7" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.14.7" charset="utf-8"></script>
   </body>
 </html>

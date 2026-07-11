@@ -3121,6 +3121,17 @@ function setupHomeFrameSequence() {
     playVideo();
   });
 
+  media.addEventListener("click", (event) => {
+    if (event.target.closest(".home-frame-replay")) return;
+    const link = media.querySelector(".home-frame-media-link");
+    if (!link || !link.href) return;
+    const trigger = typeof window.triggerLoadingTransition === "function" ? window.triggerLoadingTransition : null;
+    if (!trigger) return;
+    event.preventDefault();
+    event.stopPropagation();
+    trigger(link.href);
+  });
+
   if ("IntersectionObserver" in window) {
     const observer = new IntersectionObserver(
       (entries) => {

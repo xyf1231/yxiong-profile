@@ -87,6 +87,26 @@ html[data-site-loading="pending"] body {
   -webkit-overflow-scrolling: auto;
 }
 
+html.is-ios-touch[data-site-loading="pending"] {
+  height: auto;
+  overflow-y: auto;
+  touch-action: pan-y;
+  overscroll-behavior-y: auto;
+}
+
+html.is-ios-touch[data-site-loading="pending"] body {
+  position: static;
+  width: auto;
+  height: auto;
+  overflow-y: auto;
+  touch-action: pan-y;
+}
+
+html.is-ios-touch[data-site-loading="pending"] .site-loading-overlay {
+  position: fixed;
+  inset: 0;
+}
+
 html[data-site-loading="pending"]::before,
 html[data-site-loading="pending"]::after {
   pointer-events: none;
