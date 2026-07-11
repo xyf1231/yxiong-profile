@@ -412,9 +412,7 @@
         fillOpacity: 0.5,
         hoverFadeIn: 180,
         hoverFadeOut: 750,
-        touchGlowIntensity: 5,
-        touchHoverFadeIn: 500,
-        touchHoverFadeOut: 1000,
+        touchGlowIntensity: 2,
         colorBoost: 1.0,
         sweepSpeed: 1,
         sweepIntensity: 0.4,
@@ -756,8 +754,6 @@
           edgeSensitivity:P.edgeSensitivity,
           hoverFadeIn:P.hoverFadeIn,
           hoverFadeOut:P.hoverFadeOut,
-          touchHoverFadeIn:P.touchHoverFadeIn,
-          touchHoverFadeOut:P.touchHoverFadeOut,
           coneSpread:25,
           fillOpacity:P.fillOpacity,
           colors: boostedColors,
@@ -824,8 +820,6 @@
         lines.push("  hoverFadeOut: " + P.hoverFadeOut + ",");
         lines.push("  // === 手机端 ===");
         lines.push("  touchGlowIntensity: " + P.touchGlowIntensity + ",");
-        lines.push("  touchHoverFadeIn: " + P.touchHoverFadeIn + ",");
-        lines.push("  touchHoverFadeOut: " + P.touchHoverFadeOut + ",");
         lines.push("  // === 入场扫光动画 ===");
         lines.push("  animated: " + (P.animated ? "true" : "false") + ",");
         lines.push("  sweepFan: " + (P.sweepFan !== false ? "true" : "false") + ",");

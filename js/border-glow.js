@@ -111,47 +111,6 @@ function playSweepAnimation(card, opts) {
   });
 }
 
-function playTouchPulseAnimation(card, opts) {
-  opts = opts || {};
-  var token = (card._touchPulseToken || 0) + 1;
-  card._touchPulseToken = token;
-
-  var fadeIn = opts.fadeIn != null ? opts.fadeIn : 500;
-  var fadeOut = opts.fadeOut != null ? opts.fadeOut : 1000;
-  var peak = opts.peak != null ? opts.peak : 100;
-
-  card.classList.add('sweep-active');
-  card.style.setProperty('--hover-fade-in', fadeIn + 'ms');
-  card.style.setProperty('--edge-proximity', '0');
-
-  animateValue({
-    duration: fadeIn,
-    end: peak,
-    onUpdate: function(v) {
-      if (card._touchPulseToken !== token) return;
-      card.style.setProperty('--edge-proximity', v);
-    },
-    onEnd: function() {
-      if (card._touchPulseToken !== token) return;
-      card.style.setProperty('--hover-fade-in', fadeOut + 'ms');
-      animateValue({
-        duration: fadeOut,
-        start: peak,
-        end: 0,
-        onUpdate: function(v) {
-          if (card._touchPulseToken !== token) return;
-          card.style.setProperty('--edge-proximity', v);
-        },
-        onEnd: function() {
-          if (card._touchPulseToken !== token) return;
-          card.classList.remove('sweep-active');
-          card.style.setProperty('--hover-fade-in', fadeIn + 'ms');
-        }
-      });
-    }
-  });
-}
-
 function restartSweepAnimation(card, opts) {
   if (!card) return;
   delete card.dataset.sweepPlayed;
@@ -224,13 +183,9 @@ function initBorderGlow(cards, options) {
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
   var hoverFadeIn = options.hoverFadeIn != null ? options.hoverFadeIn : 180;
   var hoverFadeOut = options.hoverFadeOut != null ? options.hoverFadeOut : 750;
-  var touchHoverFadeIn = options.touchHoverFadeIn != null ? options.touchHoverFadeIn : hoverFadeIn;
-  var touchHoverFadeOut = options.touchHoverFadeOut != null ? options.touchHoverFadeOut : hoverFadeOut;
   var touchLike = isTouchLikeDevice();
 
   var effectiveGlowIntensity = touchLike ? touchGlowIntensity : glowIntensity;
-  var effectiveHoverFadeIn = touchLike ? touchHoverFadeIn : hoverFadeIn;
-  var effectiveHoverFadeOut = touchLike ? touchHoverFadeOut : hoverFadeOut;
   var glowVars = buildGlowVars(glowColor, effectiveGlowIntensity);
   var gradVars = buildGradientVars(colors);
   var sweepOpts = {
@@ -249,8 +204,8 @@ function initBorderGlow(cards, options) {
     card.style.setProperty('--glow-padding', glowRadius + 'px');
     card.style.setProperty('--cone-spread', coneSpread);
     card.style.setProperty('--fill-opacity', fillOpacity);
-    card.style.setProperty('--hover-fade-in', effectiveHoverFadeIn + 'ms');
-    card.style.setProperty('--hover-fade-out', effectiveHoverFadeOut + 'ms');
+    card.style.setProperty('--hover-fade-in', hoverFadeIn + 'ms');
+    card.style.setProperty('--hover-fade-out', hoverFadeOut + 'ms');
 
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }
@@ -273,10 +228,15 @@ function initBorderGlow(cards, options) {
       card.dataset.glowTapReady = 'true';
       card.addEventListener('pointerdown', function(event) {
         if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-        playTouchPulseAnimation(card, {
-          fadeIn: effectiveHoverFadeIn,
-          fadeOut: effectiveHoverFadeOut,
-          peak: 100,
+        restartSweepAnimation(card, {
+          speed: sweepSpeed,
+          intensity: touchGlowIntensity,
+          fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
+          rotateHalf: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
+          rotateSecond: options.sweepRotate != null ? options.sweepRotate * 0.6 : 2250,
+          rotateDelay: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
+          fadeOutDelay: options.sweepRotate != null ? options.sweepRotate : 2500,
+          fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1500,
         });
       }, { passive: true });
     }
