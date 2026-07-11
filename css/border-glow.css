@@ -27,6 +27,12 @@
   -webkit-backdrop-filter: none !important;
 }
 
+@media (hover: none), (pointer: coarse) {
+  .border-glow-card {
+    touch-action: manipulation;
+  }
+}
+
 /* ---------- common pseudo layers ---------- */
 .border-glow-card::before,
 .border-glow-card > .edge-light {

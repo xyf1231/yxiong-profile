@@ -50,32 +50,18 @@ const schemas = {
     fields: [
       ["date", "日期", "", "common"],
       ["slug", "标识", "", "common"],
-      ["eyebrow", "首屏标签", "", "common"],
-      ["eyebrowEn", "首屏标签（英）", "", "en"],
-      ["title", "中文标题", "textarea", "zh"],
-      ["titleEn", "英文标题", "textarea", "en"],
-      ["subtitle", "导语/副标题", "textarea", "common"],
-      ["subtitleEn", "导语/副标题（英）", "textarea", "en"],
-      ["text", "中文摘要（主页轮播）", "textarea", "zh"],
-      ["textEn", "英文摘要（主页轮播）", "textarea", "en"],
+      ["title", "标题", "textarea", "common"],
+      ["subtitle", "导语 / 副标题", "textarea", "common"],
+      ["text", "首页摘要", "textarea", "common"],
       ["image", "封面图片", "image", "common"],
       ["url", "详情页链接", "", "common"],
+      ["urlEn", "英文详情页链接", "", "en"],
+      ["pdf", "PDF / 外链", "file", "common"],
       ["contentHtml", "正文（富文本）", "richtext", "common"],
-      ["contentHtmlEn", "正文（英，富文本）", "richtext", "en"],
-      ["content", "正文纯文本", "textarea", "common"],
-      ["contentEn", "正文纯文本（英）", "textarea", "en"],
-      ["paperTitle", "论文题目", "textarea", "common"],
-      ["paperTitleEn", "论文题目（英）", "textarea", "en"],
-      ["journal", "期刊", "", "common"],
-      ["journalEn", "期刊（英）", "", "en"],
-      ["authors", "作者", "", "common"],
-      ["authorsEn", "作者（英）", "", "en"],
-      ["correspondingAuthors", "通讯作者", "", "common"],
-      ["correspondingAuthorsEn", "通讯作者（英）", "", "en"],
-      ["affiliation", "完成单位", "textarea", "common"],
-      ["affiliationEn", "完成单位（英）", "textarea", "en"],
-      ["doi", "DOI", "", "common"],
-      ["pdf", "PDF/链接", "file", "common"],
+      ["titleEn", "标题（英文）", "textarea", "en"],
+      ["subtitleEn", "导语 / 副标题（英文）", "textarea", "en"],
+      ["textEn", "首页摘要（英文）", "textarea", "en"],
+      ["contentHtmlEn", "正文（英文，富文本）", "richtext", "en"],
     ],
   },
   publications: {
@@ -1175,6 +1161,7 @@ function renderNewsForm(source) {
     ["text", "首页摘要", "textarea", "common"],
     ["image", "封面图", "image", "common"],
     ["url", "详情页链接", "", "common"],
+    ["pdf", "PDF / 外链", "file", "common"],
     ["contentHtml", "正文（富文本）", "richtext", "common"],
   ];
   const englishFields = [
@@ -2468,6 +2455,16 @@ function formatBackupLabel(item) {
   return `${shortName} · ${readable}`;
 }
 
+function getBackupTimestamp(item) {
+  const timestamp = new Date(item?.mtime || "").getTime();
+  return Number.isFinite(timestamp) ? timestamp : 0;
+}
+
+async function fetchBackups() {
+  const result = await localRequest("/api/backups");
+  return Array.isArray(result.backups) ? result.backups : [];
+}
+
 function renderBackupSelection(backups, preserveValue = true) {
   if (!restoreBackupSelect) return;
   const previous = preserveValue ? restoreBackupSelect.value : "";
@@ -2514,8 +2511,7 @@ function renderBackupList(backups) {
 async function loadBackupsPanel() {
   if (!USE_LOCAL_ADMIN_SERVER) return;
   try {
-    const result = await localRequest("/api/backups");
-    const backups = Array.isArray(result.backups) ? result.backups : [];
+    const backups = await fetchBackups();
     renderBackupSelection(backups, true);
     renderBackupList(backups);
   } catch (error) {
@@ -2551,21 +2547,66 @@ async function restoreSite() {
   }
 }
 
-async function deleteBackup(backupName) {
+async function deleteBackupByName(backupName, { confirmDelete = true, refresh = true, statusMessage = true } = {}) {
   if (!USE_LOCAL_ADMIN_SERVER) return;
   if (!backupName) return;
-  if (!confirm(`确定删除备份「${backupName}」？删除后无法恢复。`)) return;
+  if (confirmDelete && !confirm(`确定删除备份「${backupName}」？删除后无法恢复。`)) return;
   try {
-    setLocalStatus("正在删除备份…", "info");
+    if (statusMessage) setLocalStatus("正在删除备份…", "info");
     const result = await localRequest("/api/backups", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ backupName }),
     });
-    setLocalStatus(`已删除备份：${result.name}`, "success");
-    await loadBackupsPanel();
+    if (statusMessage) setLocalStatus(`已删除备份：${result.name}`, "success");
+    if (refresh) await loadBackupsPanel();
+    return true;
   } catch (error) {
-    setLocalStatus(`删除备份失败：${error.message}`, "error");
+    if (statusMessage) setLocalStatus(`删除备份失败：${error.message}`, "error");
+    return false;
+  }
+}
+
+async function deleteBackup(backupName) {
+  return deleteBackupByName(backupName, { confirmDelete: true, refresh: true });
+}
+
+async function deleteBackupsOlderThan(days, label) {
+  if (!USE_LOCAL_ADMIN_SERVER) {
+    setLocalStatus("请从本地后台 http://localhost:8787/admin.html 打开后再操作。", "error");
+    return;
+  }
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  try {
+    const backups = await fetchBackups();
+    const targets = backups
+      .filter((item) => getBackupTimestamp(item) > 0 && getBackupTimestamp(item) < cutoff)
+      .sort((a, b) => getBackupTimestamp(a) - getBackupTimestamp(b));
+    if (!targets.length) {
+      setLocalStatus(`没有早于${label}的备份。`, "info");
+      return;
+    }
+    const oldest = targets[0];
+    const newest = targets[targets.length - 1];
+    const message = `确定删除 ${targets.length} 个早于${label}的备份吗？\n\n最早：${formatBackupLabel(oldest)}\n最晚：${formatBackupLabel(newest)}\n\n删除后无法恢复。`;
+    if (!confirm(message)) return;
+    setLocalStatus(`正在删除 ${targets.length} 个早于${label}的备份…`, "info");
+    let success = 0;
+    let failed = 0;
+    for (const item of targets) {
+      const ok = await deleteBackupByName(item.name, { confirmDelete: false, refresh: false, statusMessage: false });
+      if (ok) success += 1;
+      else failed += 1;
+    }
+    await loadBackupsPanel();
+    await loadBackupPreviews();
+    if (failed > 0) {
+      setLocalStatus(`批量清理完成：已删除 ${success} 个备份，${failed} 个删除失败。`, "warn");
+    } else {
+      setLocalStatus(`批量清理完成：已删除 ${success} 个备份。`, "success");
+    }
+  } catch (error) {
+    setLocalStatus(`批量删除失败：${error.message}`, "error");
   }
 }
 
@@ -2698,6 +2739,9 @@ function init() {
   document.querySelector("#backup-site")?.addEventListener("click", backupSite);
   document.querySelector("#restore-site")?.addEventListener("click", restoreSite);
   document.querySelector("#btn-refresh-backups")?.addEventListener("click", loadBackupsPanel);
+  document.querySelector("#btn-delete-backups-1d")?.addEventListener("click", () => deleteBackupsOlderThan(1, "1 天前"));
+  document.querySelector("#btn-delete-backups-1w")?.addEventListener("click", () => deleteBackupsOlderThan(7, "1 周前"));
+  document.querySelector("#btn-delete-backups-1m")?.addEventListener("click", () => deleteBackupsOlderThan(30, "1 个月前"));
   restoreBackupSelect?.addEventListener("change", () => {
     if (!restoreBackupSelect.value) return;
     setLocalStatus(`已选择备份：${restoreBackupSelect.value}`, "info");

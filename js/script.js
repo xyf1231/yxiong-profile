@@ -242,6 +242,7 @@ function setupSiteLoadingGate() {
   let hintFadeTimer = null;
   let hintIndex = 0;
   let hintInit = false;
+  let lettersStartTimer = null;
 
   const loadingPack = getLoadingTextPack();
   const loadingHints = loadingPack.hints;
@@ -341,6 +342,71 @@ function setupSiteLoadingGate() {
     }
   };
 
+  const resetLoadingState = ({ keepEditorPreview = false, rebuildOverlay = true } = {}) => {
+    window.__EDITOR_KEEP_LOADING_OVERLAY = !!keepEditorPreview;
+    finished = false;
+    finishing = false;
+    finishStartTime = 0;
+    if (lettersTimer) window.clearInterval(lettersTimer);
+    if (intervalId) window.clearInterval(intervalId);
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    if (resourceObserver) {
+      resourceObserver.disconnect();
+      resourceObserver = null;
+    }
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+    if (progressFrameId) {
+      cancelAnimationFrame(progressFrameId);
+      progressFrameId = null;
+    }
+    clearStageTimers();
+    hintInit = false;
+    hintIndex = 0;
+    displayProgress = 0;
+    targetProgress = 0;
+    currentStageIndex = -1;
+    root.dataset.siteLoading = "pending";
+    if (rebuildOverlay && overlay) {
+      overlay.remove();
+      overlay = null;
+      barEl = null;
+      percentEl = null;
+      resourcesEl = null;
+      hintEl = null;
+      versionEl = null;
+    }
+  };
+
+  const settleLoadingOverlay = () => {
+    if (finished) return;
+    finished = true;
+    finishing = false;
+    if (intervalId) window.clearInterval(intervalId);
+    if (lettersTimer) window.clearInterval(lettersTimer);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    clearStageTimers();
+    if (progressFrameId) {
+      cancelAnimationFrame(progressFrameId);
+      progressFrameId = null;
+    }
+    setProgress(100);
+    root.dataset.siteLoading = "ready";
+    window.dispatchEvent(new Event("scroll", { bubbles: true }));
+    const hash = window.location.hash;
+    if (hash) {
+      const el = document.querySelector(hash);
+      if (el) el.scrollIntoView({ behavior: "instant", block: "start" });
+    }
+    if (overlay) {
+      overlay.classList.add("is-hidden");
+      window.setTimeout(() => overlay?.remove(), 600);
+    }
+  };
+
   const scheduleStageRun = () => {
     clearStageTimers();
     stageTimers.push(window.setTimeout(() => advanceStage(1), 360));
@@ -413,6 +479,10 @@ function setupSiteLoadingGate() {
     finishing = true;
     finishStartTime = performance.now();
     clearStageTimers();
+    if (lettersStartTimer) {
+      window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = null;
+    }
     targetProgress = 100;
     if (!progressFrameId) {
       progressFrameId = requestAnimationFrame(animateProgress);
@@ -446,12 +516,22 @@ function setupSiteLoadingGate() {
     if (versionEl) versionEl.textContent = getLoadingVersionText();
 
     // 加载并播放 Letters 手写文字动画
-    startLettersAnimation();
+    if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+    lettersStartTimer = window.setTimeout(startLettersAnimation, 0);
   };
 
   const startLettersAnimation = () => {
     const lettersEl = document.getElementById("site-loading-letters");
     if (!lettersEl) return;
+    if (typeof window.mountLettersAnimation !== "function") {
+      if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = window.setTimeout(startLettersAnimation, 80);
+      return;
+    }
+    if (lettersStartTimer) {
+      window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = null;
+    }
     if (lettersTimer) window.clearInterval(lettersTimer);
 
     const cfg = window.LOADING_CONTENT || {};
@@ -521,31 +601,30 @@ function setupSiteLoadingGate() {
    * 供页面编辑器强制预览加载遮罩使用：重置加载门并重新创建遮罩。
    */
   window.showLoadingPreview = () => {
-    window.__EDITOR_KEEP_LOADING_OVERLAY = true;
-    finished = false;
-    finishing = false;
-    finishStartTime = 0;
-    if (lettersTimer) window.clearInterval(lettersTimer);
-    if (intervalId) window.clearInterval(intervalId);
-    if (readyTimerId) window.clearTimeout(readyTimerId);
-    if (resourceObserver) {
-      resourceObserver.disconnect();
-      resourceObserver = null;
-    }
-    if (hintTimer) window.clearInterval(hintTimer);
-    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
-    hintInit = false;
-    hintIndex = 0;
-    root.dataset.siteLoading = "pending";
-    if (overlay) overlay.remove();
-    overlay = null;
-    barEl = null;
-    percentEl = null;
-    resourcesEl = null;
-    hintEl = null;
-    versionEl = null;
+    resetLoadingState({ keepEditorPreview: true, rebuildOverlay: true });
     ensureOverlay();
     startProgress();
+  };
+
+  window.triggerLoadingTransition = (targetUrl, options = {}) => {
+    const urlText = String(targetUrl || "").trim();
+    if (!urlText || window.__EDITOR_KEEP_LOADING_OVERLAY) return false;
+    const { samePage = false, transitionDelay = 120, settleDelay = 500 } = options;
+    resetLoadingState({ keepEditorPreview: false, rebuildOverlay: true });
+    ensureOverlay();
+    startProgress();
+    window.setTimeout(() => {
+      if (samePage) {
+        const resolved = new URL(urlText, window.location.href);
+        if (resolved.hash && resolved.pathname === window.location.pathname && resolved.search === window.location.search) {
+          window.location.hash = resolved.hash;
+          window.setTimeout(() => settleLoadingOverlay(), settleDelay);
+          return;
+        }
+      }
+      window.location.href = urlText;
+    }, transitionDelay);
+    return true;
   };
 
   const waitForReady = () => {
@@ -568,6 +647,43 @@ function setupSiteLoadingGate() {
   }
 }
 setupSiteLoadingGate();
+
+function setupLoadingLinkTransitions() {
+  if (window.__loadingLinkTransitionsBound) return;
+  window.__loadingLinkTransitionsBound = true;
+  document.addEventListener("click", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const targetEl = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+    const link = targetEl?.closest ? targetEl.closest("a[href]") : null;
+    if (!link) return;
+    if (link.closest("[data-paper-preview]") || link.closest("[data-pdf-download]")) return;
+    if (link.hasAttribute("download")) return;
+    if (link.target === "_blank") return;
+    const rel = String(link.getAttribute("rel") || "").toLowerCase();
+    if (rel.includes("external")) return;
+    const href = String(link.getAttribute("href") || "").trim();
+    if (!href || href.startsWith("javascript:") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+    let resolved;
+    try {
+      resolved = new URL(href, window.location.href);
+    } catch {
+      return;
+    }
+    if (resolved.origin !== window.location.origin) return;
+    const currentUrl = new URL(window.location.href);
+    const samePath = resolved.pathname === currentUrl.pathname && resolved.search === currentUrl.search;
+    const sameHash = samePath && resolved.hash === currentUrl.hash;
+    if (sameHash) return;
+    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
+    const trigger = typeof window.triggerLoadingTransition === "function" ? window.triggerLoadingTransition : null;
+    if (!trigger) return;
+    event.preventDefault();
+    trigger(resolved.toString(), { samePage: samePath && !!resolved.hash });
+  }, true);
+}
+
+setupLoadingLinkTransitions();
 
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
@@ -1166,7 +1282,7 @@ function renderNews(items) {
       const mediumAt = currentLang === "en" ? 42 : 18;
       const longAt = currentLang === "en" ? 70 : 30;
       const titleSize = titleLength >= longAt ? "long" : titleLength >= mediumAt ? "medium" : "short";
-      const href = assetUrl(item.url || "#");
+      const href = assetUrl(currentLang === "en" ? item.urlEn || item.url || "#" : item.url || "#");
       const image = item.image
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
@@ -1572,7 +1688,7 @@ function sanitizeRichHtml(html = "") {
     });
 }
 
-// 渲染新闻详情页侧边信息
+// 渲染新闻详情页正文
 function renderNewsDetail(items = []) {
   const contentTarget = document.querySelector("#news-detail-content");
   if (!contentTarget) return;
@@ -1617,19 +1733,6 @@ function renderNewsDetail(items = []) {
   const bodyHtml = detail.contentHtml ? sanitizeRichHtml(detail.contentHtml) : fallbackHtml;
 
   contentTarget.innerHTML = `${introHtml}${image}<div class="news-rich-content">${bodyHtml}</div>`;
-
-  const infoTarget = document.querySelector("#news-detail-info");
-  if (infoTarget) {
-    const info = [
-      [localizeText("论文题目"), detail.paperTitle],
-      [localizeText("期刊"), detail.journal],
-      [localizeText("作者"), detail.authors],
-      [localizeText("通讯作者"), detail.correspondingAuthors],
-      [localizeText("完成单位"), detail.affiliation],
-      ["DOI", detail.doi],
-    ].filter(([, value]) => value);
-    infoTarget.innerHTML = info.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
-  }
 
   const pdf = document.querySelector("#news-detail-pdf");
   if (pdf) {
@@ -1902,6 +2005,37 @@ function renderContacts(items) {
     .join("");
 }
 
+function renderFooter(footer = {}) {
+  const siteData = getSiteData() || {};
+  const profileName = siteData.profile?.nameEn || siteData.profile?.nameCn || "Yifeng Xiong";
+  const year = String(footer.year || new Date().getFullYear());
+  const email = String(footer.email || siteData.profile?.email || "yfxiong@nju.edu.cn").replace(/^mailto:/i, "");
+  const addressZh = String(footer.address || "南京大学仙林校区现代工学院A302").replace(/^(通信地址|通讯地址)[:：]\s*/i, "");
+  const addressEn = String(footer.addressEn || footer.address || "Nanjing University Xianlin Campus, School of Modern Engineering and Applied Science, A302").replace(/^(address|mailing address)[:：]\s*/i, "");
+  const versionText = String(footer.version || "Version 1.14.2");
+
+  document.querySelectorAll(".site-footer").forEach((root) => {
+    const copyright = root.querySelector("span:first-child");
+    if (copyright) {
+      copyright.innerHTML = `© ${escapeHtml(year)} <span data-profile="nameEn">${escapeHtml(profileName)}</span>`;
+    }
+
+    const emailLink = root.querySelector('a[href^="mailto:"]');
+    if (emailLink) {
+      emailLink.href = `mailto:${escapeHtml(email)}`;
+      emailLink.textContent = email;
+    }
+
+    root.querySelectorAll(".footer-address").forEach((node) => {
+      node.textContent = currentLang === "en" ? `Address: ${addressEn}` : `通信地址：${addressZh}`;
+    });
+
+    root.querySelectorAll(".footer-version").forEach((node) => {
+      node.textContent = versionText;
+    });
+  });
+}
+
 // 站点统一渲染入口：根据当前页面渲染对应模块
 function renderSite() {
   const data = getSiteData();
@@ -1917,6 +2051,7 @@ function renderSite() {
   renderDetailLists(data.achievements || []);
   renderExperience(data.experience || []);
   renderContacts(data.contacts || []);
+  renderFooter(data.footer || {});
   applyLanguage();
   setupGlassSurface();
   setupBorderGlow();
@@ -1993,9 +2128,7 @@ function applyLanguage() {
   });
   translateNavigation(dict);
   translateLooseHeadings(dict);
-  document.querySelectorAll(".footer-address").forEach((node) => {
-    node.textContent = localizeText("通信地址：南京大学仙林校区现代工学院A302");
-  });
+  renderFooter(getSiteData()?.footer || {});
   document.documentElement.dataset.langReady = "ready";
 }
 
@@ -2362,8 +2495,6 @@ function translateLooseHeadings(dict) {
 
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
-  return;
-
   var allCards = document.querySelectorAll(
     ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .detail-item, .project-card, .achievement-item, .profile-combo, .profile-photo, .timeline li, .home-bento-card, .all-publication-list > a, .home-frame-media, .button.secondary, .all-publications-more"
   );
@@ -2410,6 +2541,7 @@ function setupBorderGlow() {
     sweepFadeIn: 100,
     sweepRotate: 500,
     sweepFadeOut: 200,
+    hoverEnabled: !isCompactNav(),
   });
 }
 
@@ -2465,7 +2597,7 @@ function setupRevealAnimations() {
           node.style.setProperty("--reveal-delay", "200ms");
         }
         // trigger glow sweep in sync with card entrance (only after loading)
-        if (document.documentElement.dataset.siteLoading !== "pending" && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
+        if (!isCompactNav() && document.documentElement.dataset.siteLoading !== "pending" && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
           var rh = Math.round(500 * 0.4);
           var rs = Math.round(500 * 0.6);
           setTimeout(function() {

@@ -4,11 +4,24 @@
   <meta charset="utf-8" />
   <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <script>
+    (function () {
+      if (!/iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+      document.addEventListener(
+        "gesturechange",
+        function (event) {
+          var scale = typeof event.scale === "number" ? event.scale : 1;
+          if (scale > 1) event.preventDefault();
+        },
+        { passive: false }
+      );
+    })();
+  </script>
   <title>Nature Electronics | 光纤端面集成：原位读懂纤内光“指纹” | 熊毅丰</title>
-  <link rel="stylesheet" href="css/styles.css?v=v1.14.3" />
-  <link rel="stylesheet" href="css/global-section-config.css?v=v1.14.3" />
-  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.3" />
-  <link rel="stylesheet" href="css/news.css?v=v1.14.3" />
+  <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />
+  <link rel="stylesheet" href="css/global-section-config.css?v=v1.14.5" />
+  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.5" />
+  <link rel="stylesheet" href="css/news.css?v=v1.14.5" />
 </head>
 <body>
   <header class="site-header" data-elevated="false">
@@ -49,9 +62,9 @@
     <span class="footer-address">南京大学仙林校区现代工学院A302</span>
     <span class="footer-visitors">访客: <span id="visitor-count">--</span></span>
   </footer>
-  <script src="js/data.js?v=v1.14.3" charset="utf-8"></script>
-  <script src="js/loading-content.js?v=v1.14.3" charset="utf-8"></script>
-  <script src="js/resource-manifest.js?v=v1.14.3" charset="utf-8"></script>
+  <script src="js/data.js?v=v1.14.5" charset="utf-8"></script>
+  <script src="js/loading-content.js?v=v1.14.5" charset="utf-8"></script>
+  <script src="js/resource-manifest.js?v=v1.14.5" charset="utf-8"></script>
   <script>
     // letters-animation.umd.js 内部引用 process.env.NODE_ENV，浏览器环境兜底
     if (typeof window.process === "undefined") {
@@ -62,7 +75,7 @@
       window.process.env.NODE_ENV = "production";
     }
   </script>
-  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.3" charset="utf-8" defer></script>
-  <script src="js/script.js?v=v1.14.3" charset="utf-8"></script>
+  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.5" charset="utf-8" defer></script>
+  <script src="js/script.js?v=v1.14.5" charset="utf-8"></script>
 </body>
 </html>

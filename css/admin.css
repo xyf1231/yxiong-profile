@@ -266,7 +266,20 @@ select.deploy-input option { background: #1a1a2e; color: #fff; }
 .backup-action-group { display: grid; gap: var(--admin-gap-md); }
 .backup-action-group + .backup-action-group { padding-top: var(--admin-gap-lg); border-top: 1px solid var(--admin-border); }
 .backup-action-label { color: #96b8f0; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.75; }
-.backup-list { display: grid; gap: var(--admin-gap-md); }
+.backup-action-note {
+  margin: calc(var(--admin-gap-xs) * -1) 0 0;
+  color: var(--admin-text-dim);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.backup-list {
+  display: grid;
+  gap: var(--admin-gap-md);
+  max-height: min(62vh, 760px);
+  overflow-y: auto;
+  padding-right: var(--admin-gap-xs);
+  scrollbar-gutter: stable;
+}
 .backup-item {
   display: grid; gap: var(--admin-gap-md);
   padding: var(--admin-gap-lg);

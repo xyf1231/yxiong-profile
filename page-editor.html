@@ -4,10 +4,23 @@
     <meta charset="utf-8" />
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script>
+      (function () {
+        if (!/iPhone|iPad|iPod/i.test(navigator.userAgent)) return;
+        document.addEventListener(
+          "gesturechange",
+          function (event) {
+            var scale = typeof event.scale === "number" ? event.scale : 1;
+            if (scale > 1) event.preventDefault();
+          },
+          { passive: false }
+        );
+      })();
+    </script>
     <meta name="theme-color" content="#000000" />
     <script>!function(){function s(){var v=(window.visualViewport?window.visualViewport.height:window.innerHeight)*.01;document.documentElement.style.setProperty("--vh",v+"px")}window.visualViewport&&(window.visualViewport.addEventListener("resize",s),window.visualViewport.addEventListener("scroll",s)),window.addEventListener("resize",s),window.addEventListener("orientationchange",s),s(),document.addEventListener("scroll",s,{passive:!0})}();</script>
     <title>页面编辑器 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.3" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />
     <style>
       :root {
         --editor-bg: #05050a;

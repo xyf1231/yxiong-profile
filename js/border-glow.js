@@ -37,6 +37,16 @@ function buildGradientVars(colors) {
 function easeOutCubic(x) { return 1 - Math.pow(1 - x, 3); }
 function easeInCubic(x) { return x * x * x; }
 
+function isTouchLikeDevice() {
+  return !!(
+    (window.matchMedia && (
+      window.matchMedia("(hover: none)").matches ||
+      window.matchMedia("(pointer: coarse)").matches
+    )) ||
+    "ontouchstart" in window
+  );
+}
+
 function animateValue(opts) {
   var start = opts.start != null ? opts.start : 0;
   var end = opts.end != null ? opts.end : 100;
@@ -101,6 +111,15 @@ function playSweepAnimation(card, opts) {
   });
 }
 
+function restartSweepAnimation(card, opts) {
+  if (!card) return;
+  delete card.dataset.sweepPlayed;
+  card.classList.remove('sweep-active');
+  requestAnimationFrame(function() {
+    playSweepAnimation(card, opts);
+  });
+}
+
 function setupPointerTracking(card) {
   if (card.dataset.glowPointer === 'true') return;
   card.dataset.glowPointer = 'true';
@@ -161,9 +180,20 @@ function initBorderGlow(cards, options) {
   var hoverEnabled = options.hoverEnabled !== false;
   var colors = options.colors || ['#c084fc', '#f472b6', '#38bdf8'];
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
+  var touchLike = isTouchLikeDevice();
 
   var glowVars = buildGlowVars(glowColor, glowIntensity);
   var gradVars = buildGradientVars(colors);
+  var sweepOpts = {
+    speed: sweepSpeed,
+    intensity: sweepIntensity,
+    fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
+    rotateHalf: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
+    rotateSecond: options.sweepRotate != null ? options.sweepRotate * 0.6 : 2250,
+    rotateDelay: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
+    fadeOutDelay: options.sweepRotate != null ? options.sweepRotate : 2500,
+    fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1500,
+  };
 
   cards.forEach(function(card) {
     card.style.setProperty('--edge-sensitivity', edgeSensitivity);
@@ -174,12 +204,29 @@ function initBorderGlow(cards, options) {
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }
 
+    var edgeLight = null;
+    for (var child = card.firstElementChild; child; child = child.nextElementSibling) {
+      if (child.classList && child.classList.contains('edge-light')) {
+        edgeLight = child;
+        break;
+      }
+    }
+    if (!edgeLight) {
+      edgeLight = document.createElement('span');
+      edgeLight.className = 'edge-light';
+      card.appendChild(edgeLight);
+    }
+
     if (hoverEnabled) setupPointerTracking(card);
+    if (touchLike && card.dataset.glowTapReady !== 'true') {
+      card.dataset.glowTapReady = 'true';
+      card.addEventListener('pointerdown', function(event) {
+        if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
+        restartSweepAnimation(card, sweepOpts);
+      }, { passive: true });
+    }
 
     if (animated) {
-      var sweepOpts = {};
-      sweepOpts.speed = sweepSpeed;
-      sweepOpts.intensity = sweepIntensity;
       if (options.sweepFadeIn != null) sweepOpts.fadeIn = options.sweepFadeIn;
       if (options.sweepRotate != null) {
         sweepOpts.rotateHalf = options.sweepRotate * 0.4;

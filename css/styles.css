@@ -9487,17 +9487,19 @@ html[lang="en"] .news-carousel-track .news-card h3,
     linear-gradient(180deg, rgb(0 0 0 / 12%) 0%, rgb(0 0 0 / 8%) 56%, rgb(0 0 0 / 18%) 100%) !important;
 }
 
-.news-section .news-carousel-track .news-card-body {
+.news-section .news-carousel-track .news-card-body,
+.news-section .news-carousel-track .news-card[data-title-size="medium"] .news-card-body,
+.news-section .news-carousel-track .news-card[data-title-size="long"] .news-card-body {
   position: absolute !important;
-  left: clamp(22px, 3vw, 48px) !important;
-  right: clamp(22px, 3vw, 48px) !important;
-  bottom: clamp(18px, 2.4vw, 38px) !important;
-  width: min(720px, calc(100% - 44px)) !important;
-  max-width: min(720px, calc(100% - 44px)) !important;
+  left: clamp(18px, 2.4vw, 36px) !important;
+  right: clamp(18px, 2.4vw, 36px) !important;
+  bottom: clamp(14px, 1.8vw, 28px) !important;
+  width: min(34%, 460px) !important;
+  max-width: min(460px, calc(100% - 36px)) !important;
   min-height: 0 !important;
-  padding: clamp(18px, 1.8vw, 28px) !important;
+  padding: clamp(14px, 1.4vw, 22px) !important;
   border: 0 !important;
-  border-radius: 26px !important;
+  border-radius: 22px !important;
   background:
     linear-gradient(145deg, rgb(26 28 34 / 72%), rgb(34 38 46 / 54%) 42%, rgb(22 24 30 / 68%) 100%) !important;
   box-shadow:
@@ -9530,16 +9532,16 @@ html[lang="en"] .news-carousel-track .news-card h3,
 
 .news-section .news-carousel-track .news-card time {
   color: #6da8ff !important;
-  font-size: clamp(1.05rem, 1.35vw, 1.35rem) !important;
-  font-weight: 900 !important;
+  font-size: clamp(0.92rem, 1vw, 1.12rem) !important;
+  font-weight: 800 !important;
   letter-spacing: 0.04em !important;
   text-shadow: 0 1px 10px rgb(109 168 255 / 20%);
 }
 
 .news-section .news-carousel-track .news-card h3 {
-  font-size: clamp(2rem, 4vw, 4.2rem) !important;
-  line-height: 1.04 !important;
-  letter-spacing: -0.055em !important;
+  font-size: clamp(1.35rem, 2.35vw, 2.2rem) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -0.035em !important;
 }
 
 .news-section .news-carousel-track .news-card p,
@@ -9577,18 +9579,20 @@ html[lang="en"] .news-carousel-track .news-card h3,
     border-radius: 28px !important;
   }
 
-  .news-section .news-carousel-track .news-card-body {
-    left: 16px !important;
-    right: 16px !important;
-    bottom: 16px !important;
+  .news-section .news-carousel-track .news-card-body,
+  .news-section .news-carousel-track .news-card[data-title-size="medium"] .news-card-body,
+  .news-section .news-carousel-track .news-card[data-title-size="long"] .news-card-body {
+    left: 14px !important;
+    right: 14px !important;
+    bottom: 14px !important;
     width: auto !important;
     max-width: none !important;
-    padding: 16px !important;
+    padding: 14px !important;
   }
 
   .news-section .news-carousel-track .news-card h3 {
-    font-size: clamp(1.45rem, 5.8vw, 2.1rem) !important;
-    line-height: 1.06 !important;
+    font-size: clamp(1.18rem, 4.8vw, 1.7rem) !important;
+    line-height: 1.08 !important;
     -webkit-line-clamp: 3 !important;
   }
 
@@ -9622,20 +9626,22 @@ html[lang="en"] .news-carousel-track .news-card h3,
     border: 0 !important;
   }
 
-  .news-section .news-carousel-track .news-card-body {
-    left: 14px !important;
-    right: 14px !important;
-    bottom: 14px !important;
+  .news-section .news-carousel-track .news-card-body,
+  .news-section .news-carousel-track .news-card[data-title-size="medium"] .news-card-body,
+  .news-section .news-carousel-track .news-card[data-title-size="long"] .news-card-body {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
     width: auto !important;
     max-width: none !important;
-    padding: 14px !important;
-    border-radius: 22px !important;
+    padding: 12px !important;
+    border-radius: 20px !important;
   }
 
   .news-section .news-carousel-track .news-card time {
-    font-size: 1rem !important;
+    font-size: 0.92rem !important;
     line-height: 1.1 !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
   }
 
   .news-section .news-carousel-track .news-card h3,
@@ -9646,8 +9652,8 @@ html[lang="en"] .news-carousel-track .news-card h3,
     -webkit-box-orient: vertical !important;
     -webkit-line-clamp: 4 !important;
     overflow: hidden !important;
-    font-size: clamp(1.18rem, 4.6vw, 1.62rem) !important;
-    line-height: 1.1 !important;
+    font-size: clamp(1.04rem, 4.1vw, 1.42rem) !important;
+    line-height: 1.08 !important;
     letter-spacing: -0.04em !important;
   }
 

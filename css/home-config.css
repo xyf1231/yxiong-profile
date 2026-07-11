@@ -62,12 +62,12 @@
 
   /* 新闻卡片 */
   --news-card-min-height: 240px;
-  --news-card-body-padding: clamp(22px, 3vw, 36px);
+  --news-card-body-padding: clamp(18px, 2.2vw, 28px);
   --news-card-body-align: flex-end;
-  --news-card-title-font-size: 1.28rem;
+  --news-card-title-font-size: 1.08rem;
   --news-card-title-color: rgba(255, 255, 255, 0.96);
   --news-card-title-font-weight: 600;
-  --news-card-title-line-height: 1.25;
+  --news-card-title-line-height: 1.18;
 
   /* 手机端（<= 768px） */
   --hero-title-font-size-zh-mobile: clamp(3rem, 14vw, 7rem);
@@ -132,12 +132,12 @@
 
   /* 新闻卡片（手机端） */
   --news-card-min-height-mobile: 420px;
-  --news-card-body-padding-mobile: 24px;
-  --news-card-title-font-size-mobile: 1.28rem;
+  --news-card-body-padding-mobile: 18px;
+  --news-card-title-font-size-mobile: 1.02rem;
   --news-card-body-align-mobile: flex-end;
   --news-card-title-color-mobile: rgba(255, 255, 255, 0.96);
   --news-card-title-font-weight-mobile: 600;
-  --news-card-title-line-height-mobile: 1.25;
+  --news-card-title-line-height-mobile: 1.18;
 }
 
 /* Hero 区域最小高度 */

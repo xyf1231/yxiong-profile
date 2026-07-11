@@ -227,6 +227,7 @@ function setupSiteLoadingGate() {
   let hintFadeTimer = null;
   let hintIndex = 0;
   let hintInit = false;
+  let lettersStartTimer = null;
 
   const loadingPack = getLoadingTextPack();
   const loadingHints = loadingPack.hints;
@@ -324,6 +325,39 @@ function setupSiteLoadingGate() {
     }
   };
 
+  const resetLoadingState = ({ keepEditorPreview = false, rebuildOverlay = true } = {}) => {
+    window.__EDITOR_KEEP_LOADING_OVERLAY = !!keepEditorPreview;
+    finished = false;
+    finishing = false;
+    finishStartTime = 0;
+    if (lettersTimer) window.clearInterval(lettersTimer);
+    if (intervalId) window.clearInterval(intervalId);
+    if (readyTimerId) window.clearTimeout(readyTimerId);
+    if (hintTimer) window.clearInterval(hintTimer);
+    if (hintFadeTimer) window.clearTimeout(hintFadeTimer);
+    if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+    if (progressFrameId) {
+      cancelAnimationFrame(progressFrameId);
+      progressFrameId = null;
+    }
+    clearStageTimers();
+    hintInit = false;
+    hintIndex = 0;
+    displayProgress = 0;
+    targetProgress = 0;
+    currentStageIndex = -1;
+    root.dataset.siteLoading = "pending";
+    if (rebuildOverlay && overlay) {
+      overlay.remove();
+      overlay = null;
+      barEl = null;
+      percentEl = null;
+      resourcesEl = null;
+      hintEl = null;
+      versionEl = null;
+    }
+  };
+
   const scheduleStageRun = () => {
     clearStageTimers();
     stageTimers.push(window.setTimeout(() => advanceStage(1), 360));
@@ -376,6 +410,33 @@ function setupSiteLoadingGate() {
     requestAnimationFrame(reveal);
   };
 
+  window.showLoadingPreview = () => {
+    resetLoadingState({ keepEditorPreview: true, rebuildOverlay: true });
+    ensureOverlay();
+    startProgress();
+  };
+
+  window.triggerLoadingTransition = (targetUrl, options = {}) => {
+    const urlText = String(targetUrl || "").trim();
+    if (!urlText || window.__EDITOR_KEEP_LOADING_OVERLAY) return false;
+    const { samePage = false, transitionDelay = 120, settleDelay = 500 } = options;
+    resetLoadingState({ keepEditorPreview: false, rebuildOverlay: true });
+    ensureOverlay();
+    startProgress();
+    window.setTimeout(() => {
+      if (samePage) {
+        const resolved = new URL(urlText, window.location.href);
+        if (resolved.hash && resolved.pathname === window.location.pathname && resolved.search === window.location.search) {
+          window.location.hash = resolved.hash;
+          window.setTimeout(() => revealNow(), settleDelay);
+          return;
+        }
+      }
+      window.location.href = urlText;
+    }, transitionDelay);
+    return true;
+  };
+
   const startProgress = () => {
     if (finished) return;
     startHintRotation();
@@ -398,6 +459,10 @@ function setupSiteLoadingGate() {
     finishing = true;
     finishStartTime = performance.now();
     clearStageTimers();
+    if (lettersStartTimer) {
+      window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = null;
+    }
     targetProgress = 100;
     if (!progressFrameId) {
       progressFrameId = requestAnimationFrame(animateProgress);
@@ -431,46 +496,61 @@ function setupSiteLoadingGate() {
     if (versionEl) versionEl.textContent = getLoadingVersionText();
 
     // 加载并播放 Letters 手写文字动画
+    if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+    lettersStartTimer = window.setTimeout(startLettersAnimation, 0);
+  };
+
+  const startLettersAnimation = () => {
     const lettersEl = document.getElementById("site-loading-letters");
-    if (lettersEl && typeof window.mountLettersAnimation === "function") {
-      const cfg = window.LOADING_CONTENT || {};
-      const shared = cfg.shared || {};
-      function split(str) {
-        return String(str || "").split(/[,，]/).map(s => s.trim().toLowerCase()).filter(Boolean);
-      }
-      const words = split(shared.words).length ? split(shared.words) : ["hello", "welcome", "coming", "loading"];
-      const presets = split(shared.presets).length ? split(shared.presets) : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
-      const durationVal = Math.max(0.1, parseFloat(shared.duration) || 2);
-      const erase = String(shared.erase).trim().toLowerCase() !== "false";
-
-      function cssNum(name, fallback) {
-        try {
-          const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-          return v ? parseFloat(v) : fallback;
-        } catch {
-          return fallback;
-        }
-      }
-
-      const duration = cssNum('--loading-anim-duration', durationVal) || 2;
-      const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2;
-      const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 20;
-      const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 20;
-
-      const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
-      const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
-      let index = 0;
-      function shuffle(arr) { const copy = arr.slice(); for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
-      const shuffledWords = shuffle(words);
-      function playNext() {
-        if (index >= shuffledWords.length) index = 0;
-        const word = shuffledWords[index++];
-        const preset = presets[Math.floor(Math.random() * presets.length)];
-        window.mountLettersAnimation(lettersEl, word, preset, strokeWidth, brightness, saturation, duration, erase);
-      }
-      playNext();
-      lettersTimer = window.setInterval(playNext, interval);
+    if (!lettersEl) return;
+    if (typeof window.mountLettersAnimation !== "function") {
+      if (lettersStartTimer) window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = window.setTimeout(startLettersAnimation, 80);
+      return;
     }
+    if (lettersStartTimer) {
+      window.clearTimeout(lettersStartTimer);
+      lettersStartTimer = null;
+    }
+    if (lettersTimer) window.clearInterval(lettersTimer);
+
+    const cfg = window.LOADING_CONTENT || {};
+    const shared = cfg.shared || {};
+    function split(str) {
+      return String(str || "").split(/[,，]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+    }
+    const words = split(shared.words).length ? split(shared.words) : ["hello", "welcome", "coming", "loading"];
+    const presets = split(shared.presets).length ? split(shared.presets) : ["sunrise", "rasta", "plasma", "tropical", "cyber", "fire", "lemonade", "ocean-bright", "sunset-bright", "rainbow"];
+    const durationVal = Math.max(0.1, parseFloat(shared.duration) || 2);
+    const erase = String(shared.erase).trim().toLowerCase() !== "false";
+
+    function cssNum(name, fallback) {
+      try {
+        const v = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        return v ? parseFloat(v) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    const duration = cssNum('--loading-anim-duration', durationVal) || 2;
+    const strokeWidth = cssNum('--loading-anim-stroke-width', parseFloat(shared.strokeWidth)) || 2;
+    const brightness = cssNum('--loading-anim-brightness', parseFloat(shared.brightness)) || 20;
+    const saturation = cssNum('--loading-anim-saturation', parseFloat(shared.saturation)) || 20;
+
+    const minInterval = Math.round((erase ? duration * 1.5 : duration) * 1000) + 200;
+    const interval = Math.max(minInterval, parseInt(shared.interval, 10) || minInterval);
+    let index = 0;
+    function shuffle(arr) { const copy = arr.slice(); for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]]; } return copy; }
+    const shuffledWords = shuffle(words);
+    function playNext() {
+      if (index >= shuffledWords.length) index = 0;
+      const word = shuffledWords[index++];
+      const preset = presets[Math.floor(Math.random() * presets.length)];
+      window.mountLettersAnimation(lettersEl, word, preset, strokeWidth, brightness, saturation, duration, erase);
+    }
+    playNext();
+    lettersTimer = window.setInterval(playNext, interval);
   };
 
   const waitForReady = () => {
@@ -493,6 +573,44 @@ function setupSiteLoadingGate() {
 }
 
 setupSiteLoadingGate();
+
+function setupLoadingLinkTransitions() {
+  if (window.__loadingLinkTransitionsBound) return;
+  window.__loadingLinkTransitionsBound = true;
+  document.addEventListener("click", (event) => {
+    if (event.defaultPrevented) return;
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const targetEl = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
+    const link = targetEl?.closest ? targetEl.closest("a[href]") : null;
+    if (!link) return;
+    if (link.closest("[data-paper-preview]") || link.closest("[data-pdf-download]")) return;
+    if (link.hasAttribute("download")) return;
+    if (link.target === "_blank") return;
+    const rel = String(link.getAttribute("rel") || "").toLowerCase();
+    if (rel.includes("external")) return;
+    const href = String(link.getAttribute("href") || "").trim();
+    if (!href || href.startsWith("javascript:") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
+    let resolved;
+    try {
+      resolved = new URL(href, window.location.href);
+    } catch {
+      return;
+    }
+    if (resolved.origin !== window.location.origin) return;
+    const currentUrl = new URL(window.location.href);
+    const samePath = resolved.pathname === currentUrl.pathname && resolved.search === currentUrl.search;
+    const sameHash = samePath && resolved.hash === currentUrl.hash;
+    if (sameHash) return;
+    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
+    const trigger = typeof window.triggerLoadingTransition === "function" ? window.triggerLoadingTransition : null;
+    if (!trigger) return;
+    event.preventDefault();
+    trigger(resolved.toString(), { samePage: samePath && !!resolved.hash });
+  }, true);
+}
+
+setupLoadingLinkTransitions();
+
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
@@ -1082,7 +1200,7 @@ function renderNews(items) {
       const mediumAt = currentLang === "en" ? 42 : 18;
       const longAt = currentLang === "en" ? 70 : 30;
       const titleSize = titleLength >= longAt ? "long" : titleLength >= mediumAt ? "medium" : "short";
-      const href = assetUrl(item.url || "#");
+      const href = assetUrl(currentLang === "en" ? item.urlEn || item.url || "#" : item.url || "#");
       const image = item.image
         ? `<div class="news-card-image">${pictureTag(item.image, title || "新闻图片", "", index === 0)}</div>`
         : "";
@@ -1488,7 +1606,7 @@ function sanitizeRichHtml(html = "") {
     });
 }
 
-// 渲染新闻详情页侧边信息
+// 渲染新闻详情页正文
 function renderNewsDetail(items = []) {
   const contentTarget = document.querySelector("#news-detail-content");
   if (!contentTarget) return;
@@ -1533,19 +1651,6 @@ function renderNewsDetail(items = []) {
   const bodyHtml = detail.contentHtml ? sanitizeRichHtml(detail.contentHtml) : fallbackHtml;
 
   contentTarget.innerHTML = `${introHtml}${image}<div class="news-rich-content">${bodyHtml}</div>`;
-
-  const infoTarget = document.querySelector("#news-detail-info");
-  if (infoTarget) {
-    const info = [
-      [localizeText("论文题目"), detail.paperTitle],
-      [localizeText("期刊"), detail.journal],
-      [localizeText("作者"), detail.authors],
-      [localizeText("通讯作者"), detail.correspondingAuthors],
-      [localizeText("完成单位"), detail.affiliation],
-      ["DOI", detail.doi],
-    ].filter(([, value]) => value);
-    infoTarget.innerHTML = info.map(([label, value]) => `<div><dt>${escapeHtml(label)}</dt><dd>${escapeHtml(value)}</dd></div>`).join("");
-  }
 
   const pdf = document.querySelector("#news-detail-pdf");
   if (pdf) {
@@ -1814,6 +1919,37 @@ function renderContacts(items) {
     .join("");
 }
 
+function renderFooter(footer = {}) {
+  const siteData = getSiteData() || {};
+  const profileName = siteData.profile?.nameEn || siteData.profile?.nameCn || "Yifeng Xiong";
+  const year = String(footer.year || new Date().getFullYear());
+  const email = String(footer.email || siteData.profile?.email || "yfxiong@nju.edu.cn").replace(/^mailto:/i, "");
+  const addressZh = String(footer.address || "南京大学仙林校区现代工学院A302").replace(/^(通信地址|通讯地址)[:：]\s*/i, "");
+  const addressEn = String(footer.addressEn || footer.address || "Nanjing University Xianlin Campus, School of Modern Engineering and Applied Science, A302").replace(/^(address|mailing address)[:：]\s*/i, "");
+  const versionText = String(footer.version || "Version 1.14.2");
+
+  document.querySelectorAll(".site-footer").forEach((root) => {
+    const copyright = root.querySelector("span:first-child");
+    if (copyright) {
+      copyright.innerHTML = `© ${escapeHtml(year)} <span data-profile="nameEn">${escapeHtml(profileName)}</span>`;
+    }
+
+    const emailLink = root.querySelector('a[href^="mailto:"]');
+    if (emailLink) {
+      emailLink.href = `mailto:${escapeHtml(email)}`;
+      emailLink.textContent = email;
+    }
+
+    root.querySelectorAll(".footer-address").forEach((node) => {
+      node.textContent = currentLang === "en" ? `Address: ${addressEn}` : `通信地址：${addressZh}`;
+    });
+
+    root.querySelectorAll(".footer-version").forEach((node) => {
+      node.textContent = versionText;
+    });
+  });
+}
+
 // 站点统一渲染入口：根据当前页面渲染对应模块
 function renderSite(page = "shared") {
   const data = getSiteData();
@@ -1850,6 +1986,7 @@ function renderSite(page = "shared") {
     renderExperience(data.experience || []);
     renderContacts(data.contacts || []);
   }
+  renderFooter(data.footer || {});
   applyLanguage();
   setupGlassSurface();
   setupBorderGlow();
@@ -1923,9 +2060,7 @@ function applyLanguage() {
   });
   translateNavigation(dict);
   translateLooseHeadings(dict);
-  document.querySelectorAll(".footer-address").forEach((node) => {
-    node.textContent = localizeText("通信地址：南京大学仙林校区现代工学院A302");
-  });
+  renderFooter(getSiteData()?.footer || {});
   document.documentElement.dataset.langReady = "ready";
 }
 
@@ -2292,7 +2427,6 @@ function translateLooseHeadings(dict) {
 
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
-  if (isCompactNav()) return;
   const cards = document.querySelectorAll(
     ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner",
   );
@@ -2302,6 +2436,25 @@ function setupBorderGlow() {
     card.classList.add("border-glow-card");
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
     card.style.setProperty("--border-radius", window.getComputedStyle(card).borderRadius || "18px");
+  });
+
+  if (!cards.length || typeof initBorderGlow !== "function") return;
+
+  initBorderGlow(Array.from(cards), {
+    colors: ["#000033", "#0044cc", "#6688ff"],
+    glowColor: "220 80 80",
+    glowRadius: 30,
+    glowIntensity: 1.5,
+    edgeSensitivity: 0,
+    fillOpacity: 0.5,
+    animated: false,
+    sweepFan: false,
+    sweepSpeed: 2,
+    sweepIntensity: 1,
+    sweepFadeIn: 100,
+    sweepRotate: 500,
+    sweepFadeOut: 200,
+    hoverEnabled: !isCompactNav(),
   });
 }
 

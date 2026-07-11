@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <title>Word 转换 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.3" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局
@@ -369,6 +369,7 @@
               <div class="output-actions">
                 <button class="admin-button" id="btn-copy-html" disabled>📋 复制 HTML</button>
                 <button class="admin-button" id="btn-download" disabled>⬇️ 下载独立页面</button>
+                <button class="admin-button" id="btn-translate-en" disabled>🌍 一键翻译英文并发送</button>
                 <button class="admin-button primary" id="btn-send-admin" disabled>📤 压缩 WebP 并发送</button>
               </div>
             </section>
@@ -395,6 +396,7 @@
         var btnRefresh = document.getElementById('btn-refresh-preview');
         var btnCopy = document.getElementById('btn-copy-html');
         var btnDownload = document.getElementById('btn-download');
+        var btnTranslateEn = document.getElementById('btn-translate-en');
         var btnSendAdmin = document.getElementById('btn-send-admin');
         var previewEl = document.getElementById('converter-preview');
         var sourceArea = document.getElementById('source-area');
@@ -447,6 +449,158 @@
 
         function esc(v) {
           return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function cloneObject(value) {
+          return JSON.parse(JSON.stringify(value || {}));
+        }
+
+        function hasChineseText(value = "") {
+          return /[\u4e00-\u9fff]/.test(String(value || ""));
+        }
+
+        function tidyEnglishText(value = "") {
+          return String(value || "")
+            .replace(/\s+([,.;:!?])/g, "$1")
+            .replace(/([,.;:!?])([A-Za-z0-9\u4e00-\u9fff])/g, "$1 $2")
+            .replace(/\s+/g, " ")
+            .replace(/\s+\)/g, ")")
+            .replace(/\(\s+/g, "(")
+            .trim();
+        }
+
+        var translateCache = new Map();
+        var AUTO_TRANSLATE_ENDPOINT = "https://translate.googleapis.com/translate_a/single";
+
+        async function remoteTranslateText(value) {
+          var text = String(value || "").trim();
+          if (!text) return "";
+          if (!hasChineseText(text)) return text;
+          var cacheKey = "remote:" + text;
+          if (translateCache.has(cacheKey)) return translateCache.get(cacheKey);
+          var params = new URLSearchParams({
+            client: "gtx",
+            sl: "zh-CN",
+            tl: "en",
+            dt: "t",
+            q: text
+          });
+          var response = await fetch(AUTO_TRANSLATE_ENDPOINT + "?" + params.toString(), { cache: "no-store" });
+          if (!response.ok) throw new Error("HTTP " + response.status);
+          var payload = await response.json();
+          var translated = Array.isArray(payload && payload[0]) ? payload[0].map(function (part) { return part && part[0] || ""; }).join("") : "";
+          var cleaned = tidyEnglishText(translated);
+          if (!cleaned) throw new Error("翻译结果为空");
+          translateCache.set(cacheKey, cleaned);
+          return cleaned;
+        }
+
+        async function translateText(value) {
+          var text = String(value || "");
+          var trimmed = text.trim();
+          if (!trimmed) return "";
+          var cacheKey = "text:" + trimmed;
+          if (translateCache.has(cacheKey)) return translateCache.get(cacheKey);
+          if (!hasChineseText(trimmed)) {
+            translateCache.set(cacheKey, text);
+            return text;
+          }
+          try {
+            var remote = await remoteTranslateText(trimmed);
+            translateCache.set(cacheKey, remote);
+            return remote;
+          } catch (error) {
+            translateCache.set(cacheKey, trimmed);
+            return trimmed;
+          }
+        }
+
+        async function translateHtmlContent(html) {
+          var markup = String(html || "");
+          if (!markup.trim()) return "";
+          var template = document.createElement("template");
+          template.innerHTML = markup;
+          var nodeFilter = window.NodeFilter || { SHOW_TEXT: 4, FILTER_ACCEPT: 1, FILTER_REJECT: 0 };
+          var nodes = [];
+          var walker = document.createTreeWalker(
+            template.content,
+            nodeFilter.SHOW_TEXT,
+            {
+              acceptNode: function (node) {
+                var parent = node.parentElement;
+                if (!parent) return nodeFilter.FILTER_REJECT;
+                if (["SCRIPT", "STYLE", "CODE", "PRE", "TEXTAREA"].includes(parent.tagName)) return nodeFilter.FILTER_REJECT;
+                if (!String(node.nodeValue || "").trim()) return nodeFilter.FILTER_REJECT;
+                return hasChineseText(node.nodeValue) ? nodeFilter.FILTER_ACCEPT : nodeFilter.FILTER_REJECT;
+              }
+            }
+          );
+          while (walker.nextNode()) nodes.push(walker.currentNode);
+          if (nodes.length === 0) return markup;
+          for (var i = 0; i < nodes.length; i++) {
+            nodes[i].nodeValue = await translateText(nodes[i].nodeValue);
+          }
+          return template.innerHTML;
+        }
+
+        function loadStoredSiteData() {
+          try {
+            var stored = localStorage.getItem("academicSiteData");
+            if (stored) return cloneObject(JSON.parse(stored));
+          } catch (error) {}
+          return cloneObject(window.DEFAULT_SITE_DATA || {});
+        }
+
+        async function saveSiteData(siteData) {
+          var response = await fetch("/api/save-data", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ data: siteData })
+          });
+          if (!response.ok) throw new Error("保存后台数据失败: HTTP " + response.status);
+          return response.json();
+        }
+
+        async function saveTextFile(path, content) {
+          var response = await fetch("/api/save-file", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ path: path, content: content })
+          });
+          if (!response.ok) throw new Error("保存文件失败: HTTP " + response.status);
+          return response.json();
+        }
+
+        async function validateHtmlReferences(html) {
+          var template = document.createElement("template");
+          template.innerHTML = html || "";
+          var nodes = template.content.querySelectorAll("img[src], script[src], link[href], a[href], source[src]");
+          var checked = [];
+          for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            var attr = node.getAttribute("src") ? "src" : "href";
+            var value = (node.getAttribute(attr) || "").trim();
+            if (!value || /^(https?:|data:|mailto:|tel:|#|javascript:)/i.test(value)) continue;
+            if (!/^resources\//i.test(value) && !/^(css|js|images|videos|frames|papers)\//i.test(value) && !/\.html(?:[?#].*)?$/i.test(value) && !/\.webp(?:[?#].*)?$/i.test(value) && !/\.pdf(?:[?#].*)?$/i.test(value)) continue;
+            checked.push(value);
+          }
+          var missing = [];
+          for (var j = 0; j < checked.length; j++) {
+            try {
+              var response = await fetch(checked[j], { method: "HEAD", cache: "no-store" });
+              if (!response.ok) missing.push(checked[j]);
+            } catch (error) {
+              missing.push(checked[j]);
+            }
+          }
+          return missing;
+        }
+
+        function yearFromDate(value) {
+          var text = String(value || "").trim();
+          if (!text) return String(new Date().getFullYear());
+          var match = text.match(/^(\d{4})/);
+          return match ? match[1] : String(new Date().getFullYear());
         }
 
         function todayStr() {
@@ -543,19 +697,33 @@
         }
 
         // ─── 生成完整页面 HTML ─────────────────────────
-        function buildFullPage(title, contentHtml, slug) {
+        function buildFullPage(title, contentHtml, slug, lang) {
           slug = slug || slugify(title || 'news');
           var safeTitle = esc(title || '新闻详情');
+          var htmlLang = lang || 'zh-CN';
           return '<!doctype html>\n' +
-            '<html lang="zh-CN">\n' +
+            '<html lang="' + esc(htmlLang) + '">\n' +
             '<head>\n' +
             '  <meta charset="utf-8" />\n' +
             '  <base href="/" />\n' +
             '  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />\n' +
+            '  <script>\n' +
+            '    (function () {\n' +
+            '      if (!/iPhone|iPad|iPod/i.test(navigator.userAgent)) return;\n' +
+            '      document.addEventListener(\n' +
+            '        "gesturechange",\n' +
+            '        function (event) {\n' +
+            '          var scale = typeof event.scale === "number" ? event.scale : 1;\n' +
+            '          if (scale > 1) event.preventDefault();\n' +
+            '        },\n' +
+            '        { passive: false }\n' +
+            '      );\n' +
+            '    })();\n' +
+            '  <\\/script>\n' +
             '  <title>' + safeTitle + ' | 熊毅丰</title>\n' +
-            '  <link rel="stylesheet" href="css/styles.css?v=v1.14.3" />\n' +
-            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.3" />\n' +
-            '  <link rel="stylesheet" href="css/news.css?v=v1.14.3" />\n' +
+            '  <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />\n' +
+            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.5" />\n' +
+            '  <link rel="stylesheet" href="css/news.css?v=v1.14.5" />\n' +
             '</head>\n' +
             '<body>\n' +
             '  <header class="site-header" data-elevated="false">\n' +
@@ -595,9 +763,9 @@
             '    <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>\n' +
             '    <span class="footer-address">南京大学仙林校区现代工学院A302</span>\n' +
             '  </footer>\n' +
-            '  <script src="js/data.js?v=v1.14.3" charset="utf-8"><\/script>\n' +
-            '  <script src="js/loading-content.js?v=v1.14.3" charset="utf-8"><\/script>\n' +
-            '  <script src="js/resource-manifest.js?v=v1.14.3" charset="utf-8"><\/script>\n' +
+            '  <script src="js/data.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
+            '  <script src="js/loading-content.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
+            '  <script src="js/resource-manifest.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
             '  <script>\n' +
             '    // letters-animation.umd.js 内部引用 process.env.NODE_ENV，浏览器环境兜底\n' +
             '    if (typeof window.process === "undefined") {\n' +
@@ -608,8 +776,8 @@
             '      window.process.env.NODE_ENV = "production";\n' +
             '    }\n' +
             '  <\/script>\n' +
-            '  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.3" charset="utf-8" defer><\/script>\n' +
-            '  <script src="js/script.js?v=v1.14.3" charset="utf-8"><\/script>\n' +
+            '  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.5" charset="utf-8" defer><\/script>\n' +
+            '  <script src="js/script.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
             '</body>\n' +
             '</html>';
         }
@@ -678,6 +846,7 @@
                   btnRefresh.disabled = false;
                   btnCopy.disabled = false;
                   btnDownload.disabled = false;
+                  btnTranslateEn.disabled = false;
                   btnSendAdmin.disabled = false;
 
                   var stats = docStatsData.paragraphs + ' 段落, ' + docStatsData.headings + ' 标题, ' + docStatsData.images + ' 图片';
@@ -710,6 +879,19 @@
             '<html lang="zh-CN">\n' +
             '<head>\n' +
             '  <meta charset="utf-8" />\n' +
+            '  <script>\n' +
+            '    (function () {\n' +
+            '      if (!/iPhone|iPad|iPod/i.test(navigator.userAgent)) return;\n' +
+            '      document.addEventListener(\n' +
+            '        "gesturechange",\n' +
+            '        function (event) {\n' +
+            '          var scale = typeof event.scale === "number" ? event.scale : 1;\n' +
+            '          if (scale > 1) event.preventDefault();\n' +
+            '        },\n' +
+            '        { passive: false }\n' +
+            '      );\n' +
+            '    })();\n' +
+            '  <\\/script>\n' +
             '  <style>\n' +
             '    * { box-sizing: border-box; }\n' +
             '    html, body { background: #000; color: #fff; min-height: 100%; margin: 0; padding: 0; }\n' +
@@ -750,7 +932,7 @@
           var title = fieldTitle.value || extractTitle(bodyHtml) || '新闻标题';
 
           contentHtml = buildContentHtml(title, bodyHtml);
-          fullPageHtml = buildFullPage(title, contentHtml);
+          fullPageHtml = buildFullPage(title, contentHtml, autoSlug(title), 'zh-CN');
 
           previewEl.srcdoc = buildPreviewPage(contentHtml);
           sourceArea.value = fullPageHtml;
@@ -786,6 +968,57 @@
           document.body.removeChild(a);
           URL.revokeObjectURL(url);
           showToast('已下载: ' + filename);
+        }
+
+        function buildNewsPayload(overrides) {
+          var title = fieldTitle.value || '新闻标题';
+          var plainText = mammothHtml ? mammothHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
+          var slug = autoSlug(title);
+          return Object.assign({
+            slug: slug,
+            eyebrow: fieldEyebrow.value || 'Research News',
+            title: title,
+            subtitle: fieldSubtitle.value || '',
+            text: plainText.slice(0, 150),
+            image: fieldImage.value || '',
+            url: 'resources/news/' + slug + '.html',
+            contentHtml: contentHtml,
+            content: plainText,
+            paperTitle: '',
+            journal: '',
+            authors: '',
+            correspondingAuthors: '',
+            affiliation: '',
+            doi: '',
+            pdf: '',
+            date: fieldDate.value || '',
+            titleEn: '',
+            subtitleEn: '',
+            textEn: '',
+            contentHtmlEn: '',
+            urlEn: '',
+            paperTitleEn: '',
+            journalEn: '',
+            authorsEn: '',
+            correspondingAuthorsEn: '',
+            affiliationEn: '',
+            _from: 'docx-converter',
+            _timestamp: Date.now()
+          }, overrides || {});
+        }
+
+        function upsertNewsItem(siteData, payload) {
+          if (!siteData.news) siteData.news = [];
+          var index = -1;
+          for (var i = 0; i < siteData.news.length; i++) {
+            if (siteData.news[i] && siteData.news[i].slug === payload.slug) {
+              index = i;
+              break;
+            }
+          }
+          var nextItem = Object.assign({}, index >= 0 ? siteData.news[index] : {}, payload);
+          if (index >= 0) siteData.news[index] = nextItem;
+          else siteData.news.unshift(nextItem);
         }
 
         // ─── 解析 base64 图片列表 ───────────────────────
@@ -891,20 +1124,31 @@
         }
 
         // ─── 提取图片 + 发送到后台 ────────────────────
-        async function replaceImagesAndSend() {
+        async function replaceImagesAndSend(options) {
           if (!contentHtml) { showToast('请先转换文档'); return; }
 
-          var title = fieldTitle.value || '新闻标题';
+          var mode = options && options.mode === 'en' ? 'en' : 'zh';
+          var titleZh = fieldTitle.value || '新闻标题';
+          var title = mode === 'en' ? await translateText(titleZh) : titleZh;
+          var subtitleZh = fieldSubtitle.value || '';
+          var subtitle = mode === 'en' && subtitleZh ? await translateText(subtitleZh) : subtitleZh;
+          var bodySource = contentHtml;
           var parser = new DOMParser();
-          var doc = parser.parseFromString('<div id="docx-content-root">' + contentHtml + '</div>', 'text/html');
+          var doc = parser.parseFromString('<div id="docx-content-root">' + bodySource + '</div>', 'text/html');
           var root = doc.getElementById('docx-content-root');
-          var images = extractBase64Images(contentHtml);
+          var images = extractBase64Images(bodySource);
           var uploaded = 0;
           var srcMap = new Map();
 
           if (images.length === 0) {
-            // 无 base64 图片，直接发送
-            doSendPayload(contentHtml);
+            await finalizeAndSend({
+              mode: mode,
+              title: title,
+              titleZh: titleZh,
+              subtitle: subtitle,
+              subtitleZh: subtitleZh,
+              bodyHtml: mode === 'en' ? await translateHtmlContent(bodySource) : bodySource
+            });
             return;
           }
 
@@ -913,8 +1157,8 @@
           for (var i = 0; i < images.length; i++) {
             var img = images[i];
             try {
-              setStatus('⬆️ 压缩并上传 ' + (i + 1) + '/' + images.length + ': ' + slugify(title) + '-img-' + (i + 1));
-              var result = await uploadBase64Image(img.src, i, title);
+              setStatus('⬆️ 压缩并上传 ' + (i + 1) + '/' + images.length + ': ' + slugify(titleZh) + '-img-' + (i + 1));
+              var result = await uploadBase64Image(img.src, i, titleZh);
               srcMap.set(img.src, result.url);
               uploaded++;
               setStatus('✅ 已上传 ' + uploaded + '/' + images.length + ': ' + result.filename + '（' + (result.mime === 'image/webp' ? 'WebP' : '原格式') + '）');
@@ -925,8 +1169,9 @@
 
           if (root) {
             updateImageSources(root, srcMap);
-            contentHtml = root.innerHTML;
+            bodySource = root.innerHTML;
           }
+          var bodyOnly = String(bodySource || '').replace(/<h1[^>]*>[\s\S]*?<\/h1>/i, '');
 
           if (fieldImage.value && srcMap.has(fieldImage.value)) {
             fieldImage.value = srcMap.get(fieldImage.value);
@@ -935,63 +1180,107 @@
             detectedImagePreview.src = srcMap.get(detectedImagePreview.src);
           }
 
-          // 用替换后的 HTML 更新全局变量
-          // 重建完整页面并刷新预览 + 源码
-          var freshTitle = fieldTitle.value || '新闻标题';
-          fullPageHtml = buildFullPage(freshTitle, contentHtml);
-          previewEl.srcdoc = buildPreviewPage(contentHtml);
-          sourceArea.value = fullPageHtml;
-
-          // 发送
-          doSendPayload(contentHtml);
+          await finalizeAndSend({
+            mode: mode,
+            title: title,
+            titleZh: titleZh,
+            subtitle: subtitle,
+            subtitleZh: subtitleZh,
+            bodyHtml: mode === 'en' ? await translateHtmlContent(bodyOnly) : bodyOnly,
+            fullHtml: bodySource
+          });
         }
 
-        // ─── 实际写入 localStorage ───────────────────────
-        function doSendPayload(contentHtmlFinal) {
-          var title = fieldTitle.value || '新闻标题';
+        async function finalizeAndSend(options) {
+          var mode = options.mode || 'zh';
+          var titleZh = options.titleZh || (fieldTitle.value || '新闻标题');
+          var title = options.title || titleZh;
+          var subtitleZh = options.subtitleZh || (fieldSubtitle.value || '');
+          var subtitle = options.subtitle || subtitleZh;
+          var bodyHtml = options.bodyHtml || '';
+          var fullHtml = options.fullHtml || contentHtml || '';
           var plainText = mammothHtml ? mammothHtml.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim() : '';
-          var slug = slugify(title);
-          var date = fieldDate.value || '';
+          var year = yearFromDate(fieldDate.value);
+          var chineseSlug = autoSlug(titleZh);
+          var englishSlug = year + '-' + slugify(title);
+          var chinesePath = 'resources/news/' + chineseSlug + '.html';
+          var englishPath = 'resources/news/' + englishSlug + '.html';
+          var chinesePage = buildFullPage(titleZh, fullHtml || buildContentHtml(titleZh, bodyHtml), chineseSlug, 'zh-CN');
+          var englishPage = buildFullPage(title, buildContentHtml(title, bodyHtml), englishSlug, 'en');
 
-          var payload = {
-            slug: slug,
-            eyebrow: fieldEyebrow.value || 'Research News',
-            title: title,
-            titleEn: '',
-            subtitle: fieldSubtitle.value || '',
+          if (mode === 'en') {
+            var missingRefs = await validateHtmlReferences(englishPage);
+            if (missingRefs.length) {
+              setStatus('⚠️ 检查到缺失引用：' + missingRefs.join(', '), 'warn');
+              showToast('有文件引用缺失，请先检查');
+              return;
+            }
+          }
+
+          var payload = buildNewsPayload({
+            slug: chineseSlug,
+            title: titleZh,
+            subtitle: subtitleZh,
             text: plainText.slice(0, 150),
-            textEn: '',
             image: fieldImage.value || '',
-            url: 'resources/news/' + slug + '.html',
-            contentHtml: contentHtmlFinal,
+            url: chinesePath,
+            contentHtml: fullHtml,
+            contentHtmlZh: fullHtml,
             content: plainText,
-            paperTitle: '',
-            journal: '',
-            authors: '',
-            correspondingAuthors: '',
-            affiliation: '',
-            doi: '',
-            pdf: '',
-            date: date,
-            _from: 'docx-converter',
-            _timestamp: Date.now()
-          };
+            date: fieldDate.value || '',
+            titleEn: mode === 'en' ? title : '',
+            subtitleEn: mode === 'en' ? subtitle : '',
+            textEn: mode === 'en' ? String(bodyHtml || '').replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim().slice(0, 150) : '',
+            contentHtmlEn: mode === 'en' ? buildContentHtml(title, bodyHtml) : '',
+            urlEn: mode === 'en' ? englishPath : '',
+            paperTitleEn: '',
+            journalEn: '',
+            authorsEn: '',
+            correspondingAuthorsEn: '',
+            affiliationEn: ''
+          });
 
           try {
+            await saveTextFile(chinesePath, chinesePage);
+            if (mode === 'en') {
+              await saveTextFile(englishPath, englishPage);
+            }
+
+            var siteData = loadStoredSiteData();
+            upsertNewsItem(siteData, payload);
+            await saveSiteData(siteData);
+            localStorage.setItem('academicSiteData', JSON.stringify(siteData));
             localStorage.setItem('docxConverterOutput', JSON.stringify(payload));
-            setStatus('✅ 已发送到后台！前往后台管理 → 新闻 → 导入转换器内容', 'success');
-            showToast('已发送到后台！');
+
+            if (mode === 'en') {
+              setStatus('✅ 中文页、英文页和后台数据已保存，英文文件：' + englishPath, 'success');
+              showToast('英文版已保存到后台');
+            } else {
+              setStatus('✅ 中文页和后台数据已保存：' + chinesePath, 'success');
+              showToast('已保存到后台');
+            }
+
+            fullPageHtml = mode === 'en' ? englishPage : chinesePage;
+            previewEl.srcdoc = buildPreviewPage(mode === 'en' ? buildContentHtml(title, bodyHtml) : fullHtml);
+            sourceArea.value = mode === 'en' ? englishPage : chinesePage;
           } catch (e) {
-            setStatus('❌ localStorage 写入失败: ' + e.message + '。请尝试手动替换图片路径。', 'error');
-            showToast('发送失败: ' + e.message);
+            setStatus('❌ 保存失败: ' + e.message, 'error');
+            showToast('保存失败: ' + e.message);
           }
         }
 
         // ─── 保留旧函数名兼容 ────────────────────────────
         function sendToAdmin() {
-          replaceImagesAndSend().catch(function (err) {
+          replaceImagesAndSend({ mode: 'zh' }).catch(function (err) {
             setStatus('发送异常: ' + err.message, 'error');
             showToast('发送异常: ' + err.message);
+          });
+        }
+
+        function translateToEnglishAndSend() {
+          replaceImagesAndSend({ mode: 'en' }).catch(function (err) {
+            setStatus('英文发送异常: ' + err.message, 'error');
+            showToast('英文发送异常: ' + err.message);
           });
         }
 
@@ -1028,6 +1317,7 @@
           btnRefresh.disabled = true;
           btnCopy.disabled = true;
           btnDownload.disabled = true;
+          btnTranslateEn.disabled = true;
           btnSendAdmin.disabled = true;
 
           showToast('已重置');
@@ -1049,6 +1339,7 @@
         btnRefresh.addEventListener('click', refreshPreview);
         btnCopy.addEventListener('click', copyHtml);
         btnDownload.addEventListener('click', downloadPage);
+        btnTranslateEn.addEventListener('click', translateToEnglishAndSend);
         btnSendAdmin.addEventListener('click', sendToAdmin);
         document.getElementById('btn-reset').addEventListener('click', resetAll);
 
@@ -1069,7 +1360,7 @@
           if (!bodyHtml || bodyHtml.indexOf('转换为新闻页') > -1) return;
           if (!fieldTitle.value) return;
           contentHtml = buildContentHtml(fieldTitle.value, bodyHtml);
-          fullPageHtml = buildFullPage(fieldTitle.value, contentHtml);
+          fullPageHtml = buildFullPage(fieldTitle.value, contentHtml, autoSlug(fieldTitle.value), 'zh-CN');
           sourceArea.value = fullPageHtml;
         });
 
