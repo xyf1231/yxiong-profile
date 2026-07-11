@@ -283,19 +283,19 @@ function initBorderGlow(cards, options) {
   var touchLike = isTouchLikeDevice();
 
   var effectiveGlowIntensity = touchLike ? touchGlowIntensity : glowIntensity;
-  var effectiveHoverFadeIn = touchLike ? (options.sweepFadeIn != null ? options.sweepFadeIn : 500) : hoverFadeIn;
-  var effectiveHoverFadeOut = touchLike ? (options.sweepFadeOut != null ? options.sweepFadeOut : 2000) : hoverFadeOut;
+  var effectiveHoverFadeIn = touchLike ? (options.sweepFadeIn != null ? options.sweepFadeIn : 200) : hoverFadeIn;
+  var effectiveHoverFadeOut = touchLike ? (options.sweepFadeOut != null ? options.sweepFadeOut : 1000) : hoverFadeOut;
   var glowVars = buildGlowVars(glowColor, effectiveGlowIntensity);
   var gradVars = buildGradientVars(colors);
   var sweepOpts = {
     speed: sweepSpeed,
     intensity: sweepIntensity,
-    fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
+    fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 200,
     rotateHalf: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
     rotateSecond: options.sweepRotate != null ? options.sweepRotate * 0.6 : 2250,
     rotateDelay: options.sweepRotate != null ? options.sweepRotate * 0.4 : 1500,
     fadeOutDelay: options.sweepRotate != null ? options.sweepRotate : 2500,
-    fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 2000,
+    fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1000,
   };
 
   cards.forEach(function(card) {
@@ -330,8 +330,8 @@ function initBorderGlow(cards, options) {
         playTouchGlowAnimation(card, {
           angle: getPointerAngle(card, event, 110),
           intensity: touchGlowIntensity,
-          fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 500,
-          fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 2000,
+          fadeIn: options.sweepFadeIn != null ? options.sweepFadeIn : 200,
+          fadeOut: options.sweepFadeOut != null ? options.sweepFadeOut : 1000,
         });
       }, { passive: true });
     }
