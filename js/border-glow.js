@@ -186,6 +186,8 @@ function initBorderGlow(cards, options) {
   var touchLike = isTouchLikeDevice();
 
   var effectiveGlowIntensity = touchLike ? touchGlowIntensity : glowIntensity;
+  var effectiveHoverFadeIn = touchLike ? (options.sweepFadeIn != null ? options.sweepFadeIn : 500) : hoverFadeIn;
+  var effectiveHoverFadeOut = touchLike ? (options.sweepFadeOut != null ? options.sweepFadeOut : 1500) : hoverFadeOut;
   var glowVars = buildGlowVars(glowColor, effectiveGlowIntensity);
   var gradVars = buildGradientVars(colors);
   var sweepOpts = {
@@ -204,8 +206,8 @@ function initBorderGlow(cards, options) {
     card.style.setProperty('--glow-padding', glowRadius + 'px');
     card.style.setProperty('--cone-spread', coneSpread);
     card.style.setProperty('--fill-opacity', fillOpacity);
-    card.style.setProperty('--hover-fade-in', hoverFadeIn + 'ms');
-    card.style.setProperty('--hover-fade-out', hoverFadeOut + 'ms');
+    card.style.setProperty('--hover-fade-in', effectiveHoverFadeIn + 'ms');
+    card.style.setProperty('--hover-fade-out', effectiveHoverFadeOut + 'ms');
 
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }
