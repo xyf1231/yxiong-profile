@@ -1975,7 +1975,7 @@ function renderFooter(footer = {}) {
   const email = String(footer.email || siteData.profile?.email || "yfxiong@nju.edu.cn").replace(/^mailto:/i, "");
   const addressZh = String(footer.address || "南京大学仙林校区现代工学院A302").replace(/^(通信地址|通讯地址)[:：]\s*/i, "");
   const addressEn = String(footer.addressEn || footer.address || "Nanjing University Xianlin Campus, School of Modern Engineering and Applied Science, A302").replace(/^(address|mailing address)[:：]\s*/i, "");
-  const versionText = String(footer.version || "Version 1.14.2");
+  const versionText = String(footer.version || (ASSET_CACHE_BUSTER ? `Version ${String(ASSET_CACHE_BUSTER).replace(/^v/i, "").trim()}` : "Version 1.14.8"));
 
   document.querySelectorAll(".site-footer").forEach((root) => {
     const copyright = root.querySelector("span:first-child");
