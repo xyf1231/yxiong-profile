@@ -145,7 +145,6 @@ const schemas = {
       ["email", "邮箱", "", "common"],
       ["address", "通讯地址", "", "common"],
       ["addressEn", "通讯地址（英）", "", "en"],
-      ["version", "版本号文本", "", "common"],
     ],
   },
 };
@@ -457,6 +456,10 @@ function currentCollection() {
 function footerContactsCollection() {
   if (!Array.isArray(data.contacts)) data.contacts = [];
   return data.contacts;
+}
+
+function currentVersionText() {
+  return (sbVersionInline?.textContent || sbVersion?.textContent || data.footer?.version || "").trim() || "Version 1.14.8";
 }
 
 function normalizeTab(tab) {
@@ -1354,7 +1357,7 @@ function renderFooterPanel(source) {
     groups[loc].push(field);
   }
   function missingCount(fields) {
-    return fields.filter(([key]) => !footer[key] && footer[key] !== 0).length;
+    return fields.filter(([key]) => !footerDisplay[key] && footerDisplay[key] !== 0).length;
   }
   function renderGroup(loc, fields) {
     const missing = missingCount(fields);
@@ -1362,17 +1365,25 @@ function renderFooterPanel(source) {
     const warn = missing > 0 ? ` <span class="missing-badge">${missing} 项未填写</span>` : "";
     const header = showLangPicker ? `<div class="lang-group-header">${label}${warn}</div>` : "";
     const body = fields
-      .map((field) => renderFieldControl(field, footer, {
+      .map((field) => renderFieldControl(field, footerDisplay, {
         full: field[2] === "textarea" || field[2] === "image" || field[2] === "file" || field[2] === "richtext",
         missing: formLang !== "all" && loc !== "common",
       }))
       .join("");
     return `<div class="lang-group${missing > 0 && formLang !== "all" ? " lang-group-incomplete" : ""}">${header}${body}</div>`;
   }
+  const footerDisplay = { ...footer, version: currentVersionText() };
   return `
     <div class="footer-editor-note">页脚信息和联系方式已合并在这里。联系方式会继续同步到前台的联系入口。</div>
     ${langBar}
     ${order.map((loc) => renderGroup(loc, groups[loc])).join("")}
+    <section class="lang-group footer-version-group">
+      <div class="lang-group-header">🏷️ 版本号</div>
+      <div class="footer-version-display" aria-label="当前版本号">
+        <strong>${escapeHtml(currentVersionText())}</strong>
+        <span>自动同步自版本管理</span>
+      </div>
+    </section>
     ${renderFooterContactsEditor()}
   `;
 }
@@ -1781,6 +1792,10 @@ async function saveCurrent() {
   if (activeTab === "footer") {
     const target = data.footer || {};
     for (const [key, , kind] of schema.fields) {
+      if (key === "version") {
+        target[key] = currentVersionText();
+        continue;
+      }
       const el = form.elements[key];
       if (!el) continue;
       if (kind === "checkbox" && el) {
@@ -2172,6 +2187,12 @@ async function loadVersion() {
 function updateVersionPill(version) {
   if (sbVersion) sbVersion.innerHTML = `<span class="dot"></span>${version}`;
   if (sbVersionInline) sbVersionInline.textContent = version;
+  if (!data.footer) data.footer = {};
+  data.footer.version = version;
+  if (activeTab === "footer") {
+    const footerVersion = form?.querySelector(".footer-version-display strong");
+    if (footerVersion) footerVersion.textContent = version;
+  }
 }
 
 async function updateVersion() {

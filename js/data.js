@@ -860,24 +860,30 @@
   "contacts": [
     {
       "label": "Email",
-      "value": "yfxiong@nju.edu.cn",
-      "url": "mailto:yfxiong@nju.edu.cn",
       "labelEn": "Email",
-      "valueEn": "yfxiong@nju.edu.cn"
+      "value": "yfxiong@nju.edu.cn",
+      "valueEn": "yfxiong@nju.edu.cn",
+      "url": "mailto:yfxiong@nju.edu.cn"
     },
     {
       "label": "Phone",
+      "labelEn": "Phone",
       "value": "+86 17826029295",
+      "valueEn": "+86 17826029295",
       "url": "tel:+8617826029295"
     },
     {
       "label": "Google Scholar",
+      "labelEn": "Google Scholar",
       "value": "Google Scholar",
+      "valueEn": "Google Scholar",
       "url": "#"
     },
     {
       "label": "GitHub",
+      "labelEn": "GitHub",
       "value": "GitHub",
+      "valueEn": "GitHub",
       "url": "#"
     }
   ],
@@ -885,8 +891,8 @@
     "year": "2026",
     "email": "yfxiong@nju.edu.cn",
     "address": "南京大学仙林校区现代工学院A302",
-    "addressEn": "Nanjing University Xianlin Campus, School of Modern Engineering and Applied Science, A302",
-    "version": "Version 1.14.8"
+    "addressEn": "A302, College of Engineering and Applied Sciences, Xianlin Campus, Nanjing University",
+    "version": "v1.14.10"
   },
   "representativeOrder": [
     "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",
