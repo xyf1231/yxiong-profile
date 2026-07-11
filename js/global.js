@@ -2462,7 +2462,7 @@ function setupBorderGlow() {
     sweepIntensity: 1,
     sweepFadeIn: 100,
     sweepRotate: 500,
-    sweepFadeOut: 5000,
+    sweepFadeOut: 2000,
     hoverEnabled: !isCompactNav(),
   });
 }
