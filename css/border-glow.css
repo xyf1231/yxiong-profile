@@ -41,7 +41,9 @@
   inset: 0;
   border-radius: inherit;
   will-change: opacity;
-  transition: none;
+  transition-property: opacity;
+  transition-timing-function: ease-in-out;
+  transition-duration: var(--hover-fade-in, 0.75s);
   z-index: -1;
 }
 
@@ -53,7 +55,7 @@
 .border-glow-card:not(:hover):not(.sweep-active)::before,
 .border-glow-card:not(:hover):not(.sweep-active) > .edge-light {
   opacity: 0;
-  transition: opacity 0.75s ease-in-out;
+  transition-duration: var(--hover-fade-out, 0.75s);
 }
 
 /* ---------- ::before — colored mesh-gradient border ---------- */

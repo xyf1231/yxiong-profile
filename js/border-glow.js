@@ -180,6 +180,8 @@ function initBorderGlow(cards, options) {
   var hoverEnabled = options.hoverEnabled !== false;
   var colors = options.colors || ['#c084fc', '#f472b6', '#38bdf8'];
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
+  var hoverFadeIn = options.hoverFadeIn != null ? options.hoverFadeIn : 180;
+  var hoverFadeOut = options.hoverFadeOut != null ? options.hoverFadeOut : 750;
   var touchLike = isTouchLikeDevice();
 
   var glowVars = buildGlowVars(glowColor, glowIntensity);
@@ -200,6 +202,8 @@ function initBorderGlow(cards, options) {
     card.style.setProperty('--glow-padding', glowRadius + 'px');
     card.style.setProperty('--cone-spread', coneSpread);
     card.style.setProperty('--fill-opacity', fillOpacity);
+    card.style.setProperty('--hover-fade-in', hoverFadeIn + 'ms');
+    card.style.setProperty('--hover-fade-out', hoverFadeOut + 'ms');
 
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }

@@ -410,6 +410,8 @@
         glowIntensity: 1.5,
         edgeSensitivity: 0,
         fillOpacity: 0.5,
+        hoverFadeIn: 180,
+        hoverFadeOut: 750,
         colorBoost: 1.0,
         sweepSpeed: 1,
         sweepIntensity: 0.4,
@@ -417,7 +419,7 @@
         sweepFadeIn: 500,
         sweepRotate: 3750,
         sweepFadeOut: 1500,
-        animated: true,
+        animated: false,
         colors: ["#0d0887", "#f89540", "#ffffff"],
       };
 
@@ -519,6 +521,8 @@
         gHover.append(rangeField("发光强度","glowIntensity",{min:0.1,max:3,step:0.1,val:P.glowIntensity,desc:"发光层的不透明度倍率，值越高边缘光越亮"}));
         gHover.append(rangeField("边缘敏感度","edgeSensitivity",{min:0,max:100,step:1,val:P.edgeSensitivity,desc:"鼠标靠近边缘多远时触发发光，值越低越早触发"}));
         gHover.append(rangeField("填充不透明度","fillOpacity",{min:0,max:1,step:0.05,val:P.fillOpacity,desc:"卡片内部填充色的透明度" }));
+        gHover.append(rangeField("悬停淡入","hoverFadeIn",{min:0,max:2000,step:10,unit:"ms",val:P.hoverFadeIn,desc:"鼠标进入卡片时，边框发光从无到有的过渡时间"}));
+        gHover.append(rangeField("悬停淡出","hoverFadeOut",{min:0,max:2000,step:10,unit:"ms",val:P.hoverFadeOut,desc:"鼠标离开卡片时，边框发光从有到无的过渡时间"}));
         gHover.append(rangeField("卡片圆角","_borderRadius",{text:true,val:P._borderRadius||"clamp(22px, 2.4vw, 32px)",desc:"卡片四个角的圆角半径"}));
         panel.appendChild(gHover);
 
@@ -566,8 +570,8 @@
         var animHint = document.createElement("p");
         animHint.style.cssText = "font-size:0.68rem;color:var(--muted);line-height:1.4;margin:6px 0 0;";
         animHint.textContent = isTouchDevice()
-          ? "移动端自动启用循环扫光以替代鼠标悬停效果"
-          : "扫光动画在卡片进入视口时自动播放一次，开启后每个卡片只播放一次。循环播放按钮可反复触发。";
+          ? "移动端点击卡片触发扫光，默认不自动播放。"
+          : "默认不自动播放扫光；开启后会在卡片进入视口时播放一次。循环播放按钮可反复触发。";
         gAnim.appendChild(animHint);
         panel.appendChild(gAnim);
 
@@ -746,6 +750,8 @@
           glowRadius:P.glowRadius,
           glowIntensity:P.glowIntensity,
           edgeSensitivity:P.edgeSensitivity,
+          hoverFadeIn:P.hoverFadeIn,
+          hoverFadeOut:P.hoverFadeOut,
           coneSpread:25,
           fillOpacity:P.fillOpacity,
           colors: boostedColors,
@@ -758,8 +764,8 @@
           sweepFadeOut:P.sweepFadeOut,
         });
 
-        // mobile: auto-loop sweep to replace hover glow
-        if (!isTouchDevice()) { updateCode(); return; }
+        // mobile: click-to-play, no auto intro
+        if (!isTouchDevice() || !P.animated) { updateCode(); return; }
         cards.forEach(function(c) {
           delete c.dataset.sweepPlayed;
           c.classList.remove("sweep-active");
@@ -808,6 +814,8 @@
         lines.push("  glowIntensity: " + P.glowIntensity + ",");
         lines.push("  edgeSensitivity: " + P.edgeSensitivity + ",");
         lines.push("  fillOpacity: " + P.fillOpacity + ",");
+        lines.push("  hoverFadeIn: " + P.hoverFadeIn + ",");
+        lines.push("  hoverFadeOut: " + P.hoverFadeOut + ",");
         lines.push("  // === 入场扫光动画 ===");
         lines.push("  animated: " + (P.animated ? "true" : "false") + ",");
         lines.push("  sweepFan: " + (P.sweepFan !== false ? "true" : "false") + ",");

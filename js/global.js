@@ -1779,7 +1779,7 @@ function renderAllPublications(items) {
       const date = (item.date && item.date !== "-" ? item.date : item.year || "").toString().slice(0, 4);
       const image = publicationImageMarkup(item, title);
       return `
-        <article class="publication-item${expanded ? ' is-revealed' : ''}"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
+        <article class="publication-item"${item.url ? ` data-paper-preview="${escapeHtml(assetUrl(item.url))}"` : ""}>
           <time>${String(index + 1).padStart(2, "0")}</time>
           ${image}
           <div class="publication-copy">
@@ -1797,6 +1797,15 @@ function renderAllPublications(items) {
     ? `<button class="all-publications-more" type="button">${currentLang === "en" ? "Show all publications" : "展开全部论文"}</button>`
     : "";
   target.innerHTML = `${listHtml}${moreHtml}`;
+  setupBorderGlow();
+  if (expanded) {
+    requestAnimationFrame(() => {
+      target.querySelectorAll(".publication-item").forEach((card, index) => {
+        card.style.setProperty("--reveal-delay", `${Math.min(index * 45, 420)}ms`);
+        card.classList.add("is-revealed");
+      });
+    });
+  }
   const moreBtn = target.querySelector(".all-publications-more");
   if (moreBtn) {
     moreBtn.addEventListener("pointerdown", (e) => {
