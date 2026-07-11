@@ -2216,6 +2216,7 @@ async function updateVersion() {
     const result = await apiPost("/api/version", payload);
     if (result.ok) {
       updateVersionPill(result.version);
+      await persistAndWrite();
       deployLog(`✅ 版本号已更新: ${result.previous} → ${result.version}`, "success");
     } else {
       deployLog(`❌ 更新失败: ${result.message}`, "error");
