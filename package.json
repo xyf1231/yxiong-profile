@@ -7,5 +7,5 @@
     "build:manifest": "node scripts/generate-resource-manifest.mjs",
     "check": "node scripts/check-site.mjs"
   },
-  "version": "1.14.16"
+  "version": "1.14.17"
 }
