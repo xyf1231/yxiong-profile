@@ -648,43 +648,6 @@ function setupSiteLoadingGate() {
 }
 setupSiteLoadingGate();
 
-function setupLoadingLinkTransitions() {
-  if (window.__loadingLinkTransitionsBound) return;
-  window.__loadingLinkTransitionsBound = true;
-  document.addEventListener("click", (event) => {
-    if (event.defaultPrevented) return;
-    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-    const targetEl = event.target?.nodeType === Node.TEXT_NODE ? event.target.parentElement : event.target;
-    const link = targetEl?.closest ? targetEl.closest("a[href]") : null;
-    if (!link) return;
-    if (link.closest("[data-paper-preview]") || link.closest("[data-pdf-download]")) return;
-    if (link.hasAttribute("download")) return;
-    if (link.target === "_blank") return;
-    const rel = String(link.getAttribute("rel") || "").toLowerCase();
-    if (rel.includes("external")) return;
-    const href = String(link.getAttribute("href") || "").trim();
-    if (!href || href.startsWith("javascript:") || href.startsWith("mailto:") || href.startsWith("tel:")) return;
-    let resolved;
-    try {
-      resolved = new URL(href, window.location.href);
-    } catch {
-      return;
-    }
-    if (resolved.origin !== window.location.origin) return;
-    const currentUrl = new URL(window.location.href);
-    const samePath = resolved.pathname === currentUrl.pathname && resolved.search === currentUrl.search;
-    const sameHash = samePath && resolved.hash === currentUrl.hash;
-    if (sameHash) return;
-    if (window.__EDITOR_KEEP_LOADING_OVERLAY) return;
-    const trigger = typeof window.triggerLoadingTransition === "function" ? window.triggerLoadingTransition : null;
-    if (!trigger) return;
-    event.preventDefault();
-    trigger(resolved.toString(), { samePage: samePath && !!resolved.hash });
-  }, true);
-}
-
-setupLoadingLinkTransitions();
-
 const header = document.querySelector(".site-header");
 const canvas = document.querySelector("#research-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;

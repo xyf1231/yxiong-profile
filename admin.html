@@ -42,8 +42,8 @@
     <!-- 页面标题与全站样式（带版本戳防止缓存） -->
     <title>后台管理 | 熊毅丰</title>
     <!-- 后台专有样式：左侧边栏 + 右侧主区域、CMS 表单、版本控制台、备份面板、移动端适配 -->
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />
-    <link rel="stylesheet" href="css/admin.css?v=v1.14.5" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.6" />
+    <link rel="stylesheet" href="css/admin.css?v=v1.14.6" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局：左侧边栏 + 右侧主区域
@@ -1143,11 +1143,11 @@
               </section>
 
               <div class="deploy-grid">
-                <section class="deploy-console-pane">
+                <section class="deploy-console-pane deploy-workflow-panel">
                   <div class="deploy-console-head">
                     <div>
                       <h2>操作台</h2>
-                      <p>把版本、资源源、发布和预览收拢到一条顺手的工作流里。</p>
+                      <p>把版本、资源源、发布、预览、维护和备份收拢到同一条工作流里。</p>
                     </div>
                   </div>
 
@@ -1220,6 +1220,66 @@
                         <div class="deploy-log-entry info">未开始压缩。</div>
                       </div>
                     </div>
+
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">网络诊断</div>
+                      <div class="deploy-btn-row">
+                        <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
+                        <span class="deploy-note">诊断结果会写到下方日志里，先跑一次再看问题最直接。</span>
+                      </div>
+                    </div>
+
+                    <div class="deploy-action-group">
+                      <div class="deploy-action-label">备份管理</div>
+                      <div class="deploy-console-head">
+                        <div>
+                          <h2>备份管理</h2>
+                          <p>顺着“创建 - 还原 - 预览 - 清理”的顺序排布。</p>
+                        </div>
+                        <button class="deploy-btn" id="btn-refresh-backups" type="button">刷新列表</button>
+                      </div>
+
+                      <div class="backup-action-group">
+                        <div class="backup-action-label">创建备份</div>
+                        <div class="deploy-btn-row">
+                          <button class="deploy-btn success" id="backup-site" type="button">备份网页</button>
+                          <span class="deploy-status-badge" id="backup-count-badge"><span class="dot"></span>加载中</span>
+                        </div>
+                      </div>
+
+                      <div class="backup-action-group">
+                        <div class="backup-action-label">历史还原</div>
+                        <div class="deploy-btn-row">
+                          <select class="deploy-input" id="restore-backup" aria-label="选择备份" style="flex:1;min-width:240px;">
+                            <option value="">还原最新备份</option>
+                          </select>
+                          <button class="deploy-btn primary" id="restore-site" type="button">还原所选备份</button>
+                        </div>
+                      </div>
+
+                      <div class="backup-action-group">
+                        <div class="backup-action-label">备份预览</div>
+                        <div id="backup-preview-status" class="deploy-mini-list"></div>
+                        <div class="deploy-btn-row">
+                          <button class="deploy-btn" id="btn-refresh-backup-previews" type="button">刷新预览状态</button>
+                        </div>
+                      </div>
+
+                      <div class="backup-action-group">
+                        <div class="backup-action-label">历史列表</div>
+                        <div class="backup-list" id="backup-list" aria-live="polite"></div>
+                      </div>
+
+                      <div class="backup-action-group">
+                        <div class="backup-action-label">批量清理</div>
+                        <p class="backup-action-note">按备份时间清理早于指定时长的所有备份，删除后无法恢复。</p>
+                        <div class="deploy-btn-row">
+                          <button class="deploy-btn danger" id="btn-delete-backups-1d" type="button">删除 1 天前</button>
+                          <button class="deploy-btn danger" id="btn-delete-backups-1w" type="button">删除 1 周前</button>
+                          <button class="deploy-btn danger" id="btn-delete-backups-1m" type="button">删除 1 个月前</button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </section>
 
@@ -1262,77 +1322,21 @@
                 </aside>
               </div>
 
-              <div class="deploy-grid">
-                <section class="deploy-log-panel">
-                  <div class="deploy-console-head">
-                    <div>
-                      <h2>操作日志</h2>
-                      <p>所有版本更新、推送、预览和诊断结果都集中在这里。出了问题先看这里最快。</p>
-                    </div>
-                    <button class="deploy-btn" id="btn-clear-log">清空日志</button>
+              <section class="deploy-log-panel">
+                <div class="deploy-console-head">
+                  <div>
+                    <h2>操作日志</h2>
+                    <p>所有版本更新、推送、预览和诊断结果都集中在这里。出了问题先看这里最快。</p>
                   </div>
-                  <div class="deploy-log" id="deploy-log">
-                    <div class="deploy-log-entry info">版本控制台已就绪。</div>
-                  </div>
-                  <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
-                    <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
-                  </div>
-                  <div class="deploy-btn-row" style="margin-top:10px;">
-                    <button class="deploy-btn primary" id="btn-network-diagnostics" type="button">开始诊断</button>
-                  </div>
-                </section>
-
-                <section class="deploy-backup-panel">
-                  <div class="deploy-console-head">
-                    <div>
-                      <h2>备份管理</h2>
-                      <p>备份和还原放在同一块，和上面的发布链路并列，不再挤在一起，也更符合日常操作顺序。</p>
-                    </div>
-                    <button class="deploy-btn" id="btn-refresh-backups" type="button">刷新列表</button>
-                  </div>
-
-                  <div class="backup-action-group">
-                    <div class="backup-action-label">创建备份</div>
-                    <div class="deploy-btn-row">
-                      <button class="deploy-btn success" id="backup-site" type="button">备份网页</button>
-                      <span class="deploy-status-badge" id="backup-count-badge"><span class="dot"></span>加载中</span>
-                    </div>
-                  </div>
-
-                  <div class="backup-action-group">
-                    <div class="backup-action-label">历史还原</div>
-                    <div class="deploy-btn-row">
-                      <select class="deploy-input" id="restore-backup" aria-label="选择备份" style="flex:1;min-width:240px;">
-                        <option value="">还原最新备份</option>
-                      </select>
-                      <button class="deploy-btn primary" id="restore-site" type="button">还原所选备份</button>
-                    </div>
-                  </div>
-
-                  <div class="backup-action-group">
-                    <div class="backup-action-label">备份预览</div>
-                    <div id="backup-preview-status" class="deploy-mini-list"></div>
-                    <div class="deploy-btn-row">
-                      <button class="deploy-btn" id="btn-refresh-backup-previews" type="button">刷新预览状态</button>
-                    </div>
-                  </div>
-
-                  <div class="backup-action-group">
-                    <div class="backup-action-label">历史列表</div>
-                    <div class="backup-list" id="backup-list" aria-live="polite"></div>
-                  </div>
-
-                  <div class="backup-action-group">
-                    <div class="backup-action-label">批量清理</div>
-                    <p class="backup-action-note">按备份时间清理早于指定时长的所有备份，删除后无法恢复。</p>
-                    <div class="deploy-btn-row">
-                      <button class="deploy-btn danger" id="btn-delete-backups-1d" type="button">删除 1 天前</button>
-                      <button class="deploy-btn danger" id="btn-delete-backups-1w" type="button">删除 1 周前</button>
-                      <button class="deploy-btn danger" id="btn-delete-backups-1m" type="button">删除 1 个月前</button>
-                    </div>
-                  </div>
-                </section>
-              </div>
+                  <button class="deploy-btn" id="btn-clear-log">清空日志</button>
+                </div>
+                <div class="deploy-log" id="deploy-log">
+                  <div class="deploy-log-entry info">版本控制台已就绪。</div>
+                </div>
+                <div class="deploy-log" id="network-diagnostics-log" style="max-height:220px; margin-top:12px;">
+                  <div class="deploy-log-entry info">点击「开始诊断」后会显示各项耗时。</div>
+                </div>
+              </section>
             </div>
           </div>
 
@@ -1345,7 +1349,7 @@
       <button id="undo-btn" type="button" style="background:rgba(41,151,255,0.15);border:1px solid rgba(41,151,255,0.3);color:#2997FF;border-radius:8px;padding:6px 14px;font:inherit;font-size:0.8rem;font-weight:600;cursor:pointer;white-space:nowrap;">撤销</button>
     </div>
     <!-- 核心脚本：data.js 为站点内容数据库，admin.js 负责后台交互与本地服务通信 -->
-    <script src="js/data.js?v=v1.14.5" charset="utf-8"></script>
-    <script src="js/admin.js?v=v1.14.5" charset="utf-8"></script>
+    <script src="js/data.js?v=v1.14.6" charset="utf-8"></script>
+    <script src="js/admin.js?v=v1.14.6" charset="utf-8"></script>
   </body>
 </html>

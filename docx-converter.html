@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="theme-color" content="#000000" />
     <title>Word 转换 | 熊毅丰</title>
-    <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />
+    <link rel="stylesheet" href="css/styles.css?v=v1.14.6" />
     <style>
       /* ═══════════════════════════════════════════════
          整体布局
@@ -369,8 +369,7 @@
               <div class="output-actions">
                 <button class="admin-button" id="btn-copy-html" disabled>📋 复制 HTML</button>
                 <button class="admin-button" id="btn-download" disabled>⬇️ 下载独立页面</button>
-                <button class="admin-button" id="btn-translate-en" disabled>🌍 一键翻译英文并发送</button>
-                <button class="admin-button primary" id="btn-send-admin" disabled>📤 压缩 WebP 并发送</button>
+                <button class="admin-button primary" id="btn-translate-en" disabled>🌍 翻译并发送</button>
               </div>
             </section>
 
@@ -397,7 +396,6 @@
         var btnCopy = document.getElementById('btn-copy-html');
         var btnDownload = document.getElementById('btn-download');
         var btnTranslateEn = document.getElementById('btn-translate-en');
-        var btnSendAdmin = document.getElementById('btn-send-admin');
         var previewEl = document.getElementById('converter-preview');
         var sourceArea = document.getElementById('source-area');
         var toastEl = document.getElementById('toast');
@@ -721,9 +719,9 @@
             '    })();\n' +
             '  <\\/script>\n' +
             '  <title>' + safeTitle + ' | 熊毅丰</title>\n' +
-            '  <link rel="stylesheet" href="css/styles.css?v=v1.14.5" />\n' +
-            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.5" />\n' +
-            '  <link rel="stylesheet" href="css/news.css?v=v1.14.5" />\n' +
+            '  <link rel="stylesheet" href="css/styles.css?v=v1.14.6" />\n' +
+            '  <link rel="stylesheet" href="css/loading-config.css?v=v1.14.6" />\n' +
+            '  <link rel="stylesheet" href="css/news.css?v=v1.14.6" />\n' +
             '</head>\n' +
             '<body>\n' +
             '  <header class="site-header" data-elevated="false">\n' +
@@ -763,9 +761,9 @@
             '    <a href="mailto:yfxiong@nju.edu.cn">yfxiong@nju.edu.cn</a>\n' +
             '    <span class="footer-address">南京大学仙林校区现代工学院A302</span>\n' +
             '  </footer>\n' +
-            '  <script src="js/data.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
-            '  <script src="js/loading-content.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
-            '  <script src="js/resource-manifest.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
+            '  <script src="js/data.js?v=v1.14.6" charset="utf-8"><\/script>\n' +
+            '  <script src="js/loading-content.js?v=v1.14.6" charset="utf-8"><\/script>\n' +
+            '  <script src="js/resource-manifest.js?v=v1.14.6" charset="utf-8"><\/script>\n' +
             '  <script>\n' +
             '    // letters-animation.umd.js 内部引用 process.env.NODE_ENV，浏览器环境兜底\n' +
             '    if (typeof window.process === "undefined") {\n' +
@@ -776,8 +774,8 @@
             '      window.process.env.NODE_ENV = "production";\n' +
             '    }\n' +
             '  <\/script>\n' +
-            '  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.5" charset="utf-8" defer><\/script>\n' +
-            '  <script src="js/script.js?v=v1.14.5" charset="utf-8"><\/script>\n' +
+            '  <script src="js/letters-dist/letters-animation.umd.js?v=v1.14.6" charset="utf-8" defer><\/script>\n' +
+            '  <script src="js/script.js?v=v1.14.6" charset="utf-8"><\/script>\n' +
             '</body>\n' +
             '</html>';
         }
@@ -1318,7 +1316,6 @@
           btnCopy.disabled = true;
           btnDownload.disabled = true;
           btnTranslateEn.disabled = true;
-          btnSendAdmin.disabled = true;
 
           showToast('已重置');
         }
@@ -1340,7 +1337,6 @@
         btnCopy.addEventListener('click', copyHtml);
         btnDownload.addEventListener('click', downloadPage);
         btnTranslateEn.addEventListener('click', translateToEnglishAndSend);
-        btnSendAdmin.addEventListener('click', sendToAdmin);
         document.getElementById('btn-reset').addEventListener('click', resetAll);
 
         // ─── 富文本编辑器：工具栏 ──────────────────────
