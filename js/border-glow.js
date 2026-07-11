@@ -213,6 +213,7 @@ function initBorderGlow(cards, options) {
   var glowColor = options.glowColor || '40 80 80';
   var glowRadius = options.glowRadius != null ? options.glowRadius : 40;
   var glowIntensity = options.glowIntensity != null ? options.glowIntensity : 1.0;
+  var touchGlowIntensity = options.touchGlowIntensity != null ? options.touchGlowIntensity : glowIntensity;
   var coneSpread = options.coneSpread != null ? options.coneSpread : 25;
   var animated = options.animated || false;
   var sweepSpeed = options.sweepSpeed != null ? options.sweepSpeed : 1;
@@ -223,9 +224,14 @@ function initBorderGlow(cards, options) {
   var fillOpacity = options.fillOpacity != null ? options.fillOpacity : 0.5;
   var hoverFadeIn = options.hoverFadeIn != null ? options.hoverFadeIn : 180;
   var hoverFadeOut = options.hoverFadeOut != null ? options.hoverFadeOut : 750;
+  var touchHoverFadeIn = options.touchHoverFadeIn != null ? options.touchHoverFadeIn : hoverFadeIn;
+  var touchHoverFadeOut = options.touchHoverFadeOut != null ? options.touchHoverFadeOut : hoverFadeOut;
   var touchLike = isTouchLikeDevice();
 
-  var glowVars = buildGlowVars(glowColor, glowIntensity);
+  var effectiveGlowIntensity = touchLike ? touchGlowIntensity : glowIntensity;
+  var effectiveHoverFadeIn = touchLike ? touchHoverFadeIn : hoverFadeIn;
+  var effectiveHoverFadeOut = touchLike ? touchHoverFadeOut : hoverFadeOut;
+  var glowVars = buildGlowVars(glowColor, effectiveGlowIntensity);
   var gradVars = buildGradientVars(colors);
   var sweepOpts = {
     speed: sweepSpeed,
@@ -243,8 +249,8 @@ function initBorderGlow(cards, options) {
     card.style.setProperty('--glow-padding', glowRadius + 'px');
     card.style.setProperty('--cone-spread', coneSpread);
     card.style.setProperty('--fill-opacity', fillOpacity);
-    card.style.setProperty('--hover-fade-in', hoverFadeIn + 'ms');
-    card.style.setProperty('--hover-fade-out', hoverFadeOut + 'ms');
+    card.style.setProperty('--hover-fade-in', effectiveHoverFadeIn + 'ms');
+    card.style.setProperty('--hover-fade-out', effectiveHoverFadeOut + 'ms');
 
     for (var key in glowVars) { card.style.setProperty(key, glowVars[key]); }
     for (var key in gradVars) { card.style.setProperty(key, gradVars[key]); }
@@ -268,8 +274,8 @@ function initBorderGlow(cards, options) {
       card.addEventListener('pointerdown', function(event) {
         if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
         playTouchPulseAnimation(card, {
-          fadeIn: hoverFadeIn,
-          fadeOut: hoverFadeOut,
+          fadeIn: effectiveHoverFadeIn,
+          fadeOut: effectiveHoverFadeOut,
           peak: 100,
         });
       }, { passive: true });
