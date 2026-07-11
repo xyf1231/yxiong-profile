@@ -1,5 +1,12 @@
 # 更新日志
 
+# v1.14.15 - 2026-07-12
+- 类型：调整
+- 变更：更新 `glow-lab.html` 的边框发光交互，桌面端保持悬停触发，手机端改为点击触发，并让手机端点击特效直接使用 `hoverFadeIn` / `hoverFadeOut` 参数。
+- 变更：将前台静态资源版本戳统一升到 `v1.14.15`，避免 Cloudflare Pages 继续命中旧缓存。
+- 检查：`node scripts/check-site.mjs` 通过
+- 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
+
 # v1.13.14 - 2026-07-11
 - 类型：修复
 - 变更：修复首页和内容页页脚访客统计在正式站点仍显示 `--` 的问题。`js/script.js` 现在会先用 `GET /api/counter` 读取当前计数，再用 `POST /api/counter` 做访问递增；两次请求都使用 `cache: "no-store"`，并且不会因为一次失败直接把已拿到的计数清空。

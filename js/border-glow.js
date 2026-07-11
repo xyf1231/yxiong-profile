@@ -111,6 +111,47 @@ function playSweepAnimation(card, opts) {
   });
 }
 
+function playTouchPulseAnimation(card, opts) {
+  opts = opts || {};
+  var token = (card._touchPulseToken || 0) + 1;
+  card._touchPulseToken = token;
+
+  var fadeIn = opts.fadeIn != null ? opts.fadeIn : 500;
+  var fadeOut = opts.fadeOut != null ? opts.fadeOut : 1000;
+  var peak = opts.peak != null ? opts.peak : 100;
+
+  card.classList.add('sweep-active');
+  card.style.setProperty('--hover-fade-in', fadeIn + 'ms');
+  card.style.setProperty('--edge-proximity', '0');
+
+  animateValue({
+    duration: fadeIn,
+    end: peak,
+    onUpdate: function(v) {
+      if (card._touchPulseToken !== token) return;
+      card.style.setProperty('--edge-proximity', v);
+    },
+    onEnd: function() {
+      if (card._touchPulseToken !== token) return;
+      card.style.setProperty('--hover-fade-in', fadeOut + 'ms');
+      animateValue({
+        duration: fadeOut,
+        start: peak,
+        end: 0,
+        onUpdate: function(v) {
+          if (card._touchPulseToken !== token) return;
+          card.style.setProperty('--edge-proximity', v);
+        },
+        onEnd: function() {
+          if (card._touchPulseToken !== token) return;
+          card.classList.remove('sweep-active');
+          card.style.setProperty('--hover-fade-in', fadeIn + 'ms');
+        }
+      });
+    }
+  });
+}
+
 function restartSweepAnimation(card, opts) {
   if (!card) return;
   delete card.dataset.sweepPlayed;
@@ -226,7 +267,11 @@ function initBorderGlow(cards, options) {
       card.dataset.glowTapReady = 'true';
       card.addEventListener('pointerdown', function(event) {
         if (event.pointerType !== 'touch' && event.pointerType !== 'pen') return;
-        restartSweepAnimation(card, sweepOpts);
+        playTouchPulseAnimation(card, {
+          fadeIn: hoverFadeIn,
+          fadeOut: hoverFadeOut,
+          peak: 100,
+        });
       }, { passive: true });
     }
 
