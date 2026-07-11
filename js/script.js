@@ -2469,11 +2469,9 @@ function setupBorderGlow() {
     card.dataset.glowReady = "true";
     var computedStyle = window.getComputedStyle(card);
     card.classList.add("border-glow-card");
-    if (touchLike && card.classList.contains("detail-item")) {
-      card.classList.add("border-glow-native-bg");
-      card.style.setProperty("--native-card-background", computedStyle.background);
-      card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
-    }
+    card.classList.add("border-glow-native-bg");
+    card.style.setProperty("--native-card-background", computedStyle.background);
+    card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
 
     var borderRadius = computedStyle.borderRadius || "clamp(22px, 2.4vw, 32px)";
     card.style.setProperty("--border-radius", borderRadius);

@@ -1,5 +1,12 @@
 # 更新日志
 
+# v1.14.31 - 2026-07-12
+- 类型：修复
+- 变更：将所有进入 glow 体系的卡片统一切到原生背景模式，保留各自原有 background / backdrop-filter，不再被 `border-glow-card` 压黑。
+- 变更：手机端仍保留点击 glow，桌面端仍保留悬停 glow，入场 sweep 只在桌面端播放。
+- 检查：`node scripts/check-site.mjs` 待复跑
+- 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
+
 # v1.14.30 - 2026-07-12
 - 类型：修复
 - 变更：保留手机端专利/详情卡片的 glow 触发，但将 `detail-item` 切换为原生背景模式，避免 `border-glow-card` 的伪层把卡片压黑。

@@ -2446,11 +2446,9 @@ function setupBorderGlow() {
     card.dataset.glowReady = "true";
     const computedStyle = window.getComputedStyle(card);
     card.classList.add("border-glow-card");
-    if (touchLike && card.classList.contains("detail-item")) {
-      card.classList.add("border-glow-native-bg");
-      card.style.setProperty("--native-card-background", computedStyle.background);
-      card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
-    }
+    card.classList.add("border-glow-native-bg");
+    card.style.setProperty("--native-card-background", computedStyle.background);
+    card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
     card.style.setProperty("--card-bg", index % 3 === 0 ? "#090d16" : "#070b12");
     card.style.setProperty("--border-radius", computedStyle.borderRadius || "18px");
   });
