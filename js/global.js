@@ -2436,9 +2436,11 @@ function translateLooseHeadings(dict) {
 
 // ==================== 视觉动效 ====================
 function setupBorderGlow() {
-  const cards = document.querySelectorAll(
-    ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner",
-  );
+  const touchLike = isTouchLikeDevice();
+  const selector = touchLike
+    ? ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner"
+    : ".news-card, .news-article-card, .news-info-card, .feature-card, .publication-item, .profile-publication-item, .all-publication-list > a, .all-publication-list > article, .detail-item, .project-card, .achievement-item, .profile-photo, .profile-combo, .profile-timeline .timeline li, .home-bento-card, .contact-inner";
+  const cards = document.querySelectorAll(selector);
   cards.forEach((card, index) => {
     if (card.dataset.glowReady === "true") return;
     card.dataset.glowReady = "true";

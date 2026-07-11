@@ -1,5 +1,12 @@
 # 更新日志
 
+# v1.14.29 - 2026-07-12
+- 类型：修复
+- 变更：将手机端的专利/详情卡片从 glow 目标中排除，避免 `detail-item` 套用 `border-glow-card` 后把原生卡片背景压成深色。
+- 变更：将前台静态资源版本戳统一升到 `v1.14.29`，避免 Cloudflare Pages 继续命中旧缓存。
+- 检查：`node scripts/check-site.mjs` 待复跑
+- 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
+
 # v1.14.28 - 2026-07-12
 - 类型：修复
 - 变更：修正手机端点击 glow 时卡片背景变黑的问题。touch 状态现在保留一层稳定的 `--touch-base-opacity`，不再把 `::before` 直接压成 0。
