@@ -1,9 +1,9 @@
 # 更新日志
 
-# v1.14.17 - 2026-07-12
+# v1.14.18 - 2026-07-12
 - 类型：调整
 - 变更：更新 `glow-lab.html` 的边框发光交互，桌面端保持悬停触发，手机端改为点击触发，并让手机端点击特效直接使用 `hoverFadeIn` / `hoverFadeOut` 参数。
-- 变更：将前台静态资源版本戳统一升到 `v1.14.17`，避免 Cloudflare Pages 继续命中旧缓存。
+- 变更：将前台静态资源版本戳统一升到 `v1.14.18`，避免 Cloudflare Pages 继续命中旧缓存。
 - 检查：`node scripts/check-site.mjs` 通过
 - 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
 
