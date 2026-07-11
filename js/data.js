@@ -892,7 +892,7 @@
     "email": "yfxiong@nju.edu.cn",
     "address": "南京大学仙林校区现代工学院A302",
     "addressEn": "A302, College of Engineering and Applied Sciences, Xianlin Campus, Nanjing University",
-    "version": "v1.14.25"
+    "version": "v1.14.26"
   },
   "representativeOrder": [
     "Identification of the mode, polarization, wavelength and intensity of light using a one-pixel device on an optical fibre tip.",

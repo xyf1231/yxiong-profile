@@ -172,37 +172,39 @@ function playTouchGlowAnimation(card, opts) {
   // Touch taps need a separate timeline; the CSS hover transition would blur the timing.
   cancelTouchGlowAnimation(card);
   delete card.dataset.sweepPlayed;
-  card.classList.add('sweep-active', 'touch-glow-playing');
+  card.classList.add('touch-glow-playing');
 
   var angle = opts.angle != null ? opts.angle : 110;
   var fadeIn = opts.fadeIn != null ? opts.fadeIn : 500;
   var hold = opts.hold != null ? opts.hold : 180;
   var fadeOut = opts.fadeOut != null ? opts.fadeOut : 1500;
   var intensity = opts.intensity != null ? opts.intensity : 1;
-  var peak = 100 * Math.max(1, intensity);
+  var peakOpacity = Math.max(0.18, Math.min(1, intensity / 2));
   var controllers = [];
   var timeouts = [];
 
   card.style.setProperty('--cursor-angle', angle + 'deg');
+  card.style.setProperty('--touch-glow-opacity', '0');
 
   controllers.push(animateValue({
     duration: fadeIn,
-    end: peak,
+    end: peakOpacity,
     onUpdate: function(v) {
-      card.style.setProperty('--edge-proximity', v);
+      card.style.setProperty('--touch-glow-opacity', v);
     },
   }));
 
   timeouts.push(setTimeout(function() {
     controllers.push(animateValue({
       duration: fadeOut,
-      start: peak,
+      start: peakOpacity,
       end: 0,
       onUpdate: function(v) {
-        card.style.setProperty('--edge-proximity', v);
+        card.style.setProperty('--touch-glow-opacity', v);
       },
       onEnd: function() {
-        card.classList.remove('sweep-active', 'touch-glow-playing');
+        card.classList.remove('touch-glow-playing');
+        card.style.setProperty('--touch-glow-opacity', '0');
         if (card.__touchGlowAnim) delete card.__touchGlowAnim;
       }
     }));
@@ -211,7 +213,8 @@ function playTouchGlowAnimation(card, opts) {
   timeouts.push(setTimeout(function() {
     if (!card.__touchGlowAnim) return;
     delete card.__touchGlowAnim;
-    card.classList.remove('sweep-active', 'touch-glow-playing');
+    card.classList.remove('touch-glow-playing');
+    card.style.setProperty('--touch-glow-opacity', '0');
   }, fadeIn + hold + fadeOut + 32));
 
   card.__touchGlowAnim = { controllers: controllers, timeouts: timeouts };

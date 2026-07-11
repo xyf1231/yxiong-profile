@@ -63,6 +63,14 @@
   transition-duration: 0ms !important;
 }
 
+.border-glow-card.touch-glow-playing::before {
+  opacity: 0 !important;
+}
+
+.border-glow-card.touch-glow-playing > .edge-light {
+  opacity: var(--touch-glow-opacity, 0) !important;
+}
+
 /* ---------- ::before — colored mesh-gradient border ---------- */
 .border-glow-card::before {
   border: 1px solid transparent;
