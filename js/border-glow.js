@@ -227,6 +227,10 @@ function setupPointerTracking(card) {
   if (card.dataset.glowPointer === 'true') return;
   card.dataset.glowPointer = 'true';
 
+  card.addEventListener('pointerenter', function() {
+    card.style.setProperty('--edge-proximity', '100');
+  });
+
   card.addEventListener('pointermove', function(e) {
     var rect = card.getBoundingClientRect();
     var x = e.clientX - rect.left;
@@ -235,13 +239,6 @@ function setupPointerTracking(card) {
     var cy = rect.height / 2;
     var dx = x - cx;
     var dy = y - cy;
-
-    var kx = Infinity;
-    var ky = Infinity;
-    if (dx !== 0) kx = cx / Math.abs(dx);
-    if (dy !== 0) ky = cy / Math.abs(dy);
-    var edge = Math.min(Math.max(1 / Math.min(kx, ky), 0), 1);
-
     var angle = 0;
     if (dx !== 0 || dy !== 0) {
       var radians = Math.atan2(dy, dx);
@@ -249,7 +246,6 @@ function setupPointerTracking(card) {
       if (angle < 0) angle += 360;
     }
 
-    card.style.setProperty('--edge-proximity', (edge * 100).toFixed(3));
     card.style.setProperty('--cursor-angle', angle.toFixed(3) + 'deg');
   });
 
