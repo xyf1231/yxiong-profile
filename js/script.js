@@ -2500,7 +2500,7 @@ function setupBorderGlow() {
     colors: ["#000033", "#0044cc", "#6688ff"],
     glowColor: "220 80 80",
     glowRadius: 30,
-    glowIntensity: 1.5,
+    glowIntensity: 1,
     edgeSensitivity: 0,
     fillOpacity: 0.5,
     animated: false,
@@ -2564,21 +2564,6 @@ function setupRevealAnimations() {
         if (rDelay > 600) {
           rDelay = 600;
           node.style.setProperty("--reveal-delay", "200ms");
-        }
-        // trigger glow sweep in sync with card entrance (only after loading)
-        if (!isCompactNav() && document.documentElement.dataset.siteLoading !== "pending" && !isTouchLikeDevice() && node.classList.contains("border-glow-card") && typeof playSweepAnimation === "function") {
-          var rh = Math.round(500 * 0.4);
-          var rs = Math.round(500 * 0.6);
-          setTimeout(function() {
-            delete node.dataset.sweepPlayed;
-            node.classList.remove("sweep-active");
-            playSweepAnimation(node, {
-              speed: 2, intensity: 1, fadeIn: 100,
-              rotateHalf: rh, rotateSecond: rs,
-              rotateDelay: rh, fadeOutDelay: rh + rs,
-              fadeOut: 200,
-            });
-          }, rDelay);
         }
       }
     }

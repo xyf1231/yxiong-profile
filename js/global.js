@@ -2459,7 +2459,7 @@ function setupBorderGlow() {
     colors: ["#000033", "#0044cc", "#6688ff"],
     glowColor: "220 80 80",
     glowRadius: 30,
-    glowIntensity: 1.5,
+    glowIntensity: 1,
     edgeSensitivity: 0,
     fillOpacity: 0.5,
     animated: false,

@@ -1,5 +1,12 @@
 # 更新日志
 
+# v1.14.32 - 2026-07-12
+- 类型：修复
+- 变更：禁用电脑端的入场 glow sweep，避免卡片在进入视口时自动扫亮。
+- 变更：将 glow 强度下调到 `1`，让桌面端悬停不再过亮。
+- 检查：`node scripts/check-site.mjs` 待复跑
+- 部署：待推送到 GitHub 后由 Cloudflare Pages 自动部署
+
 # v1.14.31 - 2026-07-12
 - 类型：修复
 - 变更：将所有进入 glow 体系的卡片统一切到原生背景模式，保留各自原有 background / backdrop-filter，不再被 `border-glow-card` 压黑。
