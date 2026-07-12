@@ -71,31 +71,32 @@ export async function onRequest({ request, env }) {
       const now = Date.now();
       let counted = true;
 
-      if (ip) {
-        await db.exec("BEGIN IMMEDIATE");
-        try {
-          const row = await db.prepare(
-            "SELECT last_counted_at FROM visitor_ip_log WHERE ip = ?"
-          ).bind(ip).first();
-          const lastCountedAt = Number(row?.last_counted_at || 0);
-          const hasWindowExpired = !Number.isFinite(lastCountedAt) || now - lastCountedAt >= windowMs;
+      if (!ip) {
+        const row = await db.prepare("SELECT count FROM visitor_counter WHERE id = 1").first();
+        return json({ count: Number(row?.count || 0), counted: false, skipped: "missing_ip" });
+      }
 
-          if (hasWindowExpired) {
-            await db.prepare("UPDATE visitor_counter SET count = count + 1 WHERE id = 1").run();
-            await db.prepare(
-              "INSERT INTO visitor_ip_log (ip, last_counted_at) VALUES (?, ?) ON CONFLICT(ip) DO UPDATE SET last_counted_at = excluded.last_counted_at"
-            ).bind(ip, now).run();
-          } else {
-            counted = false;
-          }
+      await db.exec("BEGIN IMMEDIATE");
+      try {
+        const row = await db.prepare(
+          "SELECT last_counted_at FROM visitor_ip_log WHERE ip = ?"
+        ).bind(ip).first();
+        const lastCountedAt = Number(row?.last_counted_at || 0);
+        const hasWindowExpired = !Number.isFinite(lastCountedAt) || now - lastCountedAt >= windowMs;
 
-          await db.exec("COMMIT");
-        } catch (error) {
-          await db.exec("ROLLBACK");
-          throw error;
+        if (hasWindowExpired) {
+          await db.prepare("UPDATE visitor_counter SET count = count + 1 WHERE id = 1").run();
+          await db.prepare(
+            "INSERT INTO visitor_ip_log (ip, last_counted_at) VALUES (?, ?) ON CONFLICT(ip) DO UPDATE SET last_counted_at = excluded.last_counted_at"
+          ).bind(ip, now).run();
+        } else {
+          counted = false;
         }
-      } else {
-        await db.prepare("UPDATE visitor_counter SET count = count + 1 WHERE id = 1").run();
+
+        await db.exec("COMMIT");
+      } catch (error) {
+        await db.exec("ROLLBACK");
+        throw error;
       }
 
       const row = await db.prepare("SELECT count FROM visitor_counter WHERE id = 1").first();

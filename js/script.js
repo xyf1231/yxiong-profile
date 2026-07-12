@@ -1293,9 +1293,11 @@ function setupNewsCarousel(root) {
   let activeIndex = 0;
   // 用户手动滑动后，自动播放暂停，但可通过按钮恢复
   let autoPlaying = true;
+  let isInView = false;
   let timer = null;
   let statusTimer = null;
   let autoplayStartedAt = 0;
+  let visibilityObserver = null;
   let isDragging = false;
   let dragStartX = 0;
   let dragStartY = 0;
@@ -1331,11 +1333,45 @@ function setupNewsCarousel(root) {
     });
   };
 
+  const stopAuto = () => {
+    window.clearInterval(timer);
+    timer = null;
+  };
+
+  const syncAutoTimer = () => {
+    stopAuto();
+    window.clearInterval(statusTimer);
+    statusTimer = null;
+    if (!autoPlaying || !isInView || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) {
+      update();
+      return;
+    }
+    autoplayStartedAt = Date.now();
+    timer = window.setInterval(() => {
+      autoplayStartedAt = Date.now();
+      goTo(activeIndex + 1, "smooth", true);
+    }, 5200);
+    statusTimer = window.setInterval(() => update(), 100);
+    update();
+  };
+
+  const suspendAutoForManualNav = () => {
+    if (!autoPlaying || !isInView) return;
+    stopAuto();
+    window.clearInterval(statusTimer);
+    statusTimer = null;
+  };
+
+  const restartAutoFromCurrent = () => {
+    if (!autoPlaying) return;
+    syncAutoTimer();
+  };
+
   const goTo = (index, behavior = "smooth", wrap = false, manual = false) => {
     const nextIndex = wrap
       ? (index + cards.length) % cards.length
       : Math.max(0, Math.min(cards.length - 1, index));
-    if (manual) pauseAutoForManualNav();
+    if (manual) suspendAutoForManualNav();
     const card = cards[nextIndex];
     update(nextIndex);
     if (behavior === "auto") {
@@ -1354,12 +1390,7 @@ function setupNewsCarousel(root) {
         }, 24);
       }
     });
-  };
-
-
-  const stopAuto = () => {
-    window.clearInterval(timer);
-    timer = null;
+    if (manual) restartAutoFromCurrent();
   };
 
   const pauseAuto = () => {
@@ -1376,22 +1407,30 @@ function setupNewsCarousel(root) {
     update();
   };
 
-  const pauseAutoForManualNav = () => {
-    if (autoPlaying) pauseAuto();
+  const setAutoVisibility = (visible) => {
+    if (isInView === visible) return;
+    isInView = visible;
+    if (isInView) syncAutoTimer();
+    else {
+      stopAuto();
+      window.clearInterval(statusTimer);
+      statusTimer = null;
+      update();
+    }
   };
 
-  const startAuto = () => {
-    stopAuto();
-    if (!autoPlaying || window.matchMedia("(prefers-reduced-motion: reduce)").matches || cards.length < 2) return;
-    autoplayStartedAt = Date.now();
-    timer = window.setInterval(() => {
-      autoplayStartedAt = Date.now();
-      goTo(activeIndex + 1, "smooth", true);
-    }, 5200);
-    window.clearInterval(statusTimer);
-    statusTimer = window.setInterval(() => update(), 100);
-    update();
-  };
+  if ("IntersectionObserver" in window) {
+    visibilityObserver = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        setAutoVisibility(Boolean(entry?.isIntersecting && entry.intersectionRatio >= 0.35));
+      },
+      { threshold: [0, 0.35, 0.6, 1] }
+    );
+    visibilityObserver.observe(root);
+  } else {
+    setAutoVisibility(true);
+  }
 
   prev?.addEventListener("click", () => { goTo(activeIndex - 1, "smooth", false, true); });
   next?.addEventListener("click", () => { goTo(activeIndex + 1, "smooth", false, true); });
@@ -1412,7 +1451,7 @@ function setupNewsCarousel(root) {
     autoPlaying = !autoPlaying;
     play.textContent = autoPlaying ? "Ⅱ" : "▶";
     play.setAttribute("aria-label", autoPlaying ? (currentLang === "en" ? "Pause auto play" : "暂停自动播放") : (currentLang === "en" ? "Resume auto play" : "继续自动播放"));
-    if (autoPlaying) startAuto();
+    if (autoPlaying) syncAutoTimer();
     else pauseAuto();
   });
 
@@ -1426,8 +1465,8 @@ function setupNewsCarousel(root) {
     dragDeltaY = 0;
     dragPointerId = event.pointerId;
     dragLocked = null;
-    // 用户开始拖拽，立即关闭自动播放，但保留按钮可恢复
-    pauseAutoForManualNav();
+    // 用户开始拖拽时先停掉当前计时，结束后从选中的卡片重新计时
+    suspendAutoForManualNav();
     dragBaseOffset = getCurrentOffset();
     track.style.transitionDuration = "0ms";
     root.classList.add("is-dragging");
@@ -1513,7 +1552,7 @@ function setupNewsCarousel(root) {
     touchDeltaY = 0;
     touchLocked = null;
     touchActive = true;
-    pauseAutoForManualNav();
+    suspendAutoForManualNav();
     dragBaseOffset = getCurrentOffset();
     track.style.transitionDuration = "0ms";
     root.classList.add("is-dragging");
@@ -1577,7 +1616,7 @@ function setupNewsCarousel(root) {
     const horizontalIntent = Math.abs(event.deltaX) > Math.abs(event.deltaY) || event.shiftKey;
     if (!horizontalIntent) return;
     event.preventDefault();
-    pauseAutoForManualNav();
+    suspendAutoForManualNav();
     if (wheelCooldownTimer) return;
     const delta = event.deltaX || event.deltaY;
     if (!delta) return;
@@ -1618,7 +1657,7 @@ function setupNewsCarousel(root) {
   update(0);
   goTo(0, "auto");
   window.addEventListener("load", () => goTo(activeIndex, "auto"), { once: true });
-  startAuto();
+  syncAutoTimer();
   update();
 }
 function sanitizeRichHtml(html = "") {
