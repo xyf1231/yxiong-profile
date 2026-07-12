@@ -178,8 +178,7 @@ function playTouchGlowAnimation(card, opts) {
   var fadeIn = opts.fadeIn != null ? opts.fadeIn : 500;
   var hold = opts.hold != null ? opts.hold : 180;
   var fadeOut = opts.fadeOut != null ? opts.fadeOut : 1500;
-  var intensity = opts.intensity != null ? opts.intensity : 1;
-  var peakOpacity = Math.max(0.18, Math.min(1, intensity / 2));
+  var peakOpacity = 1;
   var controllers = [];
   var timeouts = [];
 
