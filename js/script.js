@@ -2470,6 +2470,7 @@ function setupBorderGlow() {
     var computedStyle = window.getComputedStyle(card);
     card.classList.add("border-glow-card");
     card.classList.add("border-glow-native-bg");
+    if (!touchLike) card.classList.add("border-glow-edge-only");
     card.style.setProperty("--native-card-background", computedStyle.background);
     card.style.setProperty("--native-card-backdrop-filter", computedStyle.backdropFilter || computedStyle.webkitBackdropFilter || "none");
 
@@ -2496,19 +2497,40 @@ function setupBorderGlow() {
 
   if (glowCards.length === 0) return;
 
-  initBorderGlow(glowCards, {
+  initBorderGlow(glowCards, touchLike ? {
     colors: ["#000033", "#0044cc", "#6688ff"],
     glowColor: "220 80 80",
     glowRadius: 30,
     glowIntensity: 1,
     edgeSensitivity: 0,
     fillOpacity: 0.5,
+    hoverFadeIn: 180,
+    hoverFadeOut: 750,
+    touchGlowIntensity: 1,
     animated: false,
     sweepFan: false,
-    sweepSpeed: 2,
-    sweepIntensity: 1,
+    sweepSpeed: 1,
+    sweepIntensity: 0.4,
     sweepFadeIn: 200,
-    sweepRotate: 500,
+    sweepRotate: 3750,
+    sweepFadeOut: 500,
+    hoverEnabled: !isCompactNav(),
+  } : {
+    colors: ["#000033", "#0044cc", "#6688ff"],
+    glowColor: "220 80 80",
+    glowRadius: 40,
+    glowIntensity: 1.5,
+    edgeSensitivity: 0,
+    fillOpacity: 0.18,
+    hoverFadeIn: 180,
+    hoverFadeOut: 750,
+    touchGlowIntensity: 1,
+    animated: false,
+    sweepFan: false,
+    sweepSpeed: 1,
+    sweepIntensity: 0.4,
+    sweepFadeIn: 200,
+    sweepRotate: 3750,
     sweepFadeOut: 500,
     hoverEnabled: !isCompactNav(),
   });
